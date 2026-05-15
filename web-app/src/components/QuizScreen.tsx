@@ -1,0 +1,543 @@
+import React, { useState } from 'react';
+import { themes, defaultTheme } from '../lib/constants';
+import { db } from '../lib/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { useAuth } from '../contexts/AuthContext';
+import { generateContentFromGemini } from '../lib/gemini';
+import { DownloadIcon, BanIcon, CheckCircleIcon, XCircleIcon } from 'lucide-react';
+import { jsPDF } from 'jspdf';
+import PracticeQuiz from './PracticeQuiz';
+
+const difficulties = ['Introdutório', 'Médio', 'Difícil'];
+
+const Flashcard = ({ front, back, theme }: { front: string, back: string, theme: any }) => {
+  const [isFlipped, setIsFlipped] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsFlipped(false);
+  }, [front]);
+
+  return (
+    <div className="w-full h-80 perspective-1000 cursor-pointer" onClick={() => setIsFlipped(!isFlipped)}>
+      <div className={`relative w-full h-full transition-transform duration-700 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
+        <div className={`absolute w-full h-full backface-hidden flex items-center justify-center p-6 rounded-2xl shadow-lg ${theme.cardFront} ${theme.border} border-2`}>
+          <p className="text-2xl text-center font-semibold">{front}</p>
+        </div>
+        <div className={`absolute w-full h-full backface-hidden rotate-y-180 flex items-center justify-center p-6 rounded-2xl shadow-lg ${theme.cardBack} ${theme.border} border-2`}>
+          <p className="text-xl text-center">{back}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+interface QuizScreenProps {
+  settings: any;
+  onBack: () => void;
+}
+
+export default function QuizScreen({ settings, onBack }: QuizScreenProps) {
+  const { user, apiKey } = useAuth();
+  const theme = themes[settings.subject] || defaultTheme;
+  const [questions, setQuestions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [score, setScore] = useState(0);
+
+  const [eliminatedAnswers, setEliminatedAnswers] = useState<Set<string>>(new Set());
+
+  // Tutor Chat States
+  const [doubt, setDoubt] = useState("");
+  const [doubtResponse, setDoubtResponse] = useState("");
+  const [isAsking, setIsAsking] = useState(false);
+  
+  const [flashcardDoubt, setFlashcardDoubt] = useState("");
+  const [flashcardDoubtResponse, setFlashcardDoubtResponse] = useState("");
+  const [isAskingFlashcardDoubt, setIsAskingFlashcardDoubt] = useState(false);
+
+  // Sub-quiz States
+  const [subQuestions, setSubQuestions] = useState<any[]>([]);
+  const [isGeneratingSubQuestions, setIsGeneratingSubQuestions] = useState(false);
+  const [subQuestionCount, setSubQuestionCount] = useState<number>(3);
+  const [subQuestionDifficulty, setSubQuestionDifficulty] = useState<string>('Médio');
+  const [subQuestionError, setSubQuestionError] = useState<string | null>(null);
+
+  const generateQuiz = async () => {
+    if (!apiKey) {
+      setError("Chave de API não configurada.");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const generatedQuestions = await generateContentFromGemini(settings, apiKey);
+      setQuestions(generatedQuestions);
+    } catch (err: any) {
+      setError("Falha ao gerar conteúdo: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveQuiz = async () => {
+    if (!user || questions.length === 0) return;
+    setSaving(true);
+    try {
+      const isFlashcard = settings.model === 'Flashcard';
+      const collectionName = isFlashcard ? 'flashcards' : 'quizzes';
+      const quizzesRef = collection(db, 'users', user.uid, collectionName);
+      await addDoc(quizzesRef, {
+        subject: settings.subject,
+        topic: settings.topic,
+        difficulty: settings.difficulty,
+        model: settings.model,
+        data: questions,
+        createdAt: serverTimestamp(),
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao salvar conteúdo.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const onSavePdf = (type: 'questions' | 'answers' | 'flashcards') => {
+    const doc = new jsPDF();
+    let yPos = 20;
+    const lineHeight = 10;
+    const margin = 20;
+    const maxLineWidth = 170;
+
+    doc.setFontSize(16);
+    doc.text(`Conteúdo: ${settings.subject} - ${settings.topic}`, margin, yPos);
+    yPos += lineHeight * 2;
+    doc.setFontSize(12);
+
+    if (type === 'flashcards') {
+      questions.forEach((q, i) => {
+        const text = `Card ${i + 1}:\nFrente: ${q.frente}\nVerso: ${q.verso}\n`;
+        const lines = doc.splitTextToSize(text, maxLineWidth);
+        if (yPos + (lines.length * lineHeight) > 280) {
+          doc.addPage();
+          yPos = 20;
+        }
+        doc.text(lines, margin, yPos);
+        yPos += lines.length * lineHeight + lineHeight;
+      });
+    } else {
+      questions.forEach((q, i) => {
+        const text = `Questão ${i + 1}: ${q.pergunta}\n` + 
+                     (type === 'questions' ? q.opcoes.map((o: string, j: number) => `${['A', 'B', 'C', 'D'][j]}) ${o}`).join('\n') : `Resposta Correta: ${q.correta}\nExplicação: ${q.explicacao}`) + '\n';
+        const lines = doc.splitTextToSize(text, maxLineWidth);
+        if (yPos + (lines.length * lineHeight) > 280) {
+          doc.addPage();
+          yPos = 20;
+        }
+        doc.text(lines, margin, yPos);
+        yPos += lines.length * lineHeight + lineHeight;
+      });
+    }
+    
+    doc.save(`${settings.subject}_${type}.pdf`);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center space-y-4 my-16">
+        <div className={`w-16 h-16 border-4 border-dashed rounded-full animate-spin ${theme.border}`}></div>
+        <p className={`text-lg ${theme.text}`}>
+          {settings.model === 'Flashcard' ? 'Gerando seus flashcards...' : 'Gerando suas questões...'}
+        </p>
+      </div>
+    );
+  }
+
+  if (questions.length === 0) {
+    if (!apiKey) {
+      return (
+        <div className="text-center p-8 bg-white rounded-lg shadow-md max-w-2xl mx-auto border-l-4 border-yellow-500">
+          <h2 className="text-2xl font-bold mb-4 text-yellow-700">Chave da API Necessária</h2>
+          <p className="mb-6 text-gray-700">
+            Para que o conteúdo possa ser gerado pela Inteligência Artificial, você precisa configurar sua chave do Gemini.
+          </p>
+          <div className="flex gap-4 justify-center">
+            <button onClick={onBack} className="px-6 py-2 bg-gray-200 text-gray-800 rounded font-semibold hover:bg-gray-300">Voltar</button>
+            <a href="/config" className={`px-6 py-2 text-white rounded font-bold ${theme.button}`}>Ir para Configurações</a>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="text-center p-8 bg-white rounded-lg shadow-md max-w-2xl mx-auto">
+        <h2 className="text-2xl font-bold mb-4">Pronto para treinar?</h2>
+        <p className="mb-6 text-gray-600">
+          Você selecionou <strong>{settings.subject}</strong> no nível <strong>{settings.difficulty}</strong>.
+        </p>
+        {error && (
+          <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-lg border border-red-200 whitespace-pre-wrap">
+            {error}
+          </div>
+        )}
+        <div className="flex gap-4 justify-center">
+          <button onClick={onBack} className="px-6 py-2 bg-gray-200 text-gray-800 rounded font-semibold hover:bg-gray-300">Voltar</button>
+          <button onClick={generateQuiz} className={`px-6 py-2 text-white rounded font-bold ${theme.button}`}>Gerar Conteúdo</button>
+        </div>
+      </div>
+    );
+  }
+
+  const currentQ = questions[currentIndex];
+  const isFinished = currentIndex >= questions.length;
+  const isFlashcard = settings.model === 'Flashcard';
+
+  if (isFinished) {
+    return (
+      <div className="text-center p-8 bg-white rounded-lg shadow-md max-w-2xl mx-auto">
+        <h2 className="text-3xl font-bold mb-4">{isFlashcard ? 'Flashcards Finalizados!' : 'Quiz Finalizado!'}</h2>
+        {!isFlashcard && (
+          <p className="text-xl mb-8">Sua pontuação: <span className={`font-bold ${theme.accent}`}>{score}</span> de {questions.length}</p>
+        )}
+        <div className="flex justify-center gap-4 mt-8">
+          <button onClick={onBack} className="px-6 py-2 bg-gray-200 text-gray-800 rounded font-semibold hover:bg-gray-300">Novo Quiz</button>
+          <button onClick={saveQuiz} disabled={saving || saved} className={`px-6 py-2 text-white rounded font-bold ${saved ? 'bg-green-500' : theme.button}`}>
+            {saving ? 'Salvando...' : (saved ? 'Salvo!' : (isFlashcard ? 'Salvar Flashcards' : 'Salvar Questões'))}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const handleAnswer = (option: string) => {
+    if (selectedAnswer !== null) return;
+    setSelectedAnswer(option);
+    if (option === currentQ.correta) {
+      setScore(s => s + 1);
+    }
+  };
+
+  const handleNext = () => {
+    setSelectedAnswer(null);
+    setCurrentIndex(i => i + 1);
+    setEliminatedAnswers(new Set());
+    setDoubt("");
+    setDoubtResponse("");
+    setFlashcardDoubt("");
+    setFlashcardDoubtResponse("");
+    setSubQuestions([]);
+  };
+
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(i => i - 1);
+      setSelectedAnswer(null);
+      setEliminatedAnswers(new Set());
+      setDoubt("");
+      setDoubtResponse("");
+      setFlashcardDoubt("");
+      setFlashcardDoubtResponse("");
+      setSubQuestions([]);
+    }
+  };
+
+  const handleEliminateAnswer = (option: string) => {
+    setEliminatedAnswers(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(option)) newSet.delete(option);
+      else newSet.add(option);
+      return newSet;
+    });
+  };
+
+  const handleAskDoubt = async () => {
+    if (!doubt || !currentQ || !apiKey) return;
+    setIsAsking(true);
+    setDoubtResponse("");
+    setSubQuestions([]);
+    
+    const doubtPrompt = `Com base na seguinte questão do quiz: "${currentQ.pergunta}" e sua explicação: "${currentQ.explicacao}", responda a seguinte dúvida do aluno: "${doubt}". Formate sua resposta usando HTML para melhor legibilidade. Use tags <p> para parágrafos, <strong> para destacar termos importantes, e <ul>/<li> para listas, se necessário. Não inclua <html>, <head>, ou <body> tags.`;
+    
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: doubtPrompt }] }] })
+      });
+      if (!response.ok) throw new Error("A API de dúvidas falhou em responder.");
+      const result = await response.json();
+      setDoubtResponse(result.candidates?.[0]?.content?.parts?.[0]?.text || "<p>Não foi possível obter uma resposta.</p>");
+    } catch (error) {
+      setDoubtResponse("<p>Ocorreu um erro ao processar sua dúvida.</p>");
+    } finally {
+      setIsAsking(false);
+    }
+  };
+
+  const handleGenerateSubQuestions = async () => {
+    if (!apiKey) return;
+    setIsGeneratingSubQuestions(true);
+    setSubQuestionError(null);
+    setSubQuestions([]);
+
+    const prompt = `Com base no contexto da questão de quiz: "${currentQ.pergunta}", a explicação da resposta: "${currentQ.explicacao}", a dúvida do aluno: "${doubt}", e a resposta fornecida: "${doubtResponse.replace(/<[^>]*>?/gm, '')}", gere ${subQuestionCount} questões de múltipla escolha com dificuldade '${subQuestionDifficulty}'. O objetivo é testar o entendimento do aluno sobre o tópico da dúvida. A resposta DEVE ser um array de objetos JSON, cada um com as chaves "pergunta", "opcoes" (um array de 4 strings), "correta" (a string exata da resposta correta) e "explicacao".`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseMimeType: "application/json" }
+        })
+      });
+      if (!response.ok) throw new Error("A API falhou.");
+      const result = await response.json();
+      const text = result.candidates[0].content.parts[0].text;
+      const jsonMatch = text.match(/\[.*\]|\{.*\}/s);
+      let parsedData = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(text);
+      setSubQuestions(parsedData);
+    } catch (error: any) {
+      setSubQuestionError(error.message);
+    } finally {
+      setIsGeneratingSubQuestions(false);
+    }
+  };
+
+  const handleAskFlashcardDoubt = async () => {
+    if (!flashcardDoubt || !currentQ || !apiKey) return;
+    setIsAskingFlashcardDoubt(true);
+    setFlashcardDoubtResponse("");
+
+    const doubtPrompt = `Com base no seguinte flashcard de estudos (Frente: "${currentQ.frente}", Verso: "${currentQ.verso}"), responda a seguinte dúvida do aluno: "${flashcardDoubt}". Seja direto e didático. Formate sua resposta usando HTML para melhor legibilidade (<p>, <strong>, <ul>, <li>). Não inclua <html>, <head>, ou <body>.`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: doubtPrompt }] }] })
+      });
+      if (!response.ok) throw new Error("A API falhou.");
+      const result = await response.json();
+      setFlashcardDoubtResponse(result.candidates?.[0]?.content?.parts?.[0]?.text || "<p>Não foi possível obter uma resposta.</p>");
+    } catch (error) {
+      setFlashcardDoubtResponse("<p>Ocorreu um erro ao processar sua dúvida.</p>");
+    } finally {
+      setIsAskingFlashcardDoubt(false);
+    }
+  };
+
+  return (
+    <div className={`max-w-4xl mx-auto p-4 md:p-8 relative`}>
+      <div className="w-full flex justify-between items-center mb-6">
+        <button onClick={onBack} className="text-sm bg-black/5 p-2 rounded-lg hover:bg-black/10 transition-colors">
+          Voltar
+        </button>
+        <div className="flex gap-2">
+          {isFlashcard ? (
+            <button
+              onClick={() => onSavePdf('flashcards')}
+              className="text-sm bg-blue-100 text-blue-800 p-2 rounded-lg hover:bg-blue-200 transition-colors flex items-center gap-2"
+            >
+              <DownloadIcon className="w-4 h-4" /> Baixar Flashcards
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={() => onSavePdf('questions')}
+                className="text-sm bg-blue-100 text-blue-800 p-2 rounded-lg hover:bg-blue-200 transition-colors flex items-center gap-2"
+              >
+                <DownloadIcon className="w-4 h-4" /> Baixar Questões
+              </button>
+              <button
+                onClick={() => onSavePdf('answers')}
+                className="text-sm bg-green-100 text-green-800 p-2 rounded-lg hover:bg-green-200 transition-colors flex items-center gap-2"
+              >
+                <DownloadIcon className="w-4 h-4" /> Baixar Gabarito
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+      
+      <div className={`${theme.cardFront} backdrop-blur-sm p-6 rounded-2xl shadow-lg`}>
+        <p className="text-sm font-semibold mb-2 opacity-70">{isFlashcard ? 'Flashcard' : 'Questão'} {currentIndex + 1} de {questions.length}</p>
+
+        {isFlashcard ? (
+          <div className="flex flex-col items-center">
+            <Flashcard front={currentQ.frente} back={currentQ.verso} theme={theme} />
+            <div className="flex justify-between w-full mt-8 gap-4 items-center">
+              <button onClick={handlePrevious} disabled={currentIndex === 0} className={`py-2 px-4 font-bold rounded-lg ${theme.button} disabled:bg-gray-400 disabled:cursor-not-allowed`}>
+                Anterior
+              </button>
+              <p className="font-semibold">{currentIndex + 1} / {questions.length}</p>
+              <button onClick={handleNext} className={`py-2 px-4 font-bold rounded-lg text-white ${theme.button}`}>
+                {currentIndex < questions.length - 1 ? 'Próximo' : 'Finalizar Estudo'}
+              </button>
+            </div>
+
+            <div className="w-full mt-8 border-t-2 pt-6">
+              <h3 className="text-2xl font-semibold mb-4 text-center">Ainda com dúvidas sobre o card?</h3>
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  value={flashcardDoubt} 
+                  onChange={(e) => setFlashcardDoubt(e.target.value)} 
+                  placeholder="Digite sua pergunta sobre o flashcard..." 
+                  className={`flex-grow p-2 rounded-lg ${theme.border} border-2`} 
+                />
+                <button 
+                  onClick={handleAskFlashcardDoubt} 
+                  disabled={isAskingFlashcardDoubt || !flashcardDoubt} 
+                  className={`py-2 px-4 font-bold rounded-lg ${theme.button} disabled:opacity-50`}
+                >
+                  {isAskingFlashcardDoubt ? "Pensando..." : "Perguntar"}
+                </button>
+              </div>
+              {flashcardDoubtResponse && (
+                <div className="mt-4 p-4 bg-blue-100 border-l-4 border-blue-400 rounded-r-lg">
+                  <div className="prose prose-blue max-w-none" dangerouslySetInnerHTML={{ __html: flashcardDoubtResponse }} />
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <>
+            <h3 className="text-xl md:text-2xl font-semibold mt-4 mb-6 min-h-[6rem]">{currentQ.pergunta}</h3>
+            
+            <div className="space-y-4">
+              {currentQ.opcoes.map((option: string, idx: number) => {
+                const isSelected = selectedAnswer === option;
+                const isCorrect = option === currentQ.correta;
+                const isEliminated = eliminatedAnswers.has(option);
+                let btnClass = theme.option;
+
+                if (selectedAnswer !== null) {
+                  if (isCorrect) btnClass = 'bg-green-500 text-white';
+                  else if (isSelected) btnClass = 'bg-red-500 text-white';
+                }
+
+                return (
+                  <div key={idx} className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleAnswer(option)}
+                      disabled={selectedAnswer !== null}
+                      className={`w-full text-left p-4 rounded-lg transition-all duration-300 border-2 ${theme.border} ${btnClass} disabled:cursor-not-allowed ${isEliminated ? 'line-through opacity-60' : ''}`}
+                    >
+                      {option}
+                    </button>
+                    {selectedAnswer === null && (
+                      <button
+                        onClick={() => handleEliminateAnswer(option)}
+                        className={`p-2 rounded-full transition-colors ${isEliminated ? 'bg-gray-400 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+                      >
+                        <BanIcon className="w-5 h-5" />
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {selectedAnswer && (
+              <div className="mt-6">
+                <div className={`p-4 rounded-lg border ${selectedAnswer === currentQ.correta ? 'bg-green-100 border-green-300' : 'bg-red-100 border-red-300'}`}>
+                  <div className="flex items-center gap-3 mb-2">
+                    {selectedAnswer === currentQ.correta ? <CheckCircleIcon className="text-green-500" /> : <XCircleIcon className="text-red-500" />}
+                    <h4 className={`text-lg font-bold ${selectedAnswer === currentQ.correta ? 'text-green-700' : 'text-red-700'}`}>
+                      {selectedAnswer === currentQ.correta ? 'Resposta Correta!' : 'Resposta Incorreta!'}
+                    </h4>
+                  </div>
+                  <p className="mt-2 text-sm">{currentQ.explicacao}</p>
+                </div>
+                
+                <div className="mt-6 border-t-2 border-dashed pt-4 border-gray-300">
+                  <input 
+                    type="text"
+                    value={doubt}
+                    onChange={(e) => setDoubt(e.target.value)}
+                    placeholder="Ainda com dúvidas? Pergunte à IA"
+                    className={`w-full p-2 rounded-lg ${theme.border} border-2 focus:outline-none focus:ring-2 ${theme.ring}`}
+                  />
+                  <button
+                    onClick={handleAskDoubt}
+                    disabled={isAsking || !doubt}
+                    className={`w-full mt-2 py-2 font-bold rounded-lg text-white ${theme.button} disabled:opacity-50`}
+                  >
+                    {isAsking ? "Pensando..." : "Perguntar"}
+                  </button>
+                  {doubtResponse && (
+                    <div className="mt-4 p-4 bg-blue-100 border-l-4 border-blue-400 rounded-r-lg">
+                      <div className="prose prose-blue max-w-none" dangerouslySetInnerHTML={{ __html: doubtResponse }} />
+                      
+                      <div className="mt-6 pt-4 border-t border-blue-200">
+                        <h4 className="font-semibold text-blue-800 mb-3">Quer aprofundar o conhecimento?</h4>
+                        <div className="flex flex-col sm:flex-row gap-4 items-end">
+                          <div className="flex-1">
+                            <label className="block text-sm font-medium mb-1">Nº de Questões</label>
+                            <input 
+                              type="number" 
+                              value={subQuestionCount} 
+                              onChange={(e) => setSubQuestionCount(Number(e.target.value))} 
+                              className={`w-full p-2 rounded-lg border-2 ${theme.border}`}
+                              min="1" max="10"
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <label className="block text-sm font-medium mb-1">Dificuldade</label>
+                            <select 
+                              value={subQuestionDifficulty} 
+                              onChange={(e) => setSubQuestionDifficulty(e.target.value)}
+                              className={`w-full p-2 rounded-lg border-2 ${theme.border} bg-white`}
+                            >
+                              {difficulties.map(d => <option key={d} value={d}>{d}</option>)}
+                            </select>
+                          </div>
+                          <button 
+                            onClick={handleGenerateSubQuestions} 
+                            disabled={isGeneratingSubQuestions} 
+                            className={`py-2.5 px-5 font-bold rounded-lg text-white ${theme.button} disabled:opacity-50 whitespace-nowrap`}
+                          >
+                            Gerar Questões
+                          </button>
+                        </div>
+                        {isGeneratingSubQuestions && (
+                          <div className="flex flex-col items-center justify-center space-y-2 my-4">
+                            <div className={`w-8 h-8 border-4 border-dashed rounded-full animate-spin ${theme.border}`}></div>
+                            <p className="text-sm">Gerando sub-questões...</p>
+                          </div>
+                        )}
+                        {subQuestionError && <p className="text-red-500 mt-2">Erro: {subQuestionError}</p>}
+                        {subQuestions.length > 0 && <PracticeQuiz key={doubt} questions={subQuestions} theme={theme} onClose={() => setSubQuestions([])} quizTitle="Quiz da Dúvida" />}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex justify-between mt-6 gap-4">
+                  <button onClick={handlePrevious} disabled={currentIndex === 0} className={`px-6 py-2 bg-gray-400 text-white rounded font-bold hover:bg-gray-500 disabled:opacity-50`}>
+                    Anterior
+                  </button>
+                  <button onClick={handleNext} className={`px-6 py-2 font-bold rounded-lg text-white ${theme.button}`}>
+                    {currentIndex < questions.length - 1 ? 'Próxima Questão' : 'Ver Resultados'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
