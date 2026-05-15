@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Navigation from '../components/Navigation';
 import SettingsScreen from '../components/SettingsScreen';
 import LessonScreen from '../components/LessonScreen';

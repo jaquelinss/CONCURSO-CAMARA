@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Navigation from '../components/Navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
 import { collection, query, getDocs, orderBy } from 'firebase/firestore';
-import ContentViewer from '../components/ContentViewer';
+import QuizScreen from '../components/QuizScreen';
+import LessonScreen from '../components/LessonScreen';
 
 export default function SavedContent() {
   const { user } = useAuth();
@@ -43,22 +44,73 @@ export default function SavedContent() {
     fetchSavedContent();
   }, [user]);
 
+  const handleBack = () => {
+    setViewingContent(null);
+    setViewingType(null);
+  };
+
   if (viewingContent && viewingType) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Navigation />
-        <main className="flex-grow p-4">
-          <ContentViewer 
-            type={viewingType} 
-            content={viewingContent} 
-            onBack={() => {
-              setViewingContent(null);
-              setViewingType(null);
-            }} 
-          />
-        </main>
-      </div>
-    );
+    if (viewingType === 'lesson') {
+      const lessonSettings = {
+        subject: viewingContent.subject,
+        topic: viewingContent.topic,
+        lessonLevel: viewingContent.lessonLevel || 'Introdutória',
+      };
+      return (
+        <div className="min-h-screen flex flex-col">
+          <Navigation />
+          <main className="flex-grow p-4">
+            <LessonScreen
+              settings={lessonSettings}
+              onBack={handleBack}
+              savedData={viewingContent.data}
+            />
+          </main>
+        </div>
+      );
+    }
+
+    if (viewingType === 'quiz') {
+      const quizSettings = {
+        subject: viewingContent.subject,
+        topic: viewingContent.topic,
+        difficulty: viewingContent.difficulty || 'Médio',
+        model: 'Questões',
+      };
+      return (
+        <div className="min-h-screen flex flex-col">
+          <Navigation />
+          <main className="flex-grow p-4">
+            <QuizScreen
+              settings={quizSettings}
+              onBack={handleBack}
+              savedData={viewingContent.data}
+            />
+          </main>
+        </div>
+      );
+    }
+
+    if (viewingType === 'flashcard') {
+      const flashSettings = {
+        subject: viewingContent.subject,
+        topic: viewingContent.topic,
+        difficulty: viewingContent.difficulty || 'Médio',
+        model: 'Flashcard',
+      };
+      return (
+        <div className="min-h-screen flex flex-col">
+          <Navigation />
+          <main className="flex-grow p-4">
+            <QuizScreen
+              settings={flashSettings}
+              onBack={handleBack}
+              savedData={viewingContent.data}
+            />
+          </main>
+        </div>
+      );
+    }
   }
 
   return (

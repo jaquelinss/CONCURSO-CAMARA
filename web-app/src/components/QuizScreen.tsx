@@ -34,15 +34,17 @@ const Flashcard = ({ front, back, theme }: { front: string, back: string, theme:
 interface QuizScreenProps {
   settings: any;
   onBack: () => void;
+  savedData?: any[];
 }
 
-export default function QuizScreen({ settings, onBack }: QuizScreenProps) {
+export default function QuizScreen({ settings, onBack, savedData }: QuizScreenProps) {
   const { user, apiKey } = useAuth();
   const theme = themes[settings.subject] || defaultTheme;
-  const [questions, setQuestions] = useState<any[]>([]);
+  const isSavedMode = !!savedData;
+  const [questions, setQuestions] = useState<any[]>(savedData || []);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState(isSavedMode);
   const [error, setError] = useState<string | null>(null);
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -207,10 +209,12 @@ export default function QuizScreen({ settings, onBack }: QuizScreenProps) {
           <p className="text-xl mb-8">Sua pontuação: <span className={`font-bold ${theme.accent}`}>{score}</span> de {questions.length}</p>
         )}
         <div className="flex justify-center gap-4 mt-8">
-          <button onClick={onBack} className="px-6 py-2 bg-gray-200 text-gray-800 rounded font-semibold hover:bg-gray-300">Novo Quiz</button>
-          <button onClick={saveQuiz} disabled={saving || saved} className={`px-6 py-2 text-white rounded font-bold ${saved ? 'bg-green-500' : theme.button}`}>
-            {saving ? 'Salvando...' : (saved ? 'Salvo!' : (isFlashcard ? 'Salvar Flashcards' : 'Salvar Questões'))}
-          </button>
+          <button onClick={onBack} className="px-6 py-2 bg-gray-200 text-gray-800 rounded font-semibold hover:bg-gray-300">{isSavedMode ? 'Voltar aos Salvamentos' : 'Novo Quiz'}</button>
+          {!isSavedMode && (
+            <button onClick={saveQuiz} disabled={saving || saved} className={`px-6 py-2 text-white rounded font-bold ${saved ? 'bg-green-500' : theme.button}`}>
+              {saving ? 'Salvando...' : (saved ? 'Salvo!' : (isFlashcard ? 'Salvar Flashcards' : 'Salvar Questões'))}
+            </button>
+          )}
         </div>
       </div>
     );

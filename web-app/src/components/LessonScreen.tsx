@@ -10,6 +10,7 @@ import PracticeQuiz from './PracticeQuiz';
 interface LessonScreenProps {
   settings: any;
   onBack: () => void;
+  savedData?: any;
 }
 
 const lessonLevels = ['Introdutória', 'Intermediária', 'Aprofundada'];
@@ -35,15 +36,16 @@ const HighlighterPalette = ({ top, left, onHighlight }: { top: number, left: num
   );
 };
 
-export default function LessonScreen({ settings, onBack }: LessonScreenProps) {
+export default function LessonScreen({ settings, onBack, savedData }: LessonScreenProps) {
   const { user, apiKey } = useAuth();
   const theme = themes[settings.subject] || defaultTheme;
+  const isSavedMode = !!savedData;
   
-  const [currentLevel, setCurrentLevel] = useState(settings.lessonLevel);
-  const [lessonData, setLessonData] = useState<Record<string, any>>({});
+  const [currentLevel, setCurrentLevel] = useState(savedData ? (settings.lessonLevel || 'Introdutória') : settings.lessonLevel);
+  const [lessonData, setLessonData] = useState<Record<string, any>>(savedData ? { [settings.lessonLevel || 'Introdutória']: savedData } : {});
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState(isSavedMode);
   const [error, setError] = useState<string | null>(null);
 
   // Tools
@@ -542,9 +544,13 @@ export default function LessonScreen({ settings, onBack }: LessonScreenProps) {
           </div>
 
           <div className="mt-8 flex justify-end">
-            <button onClick={saveLesson} disabled={saving || saved} className={`px-8 py-3 rounded-lg font-bold text-white shadow-md transform hover:scale-105 transition-all duration-300 ${saved ? 'bg-green-500' : theme.button}`}>
-              {saving ? 'Salvando...' : (saved ? 'Salvo na Conta!' : 'Salvar na Minha Conta')}
-            </button>
+            {isSavedMode ? (
+              <span className="px-8 py-3 rounded-lg font-bold text-white bg-green-500 shadow-md">Já Salvo na Conta</span>
+            ) : (
+              <button onClick={saveLesson} disabled={saving || saved} className={`px-8 py-3 rounded-lg font-bold text-white shadow-md transform hover:scale-105 transition-all duration-300 ${saved ? 'bg-green-500' : theme.button}`}>
+                {saving ? 'Salvando...' : (saved ? 'Salvo na Conta!' : 'Salvar na Minha Conta')}
+              </button>
+            )}
           </div>
         </div>
       ) : null}
