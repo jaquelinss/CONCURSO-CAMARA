@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,11 +8,13 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setMessage('');
     try {
       if (isRegistering) {
         await createUserWithEmailAndPassword(auth, email, password);
@@ -25,6 +27,21 @@ export default function Login() {
     }
   };
 
+  const handleResetPassword = async () => {
+    if (!email) {
+      setError('Por favor, digite seu email no campo acima para redefinir a senha.');
+      return;
+    }
+    setError('');
+    setMessage('');
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setMessage('E-mail de redefinição enviado! Verifique sua caixa de entrada.');
+    } catch (err: any) {
+      setError(err.message || 'Erro ao enviar e-mail de redefinição.');
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg">
@@ -32,6 +49,7 @@ export default function Login() {
           {isRegistering ? 'Criar Conta' : 'Entrar no EduGenius'}
         </h2>
         {error && <div className="mb-4 text-sm text-red-600 bg-red-100 p-3 rounded">{error}</div>}
+        {message && <div className="mb-4 text-sm text-green-700 bg-green-100 p-3 rounded">{message}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">Email</label>
@@ -44,7 +62,18 @@ export default function Login() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Senha</label>
+            <div className="flex justify-between items-center">
+              <label className="block text-sm font-medium text-gray-700">Senha</label>
+              {!isRegistering && (
+                <button
+                  type="button"
+                  onClick={handleResetPassword}
+                  className="text-xs text-indigo-600 hover:text-indigo-800 hover:underline focus:outline-none"
+                >
+                  Esqueci minha senha
+                </button>
+              )}
+            </div>
             <input
               type="password"
               value={password}
