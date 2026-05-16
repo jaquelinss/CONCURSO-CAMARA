@@ -22,7 +22,7 @@ export const subjectsEnem = [
 ];
 
 export const subjectsConcurso = [
-  'Língua Portuguesa', 'Raciocínio Lógico-Matemático', 'Matemática', 'Noções de Informática', 'Legislação Específica', 'Administração Pública', 'Noções de Arquivologia', 'Noções de Direito Constitucional', 'Noções de Direito Administrativo'
+  'Língua Portuguesa', 'Raciocínio Lógico-Matemático', 'Matemática', 'Noções de Informática', 'Lei Orgânica de Caruaru', 'Legislação Específica', 'Administração Pública', 'Noções de Arquivologia', 'Noções de Direito Constitucional', 'Noções de Direito Administrativo'
 ];
 
 export const getSubjectsByMode = (mode: 'Geral' | 'ENEM' | 'Concurso') => {
@@ -65,10 +65,11 @@ export const themes: Record<string, any> = {
   'Noções de Arquivologia': { bg: 'bg-orange-50', text: 'text-orange-900', accent: 'text-orange-600', border: 'border-orange-300', ring: 'ring-orange-400', button: 'bg-orange-500 hover:bg-orange-600 text-white', option: 'bg-white hover:bg-orange-100', cardFront: 'bg-orange-100', cardBack: 'bg-orange-200' },
   'Noções de Direito Constitucional': { bg: 'bg-amber-50', text: 'text-amber-900', accent: 'text-amber-600', border: 'border-amber-300', ring: 'ring-amber-400', button: 'bg-amber-500 hover:bg-amber-600 text-white', option: 'bg-white hover:bg-amber-100', cardFront: 'bg-amber-100', cardBack: 'bg-amber-200' },
   'Noções de Direito Administrativo': { bg: 'bg-emerald-50', text: 'text-emerald-900', accent: 'text-emerald-600', border: 'border-emerald-300', ring: 'ring-emerald-400', button: 'bg-emerald-500 hover:bg-emerald-600 text-white', option: 'bg-white hover:bg-emerald-100', cardFront: 'bg-emerald-100', cardBack: 'bg-emerald-200' },
+  'Lei Orgânica de Caruaru': { bg: 'bg-amber-50', text: 'text-amber-900', accent: 'text-amber-600', border: 'border-amber-300', ring: 'ring-amber-400', button: 'bg-amber-500 hover:bg-amber-600 text-white', option: 'bg-white hover:bg-amber-100', cardFront: 'bg-amber-100', cardBack: 'bg-amber-200' },
 };
 
 export const topicsBySubject: Record<string, any> = {
-  // ... (Geral and ENEM topics omitted here for brevity, keeping only Concurso specifically as required by prompt or I can add them)
+  // --- Matérias de Concurso ---
   'Língua Portuguesa': {
     'Interpretação e Estrutura': ['Compreensão de textos literários', 'Mecanismos de coesão textual'],
     'Gramática e Sintaxe': ['Classes gramaticais', 'Flexão', 'Concordância nominal e verbal', 'Regência', 'Colocação pronominal'],
@@ -85,7 +86,16 @@ export const topicsBySubject: Record<string, any> = {
     'Segurança da Informação': ['Antivírus e Firewall', 'Pragas virtuais', 'Backup']
   },
   'Legislação Específica': {
-    'Geral': ['Resolução nº 554/2010 (Regimento Interno)', 'Lei Orgânica do Município de Caruaru']
+    'Geral': ['Resolução nº 554/2010 (Regimento Interno)']
+  },
+  'Lei Orgânica de Caruaru': {
+    'Disposições Preliminares': ['Dos Princípios Fundamentais', 'Da Organização Municipal'],
+    'Competências do Município': ['Competência Privativa', 'Competência Comum e Suplementar', 'Vedações'],
+    'Poder Legislativo': ['Câmara Municipal', 'Vereadores (Inviolabilidade, Impedimentos)', 'Processo Legislativo', 'Fiscalização Contábil e Financeira'],
+    'Poder Executivo': ['Prefeito e Vice-Prefeito', 'Atribuições e Responsabilidades', 'Auxiliares do Prefeito'],
+    'Administração Pública': ['Disposições Gerais', 'Servidores Públicos', 'Bens Municipais', 'Obras e Serviços Municipais'],
+    'Tributação e Orçamento': ['Tributos Municipais', 'Receitas e Despesas', 'Orçamento (PPA, LDO, LOA)'],
+    'Ordem Econômica e Social': ['Desenvolvimento Urbano', 'Saúde', 'Educação e Cultura', 'Assistência Social', 'Meio Ambiente'],
   },
   'Administração Pública': {
     'Estrutura e Pessoal': ['Gestão de pessoas', 'Motivação e liderança'],
@@ -105,9 +115,145 @@ export const topicsBySubject: Record<string, any> = {
     'Atos e Contratos': ['Atos administrativos', 'Licitações e contratos (Lei 8.666/93)'],
     'Legislação de Controle': ['Lei de Improbidade', 'Estatuto dos Funcionários']
   },
-  // Add generic topics for the original ones to make it functional
-  'Matemática': { 'Geral': ['Álgebra', 'Geometria'] },
-  'Redação': { 'Eixos Temáticos': ['Direitos Humanos e Cidadania', 'Meio Ambiente e Sustentabilidade', 'Tecnologia e Sociedade', 'Cultura e Arte', 'Saúde e Bem-estar', 'Educação', 'Segurança Pública e Violência'] }
+
+  // --- Matérias do ENEM / Geral ---
+  'Medicina': {
+    'Saúde Coletiva e SUS': ['Princípios e Diretrizes do SUS', 'Legislação (Lei 8.080/90, Lei 8.142/90)', 'Redes de Atenção à Saúde (RAS)', 'Atenção Primária à Saúde da Saúde (APS)', 'Vigilância em Saúde (Epidemiológica, Sanitária, Ambiental)', 'Políticas Nacionais de Saúde'],
+    'Ciclo Básico': ['Anatomia Humana', 'Fisiologia', 'Bioquímica Médica', 'Histologia e Biologia Celular', 'Embriologia', 'Genética Médica', 'Farmacologia Básica', 'Patologia Geral', 'Microbiologia e Imunologia'],
+    'Cardiologia': ['Hipertensão Arterial Sistêmica', 'Insuficiência Cardíaca', 'Doença Coronariana', 'Arritmias', 'Valvopatias'],
+    'Pneumologia': ['Asma e DPOC', 'Pneumonias', 'Tuberculose', 'Tromboembolismo Pulmonar', 'Câncer de Pulmão'],
+    'Gastroenterologia': ['Doença do Refluxo Gastroesofágico', 'Úlcera Péptica', 'Doenças Inflamatórias Intestinais', 'Hepatites Virais', 'Cirrose Hepática'],
+    'Nefrologia': ['Lesão Renal Aguda', 'Doença Renal Crônica', 'Glomerulopatias', 'Distúrbios Hidroeletrolíticos e Ácido-Base'],
+    'Endocrinologia': ['Diabetes Mellitus', 'Doenças da Tireoide', 'Obesidade e Síndrome Metabólica', 'Doenças da Adrenal'],
+    'Neurologia': ['Acidente Vascular Cerebral (AVC)', 'Cefaleias', 'Epilepsia', 'Doenças Neurodegenerativas (Alzheimer, Parkinson)'],
+    'Reumatologia': ['Artrite Reumatoide', 'Lúpus Eritematoso Sistêmico', 'Gota', 'Fibromialgia'],
+    'Infectologia': ['HIV/AIDS', 'Dengue, Zika e Chikungunya', 'Infecções Sexualmente Transmissíveis (ISTs)', 'Malária'],
+    'Ginecologia e Obstetrícia': ['Ciclo Menstrual e Anticoncepção', 'Assistência Pré-Natal', 'Parto e Puerpério', 'Principais Cânceres Ginecológicos', 'Sangramento Uterino Anormal'],
+    'Pediatria': ['Puericultura e Imunizações', 'Doenças Exantemáticas', 'Infecções de Vias Aéreas', 'Gastroenterites e Desidratação', 'Crescimento e Desenvolvimento'],
+    'Cirurgia Geral': ['Abdome Agudo', 'Trauma (ATLS)', 'Hérnias da Parede Abdominal', 'Doenças da Vesícula Biliar', 'Preparo e Risco Cirúrgico'],
+    'Psiquiatria': ['Transtornos de Ansiedade', 'Transtornos Depressivos', 'Transtorno Bipolar', 'Esquizofrenia', 'Dependência Química'],
+    'Ética Médica e Bioética': ['Código de Ética Médica', 'Relação Médico-Paciente', 'Autonomia, Beneficência, Não-maleficência, Justiça', 'Terminalidade da Vida'],
+  },
+  'Matemática': {
+    'Assuntos Mais Cobrados no ENEM': ['Matemática Básica (35%)', 'Estatística (11,7%)', 'Geometria Espacial (11,2%)', 'Funções (11%)', 'Geometria Plana (8,3%)'],
+    'Matemática Básica': ['Operações Fundamentais (+, -, *, /)', 'Frações e Números Decimais', 'Potenciação e Radiciação', 'Razão e Proporção', 'Regra de Três Simples e Composta'],
+    'Conjuntos e Funções': ['Teoria dos Conjuntos', 'Função do 1º Grau', 'Função do 2º Grau', 'Função Modular', 'Função Exponencial', 'Função Logarítmica'],
+    'Trigonometria': ['Relações no Triângulo Retângulo', 'Ciclo Trigonométrico', 'Funções Trigonométricas', 'Equações e Inequações Trigonométricas'],
+    'Geometria': ['Geometria Plana (Áreas e Perímetros)', 'Geometria Espacial (Volumes e Áreas)', 'Geometria Analítica (Ponto, Reta, Circunferência)'],
+    'Sequências e Análise Combinatória': ['Progressão Aritmética (PA)', 'Progressão Geométrica (PG)', 'Análise Combinatória', 'Probabilidade', 'Binômio de Newton'],
+    'Polinômios e Números Complexos': ['Operações com Polinômios', 'Equações Polinomiais', 'Números Complexos'],
+    'Estatística': ['Medidas de Tendência Central (Média, Moda, Mediana)', 'Medidas de Dispersão (Variância, Desvio Padrão)', 'Gráficos e Tabelas'],
+    'Matemática Financeira': ['Porcentagem', 'Juros Simples e Compostos', 'Descontos e Acréscimos'],
+  },
+  'Português': {
+    'Assuntos Mais Cobrados no ENEM': ['Gêneros Textuais (44,8%)', 'Introdução à Língua Portuguesa (22,4%)', 'Linguagem Culta e Coloquial (10%)', 'Funções da Linguagem (6,2%)', 'Texto e Contexto (5,8%)'],
+    'Gramática': ['Fonologia e Ortografia', 'Acentuação Gráfica', 'Morfologia (Classes de Palavras)', 'Sintaxe (Período Simples e Composto)', 'Pontuação', 'Crase', 'Concordância Verbal e Nominal', 'Regência Verbal e Nominal'],
+    'Semântica': ['Sinonímia e Antonímia', 'Homonímia e Paronímia', 'Polissemia e Ambiguidade', 'Denotação e Conotação'],
+  },
+  'Interpretação Textual': {
+    'Fundamentos da Interpretação': ['Leitura Atenta (Scanning e Skimming)', 'Identificação da Ideia Central', 'Localização de Informações Explícitas', 'Inferência e Pressuposição'],
+    'Gêneros e Tipologias': ['Textos Narrativos (Conto, Crônica)', 'Textos Descritivos', 'Textos Dissertativo-Argumentativos (Artigo de Opinião)', 'Textos Expositivos (Notícia, Verbete)', 'Textos Injuntivos (Receita, Manual)', 'Textos Híbridos (Charges, Tiras, Publicidade)'],
+    'Recursos Linguísticos': ['Coesão e Coerência', 'Funções da Linguagem', 'Variações Linguísticas (Norma Padrão e Coloquial)', 'Figuras de Linguagem (Metáfora, Ironia, etc.)'],
+    'Análise do Discurso': ['Polissemia e Ambiguidade', 'Denotação e Conotação', 'Intertextualidade (Paráfrase, Paródia)', 'Argumentação e Persuasão'],
+  },
+  'Biologia': {
+    'Assuntos Mais Cobrados no ENEM': ['Ecologia (25,2%)', 'Botânica (8,2%)', 'Fisiologia Humana (8,2%)', 'Bioenergética (7,5%)', 'Zoologia (6,8%)'],
+    'Citologia e Histologia': ['Membrana Plasmática e Transportes', 'Citoplasma e Organelas', 'Núcleo e Divisão Celular', 'Tecidos Animais'],
+    'Bioquímica': ['Água e Sais Minerais', 'Carboidratos, Lipídios e Proteínas', 'Vitamina', 'Enzimas', 'Ácidos Nucleicos (DNA e RNA)'],
+    'Genética e Evolução': ['Leis de Mendel', 'Heredogramas', 'Sistema ABO e Rh', 'Engenharia Genética', 'Teorias Evolutivas (Lamarck, Darwin, Neodarwinismo)', 'Especiação'],
+    'Ecologia': ['Conceitos Fundamentais', 'Cadeias e Teias Alimentares', 'Relações Ecológicas', 'Ciclos Biogeoquímicos', 'Biomas', 'Impactos Ambientais e Desequilíbrios'],
+    'Fisiologia Humana': ['Sistema Digestório', 'Sistema Respiratório', 'Sistema Circulatório', 'Sistema Excretor', 'Sistema Nervoso', 'Sistema Endócrino', 'Sistema Imunológico'],
+    'Reinos e Seres Vivos': ['Vírus', 'Reino Monera', 'Reino Protoctista (Algas e Protozoários)', 'Reino Fungi', 'Reino Plantae (Botânica)', 'Reino Animalia (Zoologia)'],
+  },
+  'História': {
+    'Assuntos Mais Cobrados no ENEM': ['Brasil Colônia (13%)', 'Idade Moderna (12,3%)', 'Tempo Presente (10,9%)', 'Estado Novo e Populismo (9,4%)', 'Idade Média (8%)'],
+    'História do Brasil': ['Brasil Pré-Colonial e Colonial', 'Período Joanino e Independência', 'Primeiro e Segundo Reinado', 'República Velha', 'Era Vargas', 'República Populista (1945-1964)', 'Ditadura Militar (1945-1985)', 'Nova República'],
+    'História Geral': ['Pré-História e Antiguidade Oriental', 'Antiguidade Clássica (Grécia e Roma)', 'Idade Média (Alta e Baixa)', 'Idade Moderna (Absolutismo, Mercantilismo, Renascimento, Reformas)', 'Revoluções Burguesas (Inglesa, Industrial, Francesa)', 'Era Napoleônica e Século XIX', 'Primeira e Segunda Guerra Mundial', 'Guerra Fria e Mundo Contemporâneo'],
+  },
+  'Geografia': {
+    'Assuntos Mais Cobrados no ENEM': ['Geopolítica (12,3%)', 'Espaço Agrário (11,6%)', 'Espaço Urbano (11%)', 'Geologia (7,1%)', 'Domínios Morfoclimáticos (5,2%)'],
+    'Geografia Geral': ['Cartografia e Orientação', 'Geologia e Relevo', 'Clima e Vegetação', 'Hidrografia', 'Geopolítica e Globalização', 'População Mundial e Migrações', 'Fontes de Energia e Questões Ambientais'],
+    'Geografia do Brasil': ['Formação Territorial', 'Domínios Morfoclimáticos', 'Bacias Hidrográficas', 'População Brasileira (Formação, Distribuição, Estrutura)', 'Urbanização e Industrialização', 'Agropecuária', 'Regionalização do Espaço Brasileiro'],
+  },
+  'Física': {
+    'Assuntos Mais Cobrados no ENEM': ['Eletrodinâmica (20%)', 'Termologia (16,4%)', 'Ondulatória (13,3%)', 'Cinemática (10,9%)', 'Óptica (9,1%)'],
+    'Mecânica': ['Cinemática Escalar e Vetorial', 'Leis de Newton e Aplicações', 'Trabalho, Potência e Energia', 'Impulso, Quantidade de Movimento e Colisões', 'Estática e Hidrostática', 'Gravitação Universal'],
+    'Termologia': ['Termometria', 'Calorimetria e Propagação de Calor', 'Estudo dos Gases', 'Termodinâmica'],
+    'Óptica': ['Princípios da Óptica Geométrica', 'Reflexão da Luz (Espelhos Planos e Esféricos)', 'Refração da Luz (Lentes e Dioptros)'],
+    'Ondulatória': ['Fenômenos Ondulatórios', 'Acústica', 'Ondas Eletromagnéticas'],
+    'Eletricidade': ['Eletrostática (Força, Campo, Potencial)', 'Eletrodinâmica (Corrente, Resistores, Geradores, Receptores)', 'Eletromagnetismo (Campo Magnético, Indução)'],
+    'Física Moderna': ['Noções de Relatividade Restrita', 'Noções de Física Quântica (Efeito Fotoelétrico)'],
+  },
+  'Química': {
+    'Assuntos Mais Cobrados no ENEM': ['Moléculas e Propriedades (8,8%)', 'Separação de Misturas (6,6%)', 'Funções Inorgânicas (6,6%)', 'Hidrocarbonetos (6,6%)', 'Átomos (6,6%)', 'Eletroquímica (6,6%)'],
+    'Química Geral': ['Modelos Atômicos e Estrutura', 'Tabela Periódica e Propriedades', 'Ligações Químicas (Iônica, Covalente, Metálica)', 'Funções Inorgânicas (Ácidos, Bases, Sais, Óxidos)', 'Reações Químicas e Balanceamento', 'Grandezas Químicas (Mol, Massa Molar)', 'Estequiometria'],
+    'Físico-Química': ['Soluções e Concentrações', 'Propriedades Coligativas', 'Termoquímica', 'Cinética Química', 'Equilíbrio Químico (Iônico e Molecular)', 'Eletroquímica (Pilhas e Eletrólise)', 'Radioatividade'],
+    'Química Orgânica': ['Introdução e Hidrocarbonetos', 'Funções Orgânicas Oxigenadas e Nitrogenadas', 'Isomeria (Plana e Espacial)', 'Reações Orgânicas (Adição, Substituição, Eliminação)', 'Polímeros e Biomoléculas'],
+  },
+  'Filosofia': {
+    'Assuntos Mais Cobrados no ENEM': ['Filosofia Antiga (23,3%)', 'Filosofia Moderna (16,7%)', 'Ética e Moral (13,3%)', 'Filosofia Contemporânea (10%)', 'Filosofia Política (6,7%)', 'Existencialismo (6,7%)'],
+    'Filosofia Antiga': ['Mito e Filosofia (Pré-socráticos)', 'Sócrates e os Sofistas', 'Platão (Teoria das Ideias)', 'Aristóteles (Lógica, Ética, Política)', 'Filosofia Helenística (Estoicismo, Epicurismo)'],
+    'Filosofia Medieval': ['Patrística (Santo Agostinho)', 'Escolástica (São Tomás de Aquino)'],
+    'Filosofia Moderna': ['Racionalismo (Descartes, Spinoza, Leibniz)', 'Empirismo (Locke, Berkeley, Hume)', 'Contratualismo (Hobbes, Locke, Rousseau)', 'Iluminismo e Criticismo (Kant)'],
+    'Filosofia Contemporânea': ['Idealismo Alemão (Hegel)', 'Utilitarismo (Bentham, Mill)', 'Marxismo', 'Existencialismo (Kierkegaard, Sartre)', 'Escola de Frankfurt', 'Filosofia da Ciência (Popper, Kuhn)'],
+  },
+  'Sociologia': {
+    'Assuntos Mais Cobrados no ENEM': ['Cultura e Sociedade (18,4%)', 'Movimentos Sociais (17,3%)', 'Estado e Cidadania (15,3%)', 'Sociologia Brasileira (14,3%)', 'Sociologia Contemporânea (10,2%)'],
+    'Conceitos Sociológicos Fundamentais': ['O que é Sociologia?', 'Fato Social (Durkheim)', 'Ação Social (Weber)', 'Luta de Classes (Marx)'],
+    'Cultura, Identidade e Socialização': ['Cultura e Ideologia', 'Indústria Cultural', 'Processo de Socialização', 'Identidade e Diversidade'],
+    'Trabalho, Produção e Sociedade': ['Divisão Social do Trabalho', 'Modos de Produção', 'Mundo do Trabalho Contemporâneo'],
+    'Poder, Política e Movimentos Sociais': ['Estado, Governo e Sociedade', 'Democracia e Cidadania', 'Movimentos Sociais'],
+    'Desigualdade e Estratificação Social': ['Classes Sociais', 'Desigualdades de Gênero e Raça', 'Globalização e Desigualdade'],
+  },
+  'Literatura': {
+    'Assuntos Mais Cobrados no ENEM': ['Literatura Contemporânea (31,9%)', 'Modernismo (21,5%)', 'Artes (20%)'],
+    'Teoria Literária': ['Gêneros Literários', 'Figuras de Linguagem', 'Elementos da Narrativa', 'Versificação'],
+    'Literatura Portuguesa': ['Trovadorismo', 'Humanismo', 'Classicismo', 'Barroco', 'Arcadismo', 'Romantismo', 'Realismo/Naturalismo', 'Simbolismo', 'Modernismo (Orpheu e Presença)'],
+    'Literatura Brasileira': ['Quinhentismo e Barroco', 'Arcadismo', 'Romantismo (Poesia e Prosa)', 'Realismo/Naturalismo e Parnasianismo', 'Simbolismo e Pré-Modernismo', 'Modernismo (1ª, 2ª e 3ª Fases)', 'Literatura Contemporânea'],
+  },
+  'Inglês': {
+    'Assuntos Mais Cobrados no ENEM': ['Gramática e Interpretação (93,6%)', 'Vocabulário (6,4%)'],
+    'Grammar': ['Verb Tenses (Simple, Continuous, Perfect)', 'Modal Verbs', 'Prepositions (In, On, At)', 'Conditionals (If Clauses)', 'Reported Speech', 'Passive Voice', 'Gerunds and Infinitives'],
+    'Vocabulary': ['Common Idioms and Expressions', 'Phrasal Verbs', 'Connectors and Linking Words', 'False Cognates'],
+    'Reading Comprehension': ['Skimming and Scanning', 'Identifying Main Ideas and Details', 'Inference and Context Clues'],
+  },
+  'Espanhol': {
+    'Assuntos Mais Cobrados no ENEM': ['Gramática (90%)', 'Vocabulário (10%)'],
+    'Gramática': ['Verbos (Presente, Pretéritos, Futuro)', 'Pronomes', 'Artigos e Contrações', 'Preposições', 'Conjunções'],
+    'Vocabulário': ['Falsos Cognatos', 'Sinônimos e Antônimos', 'Expressões Idiomáticas'],
+    'Interpretação de Texto': ['Leitura de Notícias e Artigos', 'Análise de Charges e Tiras', 'Compreensão de Textos Literários'],
+  },
+  'Redação': {
+    'Eixos Temáticos': ['Direitos Humanos e Cidadania', 'Meio Ambiente e Sustentabilidade', 'Tecnologia e Sociedade', 'Cultura e Arte', 'Saúde e Bem-estar', 'Educação', 'Segurança Pública e Violência'],
+    'Técnicas de Escrita': ['Conectivos', 'Regras de Acentuação', 'Agentes de Intervenção (CIVES)', 'Tipos de Tópico Frasal'],
+    'Repertório Sociocultural': ['Repertórios Históricos', 'Repertórios Filosóficos/Sociológicos', 'Repertórios de Cultura Pop', 'Repertórios Literários', 'Dados e Estatísticas Atuais (Brasil 2025)'],
+  },
+  'Atualidades': {
+    'Brasil': ['Política Interna', 'Economia Brasileira', 'Questões Sociais', 'Segurança Pública', 'Meio Ambiente no Brasil'],
+    'Mundo': ['Geopolítica Global', 'Conflitos Internacionais', 'Relações Internacionais do Brasil', 'Crises Humanitárias'],
+    'Tecnologia e Inovação': ['Inteligência Artificial', 'Transformação Digital', 'Cibersegurança', 'Inovações Científicas'],
+    'Meio Ambiente': ['Mudanças Climáticas (COP)', 'Crise Hídrica e Energética', 'Desenvolvimento Sustentável'],
+    'Economia': ['Inflação e Juros', 'Mercado de Trabalho', 'Criptomoedas e Moedas Digitais', 'Comércio Internacional'],
+    'Sociedade e Cultura': ['Movimentos Sociais', 'Direitos Humanos', 'Cultura Pop e Mídia', 'Saúde Pública Global'],
+  },
+  'Constituição Federal': {
+    'Princípios Fundamentais': ['Art. 1º ao 4º'],
+    'Direitos e Garantias Fundamentais': ['Direitos e Deveres Individuais e Coletivos (Art. 5º)', 'Direitos Sociais (Art. 6º ao 11)', 'Nacionalidade (Art. 12 e 13)', 'Direitos Políticos (Art. 14 ao 16)'],
+    'Organização do Estado': ['União, Estados, DF e Municípios', 'Intervenção Federal e Estadual', 'Administração Pública (Art. 37 ao 41)'],
+    'Organização dos Poderes': ['Poder Legislativo', 'Processo Legislativo', 'Poder Executivo', 'Poder Judiciário'],
+    'Defesa do Estado e das Instituições Democráticas': ['Estado de Defesa e Estado de Sítio', 'Forças Armadas', 'Segurança Pública (Art. 144)'],
+    'Ordem Social': ['Seguridade Social (Saúde, Previdência, Assistência)', 'Educação, Cultura e Desporto', 'Meio Ambiente (Art. 225)', 'Família, Criança, Adolescente, Jovem e Idoso'],
+  },
+  'Tecnologia e Sociedade': {
+    'Fundamentos da Era Digital': ['Revolução Digital e Sociedade da Informação', 'Internet e World Wide Web', 'Inclusão e Exclusão Digital', 'Hardware, Software e Redes'],
+    'Inteligência Artificial e Automação': ['Conceitos de IA (Machine Learning, Deep Learning)', 'Aplicações da IA no cotidiano', 'Ética em IA (Vieses, Transparência)', 'Automação e o Futuro do Trabalho'],
+    'Redes Sociais e Comportamento Online': ['Impacto das redes sociais na comunicação', 'Bolhas informacionais e câmaras de eco', 'Fake News e Desinformação', 'Privacidade e Vigilância Digital'],
+    'Cibersegurança e Crimes Digitais': ['Tipos de Ameaças (Phishing, Malware, Ransomware)', 'Proteção de Dados Pessoais (LGPD)', 'Cyberbullying e Discurso de Ódio', 'Segurança da Informação'],
+    'Inovações e Tendências': ['Internet das Coisas (IoT)', 'Computação em Nuvem (Cloud Computing)', 'Blockchain e Criptomoedas', 'Realidade Virtual e Aumentada'],
+  },
+  'Ciências da Natureza': { 'Assuntos Mais Cobrados no ENEM': [] },
+  'Ciências Humanas': { 'Assuntos Mais Cobrados no ENEM': [] },
+  'Linguagens e Códigos': { 'Assuntos Mais Cobrados no ENEM': [] },
 };
 
 export const defaultTheme = themes['Redação'];
