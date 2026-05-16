@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { themes, defaultTheme } from '../lib/constants';
 import { db } from '../lib/firebase';
-import { collection, addDoc, serverTimestamp, doc, getDoc, setDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import { generateContentFromGemini } from '../lib/gemini';
 import { DownloadIcon, BanIcon, CheckCircleIcon, XCircleIcon } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import PracticeQuiz from './PracticeQuiz';
+import { getRevisionSuggestions, calculateNextStep } from '../lib/revision.service';
 
 const difficulties = ['Introdutório', 'Médio', 'Difícil'];
 
@@ -113,18 +114,30 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
 
   const updateRevisionPerformance = async (finalScore: number) => {
     if (!user) return;
-    const performance = (finalScore / questions.length) * 100;
+    const performance = Math.round((finalScore / questions.length) * 100);
     const revisionId = `${settings.subject}_${settings.topic}`.replace(/[^a-zA-Z0-9]/g, '_');
     const revisionRef = doc(db, 'users', user.uid, 'revisions', revisionId);
     
     try {
       const revSnap = await getDoc(revisionRef);
       if (revSnap.exists()) {
+        const revData = revSnap.data();
+        const currentStep = revData.cycleStep || 0;
+        
+        // Calcula o próximo degrau do ciclo baseado no desempenho
+        const nextStep = calculateNextStep(performance, currentStep);
+        
+        // Calcula a próxima data de revisão
+        const nextDate = getRevisionSuggestions(performance, nextStep)[0].date;
+        
         await setDoc(revisionRef, { 
           performance,
           lastReviewedAt: serverTimestamp(),
-          // Se acertou 100%, marcamos como completada para este ciclo
-          status: performance === 100 ? 'completed' : 'pending' 
+          cycleStep: nextStep,
+          // Reagenda automaticamente com a nova data
+          scheduledDate: Timestamp.fromDate(nextDate),
+          status: 'pending',
+          reviewCount: (revData.reviewCount || 0) + 1,
         }, { merge: true });
       }
     } catch (e) {
