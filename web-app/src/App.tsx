@@ -6,6 +6,7 @@ import SavedContent from './pages/SavedContent';
 import ConfigScreen from './pages/ConfigScreen';
 import RevisionScreen from './pages/RevisionScreen';
 import ReportButton from './components/ReportButton';
+import StickyNotesManager from './components/StickyNotesManager';
 
 import React from 'react';
 
@@ -35,6 +36,7 @@ export default function App() {
         <div className="min-h-screen bg-gray-100 text-gray-900 font-sans">
           <AppRoutes />
           <ReportButton />
+          <StickyNotesManager />
         </div>
       </Router>
     </AuthProvider>

@@ -403,6 +403,13 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
         <button onClick={onBack} className="text-sm bg-black/5 p-2 rounded-lg hover:bg-black/10 transition-colors">
           Voltar
         </button>
+        <button
+          onClick={() => window.dispatchEvent(new Event('toggle-notes'))}
+          className="text-sm bg-yellow-100 text-yellow-800 p-2 rounded-lg hover:bg-yellow-200 transition-colors flex items-center gap-2 font-bold"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+          Post-its
+        </button>
       </div>
 
       <div className="flex justify-center mb-6 p-1 bg-gray-200 rounded-lg">

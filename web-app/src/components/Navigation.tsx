@@ -58,7 +58,22 @@ export default function Navigation() {
               </Link>
             </div>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => window.dispatchEvent(new Event('toggle-notes'))}
+              className="inline-flex items-center px-3 py-2 border border-yellow-300 text-sm leading-4 font-bold rounded-md text-yellow-800 bg-yellow-100 hover:bg-yellow-200 focus:outline-none transition shadow-sm"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+              Post-its
+            </button>
+            <button
+              onClick={() => window.dispatchEvent(new Event('add-note'))}
+              className="inline-flex items-center px-2 py-2 border border-transparent text-sm leading-4 font-bold rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none transition shadow-sm"
+              title="Nova Nota"
+            >
+              +
+            </button>
+            <div className="w-px h-6 bg-gray-200 mx-2"></div>
             <button
               onClick={signOut}
               className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition"
