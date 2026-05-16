@@ -467,7 +467,16 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
         <button onClick={onBack} className="text-sm bg-black/5 p-2 rounded-lg hover:bg-black/10 transition-colors">
           Voltar
         </button>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          {!isSavedMode && (
+            <button
+              onClick={saveQuiz}
+              disabled={saving || saved}
+              className={`text-sm p-2 rounded-lg transition-colors flex items-center gap-2 font-semibold ${saved ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800 hover:bg-purple-200'}`}
+            >
+              {saving ? 'Salvando...' : (saved ? '✓ Salvo!' : (isFlashcard ? '💾 Salvar Flashcards' : '💾 Salvar Questões'))}
+            </button>
+          )}
           {isFlashcard ? (
             <button
               onClick={() => onSavePdf('flashcards')}
