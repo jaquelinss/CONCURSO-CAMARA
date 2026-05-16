@@ -8,6 +8,7 @@ import { format, isBefore, isToday, startOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import LessonScreen from '../components/LessonScreen';
 import QuizScreen from '../components/QuizScreen';
+import LinkContentModal from '../components/LinkContentModal';
 
 export default function RevisionScreen() {
   const { user } = useAuth();
@@ -17,50 +18,39 @@ export default function RevisionScreen() {
   const [activeContent, setActiveContent] = useState<any>(null);
   const [activeType, setActiveType] = useState<'lesson' | 'quiz' | 'flashcard' | null>(null);
 
+  // Estado do modal de vinculação
+  const [linkModal, setLinkModal] = useState<{ revision: any, type: 'lesson' | 'quiz' | 'flashcard' } | null>(null);
+
+  const fetchRevisions = async () => {
+    if (!user) return;
+    try {
+      const revRef = collection(db, 'users', user.uid, 'revisions');
+      const q = query(revRef, orderBy('scheduledDate', 'asc'));
+      const snap = await getDocs(q);
+      setRevisions(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    } catch (error) {
+      console.error("Erro ao buscar revisões:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchRevisions = async () => {
-      if (!user) return;
-      try {
-        const revRef = collection(db, 'users', user.uid, 'revisions');
-        const q = query(revRef, orderBy('scheduledDate', 'asc'));
-        const snap = await getDocs(q);
-        setRevisions(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-      } catch (error) {
-        console.error("Erro ao buscar revisões:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchRevisions();
   }, [user]);
 
   const handleStartRevision = async (rev: any, type: 'lesson' | 'quiz' | 'flashcard') => {
     const contentId = rev.contentLinks?.[`${type}Id`];
     
-    // Se NÃO existe conteúdo salvo → abrir tela de geração com settings pré-preenchidos
-    if (!contentId || !user) {
-      const generationSettings: any = {
-        subject: rev.subject,
-        topic: rev.topic,
-        difficulty: 'Médio',
-        quantity: 5,
-        lessonLevel: 'Introdutória',
-      };
-
-      if (type === 'lesson') {
-        generationSettings.model = 'Aula Explicativa';
-      } else if (type === 'quiz') {
-        generationSettings.model = 'Técnica';
-      } else {
-        generationSettings.model = 'Flashcard';
-      }
-
-      setActiveContent(generationSettings);
-      setActiveType(type);
+    // Se NÃO existe conteúdo vinculado → abrir modal para escolher dos salvamentos
+    if (!contentId) {
+      setLinkModal({ revision: rev, type });
       return;
     }
 
-    // Se EXISTE conteúdo salvo → carregar do Firestore
+    if (!user) return;
+
+    // Se EXISTE conteúdo vinculado → carregar do Firestore e abrir
     try {
       const collectionName = type === 'lesson' ? 'lessons' : type === 'quiz' ? 'quizzes' : 'flashcards';
       const contentRef = doc(db, 'users', user.uid, collectionName, contentId);
@@ -69,8 +59,8 @@ export default function RevisionScreen() {
         setActiveContent({ ...contentSnap.data(), id: contentSnap.id });
         setActiveType(type);
       } else {
-        // Conteúdo foi deletado → tratar como "gerar novo"
-        handleStartRevision({ ...rev, contentLinks: { ...rev.contentLinks, [`${type}Id`]: null } }, type);
+        // Conteúdo foi deletado → abrir modal para revincular
+        setLinkModal({ revision: rev, type });
       }
     } catch (error) {
       console.error("Erro ao carregar conteúdo:", error);
@@ -155,6 +145,20 @@ export default function RevisionScreen() {
           </div>
         )}
       </main>
+
+      {/* Modal de Vinculação */}
+      {linkModal && (
+        <LinkContentModal
+          user={user}
+          revision={linkModal.revision}
+          type={linkModal.type}
+          onClose={() => setLinkModal(null)}
+          onLinked={() => {
+            setLinkModal(null);
+            fetchRevisions(); // Recarrega as revisões para refletir o vínculo
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -180,19 +184,19 @@ function RevisionCard({ revision, onAction }: { revision: any, onAction: any }) 
         <ActionButton 
           icon={<BookOpen className="w-4 h-4" />} 
           label="Aula" 
-          active={!!revision.contentLinks.lessonId} 
+          active={!!revision.contentLinks?.lessonId} 
           onClick={() => onAction(revision, 'lesson')}
         />
         <ActionButton 
           icon={<CheckCircle className="w-4 h-4" />} 
           label="Quiz" 
-          active={!!revision.contentLinks.quizId} 
+          active={!!revision.contentLinks?.quizId} 
           onClick={() => onAction(revision, 'quiz')}
         />
         <ActionButton 
           icon={<Brain className="w-4 h-4" />} 
           label="Cards" 
-          active={!!revision.contentLinks.flashcardId} 
+          active={!!revision.contentLinks?.flashcardId} 
           onClick={() => onAction(revision, 'flashcard')}
         />
       </div>
@@ -207,11 +211,11 @@ function ActionButton({ icon, label, active, onClick }: { icon: any, label: stri
       className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all ${
         active 
           ? 'border-indigo-100 bg-indigo-50 text-indigo-700 hover:border-indigo-300' 
-          : 'border-gray-100 bg-gray-50 text-gray-400 hover:border-gray-200'
+          : 'border-dashed border-gray-200 bg-gray-50 text-gray-400 hover:border-indigo-300 hover:text-indigo-500'
       }`}
     >
       {active ? icon : <PlusCircle className="w-4 h-4" />}
-      <span className="text-xs font-bold">{active ? label : 'Gerar'}</span>
+      <span className="text-xs font-bold">{active ? label : 'Vincular'}</span>
     </button>
   );
 }
