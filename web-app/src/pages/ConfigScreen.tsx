@@ -7,7 +7,7 @@ import { collection, query, getDocs, orderBy, doc, updateDoc } from 'firebase/fi
 import { Bug, ChevronDown, ChevronUp, CheckCircle, Clock } from 'lucide-react';
 
 // Email da conta admin que pode ver os reportes
-const ADMIN_EMAILS = ['jaquelinss0210@gmail.com'];
+const ADMIN_EMAILS = ['quelinalins@gmail.com'];
 
 export default function ConfigScreen() {
   const { apiKey, saveApiKey, user } = useAuth();
