@@ -81,9 +81,10 @@ export const topicsBySubject: Record<string, any> = {
     'Geometria e Outros': ['Probabilidade', 'Área e Perímetro', 'Volume', 'Contagem']
   },
   'Noções de Informática': {
-    'Sistemas e Aplicativos': ['Sistema operacional', 'Edição de textos e planilhas', 'Banco de dados'],
-    'Redes e Internet': ['Navegação', 'Correio eletrônico', 'Computação na nuvem'],
-    'Segurança da Informação': ['Antivírus e Firewall', 'Pragas virtuais', 'Backup']
+    'Ambiente Windows': ['Windows 10 e 11 (Principais Ferramentas)', 'Gerenciamento de Arquivos e Pastas', 'Atalhos de Teclado'],
+    'Suíte de Escritório': ['Edição de Textos (Word)', 'Planilhas Eletrônicas (Excel)', 'Apresentações (PowerPoint)'],
+    'Redes e Internet': ['Navegadores (Chrome, Edge)', 'Correio Eletrônico e Protocolos', 'Computação em Nuvem e Ferramentas de Colaboração'],
+    'Segurança da Informação': ['Malwares e Pragas Virtuais', 'Antivírus e Firewall', 'Backup e Armazenamento Externo', 'LGPD (Conceitos Básicos)']
   },
   'Legislação Específica': {
     'Geral': ['Resolução nº 554/2010 (Regimento Interno)']
@@ -98,22 +99,30 @@ export const topicsBySubject: Record<string, any> = {
     'Ordem Econômica e Social': ['Desenvolvimento Urbano', 'Saúde', 'Educação e Cultura', 'Assistência Social', 'Meio Ambiente'],
   },
   'Administração Pública': {
-    'Estrutura e Pessoal': ['Gestão de pessoas', 'Motivação e liderança'],
-    'Regime de Servidores': ['Provimento', 'Vacância', 'Estabilidade', 'Direitos e deveres'],
-    'Regras Restritivas': ['Proibição de nepotismo', 'Administração de recursos']
+    'Gestão Pública': ['Conceitos Básicos', 'Eficiência, Eficácia e Efetividade', 'Novas Tecnologias na Gestão'],
+    'Organização e Processos': ['Estruturas Organizacionais', 'Cultura e Clima Organizacional', 'Gestão por Processos'],
+    'Gestão de Pessoas': ['Motivação e Liderança', 'Comunicação Organizacional', 'Gestão de Conflitos'],
+    'Ética no Serviço Público': ['Código de Ética', 'Transparência e Lei de Acesso à Informação', 'Accountability']
   },
   'Noções de Arquivologia': {
-    'Gestão de documentos': ['Teoria das três idades'],
-    'Organização': ['Protocolo', 'Tabela de temporalidade', 'Conservação']
+    'Conceitos Fundamentais': ['Definição e Tipos de Arquivos', 'Ciclo Vital dos Documentos (Teoria das Três Idades)', 'Classificação de Documentos'],
+    'Gestão de Documentos': ['Protocolo (Recebimento, Registro, Autuação)', 'Expedição e Tramitação', 'Arquivamento'],
+    'Preservação e Acesso': ['Tabela de Temporalidade', 'Acondicionamento e Armazenamento', 'Gestão de Documentos Eletrônicos']
   },
   'Noções de Direito Constitucional': {
-    'Princípios e Direitos': ['Princípios fundamentais', 'Direitos e garantias fundamentais'],
-    'Organização do Estado e Poderes': ['Poder Legislativo', 'Congresso e Câmara']
+    'Teoria Geral': ['Conceito e Classificação das Constituições', 'Poder Constituinte', 'Princípios Fundamentais'],
+    'Direitos e Garantias': ['Direitos Individuais e Coletivos (Art. 5º)', 'Direitos Sociais', 'Nacionalidade e Direitos Políticos'],
+    'Organização do Estado': ['Organização Político-Administrativa', 'A União', 'Os Estados Federados', 'Os Municípios (Art. 29 a 31)'],
+    'Organização dos Poderes': ['Poder Legislativo (Estrutura e Funcionamento)', 'Processo Legislativo', 'Poder Executivo e Judiciário'],
+    'Fiscalização e Controle': ['Tribunais de Contas', 'Ministério Público', 'Controle de Constitucionalidade']
   },
   'Noções de Direito Administrativo': {
-    'Organização e Poderes': ['Administração direta e indireta', 'Poderes administrativos', 'Responsabilidade civil'],
-    'Atos e Contratos': ['Atos administrativos', 'Licitações e contratos (Lei 8.666/93)'],
-    'Legislação de Controle': ['Lei de Improbidade', 'Estatuto dos Funcionários']
+    'Fundamentos': ['Estado, Governo e Administração Pública', 'Princípios da Administração (LIMPE)', 'Poderes Administrativos'],
+    'Organização Administrativa': ['Administração Direta e Indireta', 'Autarquias e Fundações', 'Empresas Públicas e Sociedades de Economia Mista'],
+    'Atos Administrativos': ['Conceito, Requisitos e Atributos', 'Classificação e Espécies', 'Invalidação (Revogação e Anulação)'],
+    'Licitações e Contratos': ['Nova Lei de Licitações (Lei 14.133/21)', 'Princípios e Modalidades', 'Dispensa e Inexigibilidade'],
+    'Agentes Públicos': ['Cargo, Emprego e Função Pública', 'Concurso Público', 'Regime Jurídico Único'],
+    'Responsabilidade e Controle': ['Responsabilidade Civil do Estado', 'Lei de Improbidade Administrativa (Lei 8.429/92)']
   },
 
   // --- Matérias do ENEM / Geral ---
