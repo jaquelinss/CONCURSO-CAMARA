@@ -115,45 +115,125 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
   const sanitizeFilename = (str: string) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '_');
 
   const onSavePdf = (type: 'questions' | 'answers' | 'flashcards') => {
-    const doc = new jsPDF();
-    let yPos = 20;
-    const lineHeight = 10;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 20;
-    const maxLineWidth = 170;
+    const contentWidth = pageWidth - (margin * 2);
+    let y = margin;
 
-    doc.setFontSize(16);
-    doc.text(`Conteúdo: ${settings.subject} - ${settings.topic}`, margin, yPos);
-    yPos += lineHeight * 2;
-    doc.setFontSize(12);
+    // Header
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    
+    let title = `Conteúdo: ${settings.subject} - ${settings.topic}`;
+    if (type === 'questions') title = `Questões: ${settings.subject}`;
+    if (type === 'answers') title = `Gabarito: ${settings.subject}`;
+    if (type === 'flashcards') title = `Flashcards: ${settings.subject}`;
+
+    // Split title to fit
+    const titleLines = doc.splitTextToSize(title, contentWidth);
+    doc.text(titleLines, pageWidth / 2, y, { align: 'center' });
+    y += (titleLines.length * 8) + 10;
 
     if (type === 'flashcards') {
-      questions.forEach((q, i) => {
-        const text = `Card ${i + 1}:\nFrente: ${q.frente || ''}\nVerso: ${q.verso || ''}\n`;
-        const lines = doc.splitTextToSize(text, maxLineWidth);
-        lines.forEach((line: string) => {
-          if (yPos > 280) {
-            doc.addPage();
-            yPos = 20;
-          }
-          doc.text(line, margin, yPos);
-          yPos += lineHeight;
-        });
-        yPos += lineHeight; // Espaçamento extra entre cards
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      questions.forEach((q, index) => {
+        const text = `Card ${index + 1}:\nFrente: ${q.frente || ''}\nVerso: ${q.verso || ''}`;
+        const lines = doc.splitTextToSize(text, contentWidth);
+        const blockHeight = lines.length * 6 + 10;
+        
+        if (y + blockHeight > pageHeight - margin) {
+          doc.addPage();
+          y = margin;
+        }
+        
+        doc.text(lines, margin, y);
+        y += blockHeight;
       });
-    } else {
-      questions.forEach((q, i) => {
-        const text = `Questão ${i + 1}: ${q.pergunta}\n` + 
-                     (type === 'questions' ? q.opcoes.map((o: string, j: number) => `${['A', 'B', 'C', 'D'][j]}) ${o}`).join('\n') : `Resposta Correta: ${q.correta}\nExplicação: ${q.explicacao}`) + '\n';
-        const lines = doc.splitTextToSize(text, maxLineWidth);
-        lines.forEach((line: string) => {
-          if (yPos > 280) {
-            doc.addPage();
-            yPos = 20;
-          }
-          doc.text(line, margin, yPos);
-          yPos += lineHeight;
+    } else if (type === 'questions') {
+      doc.setFontSize(12);
+      questions.forEach((q, index) => {
+        // Altura da Questão
+        const qNum = `${index + 1}. `;
+        const qTextLines = doc.splitTextToSize(qNum + q.pergunta, contentWidth);
+        const qTextHeight = qTextLines.length * 6;
+
+        // Altura das Opções
+        let optionsHeight = 0;
+        const optionsLines: string[][] = [];
+        q.opcoes.forEach((opt: string, i: number) => {
+           const label = String.fromCharCode(65 + i) + ') ';
+           const optLines = doc.splitTextToSize(label + opt, contentWidth - 5);
+           optionsLines.push(optLines);
+           optionsHeight += optLines.length * 6;
         });
-        yPos += lineHeight; // Espaçamento extra entre questões
+
+        // Rascunho
+        const scratchPadHeight = 30; 
+        const totalBlockHeight = qTextHeight + optionsHeight + scratchPadHeight + 10;
+
+        if (y + totalBlockHeight > pageHeight - margin) {
+          doc.addPage();
+          y = margin;
+        }
+
+        // Renderiza Questão
+        doc.setFont('helvetica', 'bold');
+        doc.text(qTextLines, margin, y);
+        y += qTextHeight + 2;
+
+        // Renderiza Opções
+        doc.setFont('helvetica', 'normal');
+        optionsLines.forEach((lines) => {
+          doc.text(lines, margin + 5, y);
+          y += (lines.length * 6);
+        });
+
+        // Renderiza Rascunho
+        y += 5;
+        doc.setDrawColor(200);
+        doc.rect(margin, y, contentWidth, scratchPadHeight);
+        doc.setFontSize(8);
+        doc.setTextColor(150);
+        doc.text("Rascunho / Resolução", margin + 2, y + 5);
+        doc.setTextColor(0);
+        doc.setFontSize(12);
+        
+        y += scratchPadHeight + 10;
+      });
+    } else if (type === 'answers') {
+      questions.forEach((q, index) => {
+        const header = `${index + 1}. Resposta: ${q.correta}`;
+        
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        const headerLines = doc.splitTextToSize(header, contentWidth);
+        const headerHeight = headerLines.length * 6;
+
+        doc.setFont('helvetica', 'normal');
+        const explLines = doc.splitTextToSize(`Explicação: ${q.explicacao}`, contentWidth);
+        const explHeight = explLines.length * 6;
+
+        const totalHeight = headerHeight + explHeight + 8;
+
+        if (y + totalHeight > pageHeight - margin) {
+          doc.addPage();
+          y = margin;
+        }
+
+        // Renderiza Header (Verde)
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(0, 100, 0);
+        doc.text(headerLines, margin, y);
+        y += headerHeight;
+
+        // Renderiza Explicação
+        doc.setTextColor(0);
+        doc.setFont('helvetica', 'normal');
+        doc.text(explLines, margin, y);
+        y += explHeight + 8;
       });
     }
     

@@ -31,6 +31,7 @@ export const generateContentFromGemini = async (settings: any, apiKey: string) =
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
           model: 'gemini-2.5-flash',
+          tools: [{ googleSearchRetrieval: {} } as any],
           generationConfig: {
             responseMimeType: "application/json",
             temperature: 0.2, 
@@ -39,7 +40,12 @@ export const generateContentFromGemini = async (settings: any, apiKey: string) =
           }
         });
 
-        const prompt = generatePrompt(settings);
+        // Adiciona uma instrução extra de contexto ao prompt principal
+        const searchContext = settings.subject.toLowerCase().includes('legislação') || settings.subject.toLowerCase().includes('lei') 
+            ? "\nImportante: Como o tema inclui legislação específica, use a ferramenta de busca do Google para encontrar a lei oficial mais atualizada do município/estado especificado antes de gerar o conteúdo." 
+            : "";
+
+        const prompt = generatePrompt(settings) + searchContext;
         const result = await model.generateContent(prompt);
         const responseText = result.response.text();
         
