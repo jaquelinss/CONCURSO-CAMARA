@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { generateContentFromGemini } from '../lib/gemini';
 import { DownloadIcon, BanIcon, CheckCircleIcon, XCircleIcon } from 'lucide-react';
 import { jsPDF } from 'jspdf';
+import { saveAs } from 'file-saver';
 import PracticeQuiz from './PracticeQuiz';
 
 const difficulties = ['Introdutório', 'Médio', 'Difícil'];
@@ -111,6 +112,9 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     }
   };
 
+  // Função apenas para o nome do arquivo, pois caracteres especiais quebram o download no Chrome
+  const sanitizeFilename = (str: string) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '_');
+
   const onSavePdf = (type: 'questions' | 'answers' | 'flashcards') => {
     const doc = new jsPDF();
     let yPos = 20;
@@ -125,7 +129,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
 
     if (type === 'flashcards') {
       questions.forEach((q, i) => {
-        const text = `Card ${i + 1}:\nFrente: ${q.frente}\nVerso: ${q.verso}\n`;
+        const text = `Card ${i + 1}:\nFrente: ${q.frente || ''}\nVerso: ${q.verso || ''}\n`;
         const lines = doc.splitTextToSize(text, maxLineWidth);
         if (yPos + (lines.length * lineHeight) > 280) {
           doc.addPage();
@@ -148,7 +152,8 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
       });
     }
     
-    doc.save(`${settings.subject}_${type}.pdf`);
+    const safeFilename = sanitizeFilename(settings.subject);
+    doc.save(`${safeFilename}_${type}.pdf`);
   };
 
   if (loading) {

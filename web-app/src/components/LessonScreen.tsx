@@ -5,6 +5,7 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import { DownloadIcon, ClipboardListIcon } from 'lucide-react';
 import { jsPDF } from 'jspdf';
+import { saveAs } from 'file-saver';
 import PracticeQuiz from './PracticeQuiz';
 
 interface LessonScreenProps {
@@ -209,6 +210,8 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
     }
   };
 
+  const sanitizeFilename = (str: string) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '_');
+
   const onSavePdf = () => {
     if (!currentLesson) return;
     const doc = new jsPDF();
@@ -236,7 +239,8 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
       yPos += subLines.length * lineHeight + 5;
 
       doc.setFontSize(12);
-      const contentLines = doc.splitTextToSize(sec.conteudo.replace(/\[EXPLICACAO\].*?:.*?\[\/EXPLICACAO\]/g, (match: string) => match.replace(/\[\/?EXPLICACAO\]/g, '')), maxLineWidth);
+      const cleanContent = sec.conteudo.replace(/\[EXPLICACAO\].*?:.*?\[\/EXPLICACAO\]/g, (match: string) => match.replace(/\[\/?EXPLICACAO\]/g, ''));
+      const contentLines = doc.splitTextToSize(cleanContent, maxLineWidth);
       
       contentLines.forEach((line: string) => {
         if (yPos > 280) { doc.addPage(); yPos = 20; }
@@ -246,7 +250,9 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
       yPos += lineHeight;
     });
 
-    doc.save(`Aula_${settings.subject}_${currentLevel}.pdf`);
+    const safeSubject = sanitizeFilename(settings.subject);
+    const safeLevel = sanitizeFilename(currentLevel);
+    doc.save(`Aula_${safeSubject}_${safeLevel}.pdf`);
   };
 
   const handleGeneratePracticeQuiz = async () => {
