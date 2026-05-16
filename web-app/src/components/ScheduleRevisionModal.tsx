@@ -30,9 +30,9 @@ export default function ScheduleRevisionModal({ user, item, type, onClose, onSch
       const revisionRef = doc(db, 'users', user.uid, 'revisions', revisionId);
       
       const contentLinks: any = {};
-      if (type === 'lesson') contentLinks.lessonId = item.id;
-      if (type === 'quiz') contentLinks.quizId = item.id;
-      if (type === 'flashcard') contentLinks.flashcardId = item.id;
+      if (type === 'lesson') contentLinks.lessonIds = [item.id];
+      if (type === 'quiz') contentLinks.quizIds = [item.id];
+      if (type === 'flashcard') contentLinks.flashcardIds = [item.id];
 
       await setDoc(revisionRef, {
         subject: item.subject,

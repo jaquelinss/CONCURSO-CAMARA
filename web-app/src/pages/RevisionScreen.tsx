@@ -3,12 +3,23 @@ import Navigation from '../components/Navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
 import { collection, query, getDocs, orderBy, doc, getDoc } from 'firebase/firestore';
-import { Calendar, Clock, BookOpen, CheckCircle, AlertCircle, PlusCircle, Brain } from 'lucide-react';
+import { Calendar, Clock, BookOpen, CheckCircle, AlertCircle, PlusCircle, Brain, ChevronLeft } from 'lucide-react';
 import { format, isBefore, isToday, startOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import LessonScreen from '../components/LessonScreen';
 import QuizScreen from '../components/QuizScreen';
 import LinkContentModal from '../components/LinkContentModal';
+
+// Helper: pega IDs vinculados de um tipo, compatível com formato antigo (singular) e novo (array)
+function getLinkedIds(contentLinks: any, type: string): string[] {
+  if (!contentLinks) return [];
+  const arrayKey = `${type}Ids`;
+  const singleKey = `${type}Id`;
+  const ids = contentLinks[arrayKey] || [];
+  const oldId = contentLinks[singleKey];
+  if (oldId && !ids.includes(oldId)) ids.push(oldId);
+  return ids;
+}
 
 export default function RevisionScreen() {
   const { user } = useAuth();
@@ -18,8 +29,11 @@ export default function RevisionScreen() {
   const [activeContent, setActiveContent] = useState<any>(null);
   const [activeType, setActiveType] = useState<'lesson' | 'quiz' | 'flashcard' | null>(null);
 
-  // Estado do modal de vinculação
+  // Modal de vinculação
   const [linkModal, setLinkModal] = useState<{ revision: any, type: 'lesson' | 'quiz' | 'flashcard' } | null>(null);
+
+  // Modal de seleção (quando há múltiplos itens vinculados)
+  const [pickModal, setPickModal] = useState<{ revision: any, type: 'lesson' | 'quiz' | 'flashcard', items: any[] } | null>(null);
 
   const fetchRevisions = async () => {
     if (!user) return;
@@ -40,27 +54,53 @@ export default function RevisionScreen() {
   }, [user]);
 
   const handleStartRevision = async (rev: any, type: 'lesson' | 'quiz' | 'flashcard') => {
-    const contentId = rev.contentLinks?.[`${type}Id`];
+    const ids = getLinkedIds(rev.contentLinks, type);
     
-    // Se NÃO existe conteúdo vinculado → abrir modal para escolher dos salvamentos
-    if (!contentId) {
+    // Nenhum vinculado → abrir modal de vinculação
+    if (ids.length === 0) {
       setLinkModal({ revision: rev, type });
       return;
     }
 
     if (!user) return;
 
-    // Se EXISTE conteúdo vinculado → carregar do Firestore e abrir
+    // Um único vinculado → abrir direto
+    if (ids.length === 1) {
+      await openContent(type, ids[0]);
+      return;
+    }
+
+    // Múltiplos vinculados → mostrar lista para o usuário escolher
+    const collectionName = type === 'lesson' ? 'lessons' : type === 'quiz' ? 'quizzes' : 'flashcards';
+    const loadedItems: any[] = [];
+    for (const id of ids) {
+      try {
+        const snap = await getDoc(doc(db, 'users', user.uid, collectionName, id));
+        if (snap.exists()) {
+          loadedItems.push({ id: snap.id, ...snap.data() });
+        }
+      } catch (e) { /* ignore */ }
+    }
+
+    if (loadedItems.length === 1) {
+      setActiveContent(loadedItems[0]);
+      setActiveType(type);
+    } else if (loadedItems.length > 1) {
+      setPickModal({ revision: rev, type, items: loadedItems });
+    } else {
+      setLinkModal({ revision: rev, type });
+    }
+  };
+
+  const openContent = async (type: string, contentId: string) => {
+    if (!user) return;
+    const collectionName = type === 'lesson' ? 'lessons' : type === 'quiz' ? 'quizzes' : 'flashcards';
     try {
-      const collectionName = type === 'lesson' ? 'lessons' : type === 'quiz' ? 'quizzes' : 'flashcards';
       const contentRef = doc(db, 'users', user.uid, collectionName, contentId);
       const contentSnap = await getDoc(contentRef);
       if (contentSnap.exists()) {
         setActiveContent({ ...contentSnap.data(), id: contentSnap.id });
-        setActiveType(type);
-      } else {
-        // Conteúdo foi deletado → abrir modal para revincular
-        setLinkModal({ revision: rev, type });
+        setActiveType(type as any);
       }
     } catch (error) {
       console.error("Erro ao carregar conteúdo:", error);
@@ -155,9 +195,53 @@ export default function RevisionScreen() {
           onClose={() => setLinkModal(null)}
           onLinked={() => {
             setLinkModal(null);
-            fetchRevisions(); // Recarrega as revisões para refletir o vínculo
+            fetchRevisions();
           }}
         />
+      )}
+
+      {/* Modal de Seleção (múltiplos vinculados) */}
+      {pickModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+              <ChevronLeft className="w-5 h-5 text-indigo-600" />
+              Escolha qual {pickModal.type === 'quiz' ? 'quiz' : pickModal.type === 'flashcard' ? 'flashcard' : 'aula'} revisar
+            </h3>
+            <div className="space-y-3 max-h-[50vh] overflow-y-auto">
+              {pickModal.items.map((item: any) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setActiveContent(item);
+                    setActiveType(pickModal.type);
+                    setPickModal(null);
+                  }}
+                  className="w-full text-left p-4 rounded-xl border-2 border-gray-100 hover:border-indigo-300 hover:bg-indigo-50/50 transition-all"
+                >
+                  <h4 className="font-bold text-gray-900">
+                    {pickModal.type === 'lesson' ? (item.data?.titulo || item.topic) : `${item.topic}`}
+                  </h4>
+                  <p className="text-sm text-gray-500">
+                    {pickModal.type !== 'lesson' && `${item.data?.length || 0} ${pickModal.type === 'quiz' ? 'questões' : 'flashcards'} · `}
+                    {item.difficulty || ''} · Salvo em: {item.createdAt?.toDate?.()?.toLocaleDateString() || 'N/A'}
+                  </p>
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-4">
+              <button onClick={() => setPickModal(null)} className="flex-1 py-2 bg-gray-100 rounded-xl font-semibold hover:bg-gray-200 transition-colors">
+                Cancelar
+              </button>
+              <button 
+                onClick={() => { setPickModal(null); setLinkModal({ revision: pickModal.revision, type: pickModal.type }); }}
+                className="flex-1 py-2 bg-indigo-100 text-indigo-700 rounded-xl font-semibold hover:bg-indigo-200 transition-colors"
+              >
+                Editar vínculos
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -167,6 +251,10 @@ function RevisionCard({ revision, onAction }: { revision: any, onAction: any }) 
   const date = revision.scheduledDate.toDate();
   const isOverdue = isBefore(date, startOfDay(new Date()));
   const isTodayDate = isToday(date);
+
+  const lessonCount = getLinkedIds(revision.contentLinks, 'lesson').length;
+  const quizCount = getLinkedIds(revision.contentLinks, 'quiz').length;
+  const flashcardCount = getLinkedIds(revision.contentLinks, 'flashcard').length;
 
   return (
     <div className={`p-6 rounded-2xl shadow-sm border-2 transition-all hover:shadow-md bg-white ${isOverdue ? 'border-red-100 bg-red-50/30' : 'border-gray-100'}`}>
@@ -184,19 +272,19 @@ function RevisionCard({ revision, onAction }: { revision: any, onAction: any }) 
         <ActionButton 
           icon={<BookOpen className="w-4 h-4" />} 
           label="Aula" 
-          active={!!revision.contentLinks?.lessonId} 
+          count={lessonCount}
           onClick={() => onAction(revision, 'lesson')}
         />
         <ActionButton 
           icon={<CheckCircle className="w-4 h-4" />} 
           label="Quiz" 
-          active={!!revision.contentLinks?.quizId} 
+          count={quizCount}
           onClick={() => onAction(revision, 'quiz')}
         />
         <ActionButton 
           icon={<Brain className="w-4 h-4" />} 
           label="Cards" 
-          active={!!revision.contentLinks?.flashcardId} 
+          count={flashcardCount}
           onClick={() => onAction(revision, 'flashcard')}
         />
       </div>
@@ -204,11 +292,12 @@ function RevisionCard({ revision, onAction }: { revision: any, onAction: any }) 
   );
 }
 
-function ActionButton({ icon, label, active, onClick }: { icon: any, label: string, active: boolean, onClick: any }) {
+function ActionButton({ icon, label, count, onClick }: { icon: any, label: string, count: number, onClick: any }) {
+  const active = count > 0;
   return (
     <button 
       onClick={onClick}
-      className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all ${
+      className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all relative ${
         active 
           ? 'border-indigo-100 bg-indigo-50 text-indigo-700 hover:border-indigo-300' 
           : 'border-dashed border-gray-200 bg-gray-50 text-gray-400 hover:border-indigo-300 hover:text-indigo-500'
@@ -216,6 +305,11 @@ function ActionButton({ icon, label, active, onClick }: { icon: any, label: stri
     >
       {active ? icon : <PlusCircle className="w-4 h-4" />}
       <span className="text-xs font-bold">{active ? label : 'Vincular'}</span>
+      {count > 1 && (
+        <span className="absolute -top-1.5 -right-1.5 bg-indigo-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+          {count}
+        </span>
+      )}
     </button>
   );
 }

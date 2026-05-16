@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { db } from '../lib/firebase';
 import { collection, query, getDocs, orderBy, doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { X, BookOpen, CheckCircle, Brain, ArrowRight, Search } from 'lucide-react';
+import { X, BookOpen, CheckCircle, Brain, ArrowRight, Search, Check } from 'lucide-react';
 
 interface LinkContentModalProps {
   user: any;
@@ -15,14 +15,18 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [linking, setLinking] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-  const typeLabels: Record<string, { label: string, collection: string, icon: any, color: string }> = {
-    lesson: { label: 'Aula Explicativa', collection: 'lessons', icon: <BookOpen className="w-5 h-5" />, color: 'blue' },
-    quiz: { label: 'Quiz / Questões', collection: 'quizzes', icon: <CheckCircle className="w-5 h-5" />, color: 'green' },
-    flashcard: { label: 'Flashcards', collection: 'flashcards', icon: <Brain className="w-5 h-5" />, color: 'indigo' },
+  const typeLabels: Record<string, { label: string, collection: string, icon: any, color: string, plural: string }> = {
+    lesson: { label: 'Aula Explicativa', collection: 'lessons', icon: <BookOpen className="w-5 h-5" />, color: 'blue', plural: 'aulas' },
+    quiz: { label: 'Quiz / Questões', collection: 'quizzes', icon: <CheckCircle className="w-5 h-5" />, color: 'green', plural: 'quizzes' },
+    flashcard: { label: 'Flashcards', collection: 'flashcards', icon: <Brain className="w-5 h-5" />, color: 'indigo', plural: 'flashcards' },
   };
 
   const config = typeLabels[type];
+
+  // Chave para o array de IDs no contentLinks
+  const linkKey = `${type}Ids`;
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -36,6 +40,13 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
         // Filtrar pelo mesmo subject da revisão
         const filtered = allItems.filter((item: any) => item.subject === revision.subject);
         setItems(filtered);
+
+        // Pré-selecionar os que já estão vinculados
+        const existingIds = revision.contentLinks?.[linkKey] || [];
+        // Compatibilidade: também checa o formato antigo (singular)
+        const oldId = revision.contentLinks?.[`${type}Id`];
+        const allExisting = new Set<string>([...existingIds, ...(oldId ? [oldId] : [])]);
+        setSelectedIds(allExisting);
       } catch (error) {
         console.error("Erro ao buscar itens:", error);
       } finally {
@@ -45,17 +56,30 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
     fetchItems();
   }, [user, revision.subject, config.collection]);
 
-  const handleLink = async (item: any) => {
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const handleConfirm = async () => {
     setLinking(true);
     try {
       const revisionRef = doc(db, 'users', user.uid, 'revisions', revision.id);
+      
+      const updatedLinks = { ...revision.contentLinks };
+      updatedLinks[linkKey] = Array.from(selectedIds);
+      // Limpa o formato antigo singular se existir
+      delete updatedLinks[`${type}Id`];
+
       await setDoc(revisionRef, {
-        contentLinks: {
-          ...revision.contentLinks,
-          [`${type}Id`]: item.id,
-        },
+        contentLinks: updatedLinks,
         updatedAt: serverTimestamp(),
       }, { merge: true });
+
       onLinked();
     } catch (error) {
       console.error("Erro ao vincular conteúdo:", error);
@@ -70,7 +94,7 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
       <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[85vh] flex flex-col overflow-hidden">
         
         {/* Header */}
-        <div className={`p-6 border-b bg-${config.color}-50`}>
+        <div className="p-6 border-b bg-gradient-to-r from-indigo-50 to-purple-50">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold flex items-center gap-2 text-gray-900">
               {config.icon}
@@ -83,6 +107,11 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
           <p className="text-sm text-gray-600 mt-1">
             Revisão de <strong>{revision.subject}</strong> — {revision.topic}
           </p>
+          {type !== 'lesson' && (
+            <p className="text-xs text-indigo-500 mt-2 font-semibold">
+              💡 Você pode selecionar vários {config.plural} para esta revisão
+            </p>
+          )}
         </div>
 
         {/* Body */}
@@ -99,7 +128,7 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
               </h3>
               <p className="text-gray-500 text-sm mb-6 max-w-xs mx-auto">
                 Você ainda não tem {config.label.toLowerCase()} salvo(a) para <strong>{revision.subject}</strong>. 
-                Vá em <strong>"Gerar Conteúdo"</strong> na tela inicial, gere e salve, depois volte aqui para vincular.
+                Vá na tela inicial, gere e salve, depois volte aqui para vincular.
               </p>
               <a 
                 href="/dashboard"
@@ -112,39 +141,62 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
           ) : (
             <div className="space-y-3">
               <p className="text-xs text-gray-400 uppercase font-bold tracking-wider mb-2">
-                {items.length} item(ns) disponível(eis) — clique para vincular
+                {items.length} item(ns) disponível(eis) · {selectedIds.size} selecionado(s)
               </p>
-              {items.map(item => (
-                <button
-                  key={item.id}
-                  onClick={() => handleLink(item)}
-                  disabled={linking}
-                  className={`w-full text-left p-4 rounded-xl border-2 border-gray-100 hover:border-${config.color}-300 hover:bg-${config.color}-50/50 transition-all group disabled:opacity-50`}
-                >
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h4 className="font-bold text-gray-900">
-                        {type === 'lesson' 
-                          ? (item.data?.titulo || `${item.subject} - ${item.topic}`)
-                          : `${item.subject} - ${item.topic}`
-                        }
-                      </h4>
-                      <p className="text-sm text-gray-500 mt-1">
-                        {type === 'lesson' 
-                          ? `Nível: ${item.lessonLevel || 'N/A'}`
-                          : `${item.data?.length || 0} ${type === 'quiz' ? 'questões' : 'flashcards'}`
-                        }
-                        {' · '}
-                        Salvo em: {item.createdAt?.toDate?.()?.toLocaleDateString() || 'N/A'}
-                      </p>
+              {items.map(item => {
+                const isSelected = selectedIds.has(item.id);
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => toggleSelect(item.id)}
+                    className={`w-full text-left p-4 rounded-xl border-2 transition-all group ${
+                      isSelected 
+                        ? 'border-indigo-400 bg-indigo-50 ring-2 ring-indigo-200' 
+                        : 'border-gray-100 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h4 className="font-bold text-gray-900">
+                          {type === 'lesson' 
+                            ? (item.data?.titulo || `${item.subject} - ${item.topic}`)
+                            : `${item.subject} - ${item.topic}`
+                          }
+                        </h4>
+                        <p className="text-sm text-gray-500 mt-1">
+                          {type === 'lesson' 
+                            ? `Nível: ${item.lessonLevel || 'N/A'}`
+                            : `${item.data?.length || 0} ${type === 'quiz' ? 'questões' : 'flashcards'}`
+                          }
+                          {' · '}
+                          Salvo em: {item.createdAt?.toDate?.()?.toLocaleDateString() || 'N/A'}
+                        </p>
+                      </div>
+                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                        isSelected ? 'bg-indigo-600 border-indigo-600' : 'border-gray-300'
+                      }`}>
+                        {isSelected && <Check className="w-4 h-4 text-white" />}
+                      </div>
                     </div>
-                    <ArrowRight className={`w-5 h-5 text-gray-300 group-hover:text-${config.color}-500 transition-colors`} />
-                  </div>
-                </button>
-              ))}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
+
+        {/* Footer com botão de confirmar */}
+        {items.length > 0 && (
+          <div className="p-4 border-t bg-gray-50">
+            <button
+              onClick={handleConfirm}
+              disabled={linking}
+              className="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 disabled:opacity-50 transition-all active:scale-95 flex items-center justify-center gap-2"
+            >
+              {linking ? 'Vinculando...' : `Confirmar (${selectedIds.size} selecionado${selectedIds.size !== 1 ? 's' : ''})`}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
