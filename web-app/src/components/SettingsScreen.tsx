@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { getSubjectsByMode, themes, defaultTheme, questionModels, difficulties, lessonLevels, topicsBySubject } from '../lib/constants';
+import { getSubjectsByMode, getModelsByMode, themes, defaultTheme, difficulties, lessonLevels, topicsBySubject } from '../lib/constants';
 
 interface SettingsProps {
   settings: any;
@@ -42,6 +42,7 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
   const isAula = settings.model === 'Aula Explicativa';
   
   const currentSubjects = getSubjectsByMode(settings.mode);
+  const currentModels = getModelsByMode(settings.mode);
   
   const currentTopicsMap = topicsBySubject[settings.subject] || { 'Geral': [] };
   const availableTopics = ['Todos', ...Object.keys(currentTopicsMap)];
@@ -52,10 +53,12 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
   const handleModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newMode = e.target.value as 'Geral' | 'ENEM' | 'Concurso';
     const newSubjects = getSubjectsByMode(newMode);
+    const newModels = getModelsByMode(newMode);
     setSettings({
       ...settings,
       mode: newMode,
-      subject: newSubjects[0], // seleciona a primeira matéria do modo
+      subject: newSubjects[0],
+      model: newModels.includes(settings.model) ? settings.model : newModels[0],
       topic: 'Todos',
       subTopic: 'Todos',
     });
@@ -92,7 +95,7 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
             label="Modelo" 
             value={settings.model} 
             onChange={(e: any) => setSettings({...settings, model: e.target.value})} 
-            options={questionModels} 
+            options={currentModels} 
             theme={theme} 
           />
           {isAula ? (

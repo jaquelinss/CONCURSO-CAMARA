@@ -31,7 +31,13 @@ export const getSubjectsByMode = (mode: 'Geral' | 'ENEM' | 'Concurso') => {
   return subjectsGeral;
 }
 
-export const questionModels = ['Técnica', 'Enem', 'Fuvest', 'Fanema', 'Flashcard', 'Aula Explicativa'];
+export const getModelsByMode = (mode: 'Geral' | 'ENEM' | 'Concurso') => {
+  if (mode === 'Concurso') return ['Técnica', 'Ibam', 'Cespe', 'FGV', 'Flashcard', 'Aula Explicativa'];
+  if (mode === 'ENEM') return ['Enem', 'Técnica', 'Fuvest', 'Fanema', 'Flashcard', 'Aula Explicativa'];
+  return ['Técnica', 'Enem', 'Ibam', 'Cespe', 'FGV', 'Flashcard', 'Aula Explicativa'];
+}
+
+export const questionModels = ['Técnica', 'Enem', 'Fuvest', 'Fanema', 'Ibam', 'Cespe', 'FGV', 'Flashcard', 'Aula Explicativa'];
 export const difficulties = ['Fácil', 'Médio', 'Difícil', 'Avançado'];
 export const lessonLevels = ['Introdutória', 'Intermediária', 'Aprofundada'];
 
