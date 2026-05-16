@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { LogOut, Home, FolderHeart } from 'lucide-react';
+import { LogOut, Home, FolderHeart, CalendarDays } from 'lucide-react';
 
 export default function Navigation() {
   const { signOut } = useAuth();
@@ -34,6 +34,16 @@ export default function Navigation() {
                 }`}
               >
                 <FolderHeart className="w-4 h-4 mr-2" /> Meus Salvamentos
+              </Link>
+              <Link 
+                to="/revisions"
+                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                  location.pathname === '/revisions'
+                    ? 'border-indigo-500 text-gray-900'
+                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                }`}
+              >
+                <CalendarDays className="w-4 h-4 mr-2" /> Cronograma
               </Link>
               <Link 
                 to="/config"

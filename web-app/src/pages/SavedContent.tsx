@@ -5,6 +5,8 @@ import { db } from '../lib/firebase';
 import { collection, query, getDocs, orderBy } from 'firebase/firestore';
 import QuizScreen from '../components/QuizScreen';
 import LessonScreen from '../components/LessonScreen';
+import ScheduleRevisionModal from '../components/ScheduleRevisionModal';
+import { CalendarClock } from 'lucide-react';
 
 export default function SavedContent() {
   const { user } = useAuth();
@@ -15,6 +17,7 @@ export default function SavedContent() {
 
   const [viewingContent, setViewingContent] = useState<any>(null);
   const [viewingType, setViewingType] = useState<'lesson' | 'quiz' | 'flashcard' | null>(null);
+  const [schedulingItem, setSchedulingItem] = useState<{item: any, type: 'lesson' | 'quiz' | 'flashcard'} | null>(null);
 
   useEffect(() => {
     const fetchSavedContent = async () => {
@@ -132,11 +135,19 @@ export default function SavedContent() {
                   {lessons.map(lesson => (
                     <div 
                       key={lesson.id} 
-                      onClick={() => { setViewingContent(lesson); setViewingType('lesson'); }}
-                      className="p-4 bg-white rounded shadow cursor-pointer hover:bg-gray-50 transition border-l-4 border-blue-500"
+                      className="group relative p-4 bg-white rounded shadow hover:bg-gray-50 transition border-l-4 border-blue-500 flex justify-between items-center"
                     >
-                      <h3 className="font-bold">{lesson.data?.titulo || lesson.subject}</h3>
-                      <p className="text-sm text-gray-500">Salvo em: {lesson.createdAt?.toDate().toLocaleDateString()}</p>
+                      <div className="cursor-pointer flex-grow" onClick={() => { setViewingContent(lesson); setViewingType('lesson'); }}>
+                        <h3 className="font-bold">{lesson.data?.titulo || lesson.subject}</h3>
+                        <p className="text-sm text-gray-500">Salvo em: {lesson.createdAt?.toDate().toLocaleDateString()}</p>
+                      </div>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); setSchedulingItem({item: lesson, type: 'lesson'}); }}
+                        className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                        title="Agendar Revisão"
+                      >
+                        <CalendarClock className="w-5 h-5" />
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -146,18 +157,26 @@ export default function SavedContent() {
             <div>
               <h2 className="text-2xl font-semibold mb-4 border-b pb-2">Quizzes e Questões</h2>
               {quizzes.length === 0 ? (
-                <p className="text-gray-500">Nenhum quiz salvo.</p>
+                <p className="text-gray-500">Nenhum quiz salva.</p>
               ) : (
                 <div className="space-y-4">
                   {quizzes.map(quiz => (
                     <div 
                       key={quiz.id} 
-                      onClick={() => { setViewingContent(quiz); setViewingType('quiz'); }}
-                      className="p-4 bg-white rounded shadow cursor-pointer hover:bg-gray-50 transition border-l-4 border-green-500"
+                      className="group relative p-4 bg-white rounded shadow hover:bg-gray-50 transition border-l-4 border-green-500 flex justify-between items-center"
                     >
-                      <h3 className="font-bold">{quiz.subject} - {quiz.topic}</h3>
-                      <p className="text-sm text-gray-500">{quiz.data?.length || 0} questões</p>
-                      <p className="text-sm text-gray-500">Salvo em: {quiz.createdAt?.toDate().toLocaleDateString()}</p>
+                      <div className="cursor-pointer flex-grow" onClick={() => { setViewingContent(quiz); setViewingType('quiz'); }}>
+                        <h3 className="font-bold">{quiz.subject} - {quiz.topic}</h3>
+                        <p className="text-sm text-gray-500">{quiz.data?.length || 0} questões</p>
+                        <p className="text-sm text-gray-500">Salvo em: {quiz.createdAt?.toDate().toLocaleDateString()}</p>
+                      </div>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); setSchedulingItem({item: quiz, type: 'quiz'}); }}
+                        className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                        title="Agendar Revisão"
+                      >
+                        <CalendarClock className="w-5 h-5" />
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -171,18 +190,39 @@ export default function SavedContent() {
                   {flashcards.map(flash => (
                     <div 
                       key={flash.id} 
-                      onClick={() => { setViewingContent(flash); setViewingType('flashcard'); }}
-                      className="p-4 bg-white rounded shadow cursor-pointer hover:bg-gray-50 transition border-l-4 border-indigo-500"
+                      className="group relative p-4 bg-white rounded shadow hover:bg-gray-50 transition border-l-4 border-indigo-500 flex justify-between items-center"
                     >
-                      <h3 className="font-bold">{flash.subject} - {flash.topic}</h3>
-                      <p className="text-sm text-gray-500">{flash.data?.length || 0} flashcards</p>
-                      <p className="text-sm text-gray-500">Salvo em: {flash.createdAt?.toDate().toLocaleDateString()}</p>
+                      <div className="cursor-pointer flex-grow" onClick={() => { setViewingContent(flash); setViewingType('flashcard'); }}>
+                        <h3 className="font-bold">{flash.subject} - {flash.topic}</h3>
+                        <p className="text-sm text-gray-500">{flash.data?.length || 0} flashcards</p>
+                        <p className="text-sm text-gray-500">Salvo em: {flash.createdAt?.toDate().toLocaleDateString()}</p>
+                      </div>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); setSchedulingItem({item: flash, type: 'flashcard'}); }}
+                        className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                        title="Agendar Revisão"
+                      >
+                        <CalendarClock className="w-5 h-5" />
+                      </button>
                     </div>
                   ))}
                 </div>
               )}
             </div>
           </div>
+        )}
+
+        {schedulingItem && (
+          <ScheduleRevisionModal 
+            user={user} 
+            item={schedulingItem.item} 
+            type={schedulingItem.type} 
+            onClose={() => setSchedulingItem(null)} 
+            onScheduled={() => {
+              setSchedulingItem(null);
+              alert("Revisão agendada com sucesso! Confira na aba Cronograma.");
+            }} 
+          />
         )}
       </main>
     </div>

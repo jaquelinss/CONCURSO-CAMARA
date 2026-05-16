@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { themes, defaultTheme } from '../lib/constants';
 import { db } from '../lib/firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, getDoc, setDoc } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import { generateContentFromGemini } from '../lib/gemini';
 import { DownloadIcon, BanIcon, CheckCircleIcon, XCircleIcon } from 'lucide-react';
@@ -108,6 +108,27 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
       alert('Erro ao salvar conteúdo.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const updateRevisionPerformance = async (finalScore: number) => {
+    if (!user) return;
+    const performance = (finalScore / questions.length) * 100;
+    const revisionId = `${settings.subject}_${settings.topic}`.replace(/[^a-zA-Z0-9]/g, '_');
+    const revisionRef = doc(db, 'users', user.uid, 'revisions', revisionId);
+    
+    try {
+      const revSnap = await getDoc(revisionRef);
+      if (revSnap.exists()) {
+        await setDoc(revisionRef, { 
+          performance,
+          lastReviewedAt: serverTimestamp(),
+          // Se acertou 100%, marcamos como completada para este ciclo
+          status: performance === 100 ? 'completed' : 'pending' 
+        }, { merge: true });
+      }
+    } catch (e) {
+      console.error("Erro ao atualizar performance da revisão:", e);
     }
   };
 
@@ -314,7 +335,15 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     if (selectedAnswer !== null) return;
     setSelectedAnswer(option);
     if (option === currentQ.correta) {
-      setScore(s => s + 1);
+      const newScore = score + 1;
+      setScore(newScore);
+      if (currentIndex === questions.length - 1) {
+        updateRevisionPerformance(newScore);
+      }
+    } else {
+      if (currentIndex === questions.length - 1) {
+        updateRevisionPerformance(score);
+      }
     }
   };
 

@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import SavedContent from './pages/SavedContent';
 import ConfigScreen from './pages/ConfigScreen';
+import RevisionScreen from './pages/RevisionScreen';
 
 import React from 'react';
 
@@ -19,6 +20,7 @@ function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
       <Route path="/saved" element={<PrivateRoute><SavedContent /></PrivateRoute>} />
+      <Route path="/revisions" element={<PrivateRoute><RevisionScreen /></PrivateRoute>} />
       <Route path="/config" element={<PrivateRoute><ConfigScreen /></PrivateRoute>} />
       <Route path="*" element={<Navigate to="/dashboard" />} />
     </Routes>
