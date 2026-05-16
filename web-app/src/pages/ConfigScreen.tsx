@@ -2,19 +2,56 @@ import { useState, useEffect } from 'react';
 import Navigation from '../components/Navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { db } from '../lib/firebase';
+import { collection, query, getDocs, orderBy, doc, updateDoc } from 'firebase/firestore';
+import { Bug, ChevronDown, ChevronUp, CheckCircle, Clock } from 'lucide-react';
+
+// Email da conta admin que pode ver os reportes
+const ADMIN_EMAILS = ['jaquelinss0210@gmail.com'];
 
 export default function ConfigScreen() {
-  const { apiKey, saveApiKey } = useAuth();
+  const { apiKey, saveApiKey, user } = useAuth();
   const [inputValue, setInputValue] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const navigate = useNavigate();
+
+  // Admin: reportes de erro
+  const isAdmin = user?.email && ADMIN_EMAILS.includes(user.email);
+  const [reports, setReports] = useState<any[]>([]);
+  const [loadingReports, setLoadingReports] = useState(false);
+  const [showReports, setShowReports] = useState(false);
+  const [expandedReport, setExpandedReport] = useState<string | null>(null);
 
   useEffect(() => {
     if (apiKey) {
       setInputValue(apiKey);
     }
   }, [apiKey]);
+
+  const fetchReports = async () => {
+    if (!isAdmin) return;
+    setLoadingReports(true);
+    try {
+      const ref = collection(db, 'error_reports');
+      const q = query(ref, orderBy('createdAt', 'desc'));
+      const snap = await getDocs(q);
+      setReports(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    } catch (err) {
+      console.error("Erro ao buscar reportes:", err);
+    } finally {
+      setLoadingReports(false);
+    }
+  };
+
+  const markAsResolved = async (reportId: string) => {
+    try {
+      await updateDoc(doc(db, 'error_reports', reportId), { status: 'resolved' });
+      setReports(prev => prev.map(r => r.id === reportId ? { ...r, status: 'resolved' } : r));
+    } catch (err) {
+      console.error("Erro ao atualizar status:", err);
+    }
+  };
 
   const handleSave = async () => {
     if (!inputValue.trim()) {
@@ -87,7 +124,114 @@ export default function ConfigScreen() {
             </div>
           </div>
         </div>
+
+        {/* Painel de Admin - Reportes de Erro */}
+        {isAdmin && (
+          <div className="mt-8 bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-semibold text-red-700 flex items-center gap-2">
+                <Bug className="w-6 h-6" />
+                Reportes de Erro
+                {reports.filter(r => r.status === 'new').length > 0 && (
+                  <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                    {reports.filter(r => r.status === 'new').length}
+                  </span>
+                )}
+              </h2>
+              <button
+                onClick={() => { setShowReports(!showReports); if (!showReports && reports.length === 0) fetchReports(); }}
+                className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
+              >
+                {showReports ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                {showReports ? 'Ocultar' : 'Ver reportes'}
+              </button>
+            </div>
+
+            {showReports && (
+              <div className="mt-6 space-y-4">
+                {loadingReports ? (
+                  <div className="flex justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+                  </div>
+                ) : reports.length === 0 ? (
+                  <p className="text-gray-400 text-center py-8">Nenhum reporte recebido ainda. 🎉</p>
+                ) : (
+                  reports.map(report => (
+                    <div 
+                      key={report.id} 
+                      className={`border-2 rounded-xl overflow-hidden transition-all ${report.status === 'resolved' ? 'border-green-100 bg-green-50/30' : 'border-red-100'}`}
+                    >
+                      {/* Cabeçalho do reporte */}
+                      <button
+                        onClick={() => setExpandedReport(expandedReport === report.id ? null : report.id)}
+                        className="w-full p-4 flex justify-between items-center hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="text-left">
+                          <div className="flex items-center gap-2 mb-1">
+                            {report.status === 'resolved' ? (
+                              <CheckCircle className="w-4 h-4 text-green-500" />
+                            ) : (
+                              <Clock className="w-4 h-4 text-red-500" />
+                            )}
+                            <span className="text-sm font-bold text-gray-800">
+                              {report.userEmail}
+                            </span>
+                            <span className="text-xs text-gray-400">
+                              {report.createdAt?.toDate?.()?.toLocaleString('pt-BR') || 'N/A'}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600 truncate max-w-md">
+                            {report.description || report.errorMessage || 'Sem descrição'}
+                          </p>
+                        </div>
+                        {expandedReport === report.id ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                      </button>
+
+                      {/* Detalhes expandidos */}
+                      {expandedReport === report.id && (
+                        <div className="p-4 border-t bg-gray-50 space-y-3">
+                          {report.description && (
+                            <div>
+                              <p className="text-xs font-bold text-gray-500 uppercase">Descrição do Usuário</p>
+                              <p className="text-sm text-gray-800">{report.description}</p>
+                            </div>
+                          )}
+                          {report.errorMessage && (
+                            <div>
+                              <p className="text-xs font-bold text-red-500 uppercase">Erro Técnico</p>
+                              <p className="text-sm text-red-800 font-mono bg-red-50 p-2 rounded">{report.errorMessage}</p>
+                            </div>
+                          )}
+                          <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
+                            <p><strong>URL:</strong> {report.url}</p>
+                            <p><strong>Tela:</strong> {report.screenSize}</p>
+                            <p className="col-span-2"><strong>Navegador:</strong> {report.userAgent?.substring(0, 80)}...</p>
+                          </div>
+                          {report.screenshot && (
+                            <div>
+                              <p className="text-xs font-bold text-gray-500 uppercase mb-1">Captura de Tela</p>
+                              <img src={report.screenshot} alt="Screenshot" className="w-full rounded-lg border shadow-sm" />
+                            </div>
+                          )}
+                          {report.status !== 'resolved' && (
+                            <button
+                              onClick={() => markAsResolved(report.id)}
+                              className="px-4 py-2 bg-green-600 text-white rounded-lg font-bold text-sm hover:bg-green-700 transition-colors"
+                            >
+                              ✓ Marcar como Resolvido
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </main>
     </div>
   );
 }
+

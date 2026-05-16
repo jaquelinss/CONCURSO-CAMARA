@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import SavedContent from './pages/SavedContent';
 import ConfigScreen from './pages/ConfigScreen';
 import RevisionScreen from './pages/RevisionScreen';
+import ReportButton from './components/ReportButton';
 
 import React from 'react';
 
@@ -33,6 +34,7 @@ export default function App() {
       <Router>
         <div className="min-h-screen bg-gray-100 text-gray-900 font-sans">
           <AppRoutes />
+          <ReportButton />
         </div>
       </Router>
     </AuthProvider>
