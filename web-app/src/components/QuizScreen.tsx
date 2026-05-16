@@ -113,33 +113,58 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
   };
 
   const updateRevisionPerformance = async (finalScore: number) => {
-    if (!user) return;
+    if (!user || !settings.id) return;
     const performance = Math.round((finalScore / questions.length) * 100);
     const revisionId = `${settings.subject}_${settings.topic}`.replace(/[^a-zA-Z0-9]/g, '_');
     const revisionRef = doc(db, 'users', user.uid, 'revisions', revisionId);
     
     try {
       const revSnap = await getDoc(revisionRef);
-      if (revSnap.exists()) {
-        const revData = revSnap.data();
+      if (!revSnap.exists()) return;
+      
+      const revData = revSnap.data();
+      const isFlashcardType = settings.model === 'Flashcard';
+      const completedKey = isFlashcardType ? 'flashcardIds' : 'quizIds';
+
+      // Adiciona este item à lista de completados
+      const completedItems = revData.completedItems || { lessonIds: [], quizIds: [], flashcardIds: [] };
+      if (!completedItems[completedKey]) completedItems[completedKey] = [];
+      if (!completedItems[completedKey].includes(settings.id)) {
+        completedItems[completedKey].push(settings.id);
+      }
+
+      // Verifica se TODOS os itens vinculados foram completados
+      const links = revData.contentLinks || {};
+      const allLinkedLessons = links.lessonIds || (links.lessonId ? [links.lessonId] : []);
+      const allLinkedQuizzes = links.quizIds || (links.quizId ? [links.quizId] : []);
+      const allLinkedFlashcards = links.flashcardIds || (links.flashcardId ? [links.flashcardId] : []);
+
+      const lessonsComplete = allLinkedLessons.length === 0 || allLinkedLessons.every((id: string) => (completedItems.lessonIds || []).includes(id));
+      const quizzesComplete = allLinkedQuizzes.length === 0 || allLinkedQuizzes.every((id: string) => (completedItems.quizIds || []).includes(id));
+      const flashcardsComplete = allLinkedFlashcards.length === 0 || allLinkedFlashcards.every((id: string) => (completedItems.flashcardIds || []).includes(id));
+
+      const allComplete = lessonsComplete && quizzesComplete && flashcardsComplete;
+
+      const updateData: any = {
+        performance,
+        lastReviewedAt: serverTimestamp(),
+        completedItems,
+      };
+
+      // Se TODOS concluídos → reagenda automaticamente
+      if (allComplete) {
         const currentStep = revData.cycleStep || 0;
-        
-        // Calcula o próximo degrau do ciclo baseado no desempenho
         const nextStep = calculateNextStep(performance, currentStep);
-        
-        // Calcula a próxima data de revisão
         const nextDate = getRevisionSuggestions(performance, nextStep)[0].date;
         
-        await setDoc(revisionRef, { 
-          performance,
-          lastReviewedAt: serverTimestamp(),
-          cycleStep: nextStep,
-          // Reagenda automaticamente com a nova data
-          scheduledDate: Timestamp.fromDate(nextDate),
-          status: 'pending',
-          reviewCount: (revData.reviewCount || 0) + 1,
-        }, { merge: true });
+        updateData.cycleStep = nextStep;
+        updateData.scheduledDate = Timestamp.fromDate(nextDate);
+        updateData.reviewCount = (revData.reviewCount || 0) + 1;
+        // Limpa completedItems para o próximo ciclo
+        updateData.completedItems = { lessonIds: [], quizIds: [], flashcardIds: [] };
       }
+
+      await setDoc(revisionRef, updateData, { merge: true });
     } catch (e) {
       console.error("Erro ao atualizar performance da revisão:", e);
     }

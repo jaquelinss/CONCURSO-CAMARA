@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import Navigation from '../components/Navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
-import { collection, query, getDocs, orderBy, doc, getDoc } from 'firebase/firestore';
-import { Calendar, Clock, BookOpen, CheckCircle, AlertCircle, PlusCircle, Brain, ChevronLeft } from 'lucide-react';
+import { collection, query, getDocs, orderBy, doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
+import { Calendar, Clock, BookOpen, CheckCircle, AlertCircle, PlusCircle, Brain, ChevronLeft, RefreshCw } from 'lucide-react';
 import { format, isBefore, isToday, startOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import LessonScreen from '../components/LessonScreen';
 import QuizScreen from '../components/QuizScreen';
 import LinkContentModal from '../components/LinkContentModal';
+import { getRevisionSuggestions, calculateNextStep } from '../lib/revision.service';
 
 // Helper: pega IDs vinculados de um tipo, compatível com formato antigo (singular) e novo (array)
 function getLinkedIds(contentLinks: any, type: string): string[] {
@@ -66,7 +67,7 @@ export default function RevisionScreen() {
 
     // Um único vinculado → abrir direto
     if (ids.length === 1) {
-      await openContent(type, ids[0]);
+      await openContent(type, ids[0], rev);
       return;
     }
 
@@ -92,7 +93,7 @@ export default function RevisionScreen() {
     }
   };
 
-  const openContent = async (type: string, contentId: string) => {
+  const openContent = async (type: string, contentId: string, revisionForLesson?: any) => {
     if (!user) return;
     const collectionName = type === 'lesson' ? 'lessons' : type === 'quiz' ? 'quizzes' : 'flashcards';
     try {
@@ -101,10 +102,42 @@ export default function RevisionScreen() {
       if (contentSnap.exists()) {
         setActiveContent({ ...contentSnap.data(), id: contentSnap.id });
         setActiveType(type as any);
+
+        // Se for aula, marca como completa ao abrir
+        if (type === 'lesson' && revisionForLesson) {
+          markLessonComplete(revisionForLesson, contentId);
+        }
       }
     } catch (error) {
       console.error("Erro ao carregar conteúdo:", error);
     }
+  };
+
+  const markLessonComplete = async (rev: any, lessonId: string) => {
+    if (!user) return;
+    const revisionRef = doc(db, 'users', user.uid, 'revisions', rev.id);
+    const completedItems = rev.completedItems || { lessonIds: [], quizIds: [], flashcardIds: [] };
+    if (!completedItems.lessonIds) completedItems.lessonIds = [];
+    if (!completedItems.lessonIds.includes(lessonId)) {
+      completedItems.lessonIds.push(lessonId);
+      await setDoc(revisionRef, { completedItems }, { merge: true });
+    }
+  };
+
+  const handleReschedule = async (rev: any) => {
+    if (!user) return;
+    const revisionRef = doc(db, 'users', user.uid, 'revisions', rev.id);
+    const currentStep = rev.cycleStep || 0;
+    const perf = rev.performance || 100;
+    const nextStep = calculateNextStep(perf, currentStep);
+    const nextDate = getRevisionSuggestions(perf, nextStep)[0].date;
+    await setDoc(revisionRef, {
+      cycleStep: nextStep,
+      scheduledDate: Timestamp.fromDate(nextDate),
+      reviewCount: (rev.reviewCount || 0) + 1,
+      completedItems: { lessonIds: [], quizIds: [], flashcardIds: [] },
+    }, { merge: true });
+    fetchRevisions();
   };
 
   const renderContent = () => {
@@ -161,7 +194,7 @@ export default function RevisionScreen() {
                 {revisions
                   .filter(r => r.status === 'pending' && (isBefore(r.scheduledDate.toDate(), today) || isToday(r.scheduledDate.toDate())))
                   .map(rev => (
-                    <RevisionCard key={rev.id} revision={rev} onAction={handleStartRevision} />
+                    <RevisionCard key={rev.id} revision={rev} onAction={handleStartRevision} onReschedule={handleReschedule} />
                   ))}
                 {revisions.filter(r => r.status === 'pending' && (isBefore(r.scheduledDate.toDate(), today) || isToday(r.scheduledDate.toDate()))).length === 0 && (
                   <p className="text-gray-400 italic bg-gray-100 p-4 rounded-xl text-center">Tudo em dia por aqui! ✨</p>
@@ -178,7 +211,7 @@ export default function RevisionScreen() {
                 {revisions
                   .filter(r => r.status === 'pending' && !isBefore(r.scheduledDate.toDate(), today) && !isToday(r.scheduledDate.toDate()))
                   .map(rev => (
-                    <RevisionCard key={rev.id} revision={rev} onAction={handleStartRevision} />
+                    <RevisionCard key={rev.id} revision={rev} onAction={handleStartRevision} onReschedule={handleReschedule} />
                   ))}
               </div>
             </section>
@@ -247,7 +280,7 @@ export default function RevisionScreen() {
   );
 }
 
-function RevisionCard({ revision, onAction }: { revision: any, onAction: any }) {
+function RevisionCard({ revision, onAction, onReschedule }: { revision: any, onAction: any, onReschedule: any }) {
   const date = revision.scheduledDate.toDate();
   const isOverdue = isBefore(date, startOfDay(new Date()));
   const isTodayDate = isToday(date);
@@ -255,6 +288,19 @@ function RevisionCard({ revision, onAction }: { revision: any, onAction: any }) 
   const lessonCount = getLinkedIds(revision.contentLinks, 'lesson').length;
   const quizCount = getLinkedIds(revision.contentLinks, 'quiz').length;
   const flashcardCount = getLinkedIds(revision.contentLinks, 'flashcard').length;
+
+  // Contagem de completados
+  const completed = revision.completedItems || { lessonIds: [], quizIds: [], flashcardIds: [] };
+  const lessonsCompleted = (completed.lessonIds || []).length;
+  const quizzesCompleted = (completed.quizIds || []).length;
+  const flashcardsCompleted = (completed.flashcardIds || []).length;
+
+  // Botão reagendar disponível quando pelo menos 1 de cada tipo vinculado foi completado
+  const canReschedule = 
+    (lessonCount === 0 || lessonsCompleted >= 1) &&
+    (quizCount === 0 || quizzesCompleted >= 1) &&
+    (flashcardCount === 0 || flashcardsCompleted >= 1) &&
+    (lessonsCompleted + quizzesCompleted + flashcardsCompleted) > 0;
 
   return (
     <div className={`p-6 rounded-2xl shadow-sm border-2 transition-all hover:shadow-md bg-white ${isOverdue ? 'border-red-100 bg-red-50/30' : 'border-gray-100'}`}>
@@ -265,50 +311,76 @@ function RevisionCard({ revision, onAction }: { revision: any, onAction: any }) 
           </span>
           <h3 className="text-xl font-bold text-gray-900 mt-2">{revision.subject}</h3>
           <p className="text-gray-600">{revision.topic}</p>
+          {revision.reviewCount > 0 && (
+            <p className="text-xs text-gray-400 mt-1">Revisada {revision.reviewCount}x</p>
+          )}
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 mt-6">
+      <div className="grid grid-cols-3 gap-2 mt-4">
         <ActionButton 
           icon={<BookOpen className="w-4 h-4" />} 
           label="Aula" 
           count={lessonCount}
+          completedCount={lessonsCompleted}
           onClick={() => onAction(revision, 'lesson')}
         />
         <ActionButton 
           icon={<CheckCircle className="w-4 h-4" />} 
           label="Quiz" 
           count={quizCount}
+          completedCount={quizzesCompleted}
           onClick={() => onAction(revision, 'quiz')}
         />
         <ActionButton 
           icon={<Brain className="w-4 h-4" />} 
           label="Cards" 
           count={flashcardCount}
+          completedCount={flashcardsCompleted}
           onClick={() => onAction(revision, 'flashcard')}
         />
       </div>
+
+      {canReschedule && (
+        <button
+          onClick={() => onReschedule(revision)}
+          className="w-full mt-4 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:from-green-600 hover:to-emerald-700 transition-all active:scale-95 shadow-md"
+        >
+          <RefreshCw className="w-4 h-4" />
+          Reagendar Revisão
+        </button>
+      )}
     </div>
   );
 }
 
-function ActionButton({ icon, label, count, onClick }: { icon: any, label: string, count: number, onClick: any }) {
+function ActionButton({ icon, label, count, completedCount, onClick }: { icon: any, label: string, count: number, completedCount: number, onClick: any }) {
   const active = count > 0;
+  const allDone = active && completedCount >= count;
+  const someDone = active && completedCount > 0 && !allDone;
   return (
     <button 
       onClick={onClick}
       className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all relative ${
-        active 
-          ? 'border-indigo-100 bg-indigo-50 text-indigo-700 hover:border-indigo-300' 
-          : 'border-dashed border-gray-200 bg-gray-50 text-gray-400 hover:border-indigo-300 hover:text-indigo-500'
+        allDone
+          ? 'border-green-200 bg-green-50 text-green-700'
+          : active 
+            ? 'border-indigo-100 bg-indigo-50 text-indigo-700 hover:border-indigo-300' 
+            : 'border-dashed border-gray-200 bg-gray-50 text-gray-400 hover:border-indigo-300 hover:text-indigo-500'
       }`}
     >
-      {active ? icon : <PlusCircle className="w-4 h-4" />}
+      {allDone ? <CheckCircle className="w-4 h-4 text-green-600" /> : active ? icon : <PlusCircle className="w-4 h-4" />}
       <span className="text-xs font-bold">{active ? label : 'Vincular'}</span>
-      {count > 1 && (
+      {someDone && (
+        <span className="text-[10px] text-indigo-500 font-semibold">{completedCount}/{count}</span>
+      )}
+      {count > 1 && !allDone && (
         <span className="absolute -top-1.5 -right-1.5 bg-indigo-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
           {count}
         </span>
+      )}
+      {allDone && (
+        <span className="absolute -top-1.5 -right-1.5 bg-green-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">✓</span>
       )}
     </button>
   );
