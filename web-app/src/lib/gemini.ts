@@ -27,41 +27,64 @@ export const generateContentFromGemini = async (settings: any, apiKey: string) =
     if (!apiKey) {
       throw new Error("Chave de API não configurada.");
     }
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const prompt = buildPrompt(settings);
+
+    // Estratégia de resiliência:
+    // 1º) Tenta com Google Search (melhor para legislação e dados atuais)
+    // 2º) Se falhar por qualquer motivo da API, tenta sem a ferramenta de busca
     try {
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({
-          model: 'gemini-2.5-flash',
-          tools: [{ googleSearch: {} } as any],
-          generationConfig: {
-            responseMimeType: "application/json",
-            temperature: 0.2, 
-            topP: 0.95,
-            topK: 40
-          }
-        });
-
-        // Adiciona uma instrução extra de contexto ao prompt principal
-        const searchContext = settings.subject.toLowerCase().includes('legislação') || settings.subject.toLowerCase().includes('lei') 
-            ? "\nImportante: Como o tema inclui legislação específica, use a ferramenta de busca do Google para encontrar a lei oficial mais atualizada do município/estado especificado antes de gerar o conteúdo." 
-            : "";
-
-        const prompt = generatePrompt(settings) + searchContext;
-        const result = await model.generateContent(prompt);
-        const responseText = result.response.text();
-        
-        // Parse the JSON securely, finding arrays or objects if there is markdown markdown wrapping
-        const jsonMatch = responseText.match(/\[.*\]|\{.*\}/s);
-        let parsedData;
-        
-        if (jsonMatch) {
-            parsedData = JSON.parse(jsonMatch[0]);
-        } else {
-            parsedData = JSON.parse(responseText);
+        return await callGemini(genAI, prompt, true);
+    } catch (firstError: any) {
+        console.warn("Tentativa com googleSearch falhou, tentando sem busca:", firstError.message);
+        try {
+            return await callGemini(genAI, prompt, false);
+        } catch (secondError: any) {
+            console.error("Ambas as tentativas falharam:", secondError);
+            throw new Error("Falha ao gerar o conteúdo com a IA. Verifique sua chave de API e tente novamente.");
         }
-        
-        return parsedData;
-    } catch (error) {
-        console.error("Error generating content from Gemini:", error);
-        throw new Error("Falha ao gerar o conteúdo com a IA. Tente novamente.");
     }
 };
+
+function buildPrompt(settings: any): string {
+    const basePrompt = generatePrompt(settings);
+    
+    // Instrução extra para legislação
+    const needsSearch = settings.subject?.toLowerCase().includes('legislação') 
+        || settings.subject?.toLowerCase().includes('lei')
+        || settings.subject?.toLowerCase().includes('orgânica');
+    
+    const searchContext = needsSearch
+        ? "\nImportante: Como o tema inclui legislação específica, use a ferramenta de busca do Google para encontrar a lei oficial mais atualizada do município/estado especificado antes de gerar o conteúdo."
+        : "";
+
+    return basePrompt + searchContext;
+}
+
+async function callGemini(genAI: any, prompt: string, useSearch: boolean) {
+    const modelConfig: any = {
+        model: 'gemini-2.5-flash',
+        generationConfig: {
+            responseMimeType: "application/json",
+            temperature: 0.2,
+            topP: 0.95,
+            topK: 40
+        }
+    };
+
+    if (useSearch) {
+        modelConfig.tools = [{ googleSearch: {} }];
+    }
+
+    const model = genAI.getGenerativeModel(modelConfig);
+    const result = await model.generateContent(prompt);
+    const responseText = result.response.text();
+
+    const jsonMatch = responseText.match(/\[.*\]|\{.*\}/s);
+    if (jsonMatch) {
+        return JSON.parse(jsonMatch[0]);
+    }
+    return JSON.parse(responseText);
+}
+
