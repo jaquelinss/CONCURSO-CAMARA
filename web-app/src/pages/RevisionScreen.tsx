@@ -35,21 +35,42 @@ export default function RevisionScreen() {
   }, [user]);
 
   const handleStartRevision = async (rev: any, type: 'lesson' | 'quiz' | 'flashcard') => {
-    const contentId = rev.contentLinks[`${type}Id`];
+    const contentId = rev.contentLinks?.[`${type}Id`];
+    
+    // Se NÃO existe conteúdo salvo → abrir tela de geração com settings pré-preenchidos
     if (!contentId || !user) {
-      // Se não existe, vamos simular a ida para a criação com os dados do tópico
-      alert(`Conteúdo de ${type} não encontrado. Você será levado para a tela de geração com este tópico pré-selecionado.`);
+      const generationSettings: any = {
+        subject: rev.subject,
+        topic: rev.topic,
+        difficulty: 'Médio',
+        quantity: 5,
+        lessonLevel: 'Introdutória',
+      };
+
+      if (type === 'lesson') {
+        generationSettings.model = 'Aula Explicativa';
+      } else if (type === 'quiz') {
+        generationSettings.model = 'Técnica';
+      } else {
+        generationSettings.model = 'Flashcard';
+      }
+
+      setActiveContent(generationSettings);
+      setActiveType(type);
       return;
     }
 
+    // Se EXISTE conteúdo salvo → carregar do Firestore
     try {
-      const contentRef = doc(db, 'users', user.uid, `${type}s`, contentId);
+      const collectionName = type === 'lesson' ? 'lessons' : type === 'quiz' ? 'quizzes' : 'flashcards';
+      const contentRef = doc(db, 'users', user.uid, collectionName, contentId);
       const contentSnap = await getDoc(contentRef);
       if (contentSnap.exists()) {
         setActiveContent({ ...contentSnap.data(), id: contentSnap.id });
         setActiveType(type);
       } else {
-        alert("Conteúdo original não encontrado.");
+        // Conteúdo foi deletado → tratar como "gerar novo"
+        handleStartRevision({ ...rev, contentLinks: { ...rev.contentLinks, [`${type}Id`]: null } }, type);
       }
     } catch (error) {
       console.error("Erro ao carregar conteúdo:", error);
