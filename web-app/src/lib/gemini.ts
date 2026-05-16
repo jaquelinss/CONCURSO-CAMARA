@@ -31,7 +31,7 @@ export const generateContentFromGemini = async (settings: any, apiKey: string) =
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
           model: 'gemini-2.5-flash',
-          tools: [{ googleSearchRetrieval: {} } as any],
+          tools: [{ googleSearch: {} } as any],
           generationConfig: {
             responseMimeType: "application/json",
             temperature: 0.2, 
