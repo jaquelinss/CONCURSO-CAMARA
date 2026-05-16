@@ -3,7 +3,7 @@ import { db } from '../lib/firebase';
 import { collection, query, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import Draggable from 'react-draggable';
-import { Palette, X, GripHorizontal } from 'lucide-react';
+import { Palette, X, GripHorizontal, Archive } from 'lucide-react';
 
 interface Note {
   id: string;
@@ -12,6 +12,7 @@ interface Note {
   y: number;
   color: string;
   zIndex: number;
+  isArchived?: boolean;
 }
 
 const COLORS = [
@@ -28,18 +29,22 @@ export default function StickyNotesManager() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [isVisible, setIsVisible] = useState(false);
   const [highestZ, setHighestZ] = useState(100);
+  const [isArchiveOpen, setIsArchiveOpen] = useState(false);
 
   // Ouve eventos para toggle global
   useEffect(() => {
     const handleToggle = () => setIsVisible(prev => !prev);
     const handleAdd = () => handleAddNote();
+    const handleToggleArchive = () => setIsArchiveOpen(prev => !prev);
 
     window.addEventListener('toggle-notes', handleToggle);
     window.addEventListener('add-note', handleAdd);
+    window.addEventListener('toggle-archive', handleToggleArchive);
 
     return () => {
       window.removeEventListener('toggle-notes', handleToggle);
       window.removeEventListener('add-note', handleAdd);
+      window.addEventListener('toggle-archive', handleToggleArchive);
     };
   }, [user]);
 
@@ -85,6 +90,7 @@ export default function StickyNotesManager() {
         x,
         y,
         zIndex: newZ,
+        isArchived: false,
         createdAt: serverTimestamp()
       });
     } catch (error) {
@@ -120,20 +126,64 @@ export default function StickyNotesManager() {
     handleUpdateNote(id, { zIndex: newZ });
   };
 
-  if (!user || !isVisible) return null;
+  if (!user) return null;
+
+  const activeNotes = notes.filter(n => !n.isArchived);
+  const archivedNotes = notes.filter(n => n.isArchived);
 
   return (
-    <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 9999 }}>
-      {notes.map(note => (
-        <StickyNoteItem 
-          key={note.id} 
-          note={note} 
-          onUpdate={(updates) => handleUpdateNote(note.id, updates)}
-          onDelete={() => handleDeleteNote(note.id)}
-          onFocus={() => bringToFront(note.id)}
-        />
-      ))}
-    </div>
+    <>
+      {isVisible && (
+        <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 9999 }}>
+          {activeNotes.map(note => (
+            <StickyNoteItem 
+              key={note.id} 
+              note={note} 
+              onUpdate={(updates) => handleUpdateNote(note.id, updates)}
+              onDelete={() => handleDeleteNote(note.id)}
+              onFocus={() => bringToFront(note.id)}
+            />
+          ))}
+        </div>
+      )}
+
+      {isArchiveOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] flex flex-col overflow-hidden">
+            <div className="p-6 border-b bg-yellow-50 flex justify-between items-center">
+              <h2 className="text-xl font-bold flex items-center gap-2 text-yellow-900">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+                Arquivo de Post-its
+              </h2>
+              <button onClick={() => setIsArchiveOpen(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto flex-1 bg-gray-50">
+              {archivedNotes.length === 0 ? (
+                <div className="text-center py-10 text-gray-500">
+                  <p>Nenhum post-it guardado.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {archivedNotes.map(note => (
+                    <div key={note.id} className="rounded-lg shadow-sm p-4 relative" style={{ backgroundColor: note.color || '#fef08a' }}>
+                      <p className="text-sm text-gray-800 line-clamp-4 min-h-[80px]" style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}>
+                        {note.content || <span className="italic opacity-50">Nota vazia</span>}
+                      </p>
+                      <div className="flex gap-2 mt-4 justify-end border-t border-black/10 pt-2">
+                        <button onClick={() => handleDeleteNote(note.id)} className="text-xs font-bold text-red-600 hover:text-red-800 bg-red-50 px-2 py-1 rounded">Excluir</button>
+                        <button onClick={() => handleUpdateNote(note.id, { isArchived: false })} className="text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2 py-1 rounded">Restaurar</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -194,6 +244,13 @@ function StickyNoteItem({
               title="Mudar Cor"
             >
               <Palette className="w-3.5 h-3.5 text-gray-700" />
+            </button>
+            <button 
+              onClick={(e) => { e.stopPropagation(); onUpdate({ isArchived: true }); }}
+              className="p-1 hover:bg-indigo-500/20 rounded"
+              title="Guardar no Arquivo"
+            >
+              <Archive className="w-3.5 h-3.5 text-gray-700 hover:text-indigo-700" />
             </button>
             <button 
               onClick={(e) => { e.stopPropagation(); onDelete(); }}

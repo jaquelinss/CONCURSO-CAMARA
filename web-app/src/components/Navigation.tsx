@@ -73,6 +73,13 @@ export default function Navigation() {
             >
               +
             </button>
+            <button
+              onClick={() => window.dispatchEvent(new Event('toggle-archive'))}
+              className="inline-flex items-center px-2 py-2 border border-yellow-200 text-sm leading-4 font-bold rounded-md text-yellow-800 bg-white hover:bg-yellow-50 focus:outline-none transition shadow-sm"
+              title="Arquivo de Post-its"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+            </button>
             <div className="w-px h-6 bg-gray-200 mx-2"></div>
             <button
               onClick={signOut}
