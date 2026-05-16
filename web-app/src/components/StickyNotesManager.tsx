@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { db } from '../lib/firebase';
 import { collection, query, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
@@ -149,6 +149,7 @@ function StickyNoteItem({
   onFocus: () => void;
 }) {
   const [showPalette, setShowPalette] = useState(false);
+  const nodeRef = useRef<HTMLDivElement>(null);
   
   // Local state for debouncing typing and dragging
   const [content, setContent] = useState(note.content || '');
@@ -165,17 +166,19 @@ function StickyNoteItem({
 
   return (
     <Draggable
+      nodeRef={nodeRef}
       handle=".drag-handle"
-      defaultPosition={{ x: note.x, y: note.y }}
+      defaultPosition={{ x: note.x || 0, y: note.y || 0 }}
       onStop={(_e, data) => onUpdate({ x: data.x, y: data.y })}
       onStart={onFocus}
       bounds="parent"
     >
       <div 
+        ref={nodeRef}
         className="absolute w-64 rounded-lg shadow-xl overflow-hidden pointer-events-auto border-t-8 flex flex-col group transition-shadow hover:shadow-2xl"
         style={{ 
-          backgroundColor: note.color, 
-          borderColor: darkenColor(note.color, 20),
+          backgroundColor: note.color || '#fef08a', 
+          borderColor: darkenColor(note.color || '#fef08a', 20),
           zIndex: note.zIndex || 100 
         }}
         onClick={onFocus}
@@ -232,5 +235,6 @@ function StickyNoteItem({
 
 // Simple helper to darken hex color for the top border
 function darkenColor(color: string, amount: number) {
+  if (!color || typeof color !== 'string') return '#000000';
   return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) - amount)).toString(16)).substr(-2));
 }
