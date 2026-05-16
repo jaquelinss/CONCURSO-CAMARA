@@ -5,7 +5,6 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import { DownloadIcon, ClipboardListIcon } from 'lucide-react';
 import { jsPDF } from 'jspdf';
-import { saveAs } from 'file-saver';
 import PracticeQuiz from './PracticeQuiz';
 
 interface LessonScreenProps {

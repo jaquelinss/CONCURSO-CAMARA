@@ -6,7 +6,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { generateContentFromGemini } from '../lib/gemini';
 import { DownloadIcon, BanIcon, CheckCircleIcon, XCircleIcon } from 'lucide-react';
 import { jsPDF } from 'jspdf';
-import { saveAs } from 'file-saver';
 import PracticeQuiz from './PracticeQuiz';
 
 const difficulties = ['Introdutório', 'Médio', 'Difícil'];
@@ -131,24 +130,30 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
       questions.forEach((q, i) => {
         const text = `Card ${i + 1}:\nFrente: ${q.frente || ''}\nVerso: ${q.verso || ''}\n`;
         const lines = doc.splitTextToSize(text, maxLineWidth);
-        if (yPos + (lines.length * lineHeight) > 280) {
-          doc.addPage();
-          yPos = 20;
-        }
-        doc.text(lines, margin, yPos);
-        yPos += lines.length * lineHeight + lineHeight;
+        lines.forEach((line: string) => {
+          if (yPos > 280) {
+            doc.addPage();
+            yPos = 20;
+          }
+          doc.text(line, margin, yPos);
+          yPos += lineHeight;
+        });
+        yPos += lineHeight; // Espaçamento extra entre cards
       });
     } else {
       questions.forEach((q, i) => {
         const text = `Questão ${i + 1}: ${q.pergunta}\n` + 
                      (type === 'questions' ? q.opcoes.map((o: string, j: number) => `${['A', 'B', 'C', 'D'][j]}) ${o}`).join('\n') : `Resposta Correta: ${q.correta}\nExplicação: ${q.explicacao}`) + '\n';
         const lines = doc.splitTextToSize(text, maxLineWidth);
-        if (yPos + (lines.length * lineHeight) > 280) {
-          doc.addPage();
-          yPos = 20;
-        }
-        doc.text(lines, margin, yPos);
-        yPos += lines.length * lineHeight + lineHeight;
+        lines.forEach((line: string) => {
+          if (yPos > 280) {
+            doc.addPage();
+            yPos = 20;
+          }
+          doc.text(line, margin, yPos);
+          yPos += lineHeight;
+        });
+        yPos += lineHeight; // Espaçamento extra entre questões
       });
     }
     
