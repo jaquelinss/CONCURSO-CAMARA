@@ -44,7 +44,7 @@ export default function StickyNotesManager() {
     return () => {
       window.removeEventListener('toggle-notes', handleToggle);
       window.removeEventListener('add-note', handleAdd);
-      window.addEventListener('toggle-archive', handleToggleArchive);
+      window.removeEventListener('toggle-archive', handleToggleArchive);
     };
   }, [user]);
 
