@@ -13,12 +13,15 @@ export const ENEM_AREAS = {
 
 export const subjectsGeral = [
   'Ciências da Natureza', 'Ciências Humanas', 'Linguagens e Códigos', 'Matemática', 'Redação',
-  'Medicina', 'Português', 'Interpretação Textual', 'Biologia', 'Inglês', 'Espanhol', 'Geografia', 'História', 'Sociologia', 'Filosofia', 'Literatura', 'Química', 'Física',
+  'Medicina', 'Português', 'Interpretação Textual', 'Biologia', 'Inglês', 'Espanhol', 'Geografia', 'História', 'Sociologia', 'Filosofia', 'Literatura', 'Química', 'Física', 'Artes',
   'Atualidades', 'Constituição Federal', 'Tecnologia e Sociedade'
 ];
 
 export const subjectsEnem = [
-  'Ciências da Natureza', 'Ciências Humanas', 'Linguagens e Códigos', 'Matemática', 'Redação'
+  'Ciências da Natureza', 'Ciências Humanas', 'Linguagens e Códigos', 'Matemática', 'Redação',
+  'Biologia', 'Física', 'Química', 
+  'História', 'Geografia', 'Filosofia', 'Sociologia',
+  'Português', 'Artes', 'Literatura', 'Inglês', 'Espanhol'
 ];
 
 export const subjectsConcurso = [
@@ -72,6 +75,7 @@ export const themes: Record<string, any> = {
   'Noções de Direito Constitucional': { bg: 'bg-amber-50', text: 'text-amber-900', accent: 'text-amber-600', border: 'border-amber-300', ring: 'ring-amber-400', button: 'bg-amber-500 hover:bg-amber-600 text-white', option: 'bg-white hover:bg-amber-100', cardFront: 'bg-amber-100', cardBack: 'bg-amber-200' },
   'Noções de Direito Administrativo': { bg: 'bg-emerald-50', text: 'text-emerald-900', accent: 'text-emerald-600', border: 'border-emerald-300', ring: 'ring-emerald-400', button: 'bg-emerald-500 hover:bg-emerald-600 text-white', option: 'bg-white hover:bg-emerald-100', cardFront: 'bg-emerald-100', cardBack: 'bg-emerald-200' },
   'Lei Orgânica de Caruaru': { bg: 'bg-amber-50', text: 'text-amber-900', accent: 'text-amber-600', border: 'border-amber-300', ring: 'ring-amber-400', button: 'bg-amber-500 hover:bg-amber-600 text-white', option: 'bg-white hover:bg-amber-100', cardFront: 'bg-amber-100', cardBack: 'bg-amber-200' },
+  'Artes': { bg: 'bg-rose-50', text: 'text-rose-900', accent: 'text-rose-600', border: 'border-rose-300', ring: 'ring-rose-400', button: 'bg-rose-500 hover:bg-rose-600 text-white', option: 'bg-white hover:bg-rose-100', cardFront: 'bg-rose-100', cardBack: 'bg-rose-200' },
 };
 
 export const topicsBySubject: Record<string, any> = {
@@ -265,6 +269,12 @@ export const topicsBySubject: Record<string, any> = {
     'Redes Sociais e Comportamento Online': ['Impacto das redes sociais na comunicação', 'Bolhas informacionais e câmaras de eco', 'Fake News e Desinformação', 'Privacidade e Vigilância Digital'],
     'Cibersegurança e Crimes Digitais': ['Tipos de Ameaças (Phishing, Malware, Ransomware)', 'Proteção de Dados Pessoais (LGPD)', 'Cyberbullying e Discurso de Ódio', 'Segurança da Informação'],
     'Inovações e Tendências': ['Internet das Coisas (IoT)', 'Computação em Nuvem (Cloud Computing)', 'Blockchain e Criptomoedas', 'Realidade Virtual e Aumentada'],
+  },
+  'Artes': {
+    'História da Arte': ['Arte na Antiguidade', 'Arte Medieval', 'Renascimento', 'Barroco e Rococó', 'Neoclassicismo e Romantismo'],
+    'Arte Moderna e Contemporânea': ['Vanguardas Europeias (Cubismo, Futurismo, etc.)', 'Semana de Arte Moderna de 1922', 'Arte Contemporânea Brasileira', 'Pop Art'],
+    'Artes Visuais e Linguagens': ['Elementos da Linguagem Visual', 'Arquitetura e Urbanismo', 'Fotografia e Cinema', 'Artes Digitais'],
+    'Patrimônio e Cultura': ['Patrimônio Histórico e Cultural', 'Cultura Popular e Folclore', 'Museus e Centros Culturais']
   },
   'Ciências da Natureza': { 'Assuntos Mais Cobrados no ENEM': [] },
   'Ciências Humanas': { 'Assuntos Mais Cobrados no ENEM': [] },
