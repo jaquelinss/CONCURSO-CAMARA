@@ -157,56 +157,12 @@ export default function StickyNotesManager() {
               ) : (
                 <div className="flex flex-col gap-4">
                   {notes.map(note => (
-                    <Draggable
+                    <SidebarNoteItem
                       key={note.id}
-                      position={{x: 0, y: 0}}
-                      onStop={(e, data) => {
-                        // Se arrastou significativamente para a esquerda (fora da barra)
-                        if (data.x < -100) {
-                          const clientX = 'clientX' in e ? (e as MouseEvent).clientX : (e as TouchEvent).changedTouches?.[0]?.clientX || 100;
-                          const clientY = 'clientY' in e ? (e as MouseEvent).clientY : (e as TouchEvent).changedTouches?.[0]?.clientY || 100;
-                          
-                          // Ajusta a posição para o centro do post-it na nova tela
-                          handleUpdateNote(note.id, { 
-                            isArchived: false, 
-                            x: clientX - 100, 
-                            y: clientY - 50 
-                          });
-                        }
-                      }}
-                    >
-                      <div className="rounded-lg shadow-md p-4 relative cursor-move border border-black/5" style={{ backgroundColor: note.color || '#fef08a' }}>
-                        <p className="text-sm text-gray-800 line-clamp-4 min-h-[60px]" style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}>
-                          {note.content || <span className="italic opacity-50">Nota vazia</span>}
-                        </p>
-                        <div className="flex gap-2 mt-4 justify-between border-t border-black/10 pt-2 items-center">
-                          <button 
-                            onPointerDown={(e) => e.stopPropagation()} 
-                            onClick={() => handleDeleteNote(note.id)} 
-                            className="text-xs font-bold text-red-600 hover:text-red-800 bg-red-50 px-2 py-1 rounded"
-                          >
-                            Excluir
-                          </button>
-                          
-                          <div onPointerDown={(e) => e.stopPropagation()}>
-                            {note.isArchived ? (
-                              <button onClick={() => handleUpdateNote(note.id, { isArchived: false })} className="md:hidden text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2 py-1 rounded">
-                                Mostrar na Tela
-                              </button>
-                            ) : (
-                              <button onClick={() => handleUpdateNote(note.id, { isArchived: true })} className="text-xs font-bold text-gray-600 hover:text-gray-800 bg-gray-200 px-2 py-1 rounded">
-                                Ocultar
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                        {note.isArchived && (
-                          <div className="absolute top-0 right-0 left-0 h-4 bg-black/5 rounded-t-lg hidden md:flex items-center justify-center opacity-50">
-                            <span className="text-[10px] text-gray-600 font-bold uppercase tracking-wider">Arraste para fixar</span>
-                          </div>
-                        )}
-                      </div>
-                    </Draggable>
+                      note={note}
+                      onUpdate={(updates) => handleUpdateNote(note.id, updates)}
+                      onDelete={() => handleDeleteNote(note.id)}
+                    />
                   ))}
                 </div>
               )}
@@ -215,6 +171,69 @@ export default function StickyNotesManager() {
         </div>
       )}
     </>
+  );
+}
+
+function SidebarNoteItem({
+  note,
+  onUpdate,
+  onDelete
+}: {
+  note: Note;
+  onUpdate: (u: Partial<Note>) => void;
+  onDelete: () => void;
+}) {
+  const nodeRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <Draggable
+      nodeRef={nodeRef}
+      position={{x: 0, y: 0}}
+      onStop={(e, data) => {
+        if (data.x < -100) {
+          const clientX = 'clientX' in e ? (e as MouseEvent).clientX : (e as TouchEvent).changedTouches?.[0]?.clientX || 100;
+          const clientY = 'clientY' in e ? (e as MouseEvent).clientY : (e as TouchEvent).changedTouches?.[0]?.clientY || 100;
+          
+          onUpdate({ 
+            isArchived: false, 
+            x: clientX - 100, 
+            y: clientY - 50 
+          });
+        }
+      }}
+    >
+      <div ref={nodeRef} className="rounded-lg shadow-md p-4 relative cursor-move border border-black/5" style={{ backgroundColor: note.color || '#fef08a' }}>
+        <p className="text-sm text-gray-800 line-clamp-4 min-h-[60px]" style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}>
+          {note.content || <span className="italic opacity-50">Nota vazia</span>}
+        </p>
+        <div className="flex gap-2 mt-4 justify-between border-t border-black/10 pt-2 items-center">
+          <button 
+            onPointerDown={(e) => e.stopPropagation()} 
+            onClick={onDelete} 
+            className="text-xs font-bold text-red-600 hover:text-red-800 bg-red-50 px-2 py-1 rounded"
+          >
+            Excluir
+          </button>
+          
+          <div onPointerDown={(e) => e.stopPropagation()}>
+            {note.isArchived ? (
+              <button onClick={() => onUpdate({ isArchived: false })} className="md:hidden text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2 py-1 rounded">
+                Mostrar na Tela
+              </button>
+            ) : (
+              <button onClick={() => onUpdate({ isArchived: true })} className="text-xs font-bold text-gray-600 hover:text-gray-800 bg-gray-200 px-2 py-1 rounded">
+                Ocultar
+              </button>
+            )}
+          </div>
+        </div>
+        {note.isArchived && (
+          <div className="absolute top-0 right-0 left-0 h-4 bg-black/5 rounded-t-lg hidden md:flex items-center justify-center opacity-50">
+            <span className="text-[10px] text-gray-600 font-bold uppercase tracking-wider">Arraste para fixar</span>
+          </div>
+        )}
+      </div>
+    </Draggable>
   );
 }
 
