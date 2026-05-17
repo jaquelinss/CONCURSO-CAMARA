@@ -138,9 +138,9 @@ export default function StickyNotesManager() {
       </div>
 
       {isArchiveOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[80vh] flex flex-col overflow-hidden">
-            <div className="p-6 border-b bg-yellow-50 flex justify-between items-center">
+        <div className="fixed inset-0 pointer-events-none flex justify-end z-[10000]">
+          <div className="bg-white shadow-2xl h-full w-[90%] sm:w-96 flex flex-col overflow-hidden pointer-events-auto border-l border-gray-200">
+            <div className="p-4 border-b bg-yellow-50 flex justify-between items-center">
               <h2 className="text-xl font-bold flex items-center gap-2 text-yellow-900">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
                 Meus Post-its
@@ -155,21 +155,58 @@ export default function StickyNotesManager() {
                   <p>Nenhum post-it criado ainda.</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="flex flex-col gap-4">
                   {notes.map(note => (
-                    <div key={note.id} className="rounded-lg shadow-sm p-4 relative" style={{ backgroundColor: note.color || '#fef08a' }}>
-                      <p className="text-sm text-gray-800 line-clamp-4 min-h-[80px]" style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}>
-                        {note.content || <span className="italic opacity-50">Nota vazia</span>}
-                      </p>
-                      <div className="flex gap-2 mt-4 justify-end border-t border-black/10 pt-2">
-                        <button onClick={() => handleDeleteNote(note.id)} className="text-xs font-bold text-red-600 hover:text-red-800 bg-red-50 px-2 py-1 rounded">Excluir</button>
-                        {note.isArchived ? (
-                          <button onClick={() => handleUpdateNote(note.id, { isArchived: false })} className="text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2 py-1 rounded">Mostrar na Tela</button>
-                        ) : (
-                          <button onClick={() => handleUpdateNote(note.id, { isArchived: true })} className="text-xs font-bold text-gray-600 hover:text-gray-800 bg-gray-200 px-2 py-1 rounded">Ocultar</button>
+                    <Draggable
+                      key={note.id}
+                      position={{x: 0, y: 0}}
+                      onStop={(e, data) => {
+                        // Se arrastou significativamente para a esquerda (fora da barra)
+                        if (data.x < -100) {
+                          const clientX = 'clientX' in e ? (e as MouseEvent).clientX : (e as TouchEvent).changedTouches?.[0]?.clientX || 100;
+                          const clientY = 'clientY' in e ? (e as MouseEvent).clientY : (e as TouchEvent).changedTouches?.[0]?.clientY || 100;
+                          
+                          // Ajusta a posição para o centro do post-it na nova tela
+                          handleUpdateNote(note.id, { 
+                            isArchived: false, 
+                            x: clientX - 100, 
+                            y: clientY - 50 
+                          });
+                        }
+                      }}
+                    >
+                      <div className="rounded-lg shadow-md p-4 relative cursor-move border border-black/5" style={{ backgroundColor: note.color || '#fef08a' }}>
+                        <p className="text-sm text-gray-800 line-clamp-4 min-h-[60px]" style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}>
+                          {note.content || <span className="italic opacity-50">Nota vazia</span>}
+                        </p>
+                        <div className="flex gap-2 mt-4 justify-between border-t border-black/10 pt-2 items-center">
+                          <button 
+                            onPointerDown={(e) => e.stopPropagation()} 
+                            onClick={() => handleDeleteNote(note.id)} 
+                            className="text-xs font-bold text-red-600 hover:text-red-800 bg-red-50 px-2 py-1 rounded"
+                          >
+                            Excluir
+                          </button>
+                          
+                          <div onPointerDown={(e) => e.stopPropagation()}>
+                            {note.isArchived ? (
+                              <button onClick={() => handleUpdateNote(note.id, { isArchived: false })} className="md:hidden text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2 py-1 rounded">
+                                Mostrar na Tela
+                              </button>
+                            ) : (
+                              <button onClick={() => handleUpdateNote(note.id, { isArchived: true })} className="text-xs font-bold text-gray-600 hover:text-gray-800 bg-gray-200 px-2 py-1 rounded">
+                                Ocultar
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        {note.isArchived && (
+                          <div className="absolute top-0 right-0 left-0 h-4 bg-black/5 rounded-t-lg hidden md:flex items-center justify-center opacity-50">
+                            <span className="text-[10px] text-gray-600 font-bold uppercase tracking-wider">Arraste para fixar</span>
+                          </div>
                         )}
                       </div>
-                    </div>
+                    </Draggable>
                   ))}
                 </div>
               )}
