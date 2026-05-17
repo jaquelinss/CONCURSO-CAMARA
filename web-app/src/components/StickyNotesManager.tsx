@@ -27,22 +27,18 @@ const COLORS = [
 export default function StickyNotesManager() {
   const { user } = useAuth();
   const [notes, setNotes] = useState<Note[]>([]);
-  const [isVisible, setIsVisible] = useState(false);
   const [highestZ, setHighestZ] = useState(100);
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
 
   // Ouve eventos para toggle global
   useEffect(() => {
-    const handleToggle = () => setIsVisible(prev => !prev);
     const handleAdd = () => handleAddNote();
     const handleToggleArchive = () => setIsArchiveOpen(prev => !prev);
 
-    window.addEventListener('toggle-notes', handleToggle);
     window.addEventListener('add-note', handleAdd);
     window.addEventListener('toggle-archive', handleToggleArchive);
 
     return () => {
-      window.removeEventListener('toggle-notes', handleToggle);
       window.removeEventListener('add-note', handleAdd);
       window.removeEventListener('toggle-archive', handleToggleArchive);
     };
@@ -73,8 +69,6 @@ export default function StickyNotesManager() {
 
   const handleAddNote = async () => {
     if (!user) return;
-    // Se não está visível, torna visível
-    if (!isVisible) setIsVisible(true);
 
     try {
       const newZ = highestZ + 1;
@@ -129,50 +123,51 @@ export default function StickyNotesManager() {
   if (!user) return null;
 
   const activeNotes = notes.filter(n => !n.isArchived);
-  const archivedNotes = notes.filter(n => n.isArchived);
 
   return (
     <>
-      {isVisible && (
-        <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 9999 }}>
-          {activeNotes.map(note => (
-            <StickyNoteItem 
-              key={note.id} 
-              note={note} 
-              onUpdate={(updates) => handleUpdateNote(note.id, updates)}
-              onFocus={() => bringToFront(note.id)}
-            />
-          ))}
-        </div>
-      )}
+      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 9999 }}>
+        {activeNotes.map(note => (
+          <StickyNoteItem 
+            key={note.id} 
+            note={note} 
+            onUpdate={(updates) => handleUpdateNote(note.id, updates)}
+            onFocus={() => bringToFront(note.id)}
+          />
+        ))}
+      </div>
 
       {isArchiveOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] flex flex-col overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[80vh] flex flex-col overflow-hidden">
             <div className="p-6 border-b bg-yellow-50 flex justify-between items-center">
               <h2 className="text-xl font-bold flex items-center gap-2 text-yellow-900">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
-                Arquivo de Post-its
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                Meus Post-its
               </h2>
               <button onClick={() => setIsArchiveOpen(false)} className="text-gray-400 hover:text-gray-600">
                 <X className="w-6 h-6" />
               </button>
             </div>
             <div className="p-6 overflow-y-auto flex-1 bg-gray-50">
-              {archivedNotes.length === 0 ? (
+              {notes.length === 0 ? (
                 <div className="text-center py-10 text-gray-500">
-                  <p>Nenhum post-it guardado.</p>
+                  <p>Nenhum post-it criado ainda.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {archivedNotes.map(note => (
+                  {notes.map(note => (
                     <div key={note.id} className="rounded-lg shadow-sm p-4 relative" style={{ backgroundColor: note.color || '#fef08a' }}>
                       <p className="text-sm text-gray-800 line-clamp-4 min-h-[80px]" style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}>
                         {note.content || <span className="italic opacity-50">Nota vazia</span>}
                       </p>
                       <div className="flex gap-2 mt-4 justify-end border-t border-black/10 pt-2">
                         <button onClick={() => handleDeleteNote(note.id)} className="text-xs font-bold text-red-600 hover:text-red-800 bg-red-50 px-2 py-1 rounded">Excluir</button>
-                        <button onClick={() => handleUpdateNote(note.id, { isArchived: false })} className="text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2 py-1 rounded">Restaurar</button>
+                        {note.isArchived ? (
+                          <button onClick={() => handleUpdateNote(note.id, { isArchived: false })} className="text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2 py-1 rounded">Mostrar na Tela</button>
+                        ) : (
+                          <button onClick={() => handleUpdateNote(note.id, { isArchived: true })} className="text-xs font-bold text-gray-600 hover:text-gray-800 bg-gray-200 px-2 py-1 rounded">Ocultar</button>
+                        )}
                       </div>
                     </div>
                   ))}

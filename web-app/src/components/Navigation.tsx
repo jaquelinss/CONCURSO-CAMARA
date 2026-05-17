@@ -69,11 +69,12 @@ export default function Navigation() {
           </div>
           <div className="flex items-center gap-1 sm:gap-2">
             <button
-              onClick={() => window.dispatchEvent(new Event('toggle-notes'))}
-              className="inline-flex items-center px-2 sm:px-3 py-2 border border-yellow-300 text-xs sm:text-sm leading-4 font-bold rounded-md text-yellow-800 bg-yellow-100 hover:bg-yellow-200 focus:outline-none transition shadow-sm"
+              onClick={() => window.dispatchEvent(new Event('toggle-archive'))}
+              className="inline-flex items-center px-2 sm:px-3 py-2 border border-yellow-300 text-xs sm:text-sm leading-4 font-bold rounded-md text-yellow-900 bg-yellow-100 hover:bg-yellow-200 focus:outline-none transition shadow-sm"
+              title="Meus Post-its"
             >
               <svg className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-              <span className="hidden sm:inline">Post-its</span>
+              <span className="hidden sm:inline">Meus Post-its</span>
             </button>
             <button
               onClick={() => window.dispatchEvent(new Event('add-note'))}
@@ -81,13 +82,6 @@ export default function Navigation() {
               title="Nova Nota"
             >
               +
-            </button>
-            <button
-              onClick={() => window.dispatchEvent(new Event('toggle-archive'))}
-              className="inline-flex items-center px-2 py-2 border border-yellow-200 text-sm leading-4 font-bold rounded-md text-yellow-800 bg-white hover:bg-yellow-50 focus:outline-none transition shadow-sm"
-              title="Arquivo de Post-its"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
             </button>
             <div className="hidden sm:block w-px h-6 bg-gray-200 mx-2"></div>
             <button
