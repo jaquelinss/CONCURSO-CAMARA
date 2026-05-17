@@ -406,7 +406,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
         <div className="flex items-center gap-2">
           <button
             onClick={() => window.dispatchEvent(new Event('toggle-archive'))}
-            className="text-sm bg-yellow-100 text-yellow-900 dark:text-yellow-100 border border-yellow-300 p-2 rounded-lg hover:bg-yellow-200 transition-colors flex items-center gap-2 font-bold"
+            className="text-sm bg-yellow-100 text-yellow-900 border border-yellow-300 p-2 rounded-lg hover:bg-yellow-200 transition-colors flex items-center gap-2 font-bold"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
             Meus Post-its
@@ -461,7 +461,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
                     part.type === 'term' ? (
                       <span 
                         key={i} 
-                        className="term-highlight bg-yellow-100 border border-dashed border-yellow-400 rounded px-1 cursor-pointer"
+                        className="term-highlight bg-yellow-100 border border-dashed border-yellow-400 text-yellow-900 rounded px-1 cursor-pointer"
                         onClick={(e) => toggleTooltip(e, part.explanation || '')}
                       >
                         {part.term}
@@ -485,14 +485,14 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
                     <button 
                       key={level}
                       onClick={() => setQuizDifficulty(level)}
-                      className={`flex-1 py-1 px-2 text-xs font-semibold rounded-md transition-colors ${quizDifficulty === level ? `bg-yellow-50 dark:bg-yellow-900/300 text-white` : 'text-gray-600 dark:text-gray-400 hover:bg-gray-300'}`}
+                      className={`flex-1 py-1 px-2 text-xs font-semibold rounded-md transition-colors ${quizDifficulty === level ? `bg-yellow-500 text-white` : 'text-gray-600 dark:text-gray-400 hover:bg-gray-300'}`}
                     >
                       {level}
                     </button>
                   ))}
                 </div>
               </div>
-              <button onClick={handleGeneratePracticeQuiz} disabled={isGeneratingQuiz} className={`flex-1 flex items-center justify-center gap-3 py-3 font-bold rounded-lg bg-yellow-50 dark:bg-yellow-900/300 hover:bg-yellow-600 text-white disabled:opacity-50`}>
+              <button onClick={handleGeneratePracticeQuiz} disabled={isGeneratingQuiz} className={`flex-1 flex items-center justify-center gap-3 py-3 font-bold rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white disabled:opacity-50`}>
                 <ClipboardListIcon />
                 {practiceQuiz ? 'Gerar Novo Quiz' : 'Gerar Quiz de Treino'}
               </button>
@@ -520,7 +520,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
                 placeholder="Digite sua pergunta sobre a aula aqui..." 
                 className={`flex-grow p-2 rounded-lg ${theme.border} border-2 focus:outline-none focus:ring-2`} 
               />
-              <button onClick={handleAskLessonDoubt} disabled={isAsking || !doubt} className={`py-2 px-6 font-bold rounded-lg bg-yellow-50 dark:bg-yellow-900/300 hover:bg-yellow-600 text-white disabled:opacity-50`}>
+              <button onClick={handleAskLessonDoubt} disabled={isAsking || !doubt} className={`py-2 px-6 font-bold rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white disabled:opacity-50`}>
                 {isAsking ? "..." : "Perguntar"}
               </button>
             </div>
@@ -541,7 +541,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
                         {difficulties.map(d => <option key={d} value={d}>{d}</option>)}
                       </select>
                     </div>
-                    <button onClick={handleGenerateSubQuestions} disabled={isGeneratingSubQuestions} className={`py-2.5 px-5 font-bold rounded-lg bg-yellow-50 dark:bg-yellow-900/300 text-white hover:bg-yellow-600 disabled:opacity-50 whitespace-nowrap`}>
+                    <button onClick={handleGenerateSubQuestions} disabled={isGeneratingSubQuestions} className={`py-2.5 px-5 font-bold rounded-lg bg-yellow-500 text-white hover:bg-yellow-600 disabled:opacity-50 whitespace-nowrap`}>
                       Gerar Questões
                     </button>
                   </div>

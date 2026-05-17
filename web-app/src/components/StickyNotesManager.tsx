@@ -212,7 +212,7 @@ function SidebarNoteItem({
       }}
     >
       <div ref={nodeRef} className="rounded-lg shadow-md p-4 relative cursor-move border border-black/5" style={{ backgroundColor: note.color || '#fef08a' }}>
-        <p className="text-sm text-gray-800 dark:text-gray-200 line-clamp-4 min-h-[60px]" style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}>
+        <p className="text-sm text-gray-800 line-clamp-4 min-h-[60px]" style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}>
           {note.content || <span className="italic opacity-50">Nota vazia</span>}
         </p>
         <div className="flex gap-2 mt-4 justify-between border-t border-black/10 pt-2 items-center">
@@ -230,7 +230,7 @@ function SidebarNoteItem({
                 Mostrar na Tela
               </button>
             ) : (
-              <button onClick={() => onUpdate({ isArchived: true })} className="text-xs font-bold text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:text-gray-200 bg-gray-200 px-2 py-1 rounded">
+              <button onClick={() => onUpdate({ isArchived: true })} className="text-xs font-bold text-gray-600 hover:text-gray-800 bg-gray-200 px-2 py-1 rounded">
                 Ocultar
               </button>
             )}
@@ -238,7 +238,7 @@ function SidebarNoteItem({
         </div>
         {note.isArchived && (
           <div className="absolute top-0 right-0 left-0 h-4 bg-black/5 rounded-t-lg hidden md:flex items-center justify-center opacity-50">
-            <span className="text-[10px] text-gray-600 dark:text-gray-400 font-bold uppercase tracking-wider">Arraste para fixar</span>
+            <span className="text-[10px] text-gray-600 font-bold uppercase tracking-wider">Arraste para fixar</span>
           </div>
         )}
       </div>
@@ -300,14 +300,14 @@ function StickyNoteItem({
               className="p-1 hover:bg-black/10 rounded"
               title="Mudar Cor"
             >
-              <Palette className="w-3.5 h-3.5 text-gray-700 dark:text-gray-300" />
+              <Palette className="w-3.5 h-3.5 text-gray-700" />
             </button>
             <button 
               onClick={(e) => { e.stopPropagation(); onUpdate({ isArchived: true }); }}
               className="p-1 hover:bg-black/10 rounded"
               title="Fechar (Guardar)"
             >
-              <X className="w-4 h-4 text-gray-700 dark:text-gray-300" />
+              <X className="w-4 h-4 text-gray-700" />
             </button>
           </div>
         </div>
@@ -332,7 +332,7 @@ function StickyNoteItem({
           onChange={(e) => setContent(e.target.value)}
           onFocus={onFocus}
           placeholder="Escreva algo..."
-          className="w-full flex-grow min-h-[160px] p-3 bg-transparent resize-y outline-none placeholder-black/30 text-gray-800 dark:text-gray-200 font-medium"
+          className="w-full flex-grow min-h-[160px] p-3 bg-transparent resize-y outline-none placeholder-black/30 text-gray-800 font-medium"
           style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }} // Post-it feel
         />
       </div>
