@@ -29,6 +29,7 @@ export default function StickyNotesManager() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [highestZ, setHighestZ] = useState(100);
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
+  const [isDraggingFromSidebar, setIsDraggingFromSidebar] = useState(false);
 
   // Ouve eventos para toggle global
   useEffect(() => {
@@ -139,8 +140,8 @@ export default function StickyNotesManager() {
 
       {isArchiveOpen && (
         <div className="fixed inset-0 pointer-events-none flex justify-end z-[10000]">
-          <div className="bg-white shadow-2xl h-full w-[90%] sm:w-96 flex flex-col overflow-hidden pointer-events-auto border-l border-gray-200">
-            <div className="p-4 border-b bg-yellow-50 flex justify-between items-center">
+          <div className={`bg-white shadow-2xl h-full w-[90%] sm:w-96 flex flex-col pointer-events-auto border-l border-gray-200 transition-all ${isDraggingFromSidebar ? 'overflow-visible' : 'overflow-hidden'}`}>
+            <div className="p-4 border-b bg-yellow-50 flex justify-between items-center z-10">
               <h2 className="text-xl font-bold flex items-center gap-2 text-yellow-900">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
                 Meus Post-its
@@ -149,7 +150,7 @@ export default function StickyNotesManager() {
                 <X className="w-6 h-6" />
               </button>
             </div>
-            <div className="p-6 overflow-y-auto flex-1 bg-gray-50">
+            <div className={`p-6 flex-1 bg-gray-50 ${isDraggingFromSidebar ? 'overflow-visible' : 'overflow-y-auto'}`}>
               {notes.length === 0 ? (
                 <div className="text-center py-10 text-gray-500">
                   <p>Nenhum post-it criado ainda.</p>
@@ -162,6 +163,8 @@ export default function StickyNotesManager() {
                       note={note}
                       onUpdate={(updates) => handleUpdateNote(note.id, updates)}
                       onDelete={() => handleDeleteNote(note.id)}
+                      onDragStart={() => setIsDraggingFromSidebar(true)}
+                      onDragEnd={() => setIsDraggingFromSidebar(false)}
                     />
                   ))}
                 </div>
@@ -177,11 +180,15 @@ export default function StickyNotesManager() {
 function SidebarNoteItem({
   note,
   onUpdate,
-  onDelete
+  onDelete,
+  onDragStart,
+  onDragEnd
 }: {
   note: Note;
   onUpdate: (u: Partial<Note>) => void;
   onDelete: () => void;
+  onDragStart: () => void;
+  onDragEnd: () => void;
 }) {
   const nodeRef = useRef<HTMLDivElement>(null);
 
@@ -189,7 +196,9 @@ function SidebarNoteItem({
     <Draggable
       nodeRef={nodeRef}
       position={{x: 0, y: 0}}
+      onStart={onDragStart}
       onStop={(e, data) => {
+        onDragEnd();
         if (data.x < -100) {
           const clientX = 'clientX' in e ? (e as MouseEvent).clientX : (e as TouchEvent).changedTouches?.[0]?.clientX || 100;
           const clientY = 'clientY' in e ? (e as MouseEvent).clientY : (e as TouchEvent).changedTouches?.[0]?.clientY || 100;
