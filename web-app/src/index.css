@@ -30,3 +30,40 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* ===== Estilos de Impressão ===== */
+@media print {
+  /* Esconde a barra de navegação, post-its flutuantes, botão de report */
+  nav,
+  [style*="z-index: 9999"],
+  .fixed,
+  button {
+    display: none !important;
+  }
+
+  /* Garante que o conteúdo principal ocupe toda a página */
+  body {
+    background: white !important;
+    color: black !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Remove sombras e bordas decorativas */
+  .shadow-lg, .shadow-md, .shadow-sm, .shadow-xl, .shadow-2xl {
+    box-shadow: none !important;
+  }
+
+  /* Força modo claro na impressão */
+  .dark\:bg-gray-900, .dark\:bg-gray-800 {
+    background-color: white !important;
+  }
+  .dark\:text-gray-100, .dark\:text-gray-200, .dark\:text-gray-300 {
+    color: black !important;
+  }
+}
