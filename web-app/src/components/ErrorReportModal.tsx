@@ -25,19 +25,26 @@ export default function ErrorReportModal({ errorMessage, onClose }: ErrorReportM
       const modalEl = document.getElementById('error-report-modal-overlay');
       if (modalEl) modalEl.style.display = 'none';
 
-      await new Promise(r => setTimeout(r, 100)); // Espera o modal sumir
+      await new Promise(r => setTimeout(r, 200)); // Dá um tempo extra pro modal sumir
 
       const canvas = await html2canvas(document.body, {
         useCORS: true,
-        scale: 0.5, // Reduz tamanho para caber no Firestore
+        scale: 0.8, // Escala razoável
         logging: false,
+        windowWidth: window.innerWidth,
+        windowHeight: window.innerHeight,
+        x: window.scrollX,
+        y: window.scrollY,
+        width: window.innerWidth,
+        height: window.innerHeight
       });
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.5);
       setScreenshot(dataUrl);
 
       if (modalEl) modalEl.style.display = '';
     } catch (err) {
       console.error("Erro ao capturar tela:", err);
+      alert("Não foi possível capturar a tela do seu dispositivo automaticamente. Por favor, descreva o problema no campo de texto.");
       const modalEl = document.getElementById('error-report-modal-overlay');
       if (modalEl) modalEl.style.display = '';
     } finally {
