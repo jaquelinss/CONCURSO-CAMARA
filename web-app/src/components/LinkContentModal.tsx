@@ -91,20 +91,20 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[85vh] flex flex-col overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[85vh] flex flex-col overflow-hidden">
         
         {/* Header */}
         <div className="p-6 border-b bg-gradient-to-r from-indigo-50 to-purple-50">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-bold flex items-center gap-2 text-gray-900">
+            <h2 className="text-xl font-bold flex items-center gap-2 text-gray-900 dark:text-gray-100">
               {config.icon}
               Vincular {config.label}
             </h2>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:text-gray-400 transition-colors">
               <X className="w-6 h-6" />
             </button>
           </div>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             Revisão de <strong>{revision.subject}</strong> — {revision.topic}
           </p>
           {type !== 'lesson' && (
@@ -123,10 +123,10 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
           ) : items.length === 0 ? (
             <div className="text-center py-12 px-4">
               <Search className="w-14 h-14 text-gray-200 mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-gray-800 mb-2">
+              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">
                 Nenhum(a) {config.label.toLowerCase()} encontrado(a)
               </h3>
-              <p className="text-gray-500 text-sm mb-6 max-w-xs mx-auto">
+              <p className="text-gray-500 dark:text-gray-400 text-sm mb-6 max-w-xs mx-auto">
                 Você ainda não tem {config.label.toLowerCase()} salvo(a) para <strong>{revision.subject}</strong>. 
                 Vá na tela inicial, gere e salve, depois volte aqui para vincular.
               </p>
@@ -152,18 +152,18 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
                     className={`w-full text-left p-4 rounded-xl border-2 transition-all group ${
                       isSelected 
                         ? 'border-indigo-400 bg-indigo-50 ring-2 ring-indigo-200' 
-                        : 'border-gray-100 hover:border-gray-300'
+                        : 'border-gray-100 dark:border-gray-800 hover:border-gray-300'
                     }`}
                   >
                     <div className="flex justify-between items-center">
                       <div>
-                        <h4 className="font-bold text-gray-900">
+                        <h4 className="font-bold text-gray-900 dark:text-gray-100">
                           {type === 'lesson' 
                             ? (item.data?.titulo || `${item.subject} - ${item.topic}`)
                             : `${item.subject} - ${item.topic}`
                           }
                         </h4>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                           {type === 'lesson' 
                             ? `Nível: ${item.lessonLevel || 'N/A'}`
                             : `${item.data?.length || 0} ${type === 'quiz' ? 'questões' : 'flashcards'}`
@@ -187,7 +187,7 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
 
         {/* Footer com botão de confirmar */}
         {items.length > 0 && (
-          <div className="p-4 border-t bg-gray-50">
+          <div className="p-4 border-t bg-gray-50 dark:bg-gray-900">
             <button
               onClick={handleConfirm}
               disabled={linking}

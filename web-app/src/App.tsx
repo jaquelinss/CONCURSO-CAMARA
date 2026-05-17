@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import SavedContent from './pages/SavedContent';
@@ -32,13 +33,15 @@ function AppRoutes() {
 export default function App() {
   return (
     <AuthProvider>
-      <Router>
-        <div className="min-h-screen bg-gray-100 text-gray-900 font-sans">
-          <AppRoutes />
-          <ReportButton />
-          <StickyNotesManager />
-        </div>
-      </Router>
+      <ThemeProvider>
+        <Router>
+          <div className="min-h-screen font-sans transition-colors duration-200">
+            <AppRoutes />
+            <ReportButton />
+            <StickyNotesManager />
+          </div>
+        </Router>
+      </ThemeProvider>
     </AuthProvider>
   );
 }

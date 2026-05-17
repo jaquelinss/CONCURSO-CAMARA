@@ -14,9 +14,9 @@ const CustomSelect = ({ label, value, onChange, options, theme, disabled = false
       value={value}
       onChange={onChange}
       disabled={disabled}
-      className={`w-full p-3 rounded-lg bg-white ${theme.text} ${theme.border} border-2 focus:outline-none focus:ring-2 ${theme.ring} transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed`}
+      className={`w-full p-3 rounded-lg bg-white dark:bg-gray-800 ${theme.text} ${theme.border} border-2 focus:outline-none focus:ring-2 ${theme.ring} transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed`}
     >
-      {options.map((opt: string) => <option key={opt} value={opt} className="text-black">{opt}</option>)}
+      {options.map((opt: string) => <option key={opt} value={opt} className="text-black dark:text-white">{opt}</option>)}
     </select>
   </div>
 );
@@ -32,7 +32,7 @@ const CustomInput = ({ label, value, onChange, theme, type = "text", disabled = 
       max="50"
       disabled={disabled}
       placeholder={placeholder}
-      className={`w-full p-3 rounded-lg bg-white ${theme.text} ${theme.border} border-2 focus:outline-none focus:ring-2 ${theme.ring} transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed`}
+      className={`w-full p-3 rounded-lg bg-white dark:bg-gray-800 ${theme.text} ${theme.border} border-2 focus:outline-none focus:ring-2 ${theme.ring} transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed`}
     />
   </div>
 );
@@ -66,16 +66,16 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
 
   return (
     <div className="w-full max-w-2xl mx-auto p-6 md:p-8">
-      <h1 className="text-4xl font-bold text-center mb-2 text-gray-800">EduGenius</h1>
-      <p className="text-center mb-8 text-lg text-gray-600">Personalize seus estudos</p>
+      <h1 className="text-4xl font-bold text-center mb-2 text-gray-800 dark:text-gray-100">EduGenius</h1>
+      <p className="text-center mb-8 text-lg text-gray-600 dark:text-gray-300">Personalize seus estudos</p>
       
-      <div className={`space-y-6 ${theme.bg} p-6 rounded-2xl shadow-lg border border-gray-100`}>
-        <div className="flex justify-center mb-4 space-x-2 bg-white p-2 rounded-lg shadow-sm">
+      <div className={`space-y-6 ${theme.bg} p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800`}>
+        <div className="flex justify-center mb-4 space-x-2 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm">
           {['Concurso', 'ENEM', 'Geral'].map((m) => (
             <button
               key={m}
               onClick={() => handleModeChange({ target: { value: m } } as any)}
-              className={`flex-1 py-2 px-4 rounded-md font-medium transition ${settings.mode === m ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              className={`flex-1 py-2 px-4 rounded-md font-medium transition ${settings.mode === m ? 'bg-indigo-600 dark:bg-indigo-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}`}
             >
               {m}
             </button>

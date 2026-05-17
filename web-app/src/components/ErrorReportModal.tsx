@@ -125,10 +125,10 @@ export default function ErrorReportModal({ errorMessage, onClose }: ErrorReportM
   if (sent) {
     return (
       <div id="error-report-modal-overlay" className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-8 text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Reporte enviado!</h2>
-          <p className="text-gray-600 mb-6">Obrigado por nos ajudar a melhorar o EduGenius. Vamos analisar o problema o mais rápido possível.</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Reporte enviado!</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">Obrigado por nos ajudar a melhorar o EduGenius. Vamos analisar o problema o mais rápido possível.</p>
           <button onClick={onClose} className="px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-colors">
             Fechar
           </button>
@@ -139,7 +139,7 @@ export default function ErrorReportModal({ errorMessage, onClose }: ErrorReportM
 
   return (
     <div id="error-report-modal-overlay" className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="p-6 border-b bg-red-50 rounded-t-2xl">
           <div className="flex justify-between items-center">
@@ -147,7 +147,7 @@ export default function ErrorReportModal({ errorMessage, onClose }: ErrorReportM
               <AlertTriangle className="w-6 h-6" />
               Reportar Problema
             </h2>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:text-gray-400">
               <X className="w-6 h-6" />
             </button>
           </div>
@@ -164,7 +164,7 @@ export default function ErrorReportModal({ errorMessage, onClose }: ErrorReportM
 
           {/* Descrição do usuário */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               Descreva o que aconteceu:
             </label>
             <textarea
@@ -172,13 +172,13 @@ export default function ErrorReportModal({ errorMessage, onClose }: ErrorReportM
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Ex: Tentei gerar um quiz de Direito Constitucional e apareceu um erro..."
               rows={4}
-              className="w-full p-3 border-2 border-gray-200 rounded-xl resize-none focus:border-indigo-500 focus:ring-0 transition-colors"
+              className="w-full p-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl resize-none focus:border-indigo-500 focus:ring-0 transition-colors"
             />
           </div>
 
           {/* Captura de tela */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               Captura de tela:
             </label>
             {screenshot ? (
@@ -197,13 +197,13 @@ export default function ErrorReportModal({ errorMessage, onClose }: ErrorReportM
                 <button
                   onClick={captureScreenshot}
                   disabled={capturingScreen}
-                  className="w-full p-4 border-2 border-dashed border-gray-200 rounded-xl text-gray-500 hover:border-indigo-300 hover:text-indigo-600 transition-all flex flex-col items-center justify-center gap-2"
+                  className="w-full p-4 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl text-gray-500 dark:text-gray-400 hover:border-indigo-300 hover:text-indigo-600 transition-all flex flex-col items-center justify-center gap-2"
                 >
                   <Camera className="w-6 h-6" />
                   <span className="text-sm font-semibold text-center">{capturingScreen ? 'Capturando...' : 'Capturar tela automaticamente'}</span>
                 </button>
                 
-                <label className="w-full p-4 border-2 border-dashed border-gray-200 rounded-xl text-gray-500 hover:border-indigo-300 hover:text-indigo-600 transition-all flex flex-col items-center justify-center gap-2 cursor-pointer">
+                <label className="w-full p-4 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl text-gray-500 dark:text-gray-400 hover:border-indigo-300 hover:text-indigo-600 transition-all flex flex-col items-center justify-center gap-2 cursor-pointer">
                   <ImageIcon className="w-6 h-6" />
                   <span className="text-sm font-semibold text-center">Enviar print da Galeria</span>
                   <input 
@@ -218,7 +218,7 @@ export default function ErrorReportModal({ errorMessage, onClose }: ErrorReportM
           </div>
 
           {/* Info do dispositivo */}
-          <div className="p-3 bg-gray-50 rounded-xl">
+          <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-xl">
             <p className="text-xs text-gray-400">Informações enviadas junto: navegador, resolução de tela, página atual e e-mail da conta.</p>
           </div>
 

@@ -55,13 +55,13 @@ export default function ScheduleRevisionModal({ user, item, type, onClose, onSch
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-300">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-300">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold flex items-center gap-2">
             <Calendar className="text-indigo-600" />
             Agendar Revisão
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:text-gray-400">
             <X className="w-6 h-6" />
           </button>
         </div>
@@ -74,12 +74,12 @@ export default function ScheduleRevisionModal({ user, item, type, onClose, onSch
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Escolha a data:</label>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Escolha a data:</label>
             <input 
               type="date" 
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-0 transition-colors"
+              className="w-full p-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-indigo-500 focus:ring-0 transition-colors"
             />
           </div>
 
@@ -91,7 +91,7 @@ export default function ScheduleRevisionModal({ user, item, type, onClose, onSch
               <Brain className="text-indigo-500 group-hover:scale-110 transition-transform" />
               <div>
                 <p className="text-xs font-bold text-indigo-600 uppercase tracking-wider">Sugestão da IA</p>
-                <p className="text-sm text-gray-700">{suggestion.label}</p>
+                <p className="text-sm text-gray-700 dark:text-gray-300">{suggestion.label}</p>
                 <p className="text-sm font-bold text-indigo-900">
                   {format(suggestion.date, "EEEE, d 'de' MMMM", { locale: ptBR })}
                 </p>

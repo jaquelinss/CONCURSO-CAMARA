@@ -314,13 +314,13 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
   if (questions.length === 0) {
     if (!apiKey) {
       return (
-        <div className="text-center p-8 bg-white rounded-lg shadow-md max-w-2xl mx-auto border-l-4 border-yellow-500">
+        <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md max-w-2xl mx-auto border-l-4 border-yellow-500">
           <h2 className="text-2xl font-bold mb-4 text-yellow-700">Chave da API Necessária</h2>
-          <p className="mb-6 text-gray-700">
+          <p className="mb-6 text-gray-700 dark:text-gray-300">
             Para que o conteúdo possa ser gerado pela Inteligência Artificial, você precisa configurar sua chave do Gemini.
           </p>
           <div className="flex gap-4 justify-center">
-            <button onClick={onBack} className="px-6 py-2 bg-gray-200 text-gray-800 rounded font-semibold hover:bg-gray-300">Voltar</button>
+            <button onClick={onBack} className="px-6 py-2 bg-gray-200 text-gray-800 dark:text-gray-200 rounded font-semibold hover:bg-gray-300">Voltar</button>
             <a href="/config" className={`px-6 py-2 text-white rounded font-bold ${theme.button}`}>Ir para Configurações</a>
           </div>
         </div>
@@ -328,9 +328,9 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     }
 
     return (
-      <div className="text-center p-8 bg-white rounded-lg shadow-md max-w-2xl mx-auto">
+      <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md max-w-2xl mx-auto">
         <h2 className="text-2xl font-bold mb-4">Pronto para treinar?</h2>
-        <p className="mb-6 text-gray-600">
+        <p className="mb-6 text-gray-600 dark:text-gray-400">
           Você selecionou <strong>{settings.subject}</strong> no nível <strong>{settings.difficulty}</strong>.
         </p>
         {error && (
@@ -339,7 +339,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
           </div>
         )}
         <div className="flex gap-4 justify-center">
-          <button onClick={onBack} className="px-6 py-2 bg-gray-200 text-gray-800 rounded font-semibold hover:bg-gray-300">Voltar</button>
+          <button onClick={onBack} className="px-6 py-2 bg-gray-200 text-gray-800 dark:text-gray-200 rounded font-semibold hover:bg-gray-300">Voltar</button>
           <button onClick={generateQuiz} className={`px-6 py-2 text-white rounded font-bold ${theme.button}`}>Gerar Conteúdo</button>
         </div>
       </div>
@@ -352,13 +352,13 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
 
   if (isFinished) {
     return (
-      <div className="text-center p-8 bg-white rounded-lg shadow-md max-w-2xl mx-auto">
+      <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md max-w-2xl mx-auto">
         <h2 className="text-3xl font-bold mb-4">{isFlashcard ? 'Flashcards Finalizados!' : 'Quiz Finalizado!'}</h2>
         {!isFlashcard && (
           <p className="text-xl mb-8">Sua pontuação: <span className={`font-bold ${theme.accent}`}>{score}</span> de {questions.length}</p>
         )}
         <div className="flex justify-center gap-4 mt-8">
-          <button onClick={onBack} className="px-6 py-2 bg-gray-200 text-gray-800 rounded font-semibold hover:bg-gray-300">{isSavedMode ? 'Voltar aos Salvamentos' : 'Novo Quiz'}</button>
+          <button onClick={onBack} className="px-6 py-2 bg-gray-200 text-gray-800 dark:text-gray-200 rounded font-semibold hover:bg-gray-300">{isSavedMode ? 'Voltar aos Salvamentos' : 'Novo Quiz'}</button>
           {!isSavedMode && (
             <button onClick={saveQuiz} disabled={saving || saved} className={`px-6 py-2 text-white rounded font-bold ${saved ? 'bg-green-500' : theme.button}`}>
               {saving ? 'Salvando...' : (saved ? 'Salvo!' : (isFlashcard ? 'Salvar Flashcards' : 'Salvar Questões'))}
@@ -509,7 +509,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
           <div className="flex items-center gap-1">
             <button
               onClick={() => window.dispatchEvent(new Event('toggle-archive'))}
-              className="text-sm bg-yellow-100 text-yellow-900 border border-yellow-300 p-2 rounded-lg hover:bg-yellow-200 transition-colors flex items-center gap-2 font-bold"
+              className="text-sm bg-yellow-100 text-yellow-900 dark:text-yellow-100 border border-yellow-300 p-2 rounded-lg hover:bg-yellow-200 transition-colors flex items-center gap-2 font-bold"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
               Meus Post-its
@@ -678,7 +678,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
                             <select 
                               value={subQuestionDifficulty} 
                               onChange={(e) => setSubQuestionDifficulty(e.target.value)}
-                              className={`w-full p-2 rounded-lg border-2 ${theme.border} bg-white`}
+                              className={`w-full p-2 rounded-lg border-2 ${theme.border} bg-white dark:bg-gray-800`}
                             >
                               {difficulties.map(d => <option key={d} value={d}>{d}</option>)}
                             </select>
@@ -705,7 +705,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
                 </div>
 
                 <div className="flex justify-between mt-6 gap-4">
-                  <button onClick={handlePrevious} disabled={currentIndex === 0} className={`px-6 py-2 bg-gray-400 text-white rounded font-bold hover:bg-gray-500 disabled:opacity-50`}>
+                  <button onClick={handlePrevious} disabled={currentIndex === 0} className={`px-6 py-2 bg-gray-400 text-white rounded font-bold hover:bg-gray-50 dark:bg-gray-9000 disabled:opacity-50`}>
                     Anterior
                   </button>
                   <button onClick={handleNext} className={`px-6 py-2 font-bold rounded-lg text-white ${theme.button}`}>

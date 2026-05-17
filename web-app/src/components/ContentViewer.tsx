@@ -124,7 +124,7 @@ export default function ContentViewer({ type, content, onBack }: ContentViewerPr
           <p className="text-lg italic mb-6">{data.introducao}</p>
           <div className="space-y-6">
             {data.secoes?.map((sec: any, idx: number) => (
-              <div key={idx} className="p-4 bg-white rounded-lg shadow">
+              <div key={idx} className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
                 <h3 className="text-2xl font-semibold mb-2">{sec.subtitulo}</h3>
                 <div className="text-base leading-relaxed whitespace-pre-wrap">
                   {parseLessonContent(sec.conteudo).map((part, i) => 
@@ -151,11 +151,11 @@ export default function ContentViewer({ type, content, onBack }: ContentViewerPr
         <div className="space-y-8">
           <h2 className={`text-3xl font-bold mb-6 ${theme.accent}`}>Revisão de Questões</h2>
           {data.map((q: any, idx: number) => (
-            <div key={idx} className="p-6 bg-white rounded-lg shadow">
+            <div key={idx} className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
               <h3 className="text-xl font-semibold mb-4">{idx + 1}. {q.pergunta}</h3>
               <div className="space-y-2 mb-4">
                 {q.opcoes.map((opt: string, optIdx: number) => (
-                  <div key={optIdx} className={`p-3 rounded-lg border-2 ${opt === q.correta ? 'bg-green-100 border-green-400 font-bold' : 'bg-gray-50 border-gray-200'}`}>
+                  <div key={optIdx} className={`p-3 rounded-lg border-2 ${opt === q.correta ? 'bg-green-100 border-green-400 font-bold' : 'bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700'}`}>
                     {opt}
                   </div>
                 ))}

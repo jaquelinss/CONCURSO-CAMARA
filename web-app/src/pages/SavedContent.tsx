@@ -129,17 +129,17 @@ export default function SavedContent() {
             <div>
               <h2 className="text-2xl font-semibold mb-4 border-b pb-2">Aulas Explicativas</h2>
               {lessons.length === 0 ? (
-                <p className="text-gray-500">Nenhuma aula salva.</p>
+                <p className="text-gray-500 dark:text-gray-400">Nenhuma aula salva.</p>
               ) : (
                 <div className="space-y-4">
                   {lessons.map(lesson => (
                     <div 
                       key={lesson.id} 
-                      className="group relative p-4 bg-white rounded shadow hover:bg-gray-50 transition border-l-4 border-blue-500 flex justify-between items-center"
+                      className="group relative p-4 bg-white dark:bg-gray-800 rounded shadow hover:bg-gray-50 dark:bg-gray-900 transition border-l-4 border-blue-500 flex justify-between items-center"
                     >
                       <div className="cursor-pointer flex-grow" onClick={() => { setViewingContent(lesson); setViewingType('lesson'); }}>
                         <h3 className="font-bold">{lesson.data?.titulo || lesson.subject}</h3>
-                        <p className="text-sm text-gray-500">Salvo em: {lesson.createdAt?.toDate().toLocaleDateString()}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Salvo em: {lesson.createdAt?.toDate().toLocaleDateString()}</p>
                       </div>
                       <button 
                         onClick={(e) => { e.stopPropagation(); setSchedulingItem({item: lesson, type: 'lesson'}); }}
@@ -157,18 +157,18 @@ export default function SavedContent() {
             <div>
               <h2 className="text-2xl font-semibold mb-4 border-b pb-2">Quizzes e Questões</h2>
               {quizzes.length === 0 ? (
-                <p className="text-gray-500">Nenhum quiz salva.</p>
+                <p className="text-gray-500 dark:text-gray-400">Nenhum quiz salva.</p>
               ) : (
                 <div className="space-y-4">
                   {quizzes.map(quiz => (
                     <div 
                       key={quiz.id} 
-                      className="group relative p-4 bg-white rounded shadow hover:bg-gray-50 transition border-l-4 border-green-500 flex justify-between items-center"
+                      className="group relative p-4 bg-white dark:bg-gray-800 rounded shadow hover:bg-gray-50 dark:bg-gray-900 transition border-l-4 border-green-500 flex justify-between items-center"
                     >
                       <div className="cursor-pointer flex-grow" onClick={() => { setViewingContent(quiz); setViewingType('quiz'); }}>
                         <h3 className="font-bold">{quiz.subject} - {quiz.topic}</h3>
-                        <p className="text-sm text-gray-500">{quiz.data?.length || 0} questões</p>
-                        <p className="text-sm text-gray-500">Salvo em: {quiz.createdAt?.toDate().toLocaleDateString()}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{quiz.data?.length || 0} questões</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Salvo em: {quiz.createdAt?.toDate().toLocaleDateString()}</p>
                       </div>
                       <button 
                         onClick={(e) => { e.stopPropagation(); setSchedulingItem({item: quiz, type: 'quiz'}); }}
@@ -184,18 +184,18 @@ export default function SavedContent() {
 
               <h2 className="text-2xl font-semibold mb-4 border-b pb-2 mt-8">Flashcards</h2>
               {flashcards.length === 0 ? (
-                <p className="text-gray-500">Nenhum flashcard salvo.</p>
+                <p className="text-gray-500 dark:text-gray-400">Nenhum flashcard salvo.</p>
               ) : (
                 <div className="space-y-4">
                   {flashcards.map(flash => (
                     <div 
                       key={flash.id} 
-                      className="group relative p-4 bg-white rounded shadow hover:bg-gray-50 transition border-l-4 border-indigo-500 flex justify-between items-center"
+                      className="group relative p-4 bg-white dark:bg-gray-800 rounded shadow hover:bg-gray-50 dark:bg-gray-900 transition border-l-4 border-indigo-500 flex justify-between items-center"
                     >
                       <div className="cursor-pointer flex-grow" onClick={() => { setViewingContent(flash); setViewingType('flashcard'); }}>
                         <h3 className="font-bold">{flash.subject} - {flash.topic}</h3>
-                        <p className="text-sm text-gray-500">{flash.data?.length || 0} flashcards</p>
-                        <p className="text-sm text-gray-500">Salvo em: {flash.createdAt?.toDate().toLocaleDateString()}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{flash.data?.length || 0} flashcards</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Salvo em: {flash.createdAt?.toDate().toLocaleDateString()}</p>
                       </div>
                       <button 
                         onClick={(e) => { e.stopPropagation(); setSchedulingItem({item: flash, type: 'flashcard'}); }}

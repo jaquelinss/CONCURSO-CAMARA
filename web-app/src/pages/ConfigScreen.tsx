@@ -71,14 +71,14 @@ export default function ConfigScreen() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
+    <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-800">
       <Navigation />
       <main className="flex-grow p-6 max-w-4xl mx-auto w-full">
-        <h1 className="text-3xl font-bold mb-8 text-gray-800">Configurações</h1>
+        <h1 className="text-3xl font-bold mb-8 text-gray-800 dark:text-gray-200">Configurações</h1>
         
-        <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+        <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800">
           <h2 className="text-2xl font-semibold mb-4 text-indigo-700">Chave da API do Google (Gemini)</h2>
-          <p className="text-gray-600 mb-6 leading-relaxed">
+          <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
             Para gerar as aulas explicativas, quizzes e flashcards, o EduGenius utiliza a inteligência artificial do Google (Gemini).
             Para garantir que o serviço seja gratuito e rápido para você, é necessário configurar a sua própria chave de acesso.
           </p>
@@ -95,13 +95,13 @@ export default function ConfigScreen() {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700">Sua Chave API (AIza...)</label>
+              <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Sua Chave API (AIza...)</label>
               <input
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="Cole sua chave aqui..."
-                className="w-full p-4 rounded-lg bg-gray-50 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-mono"
+                className="w-full p-4 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-mono"
               />
             </div>
             
@@ -116,7 +116,7 @@ export default function ConfigScreen() {
               {saved && (
                 <button 
                   onClick={() => navigate('/dashboard')}
-                  className="px-8 py-3 bg-gray-200 text-gray-800 rounded-lg font-bold hover:bg-gray-300 transition-colors"
+                  className="px-8 py-3 bg-gray-200 text-gray-800 dark:text-gray-200 rounded-lg font-bold hover:bg-gray-300 transition-colors"
                 >
                   Voltar para os Estudos
                 </button>
@@ -127,7 +127,7 @@ export default function ConfigScreen() {
 
         {/* Painel de Admin - Reportes de Erro */}
         {isAdmin && (
-          <div className="mt-8 bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+          <div className="mt-8 bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800">
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-semibold text-red-700 flex items-center gap-2">
                 <Bug className="w-6 h-6" />
@@ -140,7 +140,7 @@ export default function ConfigScreen() {
               </h2>
               <button
                 onClick={() => { setShowReports(!showReports); if (!showReports && reports.length === 0) fetchReports(); }}
-                className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
+                className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300"
               >
                 {showReports ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                 {showReports ? 'Ocultar' : 'Ver reportes'}
@@ -164,7 +164,7 @@ export default function ConfigScreen() {
                       {/* Cabeçalho do reporte */}
                       <button
                         onClick={() => setExpandedReport(expandedReport === report.id ? null : report.id)}
-                        className="w-full p-4 flex justify-between items-center hover:bg-gray-50 transition-colors"
+                        className="w-full p-4 flex justify-between items-center hover:bg-gray-50 dark:bg-gray-900 transition-colors"
                       >
                         <div className="text-left">
                           <div className="flex items-center gap-2 mb-1">
@@ -173,14 +173,14 @@ export default function ConfigScreen() {
                             ) : (
                               <Clock className="w-4 h-4 text-red-500" />
                             )}
-                            <span className="text-sm font-bold text-gray-800">
+                            <span className="text-sm font-bold text-gray-800 dark:text-gray-200">
                               {report.userEmail}
                             </span>
                             <span className="text-xs text-gray-400">
                               {report.createdAt?.toDate?.()?.toLocaleString('pt-BR') || 'N/A'}
                             </span>
                           </div>
-                          <p className="text-sm text-gray-600 truncate max-w-md">
+                          <p className="text-sm text-gray-600 dark:text-gray-400 truncate max-w-md">
                             {report.description || report.errorMessage || 'Sem descrição'}
                           </p>
                         </div>
@@ -189,11 +189,11 @@ export default function ConfigScreen() {
 
                       {/* Detalhes expandidos */}
                       {expandedReport === report.id && (
-                        <div className="p-4 border-t bg-gray-50 space-y-3">
+                        <div className="p-4 border-t bg-gray-50 dark:bg-gray-900 space-y-3">
                           {report.description && (
                             <div>
-                              <p className="text-xs font-bold text-gray-500 uppercase">Descrição do Usuário</p>
-                              <p className="text-sm text-gray-800">{report.description}</p>
+                              <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Descrição do Usuário</p>
+                              <p className="text-sm text-gray-800 dark:text-gray-200">{report.description}</p>
                             </div>
                           )}
                           {report.errorMessage && (
@@ -202,14 +202,14 @@ export default function ConfigScreen() {
                               <p className="text-sm text-red-800 font-mono bg-red-50 p-2 rounded">{report.errorMessage}</p>
                             </div>
                           )}
-                          <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
+                          <div className="grid grid-cols-2 gap-2 text-xs text-gray-500 dark:text-gray-400">
                             <p><strong>URL:</strong> {report.url}</p>
                             <p><strong>Tela:</strong> {report.screenSize}</p>
                             <p className="col-span-2"><strong>Navegador:</strong> {report.userAgent?.substring(0, 80)}...</p>
                           </div>
                           {report.screenshot && (
                             <div>
-                              <p className="text-xs font-bold text-gray-500 uppercase mb-1">Captura de Tela</p>
+                              <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Captura de Tela</p>
                               <img src={report.screenshot} alt="Screenshot" className="w-full rounded-lg border shadow-sm" />
                             </div>
                           )}

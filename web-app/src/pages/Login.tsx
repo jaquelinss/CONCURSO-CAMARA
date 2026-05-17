@@ -43,8 +43,8 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-800">
+      <div className="w-full max-w-md p-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
         <h2 className="text-3xl font-bold text-center text-indigo-600 mb-6">
           {isRegistering ? 'Criar Conta' : 'Entrar no EduGenius'}
         </h2>
@@ -52,7 +52,7 @@ export default function Login() {
         {message && <div className="mb-4 text-sm text-green-700 bg-green-100 p-3 rounded">{message}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
             <input
               type="email"
               value={email}
@@ -63,7 +63,7 @@ export default function Login() {
           </div>
           <div>
             <div className="flex justify-between items-center">
-              <label className="block text-sm font-medium text-gray-700">Senha</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Senha</label>
               {!isRegistering && (
                 <button
                   type="button"
@@ -89,7 +89,7 @@ export default function Login() {
             {isRegistering ? 'Registrar' : 'Entrar'}
           </button>
         </form>
-        <p className="mt-4 text-sm text-center text-gray-600">
+        <p className="mt-4 text-sm text-center text-gray-600 dark:text-gray-400">
           {isRegistering ? 'Já tem uma conta?' : 'Não tem uma conta?'}{' '}
           <button
             onClick={() => setIsRegistering(!isRegistering)}
