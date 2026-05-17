@@ -3,7 +3,7 @@ import { db } from '../lib/firebase';
 import { collection, query, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import Draggable from 'react-draggable';
-import { Palette, X, GripHorizontal, Archive } from 'lucide-react';
+import { Palette, X, GripHorizontal } from 'lucide-react';
 
 interface Note {
   id: string;
@@ -140,7 +140,6 @@ export default function StickyNotesManager() {
               key={note.id} 
               note={note} 
               onUpdate={(updates) => handleUpdateNote(note.id, updates)}
-              onDelete={() => handleDeleteNote(note.id)}
               onFocus={() => bringToFront(note.id)}
             />
           ))}
@@ -190,12 +189,10 @@ export default function StickyNotesManager() {
 function StickyNoteItem({ 
   note, 
   onUpdate, 
-  onDelete, 
   onFocus 
 }: { 
   note: Note; 
   onUpdate: (u: Partial<Note>) => void; 
-  onDelete: () => void;
   onFocus: () => void;
 }) {
   const [showPalette, setShowPalette] = useState(false);
@@ -237,7 +234,7 @@ function StickyNoteItem({
         <div className="drag-handle h-8 bg-black/5 flex items-center justify-between px-2 cursor-grab active:cursor-grabbing">
           <GripHorizontal className="w-4 h-4 text-black/30" />
           
-          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
             <button 
               onClick={(e) => { e.stopPropagation(); setShowPalette(!showPalette); }}
               className="p-1 hover:bg-black/10 rounded"
@@ -247,17 +244,10 @@ function StickyNoteItem({
             </button>
             <button 
               onClick={(e) => { e.stopPropagation(); onUpdate({ isArchived: true }); }}
-              className="p-1 hover:bg-indigo-500/20 rounded"
-              title="Guardar no Arquivo"
+              className="p-1 hover:bg-black/10 rounded"
+              title="Fechar (Guardar)"
             >
-              <Archive className="w-3.5 h-3.5 text-gray-700 hover:text-indigo-700" />
-            </button>
-            <button 
-              onClick={(e) => { e.stopPropagation(); onDelete(); }}
-              className="p-1 hover:bg-red-500/20 rounded"
-              title="Excluir"
-            >
-              <X className="w-4 h-4 text-gray-700 hover:text-red-700" />
+              <X className="w-4 h-4 text-gray-700" />
             </button>
           </div>
         </div>
