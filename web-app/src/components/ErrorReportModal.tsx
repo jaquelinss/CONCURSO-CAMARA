@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
-import { AlertTriangle, Send, X, Camera, CheckCircle } from 'lucide-react';
+import { AlertTriangle, Send, X, Camera, CheckCircle, Image as ImageIcon } from 'lucide-react';
 import html2canvas from 'html2canvas';
 
 interface ErrorReportModalProps {
@@ -50,6 +50,51 @@ export default function ErrorReportModal({ errorMessage, onClose }: ErrorReportM
     } finally {
       setCapturingScreen(false);
     }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Por favor, selecione uma imagem.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        // Redimensionar para no máximo 1000px para economizar espaço
+        const MAX_WIDTH = 1000;
+        const MAX_HEIGHT = 1000;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        setScreenshot(dataUrl);
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSend = async () => {
@@ -148,14 +193,27 @@ export default function ErrorReportModal({ errorMessage, onClose }: ErrorReportM
                 <p className="text-xs text-green-600 font-semibold mt-1">✓ Captura anexada</p>
               </div>
             ) : (
-              <button
-                onClick={captureScreenshot}
-                disabled={capturingScreen}
-                className="w-full p-4 border-2 border-dashed border-gray-200 rounded-xl text-gray-500 hover:border-indigo-300 hover:text-indigo-600 transition-all flex items-center justify-center gap-2"
-              >
-                <Camera className="w-5 h-5" />
-                {capturingScreen ? 'Capturando...' : 'Capturar tela automaticamente'}
-              </button>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <button
+                  onClick={captureScreenshot}
+                  disabled={capturingScreen}
+                  className="w-full p-4 border-2 border-dashed border-gray-200 rounded-xl text-gray-500 hover:border-indigo-300 hover:text-indigo-600 transition-all flex flex-col items-center justify-center gap-2"
+                >
+                  <Camera className="w-6 h-6" />
+                  <span className="text-sm font-semibold text-center">{capturingScreen ? 'Capturando...' : 'Capturar tela automaticamente'}</span>
+                </button>
+                
+                <label className="w-full p-4 border-2 border-dashed border-gray-200 rounded-xl text-gray-500 hover:border-indigo-300 hover:text-indigo-600 transition-all flex flex-col items-center justify-center gap-2 cursor-pointer">
+                  <ImageIcon className="w-6 h-6" />
+                  <span className="text-sm font-semibold text-center">Enviar print da Galeria</span>
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    className="hidden" 
+                    onChange={handleFileUpload}
+                  />
+                </label>
+              </div>
             )}
           </div>
 
