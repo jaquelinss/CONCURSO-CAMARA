@@ -142,10 +142,10 @@ export default function RevisionScreen() {
 
   const renderContent = () => {
     if (activeType === 'lesson') {
-      return <LessonScreen settings={activeContent} onBack={() => setActiveType(null)} savedData={activeContent.data} />;
+      return <LessonScreen settings={activeContent} onBack={() => { setActiveType(null); fetchRevisions(); }} savedData={activeContent.data} />;
     }
     if (activeType === 'quiz' || activeType === 'flashcard') {
-      return <QuizScreen settings={activeContent} onBack={() => setActiveType(null)} savedData={activeContent.data} />;
+      return <QuizScreen settings={activeContent} onBack={() => { setActiveType(null); fetchRevisions(); }} savedData={activeContent.data} />;
     }
     return null;
   };
