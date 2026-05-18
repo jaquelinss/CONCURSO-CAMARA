@@ -357,9 +357,9 @@ function StickyNoteItem({
             style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}
           />
           <div className="flex gap-1 px-2 py-1">
-            <button onClick={() => executeCommand('bold')} className="px-2 py-0.5 text-xs font-bold hover:bg-black/10 rounded text-gray-800" title="Negrito">B</button>
-            <button onClick={() => executeCommand('italic')} className="px-2 py-0.5 text-xs italic hover:bg-black/10 rounded text-gray-800" title="Itálico">I</button>
-            <button onClick={() => executeCommand('underline')} className="px-2 py-0.5 text-xs underline hover:bg-black/10 rounded text-gray-800" title="Sublinhado">U</button>
+            <button onPointerDown={(e) => { e.preventDefault(); executeCommand('bold'); }} className="px-2 py-0.5 text-xs font-bold hover:bg-black/10 rounded text-gray-800" title="Negrito">B</button>
+            <button onPointerDown={(e) => { e.preventDefault(); executeCommand('italic'); }} className="px-2 py-0.5 text-xs italic hover:bg-black/10 rounded text-gray-800" title="Itálico">I</button>
+            <button onPointerDown={(e) => { e.preventDefault(); executeCommand('underline'); }} className="px-2 py-0.5 text-xs underline hover:bg-black/10 rounded text-gray-800" title="Sublinhado">U</button>
           </div>
         </div>
 
