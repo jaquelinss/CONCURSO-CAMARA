@@ -22,11 +22,13 @@ const HighlighterPalette = ({ top, left, onHighlight }: { top: number, left: num
     <div 
       className="absolute bg-gray-800 p-2 rounded-full shadow-xl flex gap-2 z-50 items-center"
       style={{ top, left, transform: 'translate(-50%, -100%)', marginTop: '-12px' }}
+      onMouseDown={(e) => e.preventDefault()}
     >
       {colors.map(color => (
         <button
           key={color}
-          onClick={(e) => { e.preventDefault(); onHighlight(color); }}
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onHighlight(color); }}
           className="w-6 h-6 rounded-full border border-white cursor-pointer hover:scale-110 transition-transform"
           style={{ backgroundColor: color }}
         />
@@ -65,6 +67,10 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
   const [subQuestionCount, setSubQuestionCount] = useState<number>(3);
   const [subQuestionDifficulty, setSubQuestionDifficulty] = useState<string>('Médio');
   const [subQuestionError, setSubQuestionError] = useState<string | null>(null);
+
+  // Save doubt response state
+  const [savingDoubt, setSavingDoubt] = useState(false);
+  const [doubtSaved, setDoubtSaved] = useState(false);
 
   // Highlighter and Tooltip Refs and States
   const contentRef = useRef<HTMLDivElement>(null);
@@ -207,6 +213,33 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
       alert('Erro ao salvar aula.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const saveDoubtResponse = async () => {
+    if (!user || !doubtResponse || !doubt) return;
+    setSavingDoubt(true);
+    try {
+      const lessonsRef = collection(db, 'users', user.uid, 'lessons');
+      await addDoc(lessonsRef, {
+        subject: settings.subject,
+        topic: settings.topic,
+        lessonLevel: 'Dúvida',
+        data: {
+          titulo: `Dúvida: ${doubt.substring(0, 80)}${doubt.length > 80 ? '...' : ''}`,
+          introducao: `Pergunta: ${doubt}`,
+          secoes: [{ subtitulo: 'Resposta da IA', conteudo: doubtResponse.replace(/<[^>]*>?/gm, '') }],
+        },
+        userComment: `Dúvida sobre ${settings.subject} - ${settings.topic}`,
+        createdAt: serverTimestamp(),
+      });
+      setDoubtSaved(true);
+      setTimeout(() => setDoubtSaved(false), 3000);
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao salvar explicação.');
+    } finally {
+      setSavingDoubt(false);
     }
   };
 
@@ -529,6 +562,16 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
               <div className="mt-4 p-4 bg-blue-100 border-l-4 border-blue-400 rounded-r-lg">
                 <div className="prose prose-blue max-w-none" dangerouslySetInnerHTML={{ __html: doubtResponse }} />
                 
+                <div className="mt-3 flex justify-end">
+                  <button
+                    onClick={saveDoubtResponse}
+                    disabled={savingDoubt || doubtSaved}
+                    className={`text-sm px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2 ${doubtSaved ? 'bg-green-500 text-white' : 'bg-white text-blue-700 border border-blue-300 hover:bg-blue-50'}`}
+                  >
+                    {savingDoubt ? 'Salvando...' : doubtSaved ? '✓ Salvo em Meus Salvamentos!' : '💾 Salvar Explicação'}
+                  </button>
+                </div>
+
                 <div className="mt-4 pt-4 border-t border-blue-200">
                   <h4 className="font-semibold text-blue-800">Quer aprofundar o conhecimento?</h4>
                   <div className="flex flex-col sm:flex-row gap-4 mt-2 items-end">

@@ -70,6 +70,10 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
   const [subQuestionDifficulty, setSubQuestionDifficulty] = useState<string>('Médio');
   const [subQuestionError, setSubQuestionError] = useState<string | null>(null);
 
+  // Save doubt response state
+  const [savingDoubt, setSavingDoubt] = useState(false);
+  const [doubtSaved, setDoubtSaved] = useState(false);
+
   const generateQuiz = async () => {
     if (!apiKey) {
       setError("Chave de API não configurada.");
@@ -110,6 +114,33 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
       alert('Erro ao salvar conteúdo.');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const saveDoubtResponse = async () => {
+    if (!user || !doubtResponse || !doubt) return;
+    setSavingDoubt(true);
+    try {
+      const lessonsRef = collection(db, 'users', user.uid, 'lessons');
+      await addDoc(lessonsRef, {
+        subject: settings.subject,
+        topic: settings.topic,
+        lessonLevel: 'Dúvida',
+        data: {
+          titulo: `Dúvida: ${doubt.substring(0, 80)}${doubt.length > 80 ? '...' : ''}`,
+          introducao: `Pergunta: ${doubt}`,
+          secoes: [{ subtitulo: 'Resposta da IA', conteudo: doubtResponse.replace(/<[^>]*>?/gm, '') }],
+        },
+        userComment: `Dúvida sobre ${settings.subject} - ${settings.topic}`,
+        createdAt: serverTimestamp(),
+      });
+      setDoubtSaved(true);
+      setTimeout(() => setDoubtSaved(false), 3000);
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao salvar explicação.');
+    } finally {
+      setSavingDoubt(false);
     }
   };
 
@@ -661,6 +692,16 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
                     <div className="mt-4 p-4 bg-blue-100 border-l-4 border-blue-400 rounded-r-lg">
                       <div className="prose prose-blue max-w-none" dangerouslySetInnerHTML={{ __html: doubtResponse }} />
                       
+                      <div className="mt-3 flex justify-end">
+                        <button
+                          onClick={saveDoubtResponse}
+                          disabled={savingDoubt || doubtSaved}
+                          className={`text-sm px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2 ${doubtSaved ? 'bg-green-500 text-white' : 'bg-white text-blue-700 border border-blue-300 hover:bg-blue-50'}`}
+                        >
+                          {savingDoubt ? 'Salvando...' : doubtSaved ? '✓ Salvo em Meus Salvamentos!' : '💾 Salvar Explicação'}
+                        </button>
+                      </div>
+
                       <div className="mt-6 pt-4 border-t border-blue-200">
                         <h4 className="font-semibold text-blue-800 mb-3">Quer aprofundar o conhecimento?</h4>
                         <div className="flex flex-col sm:flex-row gap-4 items-end">
