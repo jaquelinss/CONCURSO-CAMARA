@@ -170,7 +170,6 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
 
   const updateRevisionPerformance = async (finalScore: number) => {
     if (!user || !settings.id) return;
-    const performance = Math.round((finalScore / questions.length) * 100);
     const revisionId = `${settings.subject}_${settings.topic}`.replace(/[^a-zA-Z0-9]/g, '_');
     const revisionRef = doc(db, 'users', user.uid, 'revisions', revisionId);
     
@@ -200,6 +199,11 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
       const flashcardsComplete = allLinkedFlashcards.length === 0 || allLinkedFlashcards.every((id: string) => (completedItems.flashcardIds || []).includes(id));
 
       const allComplete = lessonsComplete && quizzesComplete && flashcardsComplete;
+
+      let performance = revData.performance || 0;
+      if (!isFlashcardType && finalScore >= 0 && questions.length > 0) {
+        performance = Math.round((finalScore / questions.length) * 100);
+      }
 
       const updateData: any = {
         performance,
@@ -442,6 +446,9 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
   };
 
   const handleNext = () => {
+    if (isFlashcard && currentIndex === questions.length - 1) {
+      updateRevisionPerformance(-1);
+    }
     setSelectedAnswer(null);
     setCurrentIndex(i => i + 1);
     setEliminatedAnswers(new Set());
