@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import Navigation from '../components/Navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp, collection, getDocs, query, where } from 'firebase/firestore';
 import { getSubjectsByMode, topicsBySubject, themes, defaultTheme } from '../lib/constants';
 import { ChevronDown, ChevronUp, Plus, Trash2, CheckCircle2, Circle } from 'lucide-react';
 
@@ -26,14 +26,51 @@ export default function StudyProgressScreen() {
   const [newCustomItem, setNewCustomItem] = useState('');
   const [selectedTopicForCustom, setSelectedTopicForCustom] = useState<string>('');
 
-  const subjects = useMemo(() => getSubjectsByMode(mode), [mode]);
+  const [allSubjects, setAllSubjects] = useState<string[]>([]);
+  const [isCreatingNewSubject, setIsCreatingNewSubject] = useState(false);
+  const [newSubjectName, setNewSubjectName] = useState('');
+
+  // AI Modal States
+  const { apiKey } = useAuth();
+  const [isAIModalOpen, setIsAIModalOpen] = useState(false);
+  const [aiContext, setAiContext] = useState('');
+  const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
+  const [aiError, setAiError] = useState('');
+
+  const defaultSubjects = useMemo(() => getSubjectsByMode(mode), [mode]);
+  const subjects = useMemo(() => {
+    const combined = [...defaultSubjects];
+    allSubjects.forEach(s => {
+      if (!combined.includes(s)) combined.push(s);
+    });
+    return combined.sort();
+  }, [defaultSubjects, allSubjects]);
+
   const theme = useMemo(() => themes[subject] || defaultTheme, [subject]);
 
   useEffect(() => {
-    if (subjects.length > 0 && !subjects.includes(subject)) {
+    const loadUserSubjects = async () => {
+      if (!user) return;
+      try {
+        const q = query(collection(db, 'users', user.uid, 'studyProgress'), where('mode', '==', mode));
+        const querySnapshot = await getDocs(q);
+        const savedSubjects: string[] = [];
+        querySnapshot.forEach(doc => {
+          if (doc.data().subject) savedSubjects.push(doc.data().subject);
+        });
+        setAllSubjects(savedSubjects);
+      } catch (error) {
+        console.error("Erro ao carregar matérias salvas:", error);
+      }
+    };
+    loadUserSubjects();
+  }, [user, mode]);
+
+  useEffect(() => {
+    if (!isCreatingNewSubject && subjects.length > 0 && !subjects.includes(subject) && subject !== 'new') {
       setSubject(subjects[0]);
     }
-  }, [mode, subjects, subject]);
+  }, [mode, subjects, subject, isCreatingNewSubject]);
 
   const fetchProgress = async () => {
     if (!user || !subject) return;
@@ -140,6 +177,80 @@ export default function StudyProgressScreen() {
     setExpandedTopics(prev => ({ ...prev, [topic]: !prev[topic] }));
   };
 
+  const handleGeneratePlan = async () => {
+    if (!apiKey) {
+      setAiError("Chave de API não configurada. Vá em Configurações para adicionar sua chave do Gemini.");
+      return;
+    }
+    
+    setIsGeneratingPlan(true);
+    setAiError('');
+
+    const prompt = `Atue como um professor especialista. Preciso de um plano de estudos estruturado para a matéria de "${subject}", focado no modo "${mode}". 
+${aiContext ? `Contexto extra do aluno: "${aiContext}"` : ''}
+
+Retorne ESTRITAMENTE um JSON válido, sem markdown (\`\`\`json), sem textos antes ou depois. 
+O JSON deve ser um array de objetos, onde cada objeto tem uma chave "topic" (nome do grande assunto) e uma chave "subTopics" (um array de strings com os tópicos menores a estudar).
+Exemplo de formato esperado:
+[
+  { "topic": "Gramática", "subTopics": ["Fonologia", "Morfologia", "Sintaxe"] },
+  { "topic": "Interpretação", "subTopics": ["Coesão e Coerência", "Tipologia Textual"] }
+]
+Certifique-se de que a ordem dos tópicos seja a melhor ordem lógica de aprendizado.`;
+
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+      });
+
+      if (!response.ok) throw new Error("A API falhou ao gerar o plano.");
+      const result = await response.json();
+      
+      let textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!textResponse) throw new Error("Resposta inválida da IA.");
+      
+      // Clean up potential markdown formatting
+      textResponse = textResponse.replace(/```json/gi, '').replace(/```/g, '').trim();
+      
+      const parsedData = JSON.parse(textResponse);
+      if (!Array.isArray(parsedData)) throw new Error("Formato JSON inválido.");
+
+      const newItems: ChecklistItem[] = [];
+      const newExpandedTopics: Record<string, boolean> = {};
+
+      parsedData.forEach((item: any, index: number) => {
+        const topic = item.topic || `Tópico ${index + 1}`;
+        newExpandedTopics[topic] = true; // expand all initially
+        
+        if (Array.isArray(item.subTopics)) {
+          item.subTopics.forEach((subTopic: string) => {
+            newItems.push({
+              id: `${topic}___${subTopic}___${Date.now()}`,
+              topic,
+              subTopic,
+              checked: false,
+              isCustom: true
+            });
+          });
+        }
+      });
+
+      setItems(newItems);
+      setExpandedTopics(newExpandedTopics);
+      saveProgress(newItems);
+      setIsAIModalOpen(false);
+      setAiContext('');
+
+    } catch (error) {
+      console.error(error);
+      setAiError("Não foi possível gerar o plano. Tente novamente ou ajuste o contexto.");
+    } finally {
+      setIsGeneratingPlan(false);
+    }
+  };
+
   // Group items by topic
   const groupedItems = items.reduce((acc, item) => {
     if (!acc[item.topic]) acc[item.topic] = [];
@@ -160,6 +271,13 @@ export default function StudyProgressScreen() {
             <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">Progresso de Estudos</h1>
             <p className="text-gray-600 dark:text-gray-400 mt-1">Acompanhe sua evolução em cada matéria</p>
           </div>
+          <button 
+            onClick={() => { setAiError(''); setIsAIModalOpen(true); }} 
+            disabled={!subject || isCreatingNewSubject}
+            className="px-4 py-2 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 rounded-lg font-bold hover:bg-indigo-200 dark:hover:bg-indigo-800/50 transition-colors flex items-center gap-2 disabled:opacity-50"
+          >
+            ✨ Plano com IA
+          </button>
         </div>
 
         <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 mb-8">
@@ -178,15 +296,61 @@ export default function StudyProgressScreen() {
             </div>
             <div className="flex-1">
               <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Matéria</label>
-              <select
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                className="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 outline-none"
-              >
-                {subjects.map(subj => (
-                  <option key={subj} value={subj}>{subj}</option>
-                ))}
-              </select>
+              <div className="flex gap-2">
+                {!isCreatingNewSubject ? (
+                  <select
+                    value={subject}
+                    onChange={(e) => {
+                      if (e.target.value === 'new') {
+                        setIsCreatingNewSubject(true);
+                        setSubject('');
+                        setItems([]);
+                      } else {
+                        setSubject(e.target.value);
+                      }
+                    }}
+                    className="flex-1 p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 outline-none"
+                  >
+                    {subjects.map(subj => (
+                      <option key={subj} value={subj}>{subj}</option>
+                    ))}
+                    <option value="new" className="font-bold text-indigo-600">+ Nova Matéria...</option>
+                  </select>
+                ) : (
+                  <div className="flex flex-1 gap-2">
+                    <input 
+                      type="text" 
+                      value={newSubjectName}
+                      onChange={(e) => setNewSubjectName(e.target.value)}
+                      placeholder="Nome da matéria..."
+                      className="flex-1 p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 outline-none"
+                      autoFocus
+                    />
+                    <button 
+                      onClick={() => {
+                        if (newSubjectName.trim()) {
+                          setSubject(newSubjectName.trim());
+                          setIsCreatingNewSubject(false);
+                          setNewSubjectName('');
+                        }
+                      }}
+                      disabled={!newSubjectName.trim()}
+                      className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 disabled:opacity-50"
+                    >
+                      Confirmar
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setIsCreatingNewSubject(false);
+                        setSubject(subjects[0] || '');
+                      }}
+                      className="px-4 py-2 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-lg font-bold hover:bg-gray-300 dark:hover:bg-gray-600"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -315,6 +479,59 @@ export default function StudyProgressScreen() {
           </div>
         )}
       </main>
+
+      {/* AI Modal */}
+      {isAIModalOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-lg p-6 animate-in fade-in zoom-in duration-200">
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">Gerar Plano de Estudos com IA</h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">A IA criará uma ordem lógica de tópicos e subtópicos para <strong>{subject}</strong>.</p>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Contexto ou Foco Específico (Opcional)</label>
+                <textarea 
+                  value={aiContext}
+                  onChange={(e) => setAiContext(e.target.value)}
+                  placeholder="Ex: Foco no edital do Banco do Brasil, priorizar questões da banca CEBRASPE..."
+                  className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
+                  rows={3}
+                ></textarea>
+              </div>
+
+              {aiError && (
+                <div className="p-3 bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-200 rounded-lg text-sm">
+                  {aiError}
+                </div>
+              )}
+
+              <div className="flex gap-3 justify-end pt-4">
+                <button 
+                  onClick={() => setIsAIModalOpen(false)}
+                  disabled={isGeneratingPlan}
+                  className="px-5 py-2 text-gray-600 dark:text-gray-300 font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  onClick={handleGeneratePlan}
+                  disabled={isGeneratingPlan}
+                  className={`px-5 py-2 text-white font-bold rounded-lg transition-all flex items-center gap-2 ${theme.button.split(' ')[0] || 'bg-indigo-600'}`}
+                >
+                  {isGeneratingPlan ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      Gerando...
+                    </>
+                  ) : (
+                    'Gerar Plano'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
