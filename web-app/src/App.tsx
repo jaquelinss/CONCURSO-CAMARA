@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import SavedContent from './pages/SavedContent';
 import ConfigScreen from './pages/ConfigScreen';
 import RevisionScreen from './pages/RevisionScreen';
+import StudyProgressScreen from './pages/StudyProgressScreen';
 import ReportButton from './components/ReportButton';
 import StickyNotesManager from './components/StickyNotesManager';
 
@@ -24,6 +25,7 @@ function AppRoutes() {
       <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
       <Route path="/saved" element={<PrivateRoute><SavedContent /></PrivateRoute>} />
       <Route path="/revisions" element={<PrivateRoute><RevisionScreen /></PrivateRoute>} />
+      <Route path="/progress" element={<PrivateRoute><StudyProgressScreen /></PrivateRoute>} />
       <Route path="/config" element={<PrivateRoute><ConfigScreen /></PrivateRoute>} />
       <Route path="*" element={<Navigate to="/dashboard" />} />
     </Routes>

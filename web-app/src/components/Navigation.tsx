@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { LogOut, Menu, X, Home, CalendarDays, FolderHeart, Sun, Moon } from 'lucide-react';
+import { LogOut, Menu, X, Home, CalendarDays, FolderHeart, Sun, Moon, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Navigation() {
@@ -56,6 +56,16 @@ export default function Navigation() {
                 }`}
               >
                 <CalendarDays className="w-4 h-4 mr-2" /> Cronograma
+              </Link>
+              <Link 
+                to="/progress"
+                className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                  location.pathname === '/progress'
+                    ? 'border-indigo-500 text-gray-900 dark:text-white'
+                    : 'border-transparent text-gray-500 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-100'
+                }`}
+              >
+                <TrendingUp className="w-4 h-4 mr-2" /> Progresso
               </Link>
               <Link 
                 to="/config"
@@ -132,19 +142,33 @@ export default function Navigation() {
             >
               <div className="flex items-center"><FolderHeart className="w-5 h-5 mr-3" /> Meus Salvamentos</div>
             </Link>
-            <Link
-              to="/revisions"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`block pl-3 pr-4 py-3 border-l-4 text-base font-medium ${
-                location.pathname === '/revisions'
-                  ? 'bg-indigo-50 dark:bg-indigo-900/30 border-indigo-500 text-indigo-700 dark:text-indigo-400'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200'
-              }`}
-            >
-              <div className="flex items-center"><CalendarDays className="w-5 h-5 mr-3" /> Cronograma</div>
-            </Link>
-            <Link
-              to="/config"
+              <Link
+                to="/revisions"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
+                  location.pathname === '/revisions'
+                    ? 'bg-indigo-50 dark:bg-indigo-900/50 border-indigo-500 text-indigo-700 dark:text-indigo-200'
+                    : 'border-transparent text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-white'
+                }`}
+              >
+                <div className="flex items-center">
+                  <CalendarDays className="w-5 h-5 mr-3" /> Cronograma
+                </div>
+              </Link>
+              <Link
+                to="/progress"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
+                  location.pathname === '/progress'
+                    ? 'bg-indigo-50 dark:bg-indigo-900/50 border-indigo-500 text-indigo-700 dark:text-indigo-200'
+                    : 'border-transparent text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-white'
+                }`}
+              >
+                <div className="flex items-center">
+                  <TrendingUp className="w-5 h-5 mr-3" /> Progresso
+                </div>
+              </Link>
+              <Link to="/config"
               onClick={() => setMobileMenuOpen(false)}
               className={`block pl-3 pr-4 py-3 border-l-4 text-base font-medium ${
                 location.pathname === '/config'
