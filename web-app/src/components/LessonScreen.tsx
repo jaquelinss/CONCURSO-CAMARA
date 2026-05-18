@@ -32,6 +32,14 @@ const HighlighterPalette = ({ top, left, onHighlight }: { top: number, left: num
           style={{ backgroundColor: color }}
         />
       ))}
+      <div className="w-px h-6 bg-gray-600 mx-1"></div>
+      <button
+        onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); onHighlight('clear'); }}
+        className="w-6 h-6 rounded-full border border-gray-400 bg-gray-200 cursor-pointer hover:scale-110 transition-transform flex items-center justify-center text-xs font-bold text-gray-600"
+        title="Remover marcação"
+      >
+        ✕
+      </button>
       <div className="absolute left-1/2 bottom-[-6px] -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-gray-800"></div>
     </div>
   );
@@ -74,6 +82,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
   // Highlighter and Tooltip Refs and States
   const contentRef = useRef<HTMLDivElement>(null);
   const selectionRef = useRef<Range | null>(null);
+  const activeHighlightNodeRef = useRef<HTMLElement | null>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   
   const [tooltip, setTooltip] = useState({ visible: false, content: '', top: 0, left: 0 });
@@ -101,22 +110,54 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
 
   const handleSelection = useCallback(() => {
     const selection = window.getSelection();
-    if (selection && !selection.isCollapsed && contentRef.current?.contains(selection.anchorNode)) {
-      selectionRef.current = selection.getRangeAt(0).cloneRange();
-      const range = selection.getRangeAt(0);
-      const rect = range.getBoundingClientRect();
-      const contentRect = contentRef.current.getBoundingClientRect();
-      setHighlighter({ 
-        visible: true, 
-        top: rect.top - contentRect.top, 
-        left: rect.left - contentRect.left + rect.width / 2 
-      });
+    if (selection && contentRef.current?.contains(selection.anchorNode)) {
+      const node = selection.anchorNode;
+      const parentElement = node?.nodeType === Node.TEXT_NODE ? node.parentElement : node as HTMLElement;
+      const highlightNode = parentElement?.closest('.highlighted-text') as HTMLElement | null;
+
+      if (!selection.isCollapsed) {
+        selectionRef.current = selection.getRangeAt(0).cloneRange();
+        activeHighlightNodeRef.current = highlightNode;
+        const range = selection.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        const contentRect = contentRef.current.getBoundingClientRect();
+        setHighlighter({ 
+          visible: true, 
+          top: rect.top - contentRect.top, 
+          left: rect.left - contentRect.left + rect.width / 2 
+        });
+      } else if (highlightNode) {
+        selectionRef.current = null;
+        activeHighlightNodeRef.current = highlightNode;
+        const rect = highlightNode.getBoundingClientRect();
+        const contentRect = contentRef.current.getBoundingClientRect();
+        setHighlighter({ 
+          visible: true, 
+          top: rect.top - contentRect.top, 
+          left: rect.left - contentRect.left + rect.width / 2 
+        });
+      } else {
+        setHighlighter({ visible: false, top: 0, left: 0 });
+        activeHighlightNodeRef.current = null;
+      }
     } else {
       setHighlighter({ visible: false, top: 0, left: 0 });
+      activeHighlightNodeRef.current = null;
     }
   }, []);
 
   const applyHighlight = (color: string) => {
+    if (color === 'clear') {
+      const nodeToClear = activeHighlightNodeRef.current;
+      if (nodeToClear) {
+        const text = document.createTextNode(nodeToClear.textContent || '');
+        nodeToClear.parentNode?.replaceChild(text, nodeToClear);
+      }
+      window.getSelection()?.removeAllRanges();
+      setHighlighter({ visible: false, top: 0, left: 0 });
+      return;
+    }
+
     if (selectionRef.current) {
       const range = selectionRef.current;
       const span = document.createElement('span');
