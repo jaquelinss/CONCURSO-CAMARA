@@ -215,11 +215,9 @@ function SidebarNoteItem({
     >
       <div ref={nodeRef} className="rounded-lg shadow-md p-4 relative cursor-move border border-black/5" style={{ backgroundColor: note.color || '#fef08a' }}>
         {note.title && <h4 className="font-bold text-gray-800 mb-1" style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}>{note.title}</h4>}
-        <div 
-          className="text-sm text-gray-800 line-clamp-3 min-h-[40px] prose prose-sm prose-p:my-0 prose-ul:my-0 prose-ol:my-0" 
-          style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}
-          dangerouslySetInnerHTML={{ __html: note.content || '<span class="italic opacity-50">Nota vazia</span>' }}
-        />
+        <p className="text-sm text-gray-800 line-clamp-4 min-h-[60px]" style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}>
+          {note.content || <span className="italic opacity-50">Nota vazia</span>}
+        </p>
         <div className="flex gap-2 mt-4 justify-between border-t border-black/10 pt-2 items-center">
           <button 
             onPointerDown={(e) => e.stopPropagation()} 
@@ -262,12 +260,10 @@ function StickyNoteItem({
 }) {
   const [showPalette, setShowPalette] = useState(false);
   const nodeRef = useRef<HTMLDivElement>(null);
-  const contentEditableRef = useRef<HTMLDivElement>(null);
   
   // Local state for debouncing typing and dragging
   const [title, setTitle] = useState(note.title || '');
   const [content, setContent] = useState(note.content || '');
-  const initialContent = useRef(note.content || '');
 
   // Debounce saving content
   useEffect(() => {
@@ -278,13 +274,6 @@ function StickyNoteItem({
     }, 1000);
     return () => clearTimeout(timeoutId);
   }, [content, title]);
-
-  const executeCommand = (cmd: string) => {
-    document.execCommand(cmd, false, undefined);
-    if (contentEditableRef.current) {
-      contentEditableRef.current.focus();
-    }
-  };
 
   return (
     <Draggable
@@ -345,7 +334,7 @@ function StickyNoteItem({
           </div>
         )}
 
-        {/* Formatação & Título */}
+        {/* Título */}
         <div className="flex flex-col bg-black/5 border-b border-black/10">
           <input
             type="text"
@@ -356,23 +345,16 @@ function StickyNoteItem({
             className="w-full px-3 py-1 bg-transparent outline-none font-bold text-gray-800 placeholder-black/40 text-sm"
             style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}
           />
-          <div className="flex gap-1 px-2 py-1">
-            <button onPointerDown={(e) => { e.preventDefault(); executeCommand('bold'); }} className="px-2 py-0.5 text-xs font-bold hover:bg-black/10 rounded text-gray-800" title="Negrito">B</button>
-            <button onPointerDown={(e) => { e.preventDefault(); executeCommand('italic'); }} className="px-2 py-0.5 text-xs italic hover:bg-black/10 rounded text-gray-800" title="Itálico">I</button>
-            <button onPointerDown={(e) => { e.preventDefault(); executeCommand('underline'); }} className="px-2 py-0.5 text-xs underline hover:bg-black/10 rounded text-gray-800" title="Sublinhado">U</button>
-          </div>
         </div>
 
-        {/* Text Area (Content Editable) */}
-        <div
-          ref={contentEditableRef}
-          contentEditable={true}
-          onInput={(e) => setContent(e.currentTarget.innerHTML)}
+        {/* Text Area */}
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
           onFocus={onFocus}
-          className="w-full h-full flex-grow p-3 bg-transparent outline-none text-gray-800 font-medium overflow-y-auto min-h-[120px] prose prose-sm prose-p:my-0 prose-ul:my-0 prose-ol:my-0 focus:ring-0"
-          style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}
-          dangerouslySetInnerHTML={{ __html: initialContent.current }}
-          suppressContentEditableWarning={true}
+          placeholder="Escreva algo..."
+          className="w-full flex-grow min-h-[160px] p-3 bg-transparent resize-none outline-none placeholder-black/30 text-gray-800 font-medium"
+          style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }} // Post-it feel
         />
       </div>
     </Draggable>
