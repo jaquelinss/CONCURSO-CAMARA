@@ -22,13 +22,12 @@ const HighlighterPalette = ({ top, left, onHighlight }: { top: number, left: num
     <div 
       className="absolute bg-gray-800 p-2 rounded-full shadow-xl flex gap-2 z-50 items-center"
       style={{ top, left, transform: 'translate(-50%, -100%)', marginTop: '-12px' }}
-      onMouseDown={(e) => e.preventDefault()}
+      onPointerDown={(e) => e.preventDefault()}
     >
       {colors.map(color => (
         <button
           key={color}
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onHighlight(color); }}
+          onPointerDown={(e) => { e.preventDefault(); e.stopPropagation(); onHighlight(color); }}
           className="w-6 h-6 rounded-full border border-white cursor-pointer hover:scale-110 transition-transform"
           style={{ backgroundColor: color }}
         />

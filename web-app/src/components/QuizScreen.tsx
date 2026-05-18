@@ -48,9 +48,33 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
   const [saved, setSaved] = useState(isSavedMode);
   const [error, setError] = useState<string | null>(null);
 
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const storageKey = settings.id ? `quiz_progress_${settings.id}` : null;
+
+  const [currentIndex, setCurrentIndex] = useState<number>(() => {
+    if (storageKey) {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) return Number(JSON.parse(saved).currentIndex) || 0;
+    }
+    return 0;
+  });
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const [score, setScore] = useState(0);
+  const [score, setScore] = useState<number>(() => {
+    if (storageKey) {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) return Number(JSON.parse(saved).score) || 0;
+    }
+    return 0;
+  });
+
+  React.useEffect(() => {
+    if (storageKey && questions.length > 0) {
+      if (currentIndex >= questions.length) {
+        localStorage.removeItem(storageKey);
+      } else {
+        localStorage.setItem(storageKey, JSON.stringify({ currentIndex, score }));
+      }
+    }
+  }, [currentIndex, score, storageKey, questions.length]);
 
   const [eliminatedAnswers, setEliminatedAnswers] = useState<Set<string>>(new Set());
 
