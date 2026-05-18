@@ -2,11 +2,68 @@ import { useEffect, useState } from 'react';
 import Navigation from '../components/Navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
-import { collection, query, getDocs, orderBy } from 'firebase/firestore';
+import { collection, query, getDocs, orderBy, doc, updateDoc } from 'firebase/firestore';
 import QuizScreen from '../components/QuizScreen';
 import LessonScreen from '../components/LessonScreen';
 import ScheduleRevisionModal from '../components/ScheduleRevisionModal';
-import { CalendarClock } from 'lucide-react';
+import { CalendarClock, MessageSquare, Check, X } from 'lucide-react';
+
+function CommentBadge({ item, collectionName, userId }: { item: any, collectionName: string, userId: string }) {
+  const [editing, setEditing] = useState(false);
+  const [comment, setComment] = useState(item.userComment || '');
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const ref = doc(db, 'users', userId, collectionName, item.id);
+      await updateDoc(ref, { userComment: comment });
+      item.userComment = comment;
+      setEditing(false);
+    } catch (err) {
+      console.error('Erro ao salvar comentário:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (editing) {
+    return (
+      <div className="mt-2 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+        <input
+          type="text"
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          placeholder="Ex: Revisão sobre verbos irregulares"
+          className="flex-grow text-sm p-1.5 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          autoFocus
+          onKeyDown={(e) => { if (e.key === 'Enter') handleSave(); if (e.key === 'Escape') { setComment(item.userComment || ''); setEditing(false); }}}
+        />
+        <button onClick={handleSave} disabled={saving} className="p-1.5 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-md transition-colors">
+          <Check className="w-4 h-4" />
+        </button>
+        <button onClick={() => { setComment(item.userComment || ''); setEditing(false); }} className="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors">
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      onClick={(e) => { e.stopPropagation(); setEditing(true); }}
+      className="mt-1 flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors"
+      title="Adicionar/editar comentário"
+    >
+      <MessageSquare className="w-3 h-3" />
+      {item.userComment ? (
+        <span className="italic text-indigo-500 dark:text-indigo-400">{item.userComment}</span>
+      ) : (
+        <span>Adicionar comentário</span>
+      )}
+    </button>
+  );
+}
 
 export default function SavedContent() {
   const { user } = useAuth();
@@ -135,11 +192,12 @@ export default function SavedContent() {
                   {lessons.map(lesson => (
                     <div 
                       key={lesson.id} 
-                      className="group relative p-4 bg-white dark:bg-gray-800 rounded shadow hover:bg-gray-50 dark:bg-gray-900 transition border-l-4 border-blue-500 flex justify-between items-center"
+                      className="group relative p-4 bg-white dark:bg-gray-800 rounded shadow hover:bg-gray-50 dark:hover:bg-gray-700 transition border-l-4 border-blue-500 flex justify-between items-start"
                     >
                       <div className="cursor-pointer flex-grow" onClick={() => { setViewingContent(lesson); setViewingType('lesson'); }}>
                         <h3 className="font-bold">{lesson.data?.titulo || lesson.subject}</h3>
                         <p className="text-sm text-gray-500 dark:text-gray-400">Salvo em: {lesson.createdAt?.toDate().toLocaleDateString()}</p>
+                        <CommentBadge item={lesson} collectionName="lessons" userId={user!.uid} />
                       </div>
                       <button 
                         onClick={(e) => { e.stopPropagation(); setSchedulingItem({item: lesson, type: 'lesson'}); }}
@@ -163,12 +221,13 @@ export default function SavedContent() {
                   {quizzes.map(quiz => (
                     <div 
                       key={quiz.id} 
-                      className="group relative p-4 bg-white dark:bg-gray-800 rounded shadow hover:bg-gray-50 dark:bg-gray-900 transition border-l-4 border-green-500 flex justify-between items-center"
+                      className="group relative p-4 bg-white dark:bg-gray-800 rounded shadow hover:bg-gray-50 dark:hover:bg-gray-700 transition border-l-4 border-green-500 flex justify-between items-start"
                     >
                       <div className="cursor-pointer flex-grow" onClick={() => { setViewingContent(quiz); setViewingType('quiz'); }}>
                         <h3 className="font-bold">{quiz.subject} - {quiz.topic}</h3>
                         <p className="text-sm text-gray-500 dark:text-gray-400">{quiz.data?.length || 0} questões</p>
                         <p className="text-sm text-gray-500 dark:text-gray-400">Salvo em: {quiz.createdAt?.toDate().toLocaleDateString()}</p>
+                        <CommentBadge item={quiz} collectionName="quizzes" userId={user!.uid} />
                       </div>
                       <button 
                         onClick={(e) => { e.stopPropagation(); setSchedulingItem({item: quiz, type: 'quiz'}); }}
@@ -190,12 +249,13 @@ export default function SavedContent() {
                   {flashcards.map(flash => (
                     <div 
                       key={flash.id} 
-                      className="group relative p-4 bg-white dark:bg-gray-800 rounded shadow hover:bg-gray-50 dark:bg-gray-900 transition border-l-4 border-indigo-500 flex justify-between items-center"
+                      className="group relative p-4 bg-white dark:bg-gray-800 rounded shadow hover:bg-gray-50 dark:hover:bg-gray-700 transition border-l-4 border-indigo-500 flex justify-between items-start"
                     >
                       <div className="cursor-pointer flex-grow" onClick={() => { setViewingContent(flash); setViewingType('flashcard'); }}>
                         <h3 className="font-bold">{flash.subject} - {flash.topic}</h3>
                         <p className="text-sm text-gray-500 dark:text-gray-400">{flash.data?.length || 0} flashcards</p>
                         <p className="text-sm text-gray-500 dark:text-gray-400">Salvo em: {flash.createdAt?.toDate().toLocaleDateString()}</p>
+                        <CommentBadge item={flash} collectionName="flashcards" userId={user!.uid} />
                       </div>
                       <button 
                         onClick={(e) => { e.stopPropagation(); setSchedulingItem({item: flash, type: 'flashcard'}); }}

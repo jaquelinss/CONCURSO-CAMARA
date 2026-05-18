@@ -197,6 +197,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
         topic: settings.topic,
         lessonLevel: currentLevel,
         data: currentLesson,
+        userComment: '',
         createdAt: serverTimestamp(),
       });
       setSaved(true);

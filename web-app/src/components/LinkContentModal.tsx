@@ -16,6 +16,7 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
   const [loading, setLoading] = useState(true);
   const [linking, setLinking] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [searchTerm, setSearchTerm] = useState('');
 
   const typeLabels: Record<string, { label: string, collection: string, icon: any, color: string, plural: string }> = {
     lesson: { label: 'Aula Explicativa', collection: 'lessons', icon: <BookOpen className="w-5 h-5" />, color: 'blue', plural: 'aulas' },
@@ -143,7 +144,24 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
               <p className="text-xs text-gray-400 uppercase font-bold tracking-wider mb-2">
                 {items.length} item(ns) disponível(eis) · {selectedIds.size} selecionado(s)
               </p>
-              {items.map(item => {
+              <div className="mb-3">
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Buscar por nome, tópico ou comentário..."
+                  className="w-full text-sm p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                />
+              </div>
+              {items.filter(item => {
+                if (!searchTerm.trim()) return true;
+                const term = searchTerm.toLowerCase();
+                const title = type === 'lesson' 
+                  ? (item.data?.titulo || `${item.subject} - ${item.topic}`)
+                  : `${item.subject} - ${item.topic}`;
+                const comment = item.userComment || '';
+                return title.toLowerCase().includes(term) || comment.toLowerCase().includes(term) || (item.topic || '').toLowerCase().includes(term);
+              }).map(item => {
                 const isSelected = selectedIds.has(item.id);
                 return (
                   <button
@@ -171,6 +189,11 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
                           {' · '}
                           Salvo em: {item.createdAt?.toDate?.()?.toLocaleDateString() || 'N/A'}
                         </p>
+                        {item.userComment && (
+                          <p className="text-xs text-indigo-500 dark:text-indigo-400 mt-1 italic flex items-center gap-1">
+                            💬 {item.userComment}
+                          </p>
+                        )}
                       </div>
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
                         isSelected ? 'bg-indigo-600 border-indigo-600' : 'border-gray-300'

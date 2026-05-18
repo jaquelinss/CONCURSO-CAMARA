@@ -100,6 +100,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
         difficulty: settings.difficulty,
         model: settings.model,
         data: questions,
+        userComment: '',
         createdAt: serverTimestamp(),
       });
       setSaved(true);
