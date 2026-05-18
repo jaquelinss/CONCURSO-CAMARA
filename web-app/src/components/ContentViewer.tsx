@@ -131,7 +131,7 @@ export default function ContentViewer({ type, content, onBack }: ContentViewerPr
                     part.type === 'term' ? (
                       <span 
                         key={i} 
-                        className="term-highlight bg-yellow-100 border border-dashed border-yellow-400 rounded px-1 cursor-pointer"
+                        className="term-highlight bg-yellow-100 dark:bg-yellow-900/30 border border-dashed border-yellow-400 dark:border-yellow-600 text-yellow-900 dark:text-yellow-200 rounded px-1 cursor-pointer"
                         onClick={(e) => toggleTooltip(e, part.explanation || '')}
                       >
                         {part.term}
@@ -155,12 +155,12 @@ export default function ContentViewer({ type, content, onBack }: ContentViewerPr
               <h3 className="text-xl font-semibold mb-4">{idx + 1}. {q.pergunta}</h3>
               <div className="space-y-2 mb-4">
                 {q.opcoes.map((opt: string, optIdx: number) => (
-                  <div key={optIdx} className={`p-3 rounded-lg border-2 ${opt === q.correta ? 'bg-green-100 border-green-400 font-bold' : 'bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700'}`}>
+                  <div key={optIdx} className={`p-3 rounded-lg border-2 ${opt === q.correta ? 'bg-green-100 dark:bg-green-900/30 border-green-400 dark:border-green-600 font-bold text-green-900 dark:text-green-200' : 'bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700'}`}>
                     {opt}
                   </div>
                 ))}
               </div>
-              <div className="p-4 bg-blue-50 text-blue-800 rounded-lg border border-blue-200 text-sm">
+              <div className="p-4 bg-blue-50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 rounded-lg border border-blue-200 dark:border-blue-800 text-sm">
                 <strong>Explicação:</strong> {q.explicacao}
               </div>
             </div>

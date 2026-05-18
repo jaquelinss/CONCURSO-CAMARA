@@ -422,7 +422,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
       <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md max-w-2xl mx-auto">
         <h2 className="text-2xl font-bold mb-4">Pronto para gerar a aula?</h2>
         <p className="mb-6 text-gray-600 dark:text-gray-400">Você selecionou <strong>{settings.subject}</strong> no nível <strong>{settings.lessonLevel}</strong>.</p>
-        {error && <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-lg">{error}</div>}
+        {error && <div className="mb-6 p-4 bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-200 rounded-lg">{error}</div>}
         <div className="flex gap-4 justify-center">
           <button onClick={onBack} className="px-6 py-2 bg-gray-200 text-gray-800 dark:text-gray-200 rounded font-semibold">Voltar</button>
           <button onClick={() => generateLessonForLevel(currentLevel)} className={`px-6 py-2 text-white rounded font-bold ${theme.button}`}>Gerar Agora</button>
@@ -440,7 +440,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
         <div className="flex items-center gap-2">
           <button
             onClick={() => window.dispatchEvent(new Event('toggle-archive'))}
-            className="text-sm bg-yellow-100 text-yellow-900 border border-yellow-300 p-2 rounded-lg hover:bg-yellow-200 transition-colors flex items-center gap-2 font-bold"
+            className="text-sm bg-yellow-100 dark:bg-yellow-900/30 text-yellow-900 dark:text-yellow-200 border border-yellow-300 dark:border-yellow-600 p-2 rounded-lg hover:bg-yellow-200 dark:hover:bg-yellow-800/50 transition-colors flex items-center gap-2 font-bold"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
             Meus Post-its
@@ -495,7 +495,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
                     part.type === 'term' ? (
                       <span 
                         key={i} 
-                        className="term-highlight bg-yellow-100 border border-dashed border-yellow-400 text-yellow-900 rounded px-1 cursor-pointer"
+                        className="term-highlight bg-yellow-100 dark:bg-yellow-900/30 border border-dashed border-yellow-400 dark:border-yellow-600 text-yellow-900 dark:text-yellow-200 rounded px-1 cursor-pointer"
                         onClick={(e) => toggleTooltip(e, part.explanation || '')}
                       >
                         {part.term}
@@ -559,21 +559,21 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
               </button>
             </div>
             {doubtResponse && (
-              <div className="mt-4 p-4 bg-blue-100 border-l-4 border-blue-400 rounded-r-lg">
-                <div className="prose prose-blue max-w-none" dangerouslySetInnerHTML={{ __html: doubtResponse }} />
+              <div className="mt-4 p-4 bg-blue-100 border-l-4 border-blue-400 dark:bg-blue-900/30 dark:border-blue-500 rounded-r-lg">
+                <div className="prose prose-blue dark:prose-invert max-w-none text-blue-900 dark:text-blue-100" dangerouslySetInnerHTML={{ __html: doubtResponse }} />
                 
                 <div className="mt-3 flex justify-end">
                   <button
                     onClick={saveDoubtResponse}
                     disabled={savingDoubt || doubtSaved}
-                    className={`text-sm px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2 ${doubtSaved ? 'bg-green-500 text-white' : 'bg-white text-blue-700 border border-blue-300 hover:bg-blue-50'}`}
+                    className={`text-sm px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2 ${doubtSaved ? 'bg-green-500 text-white' : 'bg-white dark:bg-gray-800 text-blue-700 dark:text-blue-400 border border-blue-300 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-gray-700'}`}
                   >
                     {savingDoubt ? 'Salvando...' : doubtSaved ? '✓ Salvo em Meus Salvamentos!' : '💾 Salvar Explicação'}
                   </button>
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-blue-200">
-                  <h4 className="font-semibold text-blue-800">Quer aprofundar o conhecimento?</h4>
+                <div className="mt-4 pt-4 border-t border-blue-200 dark:border-blue-800">
+                  <h4 className="font-semibold text-blue-800 dark:text-blue-200">Quer aprofundar o conhecimento?</h4>
                   <div className="flex flex-col sm:flex-row gap-4 mt-2 items-end">
                     <div className="flex-1">
                       <label className="block text-sm font-medium mb-1">Nº de Questões</label>

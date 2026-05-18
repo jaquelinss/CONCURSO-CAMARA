@@ -303,10 +303,10 @@ function RevisionCard({ revision, onAction, onReschedule }: { revision: any, onA
     (lessonsCompleted + quizzesCompleted + flashcardsCompleted) > 0;
 
   return (
-    <div className={`p-6 rounded-2xl shadow-sm border-2 transition-all hover:shadow-md bg-white dark:bg-gray-800 ${isOverdue ? 'border-red-100 bg-red-50/30' : 'border-gray-100 dark:border-gray-800'}`}>
+    <div className={`p-6 rounded-2xl shadow-sm border-2 transition-all hover:shadow-md bg-white dark:bg-gray-800 ${isOverdue ? 'border-red-100 dark:border-red-900/50 bg-red-50/30 dark:bg-red-900/10' : 'border-gray-100 dark:border-gray-800'}`}>
       <div className="flex justify-between items-start mb-4">
         <div>
-          <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-md ${isOverdue ? 'bg-red-100 text-red-700' : isTodayDate ? 'bg-amber-100 text-amber-700' : 'bg-indigo-100 text-indigo-700'}`}>
+          <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-md ${isOverdue ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300' : isTodayDate ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300' : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'}`}>
             {isOverdue ? 'Atrasado' : isTodayDate ? 'Hoje' : format(date, "d 'de' MMMM", { locale: ptBR })}
           </span>
           <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mt-2">{revision.subject}</h3>

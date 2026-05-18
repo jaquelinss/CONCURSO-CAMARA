@@ -48,8 +48,8 @@ export default function Login() {
         <h2 className="text-3xl font-bold text-center text-indigo-600 mb-6">
           {isRegistering ? 'Criar Conta' : 'Entrar no EduGenius'}
         </h2>
-        {error && <div className="mb-4 text-sm text-red-600 bg-red-100 p-3 rounded">{error}</div>}
-        {message && <div className="mb-4 text-sm text-green-700 bg-green-100 p-3 rounded">{message}</div>}
+        {error && <div className="mb-4 text-sm text-red-600 dark:text-red-200 bg-red-100 dark:bg-red-900/50 p-3 rounded">{error}</div>}
+        {message && <div className="mb-4 text-sm text-green-700 dark:text-green-200 bg-green-100 dark:bg-green-900/50 p-3 rounded">{message}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
