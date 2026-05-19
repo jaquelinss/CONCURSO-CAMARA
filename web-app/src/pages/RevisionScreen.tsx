@@ -2,14 +2,16 @@ import { useEffect, useState } from 'react';
 import Navigation from '../components/Navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
-import { collection, query, getDocs, orderBy, doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
-import { Calendar, Clock, BookOpen, CheckCircle, AlertCircle, PlusCircle, Brain, ChevronLeft, RefreshCw } from 'lucide-react';
+import { collection, query, getDocs, orderBy, doc, getDoc, setDoc, Timestamp, limit } from 'firebase/firestore';
+import { Calendar, Clock, BookOpen, CheckCircle, AlertCircle, PlusCircle, Brain, ChevronLeft, RefreshCw, Sparkles } from 'lucide-react';
 import { format, isBefore, isToday, startOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import LessonScreen from '../components/LessonScreen';
 import QuizScreen from '../components/QuizScreen';
 import LinkContentModal from '../components/LinkContentModal';
 import { getRevisionSuggestions, calculateNextStep } from '../lib/revision.service';
+import StudyPlanWizard from '../components/StudyPlanWizard';
+import StudyPlanView from '../components/StudyPlanView';
 
 // Helper: pega IDs vinculados de um tipo, compatível com formato antigo (singular) e novo (array)
 function getLinkedIds(contentLinks: any, type: string): string[] {
@@ -36,6 +38,12 @@ export default function RevisionScreen() {
   // Modal de seleção (quando há múltiplos itens vinculados)
   const [pickModal, setPickModal] = useState<{ revision: any, type: 'lesson' | 'quiz' | 'flashcard', items: any[] } | null>(null);
 
+  // Study Plan
+  const [activeTab, setActiveTab] = useState<'revisions' | 'studyPlan'>('revisions');
+  const [studyPlan, setStudyPlan] = useState<any>(null);
+  const [loadingPlan, setLoadingPlan] = useState(true);
+  const [showWizard, setShowWizard] = useState(false);
+
   const fetchRevisions = async () => {
     if (!user) return;
     try {
@@ -52,7 +60,27 @@ export default function RevisionScreen() {
 
   useEffect(() => {
     fetchRevisions();
+    fetchStudyPlan();
   }, [user]);
+
+  const fetchStudyPlan = async () => {
+    if (!user) return;
+    setLoadingPlan(true);
+    try {
+      const plansRef = collection(db, 'users', user.uid, 'studyPlans');
+      const q = query(plansRef, orderBy('createdAt', 'desc'), limit(1));
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        setStudyPlan({ id: snap.docs[0].id, ...snap.docs[0].data() });
+      } else {
+        setStudyPlan(null);
+      }
+    } catch (err) {
+      console.error('Erro ao buscar plano:', err);
+    } finally {
+      setLoadingPlan(false);
+    }
+  };
 
   const handleStartRevision = async (rev: any, type: 'lesson' | 'quiz' | 'flashcard') => {
     const ids = getLinkedIds(rev.contentLinks, type);
@@ -165,13 +193,80 @@ export default function RevisionScreen() {
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
       <Navigation />
       <main className="flex-grow p-4 md:p-8 max-w-6xl mx-auto w-full">
-        <header className="mb-10">
+        <header className="mb-6">
           <h1 className="text-4xl font-extrabold text-gray-900 dark:text-gray-100 flex items-center gap-3">
             <Calendar className="text-indigo-600 w-10 h-10" />
-            Cronograma de Revisão
+            Cronograma
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2 text-lg">Gerencie seu ciclo de aprendizagem e vença a curva do esquecimento.</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-2 text-lg">Gerencie suas revisões e plano de estudos.</p>
         </header>
+
+        {/* Tabs */}
+        <div className="flex gap-2 mb-8">
+          <button
+            onClick={() => setActiveTab('revisions')}
+            className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${
+              activeTab === 'revisions'
+                ? 'bg-indigo-600 text-white shadow-lg'
+                : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
+            }`}
+          >
+            <RefreshCw className="w-4 h-4" /> Revisões
+          </button>
+          <button
+            onClick={() => setActiveTab('studyPlan')}
+            className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${
+              activeTab === 'studyPlan'
+                ? 'bg-indigo-600 text-white shadow-lg'
+                : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
+            }`}
+          >
+            <Sparkles className="w-4 h-4" /> Plano de Estudos
+          </button>
+        </div>
+
+        {/* Study Plan Tab */}
+        {activeTab === 'studyPlan' ? (
+          <div>
+            {loadingPlan ? (
+              <div className="flex justify-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+              </div>
+            ) : studyPlan ? (
+              <div>
+                <div className="flex justify-end mb-4">
+                  <button
+                    onClick={() => setShowWizard(true)}
+                    className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl text-sm font-bold hover:from-indigo-600 hover:to-purple-700 transition-all shadow-md flex items-center gap-2"
+                  >
+                    <PlusCircle className="w-4 h-4" /> Novo Plano
+                  </button>
+                </div>
+                <StudyPlanView plan={studyPlan} onUpdate={() => { fetchStudyPlan(); window.dispatchEvent(new Event('study-plan-updated')); }} />
+              </div>
+            ) : (
+              <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-3xl shadow-sm border-2 border-dashed border-gray-200 dark:border-gray-700">
+                <Sparkles className="w-16 h-16 text-indigo-300 mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">Crie seu Plano de Estudos</h3>
+                <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto mt-2 mb-6">Envie o conteúdo programático ou selecione as matérias e a IA vai gerar um cronograma personalizado dia a dia.</p>
+                <button
+                  onClick={() => setShowWizard(true)}
+                  className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-bold hover:from-indigo-600 hover:to-purple-700 transition-all shadow-lg flex items-center gap-2 mx-auto"
+                >
+                  <Sparkles className="w-5 h-5" /> Criar Plano
+                </button>
+              </div>
+            )}
+            {showWizard && (
+              <StudyPlanWizard
+                onPlanCreated={() => { setShowWizard(false); fetchStudyPlan(); window.dispatchEvent(new Event('study-plan-updated')); }}
+                onClose={() => setShowWizard(false)}
+              />
+            )}
+          </div>
+        ) : (
+        /* Revisions Tab (original content) */
+        <>
 
         {loading ? (
           <div className="flex justify-center py-20">
@@ -216,6 +311,8 @@ export default function RevisionScreen() {
               </div>
             </section>
           </div>
+        )}
+        </>
         )}
       </main>
 

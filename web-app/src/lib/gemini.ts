@@ -133,3 +133,54 @@ async function callGemini(genAI: any, prompt: string, useSearch: boolean) {
     return JSON.parse(responseText);
 }
 
+export async function extractTopicsFromDoc(text: string, apiKey: string) {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const prompt = `Você é um especialista em educação. Analise o seguinte texto que contém um conteúdo programático ou plano de estudos de um concurso/prova:\n\n"${text.substring(0, 15000)}"\n\nExtraia e organize as matérias e seus respectivos tópicos em formato estruturado.\n\nA resposta DEVE ser estritamente um objeto JSON com o formato:\n{\n  "subjects": [\n    { "name": "Nome da Matéria", "topics": ["Tópico 1", "Tópico 2", "Tópico 3"] }\n  ]\n}`;
+    return await callGemini(genAI, prompt, false);
+}
+
+export async function generateStudyPlan(config: {
+    subjects: { name: string; topics: string[] }[];
+    hoursPerDay: number;
+    studyDays: string[];
+    examDate: string;
+    startDate: string;
+}, apiKey: string) {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const dayNames: Record<string, string> = { dom: 'Domingo', seg: 'Segunda', ter: 'Terça', qua: 'Quarta', qui: 'Quinta', sex: 'Sexta', sab: 'Sábado' };
+    const daysStr = config.studyDays.map(d => dayNames[d] || d).join(', ');
+    const subjectsStr = config.subjects.map(s => `- ${s.name}: ${s.topics.join(', ')}`).join('\n');
+
+    const prompt = `Você é um planejador educacional especialista. Crie um cronograma de estudos diário detalhado com base nas seguintes informações:
+
+MATÉRIAS E TÓPICOS:
+${subjectsStr}
+
+CONFIGURAÇÕES:
+- Horas de estudo por dia: ${config.hoursPerDay}h
+- Dias de estudo na semana: ${daysStr}
+- Data de início: ${config.startDate}
+- Data da prova: ${config.examDate}
+
+REGRAS:
+1. Distribua os tópicos de forma lógica e progressiva (do básico ao avançado).
+2. Alterne entre matérias diferentes no mesmo dia para evitar fadiga.
+3. Cada bloco de estudo deve ter no mínimo 0.5h e no máximo 2h.
+4. A soma dos blocos de cada dia deve ser exatamente ${config.hoursPerDay}h.
+5. Gere APENAS dias que caiam nos dias da semana selecionados.
+6. Tópicos mais densos podem se repetir em dias diferentes.
+7. Distribua o conteúdo de forma que tudo seja coberto antes da data da prova.
+
+A resposta DEVE ser estritamente um objeto JSON com o formato:
+{
+  "schedule": [
+    {
+      "date": "YYYY-MM-DD",
+      "blocks": [
+        { "subject": "Nome da Matéria", "topic": "Nome do Tópico", "hours": 1.5 }
+      ]
+    }
+  ]
+}`;
+    return await callGemini(genAI, prompt, false);
+}
