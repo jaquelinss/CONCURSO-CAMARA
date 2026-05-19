@@ -84,18 +84,28 @@ export const generateContentFromGemini = async (settings: any, apiKey: string) =
     const genAI = new GoogleGenerativeAI(apiKey);
     const prompt = buildPrompt(settings);
 
-    // Estratégia de resiliência:
-    // 1º) Tenta com Google Search (melhor para legislação e dados atuais)
-    // 2º) Se falhar por qualquer motivo da API, tenta sem a ferramenta de busca
-    try {
-        return await callGemini(genAI, prompt, true);
-    } catch (firstError: any) {
-        console.warn("Tentativa com googleSearch falhou, tentando sem busca:", firstError.message);
+    const needsSearch = settings.subject?.toLowerCase().includes('legislação') 
+        || settings.subject?.toLowerCase().includes('lei')
+        || settings.subject?.toLowerCase().includes('orgânica');
+
+    if (needsSearch) {
+        try {
+            return await callGemini(genAI, prompt, true);
+        } catch (firstError: any) {
+            console.warn("Tentativa com googleSearch falhou, tentando sem busca:", firstError.message);
+            try {
+                return await callGemini(genAI, prompt, false);
+            } catch (secondError: any) {
+                console.error("Ambas as tentativas falharam:", secondError);
+                throw new Error(`Falha técnica ao gerar com IA: ${secondError.message}. Verifique sua chave API.`);
+            }
+        }
+    } else {
         try {
             return await callGemini(genAI, prompt, false);
-        } catch (secondError: any) {
-            console.error("Ambas as tentativas falharam:", secondError);
-            throw new Error("Falha ao gerar o conteúdo com a IA. Verifique sua chave de API e tente novamente.");
+        } catch (error: any) {
+            console.error("Falha ao gerar conteúdo:", error);
+            throw new Error(`Falha técnica ao gerar com IA: ${error.message}. Verifique sua chave API.`);
         }
     }
 };
@@ -121,7 +131,6 @@ async function callGemini(genAI: any, prompt: string, useSearch: boolean) {
     const modelConfig: any = {
         model: 'gemini-2.5-flash',
         generationConfig: {
-            responseMimeType: "application/json",
             temperature: 0.2,
             topP: 0.95,
             topK: 40
