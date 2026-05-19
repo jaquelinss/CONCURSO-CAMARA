@@ -1,5 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import { getSubjectsByMode, getModelsByMode, themes, defaultTheme, difficulties, lessonLevels, topicsBySubject } from '../lib/constants';
+import { useAuth } from '../contexts/AuthContext';
+import { db } from '../lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 interface SettingsProps {
   settings: any;
@@ -43,11 +46,58 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
   
   const currentSubjects = getSubjectsByMode(settings.mode);
   const currentModels = getModelsByMode(settings.mode);
-  
-  const currentTopicsMap = topicsBySubject[settings.subject] || { 'Geral': [] };
-  const availableTopics = ['Todos', ...Object.keys(currentTopicsMap)];
-  const availableSubTopics = settings.topic !== 'Todos' && currentTopicsMap[settings.topic] && currentTopicsMap[settings.topic].length > 0
-        ? ['Todos', ...currentTopicsMap[settings.topic]]
+  const [activeTopicsMap, setActiveTopicsMap] = useState<Record<string, string[]>>({ 'Geral': [] });
+  const { user } = useAuth();
+
+  useEffect(() => {
+    const fetchCustomTopics = async () => {
+      const defaultMap = topicsBySubject[settings.subject] || { 'Geral': [] };
+      if (!user) {
+        setActiveTopicsMap(defaultMap);
+        return;
+      }
+
+      try {
+        const docRef = doc(db, 'users', user.uid, 'studyProgress', settings.subject);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const savedItems = data.items || [];
+          const isAiPlan = data.isAiGenerated || (savedItems.length > 0 && savedItems.every((item: any) => item.isCustom));
+          
+          const newMap: Record<string, string[]> = {};
+          
+          if (isAiPlan) {
+            savedItems.forEach((item: any) => {
+              if (!newMap[item.topic]) newMap[item.topic] = [];
+              if (!newMap[item.topic].includes(item.subTopic)) newMap[item.topic].push(item.subTopic);
+            });
+            setActiveTopicsMap(newMap);
+          } else {
+            // Mistura padrão com customizados manuais
+            Object.keys(defaultMap).forEach(k => newMap[k] = [...defaultMap[k]]);
+            savedItems.filter((i: any) => i.isCustom).forEach((item: any) => {
+              if (!newMap[item.topic]) newMap[item.topic] = [];
+              if (!newMap[item.topic].includes(item.subTopic)) newMap[item.topic].push(item.subTopic);
+            });
+            setActiveTopicsMap(newMap);
+          }
+        } else {
+          setActiveTopicsMap(defaultMap);
+        }
+      } catch (err) {
+        console.error('Erro ao buscar tópicos customizados:', err);
+        setActiveTopicsMap(defaultMap);
+      }
+    };
+
+    fetchCustomTopics();
+  }, [user, settings.subject]);
+
+  const availableTopics = ['Todos', ...Object.keys(activeTopicsMap)];
+  const availableSubTopics = settings.topic !== 'Todos' && activeTopicsMap[settings.topic] && activeTopicsMap[settings.topic].length > 0
+        ? ['Todos', ...activeTopicsMap[settings.topic]]
         : [];
 
   const handleModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
