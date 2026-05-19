@@ -106,8 +106,10 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     setLoading(true);
     setError(null);
     try {
-      const generatedQuestions = await generateContentFromGemini(settings, apiKey);
-      setQuestions(generatedQuestions);
+      const result = await generateContentFromGemini(settings, apiKey);
+      if (result.materia_identificada) settings.subject = result.materia_identificada;
+      if (result.topico_identificado) settings.topic = result.topico_identificado;
+      setQuestions(result.conteudo);
     } catch (err: any) {
       setError("Falha ao gerar conteúdo: " + err.message);
     } finally {

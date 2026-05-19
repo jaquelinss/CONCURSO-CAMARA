@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import Navigation from '../components/Navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
-import { collection, query, getDocs, orderBy, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, query, getDocs, orderBy, doc, updateDoc, deleteDoc, addDoc, serverTimestamp } from 'firebase/firestore';
 import QuizScreen from '../components/QuizScreen';
 import LessonScreen from '../components/LessonScreen';
 import ScheduleRevisionModal from '../components/ScheduleRevisionModal';
-import { CalendarClock, MessageSquare, Check, X, Trash2 } from 'lucide-react';
+import { CalendarClock, MessageSquare, Check, X, Trash2, FolderPlus, Plus, FolderOpen, XCircle } from 'lucide-react';
 
 function CommentBadge({ item, collectionName, userId }: { item: any, collectionName: string, userId: string }) {
   const [editing, setEditing] = useState(false);
@@ -76,6 +76,13 @@ export default function SavedContent() {
   const [viewingType, setViewingType] = useState<'lesson' | 'quiz' | 'flashcard' | null>(null);
   const [schedulingItem, setSchedulingItem] = useState<{item: any, type: 'lesson' | 'quiz' | 'flashcard'} | null>(null);
 
+  // Folder system
+  const [folders, setFolders] = useState<any[]>([]);
+  const [activeFolder, setActiveFolder] = useState<string>('all'); // 'all', 'none', or folderId
+  const [creatingFolder, setCreatingFolder] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
+  const [movingItem, setMovingItem] = useState<{id: string, type: 'lessons' | 'quizzes' | 'flashcards'} | null>(null);
+
   useEffect(() => {
     const fetchSavedContent = async () => {
       if (!user) return;
@@ -94,6 +101,12 @@ export default function SavedContent() {
         const qFlashcards = query(flashcardsRef, orderBy('createdAt', 'desc'));
         const flashcardsSnap = await getDocs(qFlashcards);
         setFlashcards(flashcardsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+
+        // Fetch folders
+        const foldersRef = collection(db, 'users', user.uid, 'folders');
+        const qFolders = query(foldersRef, orderBy('createdAt', 'asc'));
+        const foldersSnap = await getDocs(qFolders);
+        setFolders(foldersSnap.docs.map(d => ({ id: d.id, ...d.data() })));
       } catch (error) {
         console.error("Erro ao buscar conteúdos salvos", error);
       } finally {
@@ -103,6 +116,57 @@ export default function SavedContent() {
 
     fetchSavedContent();
   }, [user]);
+
+  const createFolder = async () => {
+    if (!user || !newFolderName.trim()) return;
+    try {
+      const foldersRef = collection(db, 'users', user.uid, 'folders');
+      const newDoc = await addDoc(foldersRef, {
+        name: newFolderName.trim(),
+        createdAt: serverTimestamp(),
+      });
+      setFolders(prev => [...prev, { id: newDoc.id, name: newFolderName.trim() }]);
+      setNewFolderName('');
+      setCreatingFolder(false);
+    } catch (err) {
+      console.error('Erro ao criar pasta:', err);
+      alert('Erro ao criar pasta.');
+    }
+  };
+
+  const deleteFolder = async (folderId: string) => {
+    if (!user) return;
+    if (!window.confirm('Excluir esta pasta? Os conteúdos dentro dela NÃO serão apagados.')) return;
+    try {
+      await deleteDoc(doc(db, 'users', user.uid, 'folders', folderId));
+      setFolders(prev => prev.filter(f => f.id !== folderId));
+      if (activeFolder === folderId) setActiveFolder('all');
+    } catch (err) {
+      console.error('Erro ao excluir pasta:', err);
+    }
+  };
+
+  const moveToFolder = async (itemId: string, type: 'lessons' | 'quizzes' | 'flashcards', folderId: string | null) => {
+    if (!user) return;
+    try {
+      const ref = doc(db, 'users', user.uid, type, itemId);
+      await updateDoc(ref, { folderId: folderId || null });
+      const updateState = (prev: any[]) => prev.map(item => item.id === itemId ? { ...item, folderId: folderId || null } : item);
+      if (type === 'lessons') setLessons(updateState);
+      if (type === 'quizzes') setQuizzes(updateState);
+      if (type === 'flashcards') setFlashcards(updateState);
+      setMovingItem(null);
+    } catch (err) {
+      console.error('Erro ao mover:', err);
+      alert('Erro ao mover conteúdo.');
+    }
+  };
+
+  const filterByFolder = (items: any[]) => {
+    if (activeFolder === 'all') return items;
+    if (activeFolder === 'none') return items.filter(i => !i.folderId);
+    return items.filter(i => i.folderId === activeFolder);
+  };
 
   const handleDelete = async (e: React.MouseEvent, id: string, type: 'lessons' | 'quizzes' | 'flashcards') => {
     e.stopPropagation();
@@ -193,7 +257,64 @@ export default function SavedContent() {
     <div className="min-h-screen flex flex-col">
       <Navigation />
       <main className="flex-grow p-4 max-w-6xl mx-auto w-full">
-        <h1 className="text-3xl font-bold mb-8">Meu Conteúdo Salvo</h1>
+        <h1 className="text-3xl font-bold mb-4">Meu Conteúdo Salvo</h1>
+
+        {/* Folder Tabs */}
+        <div className="flex flex-wrap items-center gap-2 mb-6 pb-3 border-b border-gray-200 dark:border-gray-700">
+          <button
+            onClick={() => setActiveFolder('all')}
+            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${activeFolder === 'all' ? 'bg-indigo-600 text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
+          >
+            Todos
+          </button>
+          <button
+            onClick={() => setActiveFolder('none')}
+            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${activeFolder === 'none' ? 'bg-indigo-600 text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
+          >
+            Sem Pasta
+          </button>
+          {folders.map(folder => (
+            <div key={folder.id} className="relative group flex items-center">
+              <button
+                onClick={() => setActiveFolder(folder.id)}
+                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-1.5 ${activeFolder === folder.id ? 'bg-indigo-600 text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
+              >
+                <FolderOpen className="w-3.5 h-3.5" />
+                {folder.name}
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); deleteFolder(folder.id); }}
+                className="ml-1 p-1 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                title="Excluir pasta"
+              >
+                <XCircle className="w-4 h-4" />
+              </button>
+            </div>
+          ))}
+          {creatingFolder ? (
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={newFolderName}
+                onChange={(e) => setNewFolderName(e.target.value)}
+                placeholder="Nome da pasta"
+                className="px-3 py-2 rounded-full text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 w-40"
+                autoFocus
+                onKeyDown={(e) => { if (e.key === 'Enter') createFolder(); if (e.key === 'Escape') { setCreatingFolder(false); setNewFolderName(''); }}}
+              />
+              <button onClick={createFolder} className="p-1.5 text-green-600 hover:bg-green-50 rounded-full"><Check className="w-4 h-4" /></button>
+              <button onClick={() => { setCreatingFolder(false); setNewFolderName(''); }} className="p-1.5 text-gray-400 hover:bg-gray-100 rounded-full"><X className="w-4 h-4" /></button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setCreatingFolder(true)}
+              className="px-4 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-indigo-500 to-purple-500 text-white hover:from-indigo-600 hover:to-purple-600 transition-all flex items-center gap-1.5 shadow-md"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Nova Pasta
+            </button>
+          )}
+        </div>
         
         {loading ? (
           <p>Carregando...</p>
@@ -201,11 +322,11 @@ export default function SavedContent() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
               <h2 className="text-2xl font-semibold mb-4 border-b pb-2">Aulas Explicativas</h2>
-              {lessons.length === 0 ? (
-                <p className="text-gray-500 dark:text-gray-400">Nenhuma aula salva.</p>
+              {filterByFolder(lessons).length === 0 ? (
+                <p className="text-gray-500 dark:text-gray-400">Nenhuma aula nesta visualização.</p>
               ) : (
                 <div className="space-y-4">
-                  {lessons.map(lesson => (
+                  {filterByFolder(lessons).map(lesson => (
                     <div 
                       key={lesson.id} 
                       className="group relative p-4 bg-white dark:bg-gray-800 rounded shadow hover:bg-gray-50 dark:hover:bg-gray-700 transition border-l-4 border-blue-500 flex justify-between items-start"
@@ -230,6 +351,13 @@ export default function SavedContent() {
                         >
                           <Trash2 className="w-5 h-5" />
                         </button>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); setMovingItem({id: lesson.id, type: 'lessons'}); }}
+                          className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                          title="Mover para pasta"
+                        >
+                          <FolderPlus className="w-5 h-5" />
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -239,11 +367,11 @@ export default function SavedContent() {
 
             <div>
               <h2 className="text-2xl font-semibold mb-4 border-b pb-2">Quizzes e Questões</h2>
-              {quizzes.length === 0 ? (
-                <p className="text-gray-500 dark:text-gray-400">Nenhum quiz salva.</p>
+              {filterByFolder(quizzes).length === 0 ? (
+                <p className="text-gray-500 dark:text-gray-400">Nenhum quiz nesta visualização.</p>
               ) : (
                 <div className="space-y-4">
-                  {quizzes.map(quiz => (
+                  {filterByFolder(quizzes).map(quiz => (
                     <div 
                       key={quiz.id} 
                       className="group relative p-4 bg-white dark:bg-gray-800 rounded shadow hover:bg-gray-50 dark:hover:bg-gray-700 transition border-l-4 border-green-500 flex justify-between items-start"
@@ -269,6 +397,13 @@ export default function SavedContent() {
                         >
                           <Trash2 className="w-5 h-5" />
                         </button>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); setMovingItem({id: quiz.id, type: 'quizzes'}); }}
+                          className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                          title="Mover para pasta"
+                        >
+                          <FolderPlus className="w-5 h-5" />
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -276,11 +411,11 @@ export default function SavedContent() {
               )}
 
               <h2 className="text-2xl font-semibold mb-4 border-b pb-2 mt-8">Flashcards</h2>
-              {flashcards.length === 0 ? (
-                <p className="text-gray-500 dark:text-gray-400">Nenhum flashcard salvo.</p>
+              {filterByFolder(flashcards).length === 0 ? (
+                <p className="text-gray-500 dark:text-gray-400">Nenhum flashcard nesta visualização.</p>
               ) : (
                 <div className="space-y-4">
-                  {flashcards.map(flash => (
+                  {filterByFolder(flashcards).map(flash => (
                     <div 
                       key={flash.id} 
                       className="group relative p-4 bg-white dark:bg-gray-800 rounded shadow hover:bg-gray-50 dark:hover:bg-gray-700 transition border-l-4 border-indigo-500 flex justify-between items-start"
@@ -306,11 +441,54 @@ export default function SavedContent() {
                         >
                           <Trash2 className="w-5 h-5" />
                         </button>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); setMovingItem({id: flash.id, type: 'flashcards'}); }}
+                          className="p-2 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                          title="Mover para pasta"
+                        >
+                          <FolderPlus className="w-5 h-5" />
+                        </button>
                       </div>
                     </div>
                   ))}
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Move to Folder Modal */}
+        {movingItem && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setMovingItem(null)}>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-sm w-full p-6" onClick={(e) => e.stopPropagation()}>
+              <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <FolderPlus className="w-5 h-5 text-purple-600" />
+                Mover para Pasta
+              </h3>
+              <div className="space-y-2 max-h-[50vh] overflow-y-auto">
+                <button
+                  onClick={() => moveToFolder(movingItem.id, movingItem.type, null)}
+                  className="w-full text-left p-3 rounded-xl border-2 border-gray-100 dark:border-gray-700 hover:border-yellow-300 hover:bg-yellow-50/50 dark:hover:bg-yellow-900/20 transition-all text-sm font-semibold text-gray-700 dark:text-gray-300"
+                >
+                  ✖ Remover da pasta atual
+                </button>
+                {folders.map(folder => (
+                  <button
+                    key={folder.id}
+                    onClick={() => moveToFolder(movingItem.id, movingItem.type, folder.id)}
+                    className="w-full text-left p-3 rounded-xl border-2 border-gray-100 dark:border-gray-700 hover:border-purple-300 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-2"
+                  >
+                    <FolderOpen className="w-4 h-4 text-purple-500" />
+                    <span className="font-semibold text-gray-800 dark:text-gray-200">{folder.name}</span>
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => setMovingItem(null)}
+                className="mt-4 w-full py-2 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+              >
+                Cancelar
+              </button>
             </div>
           </div>
         )}

@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { DownloadIcon, ClipboardListIcon } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import PracticeQuiz from './PracticeQuiz';
+import { generateContentFromGemini } from '../lib/gemini';
 
 interface LessonScreenProps {
   settings: any;
@@ -204,25 +205,17 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
     setLoading(true);
     setError(null);
     try {
-      const prompt = `Crie um material de estudo detalhado e didático sobre ${settings.subject} - ${settings.topic}, especificamente para um nível de aprofundamento '${level}'. Estruture a resposta como um objeto JSON com as chaves: "titulo", "introducao", e "secoes" (um array de objetos, cada um com "subtitulo" e "conteudo"). No "conteudo", identifique termos-chave que merecem uma explicação extra e os envolva na tag [EXPLICACAO]Termo: Explicação aqui[/EXPLICACAO].`;
+      const lessonSettings = { ...settings, lessonLevel: level, model: 'Aula Explicativa' };
+      const result = await generateContentFromGemini(lessonSettings, apiKey);
       
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { responseMimeType: "application/json" }
-        })
-      });
-      
-      if (!response.ok) throw new Error("A API falhou.");
-      const result = await response.json();
-      const text = result.candidates[0].content.parts[0].text;
-      const jsonMatch = text.match(/\[.*\]|\{.*\}/s);
-      let parsedData = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(text);
+      let parsedLesson = result;
+      if (result.materia_identificada) {
+        settings.subject = result.materia_identificada;
+        settings.topic = result.topico_identificado || settings.topic;
+        parsedLesson = result.conteudo;
+      }
 
-      setLessonData(prev => ({ ...prev, [level]: parsedData }));
+      setLessonData(prev => ({ ...prev, [level]: parsedLesson }));
       setCurrentLevel(level);
     } catch (err: any) {
       setError("Falha ao gerar aula: " + err.message);

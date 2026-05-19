@@ -13,14 +13,59 @@ export const generatePrompt = (settings: any) => {
     }
 
     if (studyModel === 'Aula Explicativa') {
-        return `Crie um material de estudo detalhado e didático sobre ${subjectDetails}, especificamente para um nível de aprofundamento '${lessonLevel}'. Estruture a resposta como um objeto JSON com as chaves: "titulo", "introducao", e "secoes" (um array de objetos, cada um com "subtitulo" e "conteudo"). No "conteudo", identifique termos-chave que merecem uma explicação extra e os envolva na tag [EXPLICACAO]Termo: Explicação aqui[/EXPLICACAO].`;
+        return `Você é um professor experiente. Analise o seguinte tema solicitado: "${subjectDetails}". 
+1. Identifique a qual disciplina acadêmica oficial (Matéria) ele pertence (ex: Direito Constitucional, Matemática, Raciocínio Lógico, Língua Portuguesa, etc).
+2. Identifique o Tópico principal.
+3. Crie um material de estudo detalhado e didático sobre o tema, especificamente para um nível de aprofundamento '${lessonLevel}'.
+
+A resposta DEVE ser estritamente um objeto JSON com o seguinte formato exato:
+{
+  "materia_identificada": "Nome da Matéria Oficial",
+  "topico_identificado": "Nome do Tópico",
+  "conteudo": {
+    "titulo": "Título da Aula",
+    "introducao": "Texto de introdução",
+    "secoes": [
+      { "subtitulo": "Nome da Seção", "conteudo": "Texto da seção com [EXPLICACAO]Termo: Explicação aqui[/EXPLICACAO]" }
+    ]
+  }
+}`;
     }
 
     if (studyModel === 'Flashcard') {
-        return `Gere ${quantity} flashcards de estudo sobre ${subjectDetails}, com dificuldade ${difficulty}. A resposta DEVE ser estritamente um array de objetos JSON, onde cada objeto representa um flashcard e contém apenas duas chaves: "frente" (a pergunta, termo ou conceito de forma clara) e "verso" (a resposta, definição ou explicação direta e concisa).`;
+        return `Analise o tema solicitado: "${subjectDetails}".
+1. Identifique a Matéria oficial.
+2. Identifique o Tópico.
+3. Gere ${quantity} flashcards de estudo com dificuldade ${difficulty}.
+
+A resposta DEVE ser estritamente um objeto JSON com o seguinte formato exato:
+{
+  "materia_identificada": "Nome da Matéria Oficial",
+  "topico_identificado": "Nome do Tópico",
+  "conteudo": [
+    { "frente": "pergunta ou conceito", "verso": "resposta ou definição" }
+  ]
+}`;
     }
 
-    return `Gere ${quantity} questões de múltipla escolha sobre ${subjectDetails}, no estilo ${studyModel}, com dificuldade ${difficulty}. Cada questão deve ter 4 opções de resposta. A resposta DEVE ser um array de objetos JSON, cada um com as chaves "pergunta", "opcoes" (um array de 4 strings), "correta" (a string exata da resposta correta) e "explicacao" (uma breve justificativa da resposta correta).`;
+    return `Analise o tema solicitado: "${subjectDetails}".
+1. Identifique a Matéria oficial.
+2. Identifique o Tópico.
+3. Gere ${quantity} questões de múltipla escolha no estilo ${studyModel}, com dificuldade ${difficulty}. Cada questão deve ter 4 opções.
+
+A resposta DEVE ser estritamente um objeto JSON com o seguinte formato exato:
+{
+  "materia_identificada": "Nome da Matéria Oficial",
+  "topico_identificado": "Nome do Tópico",
+  "conteudo": [
+    {
+      "pergunta": "Texto da pergunta",
+      "opcoes": ["A", "B", "C", "D"],
+      "correta": "Opção correta exata",
+      "explicacao": "Explicação da resposta"
+    }
+  ]
+}`;
 };
 
 export const generateContentFromGemini = async (settings: any, apiKey: string) => {
