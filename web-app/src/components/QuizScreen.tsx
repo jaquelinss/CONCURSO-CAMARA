@@ -124,7 +124,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
       const quizzesRef = collection(db, 'users', user.uid, collectionName);
       await addDoc(quizzesRef, {
         subject: settings.subject,
-        topic: settings.topic,
+        topic: settings.specificTopic || settings.topic,
         difficulty: settings.difficulty,
         model: settings.model,
         data: questions,
@@ -148,7 +148,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
       const lessonsRef = collection(db, 'users', user.uid, 'lessons');
       await addDoc(lessonsRef, {
         subject: settings.subject,
-        topic: settings.topic,
+        topic: settings.specificTopic || settings.topic,
         lessonLevel: 'Dúvida',
         data: {
           titulo: `Dúvida: ${doubt.substring(0, 80)}${doubt.length > 80 ? '...' : ''}`,
@@ -169,9 +169,8 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
   };
 
   const updateRevisionPerformance = async (finalScore: number) => {
-    if (!user || !settings.id) return;
-    const revisionId = `${settings.subject}_${settings.topic}`.replace(/[^a-zA-Z0-9]/g, '_');
-    const revisionRef = doc(db, 'users', user.uid, 'revisions', revisionId);
+    if (!user || !settings.id || !settings.revisionId) return;
+    const revisionRef = doc(db, 'users', user.uid, 'revisions', settings.revisionId);
     
     try {
       const revSnap = await getDoc(revisionRef);

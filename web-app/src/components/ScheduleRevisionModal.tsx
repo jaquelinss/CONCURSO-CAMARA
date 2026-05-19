@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { db } from '../lib/firebase';
-import { doc, setDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { doc, setDoc, serverTimestamp, Timestamp, collection } from 'firebase/firestore';
 import { getRevisionSuggestions } from '../lib/revision.service';
 import { Calendar, Brain, Check, X } from 'lucide-react';
 import { format } from 'date-fns';
@@ -25,9 +25,8 @@ export default function ScheduleRevisionModal({ user, item, type, onClose, onSch
     if (!user) return;
     setLoading(true);
     try {
-      // Usamos uma chave composta por subject e topic para agrupar conteúdos relacionados
-      const revisionId = `${item.subject}_${item.topic}`.replace(/[^a-zA-Z0-9]/g, '_');
-      const revisionRef = doc(db, 'users', user.uid, 'revisions', revisionId);
+      const revisionsRef = collection(db, 'users', user.uid, 'revisions');
+      const revisionRef = doc(revisionsRef);
       
       const contentLinks: any = {};
       if (type === 'lesson') contentLinks.lessonIds = [item.id];
@@ -36,7 +35,7 @@ export default function ScheduleRevisionModal({ user, item, type, onClose, onSch
 
       await setDoc(revisionRef, {
         subject: item.subject,
-        topic: item.topic,
+        topic: item.topic || 'Geral',
         scheduledDate: Timestamp.fromDate(new Date(selectedDate + 'T12:00:00')),
         status: 'pending',
         performance: item.performance || null,

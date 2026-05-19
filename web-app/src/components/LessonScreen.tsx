@@ -240,7 +240,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
       const lessonsRef = collection(db, 'users', user.uid, 'lessons');
       await addDoc(lessonsRef, {
         subject: settings.subject,
-        topic: settings.topic,
+        topic: settings.specificTopic || settings.topic,
         lessonLevel: currentLevel,
         data: currentLesson,
         userComment: '',
@@ -263,7 +263,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
       const lessonsRef = collection(db, 'users', user.uid, 'lessons');
       await addDoc(lessonsRef, {
         subject: settings.subject,
-        topic: settings.topic,
+        topic: settings.specificTopic || settings.topic,
         lessonLevel: 'Dúvida',
         data: {
           titulo: `Dúvida: ${doubt.substring(0, 80)}${doubt.length > 80 ? '...' : ''}`,

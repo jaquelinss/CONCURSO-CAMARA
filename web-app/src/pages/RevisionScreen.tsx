@@ -84,7 +84,7 @@ export default function RevisionScreen() {
     }
 
     if (loadedItems.length === 1) {
-      setActiveContent(loadedItems[0]);
+      setActiveContent({ ...loadedItems[0], revisionId: rev.id });
       setActiveType(type);
     } else if (loadedItems.length > 1) {
       setPickModal({ revision: rev, type, items: loadedItems });
@@ -100,7 +100,7 @@ export default function RevisionScreen() {
       const contentRef = doc(db, 'users', user.uid, collectionName, contentId);
       const contentSnap = await getDoc(contentRef);
       if (contentSnap.exists()) {
-        setActiveContent({ ...contentSnap.data(), id: contentSnap.id });
+        setActiveContent({ ...contentSnap.data(), id: contentSnap.id, revisionId: revisionForLesson?.id });
         setActiveType(type as any);
 
         // Se for aula, marca como completa ao abrir
@@ -246,7 +246,7 @@ export default function RevisionScreen() {
                 <button
                   key={item.id}
                   onClick={() => {
-                    setActiveContent(item);
+                    setActiveContent({ ...item, revisionId: pickModal.revision.id });
                     setActiveType(pickModal.type);
                     setPickModal(null);
                   }}
