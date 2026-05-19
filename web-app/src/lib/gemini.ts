@@ -54,12 +54,21 @@ A resposta DEVE ser estritamente um objeto JSON com o seguinte formato exato:
 3. Gere ${quantity} questões de múltipla escolha no estilo ${studyModel}.
 Nível de dificuldade exigido: ${difficulty}. As questões devem ter um nível de complexidade compatível com a dificuldade informada. Se a dificuldade for "Médio" ou "Difícil", elabore enunciados contextualizados e alternativas que exijam reflexão profunda, evitando respostas óbvias ou dadas pelo próprio enunciado.
 
-REGRAS RÍGIDAS PARA AS QUESTÕES:
-- Cada questão deve ter exatas 4 opções de resposta.
-- Apenas UMA alternativa deve estar correta. As outras TRÊS devem estar indiscutivelmente incorretas, mas devem ser distratores plausíveis.
-- Verifique a lógica da questão: se pedir a alternativa CORRETA, as outras 3 precisam estar absolutamente ERRADAS. Se pedir a INCORRETA, as outras 3 precisam estar CERTAS. Preste MUITA atenção a isso, especialmente em gramática e ortografia.
-- Não inclua as letras "A)", "B)", "C)", "D)" no texto das opções, apenas o conteúdo da resposta.
-- A "explicacao" deve justificar com base nas opções geradas, apontando os erros de cada alternativa incorreta de forma precisa e sem alucinar.
+REGRAS ABSOLUTAS E INVIOLÁVEIS PARA AS QUESTÕES:
+1. Cada questão deve ter exatas 4 opções de resposta.
+2. Apenas UMA alternativa deve estar correta. As outras TRÊS devem estar OBJETIVAMENTE e INDISCUTIVELMENTE incorretas.
+3. NÃO gere questões onde todas ou várias alternativas possam ser consideradas corretas. Se isso acontecer, a questão é INVÁLIDA.
+4. Para distratores (alternativas erradas), use erros CLAROS e VERIFICÁVEIS: dados incorretos, conceitos trocados, definições invertidas, exceções apresentadas como regra, informações inventadas, etc.
+5. Verifique a lógica da questão: se pedir a alternativa CORRETA, as outras 3 precisam estar absolutamente ERRADAS. Se pedir a INCORRETA, as outras 3 precisam estar CERTAS.
+6. Não inclua as letras "A)", "B)", "C)", "D)" no texto das opções, apenas o conteúdo da resposta.
+7. A "explicacao" deve justificar a resposta E APONTAR ESPECIFICAMENTE o erro de cada alternativa incorreta.
+
+AUTO-VALIDAÇÃO OBRIGATÓRIA (faça ANTES de retornar):
+- Releia cada questão gerada e pergunte-se: "Algum especialista no assunto poderia argumentar que outra alternativa também está correta?"
+- Se a resposta for SIM, DESCARTE essa questão e gere outra no lugar.
+- Em questões de gramática/ortografia: verifique CADA palavra de CADA alternativa contra as normas oficiais antes de marcar como certa ou errada.
+- Em questões de legislação: verifique artigos e incisos específicos.
+- NUNCA gere questões do tipo "qual dessas palavras está grafada corretamente" onde TODAS as palavras listadas estejam corretas. Isso é um erro gravíssimo.
 
 A resposta DEVE ser estritamente um objeto JSON com o seguinte formato exato:
 {
@@ -70,7 +79,7 @@ A resposta DEVE ser estritamente um objeto JSON com o seguinte formato exato:
       "pergunta": "Texto completo do enunciado da pergunta",
       "opcoes": ["Texto da opção 1", "Texto da opção 2", "Texto da opção 3", "Texto da opção 4"],
       "correta": "O texto exato e idêntico da opção que está correta",
-      "explicacao": "Explicação detalhada e coerente justificando a resposta"
+      "explicacao": "Explicação detalhada justificando a resposta e apontando o erro específico de cada alternativa incorreta"
     }
   ]
 }`;
