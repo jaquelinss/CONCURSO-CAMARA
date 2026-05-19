@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import Navigation from '../components/Navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
-import { collection, query, getDocs, orderBy, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, getDocs, orderBy, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import QuizScreen from '../components/QuizScreen';
 import LessonScreen from '../components/LessonScreen';
 import ScheduleRevisionModal from '../components/ScheduleRevisionModal';
-import { CalendarClock, MessageSquare, Check, X } from 'lucide-react';
+import { CalendarClock, MessageSquare, Check, X, Trash2 } from 'lucide-react';
 
 function CommentBadge({ item, collectionName, userId }: { item: any, collectionName: string, userId: string }) {
   const [editing, setEditing] = useState(false);
@@ -104,6 +104,22 @@ export default function SavedContent() {
     fetchSavedContent();
   }, [user]);
 
+  const handleDelete = async (e: React.MouseEvent, id: string, type: 'lessons' | 'quizzes' | 'flashcards') => {
+    e.stopPropagation();
+    if (!user) return;
+    if (!window.confirm('Tem certeza que deseja excluir este conteúdo?')) return;
+    
+    try {
+      await deleteDoc(doc(db, 'users', user.uid, type, id));
+      if (type === 'lessons') setLessons(prev => prev.filter(item => item.id !== id));
+      if (type === 'quizzes') setQuizzes(prev => prev.filter(item => item.id !== id));
+      if (type === 'flashcards') setFlashcards(prev => prev.filter(item => item.id !== id));
+    } catch (error) {
+      console.error("Erro ao excluir", error);
+      alert('Erro ao excluir conteúdo.');
+    }
+  };
+
   const handleBack = () => {
     setViewingContent(null);
     setViewingType(null);
@@ -199,13 +215,22 @@ export default function SavedContent() {
                         <p className="text-sm text-gray-500 dark:text-gray-400">Salvo em: {lesson.createdAt?.toDate().toLocaleDateString()}</p>
                         <CommentBadge item={lesson} collectionName="lessons" userId={user!.uid} />
                       </div>
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); setSchedulingItem({item: lesson, type: 'lesson'}); }}
-                        className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                        title="Agendar Revisão"
-                      >
-                        <CalendarClock className="w-5 h-5" />
-                      </button>
+                      <div className="flex flex-col gap-2">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); setSchedulingItem({item: lesson, type: 'lesson'}); }}
+                          className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                          title="Agendar Revisão"
+                        >
+                          <CalendarClock className="w-5 h-5" />
+                        </button>
+                        <button 
+                          onClick={(e) => handleDelete(e, lesson.id, 'lessons')}
+                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Excluir"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -229,13 +254,22 @@ export default function SavedContent() {
                         <p className="text-sm text-gray-500 dark:text-gray-400">Salvo em: {quiz.createdAt?.toDate().toLocaleDateString()}</p>
                         <CommentBadge item={quiz} collectionName="quizzes" userId={user!.uid} />
                       </div>
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); setSchedulingItem({item: quiz, type: 'quiz'}); }}
-                        className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                        title="Agendar Revisão"
-                      >
-                        <CalendarClock className="w-5 h-5" />
-                      </button>
+                      <div className="flex flex-col gap-2">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); setSchedulingItem({item: quiz, type: 'quiz'}); }}
+                          className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                          title="Agendar Revisão"
+                        >
+                          <CalendarClock className="w-5 h-5" />
+                        </button>
+                        <button 
+                          onClick={(e) => handleDelete(e, quiz.id, 'quizzes')}
+                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Excluir"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -257,13 +291,22 @@ export default function SavedContent() {
                         <p className="text-sm text-gray-500 dark:text-gray-400">Salvo em: {flash.createdAt?.toDate().toLocaleDateString()}</p>
                         <CommentBadge item={flash} collectionName="flashcards" userId={user!.uid} />
                       </div>
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); setSchedulingItem({item: flash, type: 'flashcard'}); }}
-                        className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                        title="Agendar Revisão"
-                      >
-                        <CalendarClock className="w-5 h-5" />
-                      </button>
+                      <div className="flex flex-col gap-2">
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); setSchedulingItem({item: flash, type: 'flashcard'}); }}
+                          className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                          title="Agendar Revisão"
+                        >
+                          <CalendarClock className="w-5 h-5" />
+                        </button>
+                        <button 
+                          onClick={(e) => handleDelete(e, flash.id, 'flashcards')}
+                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Excluir"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
