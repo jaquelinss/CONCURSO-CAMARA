@@ -10,10 +10,8 @@ import { Bug, ChevronDown, ChevronUp, CheckCircle, Clock } from 'lucide-react';
 const ADMIN_EMAILS = ['quelinalins@gmail.com'];
 
 export default function ConfigScreen() {
-  const { apiKey, geminiModel, saveApiKey, saveGeminiModel, user } = useAuth();
+  const { apiKey, saveApiKey, user } = useAuth();
   const [inputValue, setInputValue] = useState('');
-  const [modelValue, setModelValue] = useState('gemini-2.5-flash');
-  const [customModelValue, setCustomModelValue] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const navigate = useNavigate();
@@ -29,15 +27,7 @@ export default function ConfigScreen() {
     if (apiKey) {
       setInputValue(apiKey);
     }
-    if (geminiModel) {
-      if (['gemini-2.5-flash', 'gemini-3.1-pro', 'gemini-3.1-flash', 'gemini-3.0-pro', 'gemini-3.0-flash', 'gemini-1.5-pro-latest'].includes(geminiModel)) {
-        setModelValue(geminiModel);
-      } else {
-        setModelValue('custom');
-        setCustomModelValue(geminiModel);
-      }
-    }
-  }, [apiKey, geminiModel]);
+  }, [apiKey]);
 
   const fetchReports = async () => {
     if (!isAdmin) return;
@@ -71,8 +61,6 @@ export default function ConfigScreen() {
     setSaving(true);
     try {
       await saveApiKey(inputValue.trim());
-      const finalModel = modelValue === 'custom' ? customModelValue.trim() : modelValue;
-      await saveGeminiModel(finalModel);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (error) {
@@ -115,34 +103,6 @@ export default function ConfigScreen() {
                 placeholder="Cole sua chave aqui..."
                 className="w-full p-4 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-mono"
               />
-            </div>
-
-            <div className="pt-2">
-              <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Modelo de Inteligência Artificial</label>
-              <p className="text-xs text-gray-500 mb-2">Se você usa o modo gratuito ou precisa de respostas ultrarrápidas, mantenha o modelo Flash. Se você possui créditos na chave de API e quer raciocínio profundo, use o modelo Pro.</p>
-              <select
-                value={modelValue}
-                onChange={(e) => setModelValue(e.target.value)}
-                className="w-full p-4 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-mono"
-              >
-                <option value="gemini-2.5-flash">Gemini 2.5 Flash (Padrão)</option>
-                <option value="gemini-3.1-pro">Gemini 3.1 Pro (Avançado)</option>
-                <option value="gemini-3.1-flash">Gemini 3.1 Flash</option>
-                <option value="gemini-3.0-pro">Gemini 3.0 Pro</option>
-                <option value="gemini-3.0-flash">Gemini 3.0 Flash</option>
-                <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro</option>
-                <option value="custom">Outro (Digitar manualmente)</option>
-              </select>
-              
-              {modelValue === 'custom' && (
-                <input
-                  type="text"
-                  value={customModelValue}
-                  onChange={(e) => setCustomModelValue(e.target.value)}
-                  placeholder="Ex: gemini-4.0-pro"
-                  className="w-full mt-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-mono"
-                />
-              )}
             </div>
             
             <div className="flex gap-4 pt-4">

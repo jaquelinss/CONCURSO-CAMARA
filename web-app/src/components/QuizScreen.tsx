@@ -39,7 +39,7 @@ interface QuizScreenProps {
 }
 
 export default function QuizScreen({ settings, onBack, savedData }: QuizScreenProps) {
-  const { user, apiKey, geminiModel } = useAuth();
+  const { user, apiKey } = useAuth();
   const theme = themes[settings.subject] || defaultTheme;
   const isSavedMode = !!savedData;
   const [questions, setQuestions] = useState<any[]>(savedData || []);
@@ -106,7 +106,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     setLoading(true);
     setError(null);
     try {
-      const result = await generateContentFromGemini(settings, apiKey, geminiModel || 'gemini-2.5-flash');
+      const result = await generateContentFromGemini(settings, apiKey);
       if (result.materia_identificada) settings.subject = result.materia_identificada;
       if (result.topico_identificado) settings.topic = result.topico_identificado;
       setQuestions(result.conteudo);
@@ -490,7 +490,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     
     const doubtPrompt = `Com base na seguinte questão do quiz: "${currentQ.pergunta}" e sua explicação: "${currentQ.explicacao}", responda a seguinte dúvida do aluno: "${doubt}". Formate sua resposta usando HTML para melhor legibilidade. Use tags <p> para parágrafos, <strong> para destacar termos importantes, e <ul>/<li> para listas, se necessário. Não inclua <html>, <head>, ou <body> tags.`;
     
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel || 'gemini-2.5-flash'}:generateContent?key=${apiKey}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     try {
       const response = await fetch(apiUrl, {
@@ -515,7 +515,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     setSubQuestions([]);
 
     const prompt = `Com base no contexto da questão de quiz: "${currentQ.pergunta}", a explicação da resposta: "${currentQ.explicacao}", a dúvida do aluno: "${doubt}", e a resposta fornecida: "${doubtResponse.replace(/<[^>]*>?/gm, '')}", gere ${subQuestionCount} questões de múltipla escolha com dificuldade '${subQuestionDifficulty}'. O objetivo é testar o entendimento do aluno sobre o tópico da dúvida. A resposta DEVE ser um array de objetos JSON, cada um com as chaves "pergunta", "opcoes" (um array de 4 strings), "correta" (a string exata da resposta correta) e "explicacao".`;
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel || 'gemini-2.5-flash'}:generateContent?key=${apiKey}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     try {
       const response = await fetch(apiUrl, {
@@ -545,7 +545,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     setFlashcardDoubtResponse("");
 
     const doubtPrompt = `Com base no seguinte flashcard de estudos (Frente: "${currentQ.frente}", Verso: "${currentQ.verso}"), responda a seguinte dúvida do aluno: "${flashcardDoubt}". Seja direto e didático. Formate sua resposta usando HTML para melhor legibilidade (<p>, <strong>, <ul>, <li>). Não inclua <html>, <head>, ou <body>.`;
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel || 'gemini-2.5-flash'}:generateContent?key=${apiKey}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     try {
       const response = await fetch(apiUrl, {

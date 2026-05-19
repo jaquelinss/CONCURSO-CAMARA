@@ -23,7 +23,7 @@ const weekDays = [
 ];
 
 export default function StudyPlanWizard({ onPlanCreated, onClose }: StudyPlanWizardProps) {
-  const { user, apiKey, geminiModel } = useAuth();
+  const { user, apiKey } = useAuth();
   const [step, setStep] = useState(1);
 
   // Step 1 — Source
@@ -76,7 +76,7 @@ export default function StudyPlanWizard({ onPlanCreated, onClose }: StudyPlanWiz
         return;
       }
 
-      const result = await extractTopicsFromDoc(text, apiKey, geminiModel || 'gemini-2.5-flash');
+      const result = await extractTopicsFromDoc(text, apiKey);
       if (result.subjects && result.subjects.length > 0) {
         setSubjects(result.subjects);
       } else {
@@ -133,7 +133,7 @@ export default function StudyPlanWizard({ onPlanCreated, onClose }: StudyPlanWiz
         studyDays,
         examDate,
         startDate,
-      }, apiKey, geminiModel || 'gemini-2.5-flash');
+      }, apiKey);
 
       if (!result.schedule || result.schedule.length === 0) {
         setGenError('A IA não conseguiu gerar o plano. Tente novamente.');
