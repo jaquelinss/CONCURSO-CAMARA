@@ -36,6 +36,7 @@ export default function StudyProgressScreen() {
   const [aiContext, setAiContext] = useState('');
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
   const [aiError, setAiError] = useState('');
+  const [isAiGeneratedPlan, setIsAiGeneratedPlan] = useState(false);
 
   const defaultSubjects = useMemo(() => getSubjectsByMode(mode), [mode]);
   const subjects = useMemo(() => {
@@ -97,20 +98,28 @@ export default function StudyProgressScreen() {
       if (docSnap.exists()) {
         const data = docSnap.data();
         const savedItems = data.items as ChecklistItem[] || [];
+        const isAiPlan = data.isAiGenerated || (savedItems.length > 0 && savedItems.every((item: any) => item.isCustom));
         
-        // Merge saved items with default items (in case constants changed)
-        const mergedItems = [...defaultItems];
-        savedItems.forEach(savedItem => {
-          const index = mergedItems.findIndex(item => item.id === savedItem.id);
-          if (index !== -1) {
-            mergedItems[index].checked = savedItem.checked;
-          } else if (savedItem.isCustom) {
-            mergedItems.push(savedItem);
-          }
-        });
-        setItems(mergedItems);
+        setIsAiGeneratedPlan(isAiPlan);
+
+        if (isAiPlan) {
+          setItems(savedItems);
+        } else {
+          // Merge saved items with default items (in case constants changed)
+          const mergedItems = [...defaultItems];
+          savedItems.forEach((savedItem: any) => {
+            const index = mergedItems.findIndex(item => item.id === savedItem.id);
+            if (index !== -1) {
+              mergedItems[index].checked = savedItem.checked;
+            } else if (savedItem.isCustom) {
+              mergedItems.push(savedItem);
+            }
+          });
+          setItems(mergedItems);
+        }
       } else {
         setItems(defaultItems);
+        setIsAiGeneratedPlan(false);
       }
       
       // Expand first topic by default
@@ -129,7 +138,7 @@ export default function StudyProgressScreen() {
     fetchProgress();
   }, [user, subject]);
 
-  const saveProgress = async (newItems: ChecklistItem[]) => {
+  const saveProgress = async (newItems: ChecklistItem[], aiGeneratedFlag?: boolean) => {
     if (!user || !subject) return;
     try {
       const docRef = doc(db, 'users', user.uid, 'studyProgress', subject);
@@ -137,6 +146,7 @@ export default function StudyProgressScreen() {
         subject,
         mode,
         items: newItems,
+        isAiGenerated: aiGeneratedFlag !== undefined ? aiGeneratedFlag : isAiGeneratedPlan,
         updatedAt: serverTimestamp(),
       });
     } catch (error) {
@@ -239,7 +249,8 @@ Certifique-se de que a ordem dos tópicos seja a melhor ordem lógica de aprendi
 
       setItems(newItems);
       setExpandedTopics(newExpandedTopics);
-      saveProgress(newItems);
+      setIsAiGeneratedPlan(true);
+      saveProgress(newItems, true);
       setIsAIModalOpen(false);
       setAiContext('');
 
