@@ -129,7 +129,7 @@ function buildPrompt(settings: any): string {
 
 async function callGemini(genAI: any, prompt: string, useSearch: boolean) {
     const modelConfig: any = {
-        model: 'gemini-1.5-flash',
+        model: 'gemini-2.5-flash',
         generationConfig: {
             temperature: 0.2,
             topP: 0.95,
