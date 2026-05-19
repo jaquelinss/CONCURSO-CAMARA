@@ -13,6 +13,7 @@ export default function ConfigScreen() {
   const { apiKey, geminiModel, saveApiKey, saveGeminiModel, user } = useAuth();
   const [inputValue, setInputValue] = useState('');
   const [modelValue, setModelValue] = useState('gemini-2.5-flash');
+  const [customModelValue, setCustomModelValue] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const navigate = useNavigate();
@@ -29,7 +30,12 @@ export default function ConfigScreen() {
       setInputValue(apiKey);
     }
     if (geminiModel) {
-      setModelValue(geminiModel);
+      if (['gemini-2.5-flash', 'gemini-3.1-pro', 'gemini-3.1-flash', 'gemini-3.0-pro', 'gemini-3.0-flash', 'gemini-1.5-pro-latest'].includes(geminiModel)) {
+        setModelValue(geminiModel);
+      } else {
+        setModelValue('custom');
+        setCustomModelValue(geminiModel);
+      }
     }
   }, [apiKey, geminiModel]);
 
@@ -65,7 +71,8 @@ export default function ConfigScreen() {
     setSaving(true);
     try {
       await saveApiKey(inputValue.trim());
-      await saveGeminiModel(modelValue);
+      const finalModel = modelValue === 'custom' ? customModelValue.trim() : modelValue;
+      await saveGeminiModel(finalModel);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (error) {
@@ -118,10 +125,24 @@ export default function ConfigScreen() {
                 onChange={(e) => setModelValue(e.target.value)}
                 className="w-full p-4 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-mono"
               >
-                <option value="gemini-2.5-flash">Gemini 2.5 Flash (Padrão, Rápido, Otimizado)</option>
-                <option value="gemini-1.5-pro">Gemini 1.5 Pro (Avançado, Lento, Raciocínio Complexo)</option>
-                <option value="gemini-1.5-flash">Gemini 1.5 Flash (Estável, Legado)</option>
+                <option value="gemini-2.5-flash">Gemini 2.5 Flash (Padrão)</option>
+                <option value="gemini-3.1-pro">Gemini 3.1 Pro (Avançado)</option>
+                <option value="gemini-3.1-flash">Gemini 3.1 Flash</option>
+                <option value="gemini-3.0-pro">Gemini 3.0 Pro</option>
+                <option value="gemini-3.0-flash">Gemini 3.0 Flash</option>
+                <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro</option>
+                <option value="custom">Outro (Digitar manualmente)</option>
               </select>
+              
+              {modelValue === 'custom' && (
+                <input
+                  type="text"
+                  value={customModelValue}
+                  onChange={(e) => setCustomModelValue(e.target.value)}
+                  placeholder="Ex: gemini-4.0-pro"
+                  className="w-full mt-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-mono"
+                />
+              )}
             </div>
             
             <div className="flex gap-4 pt-4">
