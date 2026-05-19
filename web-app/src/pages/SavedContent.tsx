@@ -6,7 +6,7 @@ import { collection, query, getDocs, orderBy, doc, updateDoc, deleteDoc, addDoc,
 import QuizScreen from '../components/QuizScreen';
 import LessonScreen from '../components/LessonScreen';
 import ScheduleRevisionModal from '../components/ScheduleRevisionModal';
-import { CalendarClock, MessageSquare, Check, X, Trash2, FolderPlus, Plus, FolderOpen, XCircle } from 'lucide-react';
+import { CalendarClock, MessageSquare, Check, X, Trash2, FolderPlus, Plus, FolderOpen, XCircle, Pencil } from 'lucide-react';
 
 function CommentBadge({ item, collectionName, userId }: { item: any, collectionName: string, userId: string }) {
   const [editing, setEditing] = useState(false);
@@ -82,6 +82,21 @@ export default function SavedContent() {
   const [creatingFolder, setCreatingFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
   const [movingItem, setMovingItem] = useState<{id: string, type: 'lessons' | 'quizzes' | 'flashcards'} | null>(null);
+  const [editingFolderId, setEditingFolderId] = useState<string | null>(null);
+  const [editFolderName, setEditFolderName] = useState('');
+
+  const saveFolderName = async (folderId: string) => {
+    if (!user || !editFolderName.trim()) return;
+    try {
+      const folderRef = doc(db, 'users', user.uid, 'folders', folderId);
+      await updateDoc(folderRef, { name: editFolderName.trim() });
+      setFolders(prev => prev.map(f => f.id === folderId ? { ...f, name: editFolderName.trim() } : f));
+      setEditingFolderId(null);
+    } catch (err) {
+      console.error('Erro ao renomear pasta:', err);
+      alert('Erro ao renomear pasta.');
+    }
+  };
 
   useEffect(() => {
     const fetchSavedContent = async () => {
@@ -275,20 +290,70 @@ export default function SavedContent() {
           </button>
           {folders.map(folder => (
             <div key={folder.id} className="relative group flex items-center">
-              <button
-                onClick={() => setActiveFolder(folder.id)}
-                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-1.5 ${activeFolder === folder.id ? 'bg-indigo-600 text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
-              >
-                <FolderOpen className="w-3.5 h-3.5" />
-                {folder.name}
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); deleteFolder(folder.id); }}
-                className="ml-1 p-1 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
-                title="Excluir pasta"
-              >
-                <XCircle className="w-4 h-4" />
-              </button>
+              {editingFolderId === folder.id ? (
+                <div className="flex items-center gap-1 bg-white dark:bg-gray-800 rounded-full px-3 py-1 border border-indigo-400">
+                  <input
+                    type="text"
+                    value={editFolderName}
+                    onChange={(e) => setEditFolderName(e.target.value)}
+                    className="bg-transparent border-none text-sm font-semibold text-gray-800 dark:text-gray-200 focus:outline-none w-28"
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') saveFolderName(folder.id);
+                      if (e.key === 'Escape') setEditingFolderId(null);
+                    }}
+                  />
+                  <button
+                    onClick={() => saveFolderName(folder.id)}
+                    className="text-green-600 hover:text-green-700 p-0.5"
+                    title="Confirmar"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => setEditingFolderId(null)}
+                    className="text-gray-400 hover:text-gray-500 p-0.5"
+                    title="Cancelar"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <button
+                    onClick={() => setActiveFolder(folder.id)}
+                    onDoubleClick={() => {
+                      setEditingFolderId(folder.id);
+                      setEditFolderName(folder.name);
+                    }}
+                    className={`px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-1.5 ${activeFolder === folder.id ? 'bg-indigo-600 text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
+                    title="Dê duplo clique para renomear"
+                  >
+                    <FolderOpen className="w-3.5 h-3.5" />
+                    {folder.name}
+                  </button>
+                  <div className="flex items-center ml-1 gap-0.5 opacity-0 group-hover:opacity-100 transition-all">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setEditingFolderId(folder.id);
+                        setEditFolderName(folder.name);
+                      }}
+                      className="p-1 text-gray-400 hover:text-indigo-500 transition-colors"
+                      title="Renomear pasta"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); deleteFolder(folder.id); }}
+                      className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                      title="Excluir pasta"
+                    >
+                      <XCircle className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           ))}
           {creatingFolder ? (
