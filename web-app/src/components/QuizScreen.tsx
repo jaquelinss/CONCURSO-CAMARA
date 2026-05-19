@@ -488,7 +488,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     setDoubtResponse("");
     setSubQuestions([]);
     
-    const doubtPrompt = `Com base na seguinte questão do quiz: "${currentQ.pergunta}" e sua explicação: "${currentQ.explicacao}", responda a seguinte dúvida do aluno: "${doubt}". Formate sua resposta usando HTML para melhor legibilidade. Use tags <p> para parágrafos, <strong> para destacar termos importantes, e <ul>/<li> para listas, se necessário. Não inclua <html>, <head>, ou <body> tags.`;
+    const doubtPrompt = `Você é um professor extremamente rigoroso e preciso. Com base na seguinte questão do quiz: "${currentQ.pergunta}" e sua explicação: "${currentQ.explicacao}", responda a seguinte dúvida do aluno: "${doubt}". \n\nREGRAS RÍGIDAS:\n1. NUNCA invente ou alucine regras de gramática, ortografia, matemática ou leis. Siga ESTRITAMENTE as normas oficiais (ex: Novo Acordo Ortográfico da Língua Portuguesa).\n2. Se a dúvida do aluno apontar um erro real na questão original, reconheça o erro com honestidade intelectual.\n3. Formate sua resposta usando HTML para melhor legibilidade (<p>, <strong>, <ul>, <li>). Não inclua <html>, <head>, ou <body>.`;
     
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
@@ -496,7 +496,10 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: doubtPrompt }] }] })
+        body: JSON.stringify({ 
+          contents: [{ parts: [{ text: doubtPrompt }] }],
+          tools: [{ googleSearch: {} }] 
+        })
       });
       if (!response.ok) throw new Error("A API de dúvidas falhou em responder.");
       const result = await response.json();
@@ -544,14 +547,17 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     setIsAskingFlashcardDoubt(true);
     setFlashcardDoubtResponse("");
 
-    const doubtPrompt = `Com base no seguinte flashcard de estudos (Frente: "${currentQ.frente}", Verso: "${currentQ.verso}"), responda a seguinte dúvida do aluno: "${flashcardDoubt}". Seja direto e didático. Formate sua resposta usando HTML para melhor legibilidade (<p>, <strong>, <ul>, <li>). Não inclua <html>, <head>, ou <body>.`;
+    const doubtPrompt = `Você é um professor rigoroso. Com base no seguinte flashcard de estudos (Frente: "${currentQ.frente}", Verso: "${currentQ.verso}"), responda a seguinte dúvida do aluno: "${flashcardDoubt}".\n\nREGRAS:\n1. NÃO alucine fatos ou regras. Seja 100% preciso com regras gramaticais e acadêmicas oficiais.\n2. Formate sua resposta usando HTML para melhor legibilidade (<p>, <strong>, <ul>, <li>). Não inclua <html>, <head>, ou <body>.`;
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: doubtPrompt }] }] })
+        body: JSON.stringify({ 
+          contents: [{ parts: [{ text: doubtPrompt }] }],
+          tools: [{ googleSearch: {} }]
+        })
       });
       if (!response.ok) throw new Error("A API falhou.");
       const result = await response.json();

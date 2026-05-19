@@ -364,14 +364,17 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
     setSubQuestions([]);
     
     const lessonContext = currentLesson.secoes.map((s: any) => `${s.subtitulo}: ${s.conteudo}`).join('\n');
-    const doubtPrompt = `Com base no seguinte material de estudo sobre "${currentLesson.titulo}":\n${lessonContext}\n\nResponda a seguinte dúvida do aluno: "${doubt}". Formate sua resposta usando HTML. Use tags <p>, <strong>, e <ul>/<li>. Não inclua <html>, <head>, ou <body>.`;
+    const doubtPrompt = `Você é um professor extremamente rigoroso. Com base no seguinte material de estudo sobre "${currentLesson.titulo}":\n${lessonContext}\n\nResponda a seguinte dúvida do aluno: "${doubt}".\n\nREGRAS RÍGIDAS:\n1. NUNCA invente ou alucine regras (ex: gramática, ortografia, matemática, leis). Siga ESTRITAMENTE as normas oficiais.\n2. Se a dúvida do aluno apontar um erro real, reconheça o erro com honestidade intelectual.\n3. Formate sua resposta usando HTML. Use tags <p>, <strong>, e <ul>/<li>. Não inclua <html>, <head>, ou <body>.`;
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: doubtPrompt }] }] })
+        body: JSON.stringify({ 
+          contents: [{ parts: [{ text: doubtPrompt }] }],
+          tools: [{ googleSearch: {} }]
+        })
       });
       if (!response.ok) throw new Error("A API de dúvidas falhou em responder.");
       const result = await response.json();
