@@ -88,6 +88,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
   
   const [tooltip, setTooltip] = useState({ visible: false, content: '', top: 0, left: 0 });
   const [highlighter, setHighlighter] = useState({ visible: false, top: 0, left: 0 });
+  const highlighterPaletteRef = useRef<HTMLDivElement>(null);
 
   const showTooltip = (e: React.MouseEvent, explanation: string) => {
     const rect = (e.target as HTMLElement).getBoundingClientRect();
@@ -109,7 +110,11 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
     else showTooltip(e, explanation);
   };
 
-  const handleSelection = useCallback(() => {
+  const handleSelection = useCallback((e?: Event) => {
+    // Ignorar se o evento veio de dentro da paleta de marcação
+    if (e && highlighterPaletteRef.current && highlighterPaletteRef.current.contains(e.target as Node)) {
+      return;
+    }
     const selection = window.getSelection();
     if (selection && contentRef.current?.contains(selection.anchorNode)) {
       const node = selection.anchorNode;
@@ -181,12 +186,12 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
         hideTooltip();
       }
     };
-    document.addEventListener('mouseup', handleSelection);
-    document.addEventListener('touchend', handleSelection);
+    document.addEventListener('mouseup', handleSelection as EventListener);
+    document.addEventListener('touchend', handleSelection as EventListener);
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener('mouseup', handleSelection);
-      document.removeEventListener('touchend', handleSelection);
+      document.removeEventListener('mouseup', handleSelection as EventListener);
+      document.removeEventListener('touchend', handleSelection as EventListener);
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [handleSelection]);
@@ -502,7 +507,9 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
         <div ref={contentRef} className={`${theme.cardFront} p-6 rounded-xl shadow-lg relative`}>
           
           {highlighter.visible && (
-            <HighlighterPalette top={highlighter.top} left={highlighter.left} onHighlight={applyHighlight} />
+            <div ref={highlighterPaletteRef}>
+              <HighlighterPalette top={highlighter.top} left={highlighter.left} onHighlight={applyHighlight} />
+            </div>
           )}
           
           {tooltip.visible && (
