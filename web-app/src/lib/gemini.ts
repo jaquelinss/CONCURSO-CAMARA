@@ -48,21 +48,28 @@ A resposta DEVE ser estritamente um objeto JSON com o seguinte formato exato:
 }`;
     }
 
-    return `Analise o tema solicitado: "${subjectDetails}".
+    return `Atue como uma banca examinadora rigorosa de concursos públicos. Analise o tema solicitado: "${subjectDetails}".
 1. Identifique a Matéria oficial.
 2. Identifique o Tópico.
-3. Gere ${quantity} questões de múltipla escolha no estilo ${studyModel}, com dificuldade ${difficulty}. Cada questão deve ter 4 opções.
+3. Gere ${quantity} questões de múltipla escolha no estilo ${studyModel}.
+Nível de dificuldade exigido: ${difficulty}. As questões devem ter um nível de complexidade compatível com a dificuldade informada. Se a dificuldade for "Médio" ou "Difícil", elabore enunciados contextualizados e alternativas que exijam reflexão profunda, evitando respostas óbvias ou dadas pelo próprio enunciado.
 
-A resposta DEVE ser estritamente um objeto JSON com o seguinte formato exato:
+REGRAS RÍGIDAS PARA AS QUESTÕES:
+- Cada questão deve ter exatas 4 opções de resposta.
+- Apenas UMA alternativa deve estar correta. As outras TRÊS devem estar indiscutivelmente incorretas, mas devem ser distratores plausíveis.
+- Verifique a lógica da questão: se pedir a alternativa CORRETA, as outras 3 precisam estar absolutamente ERRADAS. Se pedir a INCORRETA, as outras 3 precisam estar CERTAS. Preste MUITA atenção a isso, especialmente em gramática e ortografia.
+- A "explicacao" deve justificar com base nas opções geradas, apontando os erros de cada alternativa incorreta de forma precisa e sem alucinar.
+
+A resposta DEVE ser estritamente um objeto JSON com o seguinte formato exato (não inclua "A)", "B)" no texto das opcoes):
 {
   "materia_identificada": "Nome da Matéria Oficial",
   "topico_identificado": "Nome do Tópico",
   "conteudo": [
     {
-      "pergunta": "Texto da pergunta",
-      "opcoes": ["A", "B", "C", "D"],
-      "correta": "Opção correta exata",
-      "explicacao": "Explicação da resposta"
+      "pergunta": "Texto completo do enunciado da pergunta",
+      "opcoes": ["Texto da opção 1", "Texto da opção 2", "Texto da opção 3", "Texto da opção 4"],
+      "correta": "O texto exato e idêntico da opção que está correta",
+      "explicacao": "Explicação detalhada e coerente justificando a resposta"
     }
   ]
 }`;
