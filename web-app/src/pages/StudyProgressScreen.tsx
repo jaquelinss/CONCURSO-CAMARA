@@ -31,7 +31,7 @@ export default function StudyProgressScreen() {
   const [newSubjectName, setNewSubjectName] = useState('');
 
   // AI Modal States
-  const { apiKey } = useAuth();
+  const { apiKey, geminiModel } = useAuth();
   const [isAIModalOpen, setIsAIModalOpen] = useState(false);
   const [aiContext, setAiContext] = useState('');
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
@@ -209,7 +209,7 @@ Exemplo de formato esperado:
 Certifique-se de que a ordem dos tópicos seja a melhor ordem lógica de aprendizado.`;
 
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${geminiModel || 'gemini-2.5-flash'}:generateContent?key=${apiKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })

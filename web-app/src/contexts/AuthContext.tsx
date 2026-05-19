@@ -9,8 +9,10 @@ interface AuthContextType {
   loading: boolean;
   signOut: () => Promise<void>;
   apiKey: string | null;
+  geminiModel: string | null;
   hasSeenWelcome: boolean;
   saveApiKey: (key: string) => Promise<void>;
+  saveGeminiModel: (model: string) => Promise<void>;
   markWelcomeAsSeen: () => Promise<void>;
 }
 
@@ -19,8 +21,10 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   signOut: async () => {},
   apiKey: null,
+  geminiModel: null,
   hasSeenWelcome: false,
   saveApiKey: async () => {},
+  saveGeminiModel: async () => {},
   markWelcomeAsSeen: async () => {},
 });
 
@@ -30,6 +34,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [apiKey, setApiKey] = useState<string | null>(null);
+  const [geminiModel, setGeminiModel] = useState<string | null>(null);
   const [hasSeenWelcome, setHasSeenWelcome] = useState<boolean>(false);
 
   useEffect(() => {
@@ -42,10 +47,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (docSnap.exists()) {
             const data = docSnap.data();
             setApiKey(data.apiKey || null);
+            setGeminiModel(data.geminiModel || null);
             setHasSeenWelcome(data.hasSeenWelcome || false);
           } else {
             // Document doesn't exist yet
             setApiKey(null);
+            setGeminiModel(null);
             setHasSeenWelcome(false);
           }
         } catch (error) {
@@ -53,6 +60,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } else {
         setApiKey(null);
+        setGeminiModel(null);
         setHasSeenWelcome(false);
       }
       setLoading(false);
@@ -73,6 +81,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const saveGeminiModel = async (model: string) => {
+    if (!user) return;
+    try {
+      const docRef = doc(db, 'users', user.uid, 'settings', 'config');
+      await setDoc(docRef, { geminiModel: model }, { merge: true });
+      setGeminiModel(model);
+    } catch (error) {
+      console.error("Error saving Gemini Model:", error);
+      throw error;
+    }
+  };
+
   const markWelcomeAsSeen = async () => {
     if (!user) return;
     try {
@@ -87,7 +107,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = () => firebaseSignOut(auth);
 
   return (
-    <AuthContext.Provider value={{ user, loading, signOut, apiKey, hasSeenWelcome, saveApiKey, markWelcomeAsSeen }}>
+    <AuthContext.Provider value={{ user, loading, signOut, apiKey, geminiModel, hasSeenWelcome, saveApiKey, saveGeminiModel, markWelcomeAsSeen }}>
       {!loading && children}
     </AuthContext.Provider>
   );

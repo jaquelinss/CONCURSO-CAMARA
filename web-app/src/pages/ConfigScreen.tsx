@@ -10,8 +10,9 @@ import { Bug, ChevronDown, ChevronUp, CheckCircle, Clock } from 'lucide-react';
 const ADMIN_EMAILS = ['quelinalins@gmail.com'];
 
 export default function ConfigScreen() {
-  const { apiKey, saveApiKey, user } = useAuth();
+  const { apiKey, geminiModel, saveApiKey, saveGeminiModel, user } = useAuth();
   const [inputValue, setInputValue] = useState('');
+  const [modelValue, setModelValue] = useState('gemini-2.5-flash');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const navigate = useNavigate();
@@ -27,7 +28,10 @@ export default function ConfigScreen() {
     if (apiKey) {
       setInputValue(apiKey);
     }
-  }, [apiKey]);
+    if (geminiModel) {
+      setModelValue(geminiModel);
+    }
+  }, [apiKey, geminiModel]);
 
   const fetchReports = async () => {
     if (!isAdmin) return;
@@ -61,6 +65,7 @@ export default function ConfigScreen() {
     setSaving(true);
     try {
       await saveApiKey(inputValue.trim());
+      await saveGeminiModel(modelValue);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (error) {
@@ -103,6 +108,20 @@ export default function ConfigScreen() {
                 placeholder="Cole sua chave aqui..."
                 className="w-full p-4 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-mono"
               />
+            </div>
+
+            <div className="pt-2">
+              <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Modelo de Inteligência Artificial</label>
+              <p className="text-xs text-gray-500 mb-2">Se você usa o modo gratuito ou precisa de respostas ultrarrápidas, mantenha o modelo Flash. Se você possui créditos na chave de API e quer raciocínio profundo, use o modelo Pro.</p>
+              <select
+                value={modelValue}
+                onChange={(e) => setModelValue(e.target.value)}
+                className="w-full p-4 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all font-mono"
+              >
+                <option value="gemini-2.5-flash">Gemini 2.5 Flash (Padrão, Rápido, Otimizado)</option>
+                <option value="gemini-1.5-pro">Gemini 1.5 Pro (Avançado, Lento, Raciocínio Complexo)</option>
+                <option value="gemini-1.5-flash">Gemini 1.5 Flash (Estável, Legado)</option>
+              </select>
             </div>
             
             <div className="flex gap-4 pt-4">

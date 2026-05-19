@@ -76,7 +76,7 @@ A resposta DEVE ser estritamente um objeto JSON com o seguinte formato exato:
 }`;
 };
 
-export const generateContentFromGemini = async (settings: any, apiKey: string) => {
+export const generateContentFromGemini = async (settings: any, apiKey: string, modelName: string = 'gemini-2.5-flash') => {
     if (!apiKey) {
       throw new Error("Chave de API não configurada.");
     }
@@ -90,11 +90,11 @@ export const generateContentFromGemini = async (settings: any, apiKey: string) =
 
     if (needsSearch) {
         try {
-            return await callGemini(genAI, prompt, true);
+            return await callGemini(genAI, prompt, true, modelName);
         } catch (firstError: any) {
             console.warn("Tentativa com googleSearch falhou, tentando sem busca:", firstError.message);
             try {
-                return await callGemini(genAI, prompt, false);
+                return await callGemini(genAI, prompt, false, modelName);
             } catch (secondError: any) {
                 console.error("Ambas as tentativas falharam:", secondError);
                 throw new Error(`Falha técnica ao gerar com IA: ${secondError.message}. Verifique sua chave API.`);
@@ -102,7 +102,7 @@ export const generateContentFromGemini = async (settings: any, apiKey: string) =
         }
     } else {
         try {
-            return await callGemini(genAI, prompt, false);
+            return await callGemini(genAI, prompt, false, modelName);
         } catch (error: any) {
             console.error("Falha ao gerar conteúdo:", error);
             throw new Error(`Falha técnica ao gerar com IA: ${error.message}. Verifique sua chave API.`);
@@ -127,9 +127,9 @@ function buildPrompt(settings: any): string {
     return basePrompt;
 }
 
-async function callGemini(genAI: any, prompt: string, useSearch: boolean) {
+async function callGemini(genAI: any, prompt: string, useSearch: boolean, modelName: string = 'gemini-2.5-flash') {
     const modelConfig: any = {
-        model: 'gemini-2.5-flash',
+        model: modelName,
         generationConfig: {
             temperature: 0.2,
             topP: 0.95,
@@ -164,10 +164,10 @@ async function callGemini(genAI: any, prompt: string, useSearch: boolean) {
     return JSON.parse(sanitizeJSON(responseText));
 }
 
-export async function extractTopicsFromDoc(text: string, apiKey: string) {
+export async function extractTopicsFromDoc(text: string, apiKey: string, modelName: string = 'gemini-2.5-flash') {
     const genAI = new GoogleGenerativeAI(apiKey);
     const prompt = `Você é um especialista em educação. Analise o seguinte texto que contém um conteúdo programático ou plano de estudos de um concurso/prova:\n\n"${text.substring(0, 15000)}"\n\nExtraia e organize as matérias e seus respectivos tópicos em formato estruturado.\n\nA resposta DEVE ser estritamente um objeto JSON com o formato:\n{\n  "subjects": [\n    { "name": "Nome da Matéria", "topics": ["Tópico 1", "Tópico 2", "Tópico 3"] }\n  ]\n}`;
-    return await callGemini(genAI, prompt, false);
+    return await callGemini(genAI, prompt, false, modelName);
 }
 
 export async function generateStudyPlan(config: {
@@ -176,7 +176,7 @@ export async function generateStudyPlan(config: {
     studyDays: string[];
     examDate: string;
     startDate: string;
-}, apiKey: string) {
+}, apiKey: string, modelName: string = 'gemini-2.5-flash') {
     const genAI = new GoogleGenerativeAI(apiKey);
     const dayNames: Record<string, string> = { dom: 'Domingo', seg: 'Segunda', ter: 'Terça', qua: 'Quarta', qui: 'Quinta', sex: 'Sexta', sab: 'Sábado' };
     const daysStr = config.studyDays.map(d => dayNames[d] || d).join(', ');
@@ -213,5 +213,5 @@ A resposta DEVE ser estritamente um objeto JSON com o formato:
     }
   ]
 }`;
-    return await callGemini(genAI, prompt, false);
+    return await callGemini(genAI, prompt, false, modelName);
 }
