@@ -129,7 +129,7 @@ function buildPrompt(settings: any): string {
 
 async function callGemini(genAI: any, prompt: string, useSearch: boolean) {
     const modelConfig: any = {
-        model: 'gemini-2.5-flash',
+        model: 'gemini-1.5-flash',
         generationConfig: {
             temperature: 0.2,
             topP: 0.95,
@@ -139,17 +139,29 @@ async function callGemini(genAI: any, prompt: string, useSearch: boolean) {
 
     if (useSearch) {
         modelConfig.tools = [{ googleSearch: {} }];
+    } else {
+        modelConfig.generationConfig.responseMimeType = "application/json";
     }
 
     const model = genAI.getGenerativeModel(modelConfig);
     const result = await model.generateContent(prompt);
     const responseText = result.response.text();
 
+    const sanitizeJSON = (raw: string) => {
+        // Remove control characters that break JSON.parse (except actual \n which should be escaped)
+        // If responseMimeType is used, this is rarely needed.
+        return raw.replace(/[\u0000-\u0019]+/g, "");
+    };
+
     const jsonMatch = responseText.match(/\[.*\]|\{.*\}/s);
     if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
+        try {
+            return JSON.parse(sanitizeJSON(jsonMatch[0]));
+        } catch (e) {
+            return JSON.parse(jsonMatch[0]);
+        }
     }
-    return JSON.parse(responseText);
+    return JSON.parse(sanitizeJSON(responseText));
 }
 
 export async function extractTopicsFromDoc(text: string, apiKey: string) {

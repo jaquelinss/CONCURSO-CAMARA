@@ -333,7 +333,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
     setPracticeQuiz(null);
 
     const prompt = `Gere 5 questões de múltipla escolha de dificuldade '${quizDifficulty}' sobre o tópico "${currentLesson.titulo}". A resposta DEVE ser um array de objetos JSON, cada um com as chaves "pergunta", "opcoes" (um array de 4 strings), "correta" (a string exata da resposta correta) e "explicacao".`;
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
     try {
       const response = await fetch(apiUrl, {
@@ -365,7 +365,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
     
     const lessonContext = currentLesson.secoes.map((s: any) => `${s.subtitulo}: ${s.conteudo}`).join('\n');
     const doubtPrompt = `Com base no seguinte material de estudo sobre "${currentLesson.titulo}":\n${lessonContext}\n\nResponda a seguinte dúvida do aluno: "${doubt}". Formate sua resposta usando HTML. Use tags <p>, <strong>, e <ul>/<li>. Não inclua <html>, <head>, ou <body>.`;
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
     try {
       const response = await fetch(apiUrl, {
@@ -390,7 +390,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
     setSubQuestions([]);
 
     const prompt = `Com base no contexto da seguinte dúvida de um aluno sobre a aula de "${currentLesson.titulo}": "${doubt}", e a resposta fornecida: "${doubtResponse.replace(/<[^>]*>?/gm, '')}", gere ${subQuestionCount} questões de múltipla escolha com dificuldade '${subQuestionDifficulty}'. A resposta DEVE ser um array de objetos JSON, cada um com as chaves "pergunta", "opcoes" (um array de 4 strings), "correta" (a string exata da resposta correta) e "explicacao".`;
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
     try {
       const response = await fetch(apiUrl, {
