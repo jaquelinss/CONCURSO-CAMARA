@@ -78,7 +78,7 @@ export default function SavedContent() {
 
   // Folder system
   const [folders, setFolders] = useState<any[]>([]);
-  const [activeFolder, setActiveFolder] = useState<string>('all'); // 'all', 'none', or folderId
+  const [activeFolder, setActiveFolder] = useState<string>('none'); // Default to 'none' (Sem Pasta) to keep the landing page clean
   const [creatingFolder, setCreatingFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
   const [movingItem, setMovingItem] = useState<{id: string, type: 'lessons' | 'quizzes' | 'flashcards'} | null>(null);
@@ -178,8 +178,11 @@ export default function SavedContent() {
   };
 
   const filterByFolder = (items: any[]) => {
+    const existingFolderIds = folders.map(f => f.id);
     if (activeFolder === 'all') return items;
-    if (activeFolder === 'none') return items.filter(i => !i.folderId);
+    if (activeFolder === 'none') {
+      return items.filter(i => !i.folderId || !existingFolderIds.includes(i.folderId));
+    }
     return items.filter(i => i.folderId === activeFolder);
   };
 
@@ -398,7 +401,15 @@ export default function SavedContent() {
                     >
                       <div className="cursor-pointer flex-grow" onClick={() => { setViewingContent(lesson); setViewingType('lesson'); }}>
                         <h3 className="font-bold">{lesson.data?.titulo || lesson.subject}</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Salvo em: {lesson.createdAt?.toDate().toLocaleDateString()}</p>
+                        <div className="flex items-center flex-wrap gap-2 text-sm text-gray-500 dark:text-gray-400 mt-1">
+                          <span>Salvo em: {lesson.createdAt?.toDate().toLocaleDateString()}</span>
+                          {lesson.folderId && folders.find(f => f.id === lesson.folderId) && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
+                              <FolderOpen className="w-3 h-3" />
+                              {folders.find(f => f.id === lesson.folderId)?.name}
+                            </span>
+                          )}
+                        </div>
                         <CommentBadge item={lesson} collectionName="lessons" userId={user!.uid} />
                       </div>
                       <div className="flex flex-col gap-2">
@@ -444,7 +455,15 @@ export default function SavedContent() {
                       <div className="cursor-pointer flex-grow" onClick={() => { setViewingContent(quiz); setViewingType('quiz'); }}>
                         <h3 className="font-bold">{quiz.subject} - {quiz.topic}</h3>
                         <p className="text-sm text-gray-500 dark:text-gray-400">{quiz.data?.length || 0} questões</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Salvo em: {quiz.createdAt?.toDate().toLocaleDateString()}</p>
+                        <div className="flex items-center flex-wrap gap-2 text-sm text-gray-500 dark:text-gray-400 mt-1">
+                          <span>Salvo em: {quiz.createdAt?.toDate().toLocaleDateString()}</span>
+                          {quiz.folderId && folders.find(f => f.id === quiz.folderId) && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
+                              <FolderOpen className="w-3 h-3" />
+                              {folders.find(f => f.id === quiz.folderId)?.name}
+                            </span>
+                          )}
+                        </div>
                         <CommentBadge item={quiz} collectionName="quizzes" userId={user!.uid} />
                       </div>
                       <div className="flex flex-col gap-2">
@@ -488,7 +507,15 @@ export default function SavedContent() {
                       <div className="cursor-pointer flex-grow" onClick={() => { setViewingContent(flash); setViewingType('flashcard'); }}>
                         <h3 className="font-bold">{flash.subject} - {flash.topic}</h3>
                         <p className="text-sm text-gray-500 dark:text-gray-400">{flash.data?.length || 0} flashcards</p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Salvo em: {flash.createdAt?.toDate().toLocaleDateString()}</p>
+                        <div className="flex items-center flex-wrap gap-2 text-sm text-gray-500 dark:text-gray-400 mt-1">
+                          <span>Salvo em: {flash.createdAt?.toDate().toLocaleDateString()}</span>
+                          {flash.folderId && folders.find(f => f.id === flash.folderId) && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
+                              <FolderOpen className="w-3 h-3" />
+                              {folders.find(f => f.id === flash.folderId)?.name}
+                            </span>
+                          )}
+                        </div>
                         <CommentBadge item={flash} collectionName="flashcards" userId={user!.uid} />
                       </div>
                       <div className="flex flex-col gap-2">
