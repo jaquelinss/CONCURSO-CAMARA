@@ -5,6 +5,7 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import { DownloadIcon, ClipboardListIcon } from 'lucide-react';
 import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 import PracticeQuiz from './PracticeQuiz';
 import { generateContentFromGemini } from '../lib/gemini';
 
@@ -283,47 +284,207 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
 
   const sanitizeFilename = (str: string) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '_');
 
-  const onSavePdf = () => {
+  const onSavePdf = async () => {
     if (!currentLesson) return;
-    const doc = new jsPDF();
-    let yPos = 20;
-    const lineHeight = 10;
-    const margin = 20;
-    const maxLineWidth = 170;
+    try {
+      const getSubjectColor = () => {
+        switch (settings.subject) {
+          case 'Matemática':
+          case 'Raciocínio Lógico-Matemático':
+            return { accent: '#3b82f6', bg: '#eff6ff', border: '#bfdbfe', text: '#1e40af' };
+          case 'Português':
+          case 'Língua Portuguesa':
+            return { accent: '#eab308', bg: '#fef9c3', border: '#fef08a', text: '#854d0e' };
+          case 'Redação':
+            return { accent: '#64748b', bg: '#f1f5f9', border: '#cbd5e1', text: '#334155' };
+          case 'Ciências da Natureza':
+          case 'Biologia':
+            return { accent: '#10b981', bg: '#ecfdf5', border: '#a7f3d0', text: '#065f46' };
+          case 'Química':
+            return { accent: '#06b6d4', bg: '#ecfeff', border: '#c5f2f7', text: '#155e75' };
+          case 'Física':
+            return { accent: '#f43f5e', bg: '#fff1f2', border: '#fecdd3', text: '#9f1239' };
+          case 'Constituição Federal':
+          case 'Noções de Direito Constitucional':
+          case 'Noções de Direito Administrativo':
+          case 'Lei Orgânica de Caruaru':
+          case 'Legislação Específica':
+            return { accent: '#f59e0b', bg: '#fef3c7', border: '#fde68a', text: '#92400e' };
+          default:
+            return { accent: '#6366f1', bg: '#e0e7ff', border: '#c7d2fe', text: '#3730a3' };
+        }
+      };
 
-    doc.setFontSize(20);
-    const titleLines = doc.splitTextToSize(currentLesson.titulo, maxLineWidth);
-    doc.text(titleLines, margin, yPos);
-    yPos += titleLines.length * lineHeight + 5;
+      const colors = getSubjectColor();
 
-    doc.setFontSize(12);
-    const introLines = doc.splitTextToSize(currentLesson.introducao, maxLineWidth);
-    doc.text(introLines, margin, yPos);
-    yPos += introLines.length * lineHeight + lineHeight;
+      const formatSectionContentForPdf = (content: string) => {
+        if (typeof content !== 'string') return '';
+        let formatted = content;
+        formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        formatted = formatted.replace(/\n/g, '<br />');
+        formatted = formatted.replace(/\[EXPLICACAO\](.*?):(.*?)\[\/EXPLICACAO\]/gs, 
+          `<span style="border-bottom: 1.5px dotted ${colors.accent}; color: ${colors.text}; font-weight: 600; padding: 0 2px;">$1</span>`
+        );
+        return formatted;
+      };
 
-    currentLesson.secoes.forEach((sec: any) => {
-      if (yPos > 260) { doc.addPage(); yPos = 20; }
-      
-      doc.setFontSize(16);
-      const subLines = doc.splitTextToSize(sec.subtitulo, maxLineWidth);
-      doc.text(subLines, margin, yPos);
-      yPos += subLines.length * lineHeight + 5;
-
-      doc.setFontSize(12);
-      const cleanContent = sec.conteudo.replace(/\[EXPLICACAO\].*?:.*?\[\/EXPLICACAO\]/g, (match: string) => match.replace(/\[\/?EXPLICACAO\]/g, ''));
-      const contentLines = doc.splitTextToSize(cleanContent, maxLineWidth);
-      
-      contentLines.forEach((line: string) => {
-        if (yPos > 280) { doc.addPage(); yPos = 20; }
-        doc.text(line, margin, yPos);
-        yPos += lineHeight;
+      // Extract Glossary Terms
+      const termsMap = new Map<string, string>();
+      const regex = /\[EXPLICACAO\](.*?):(.*?)\[\/EXPLICACAO\]/gs;
+      currentLesson.secoes.forEach((sec: any) => {
+        let match;
+        regex.lastIndex = 0;
+        while ((match = regex.exec(sec.conteudo)) !== null) {
+          const term = match[1]?.trim();
+          const explanation = match[2]?.trim();
+          if (term && explanation) {
+            termsMap.set(term, explanation);
+          }
+        }
       });
-      yPos += lineHeight;
-    });
+      const glossaryTerms = Array.from(termsMap.entries()).map(([term, explanation]) => ({ term, explanation }));
 
-    const safeSubject = sanitizeFilename(settings.subject);
-    const safeLevel = sanitizeFilename(currentLevel);
-    doc.save(`Aula_${safeSubject}_${safeLevel}.pdf`);
+      // Prepare blocks
+      const blocks: string[] = [];
+
+      // Cover Page / Header Block
+      const coverHtml = `
+        <div style="padding: 24px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b; background-color: #ffffff; border-radius: 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
+            <span style="font-size: 9pt; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em;">EduGenius AI</span>
+            <span style="font-size: 9pt; font-weight: 600; color: #94a3b8;">Material de Aula</span>
+          </div>
+          <div style="display: inline-block; padding: 4px 12px; background-color: ${colors.bg}; color: ${colors.text}; font-size: 10pt; font-weight: 700; border-radius: 9999px; text-transform: uppercase; margin-bottom: 16px; letter-spacing: 0.05em;">
+            ${settings.subject} • Nível ${currentLevel}
+          </div>
+          <h1 style="font-size: 26pt; font-weight: 800; line-height: 1.2; margin: 0 0 16px 0; color: #0f172a;">
+            ${currentLesson.titulo}
+          </h1>
+          <div style="border-left: 4px solid ${colors.accent}; padding: 14px 20px; background-color: #f8fafc; border-radius: 0 8px 8px 0; margin-bottom: 24px; font-style: italic; font-size: 12pt; line-height: 1.6; color: #475569;">
+            ${currentLesson.introducao}
+          </div>
+        </div>
+      `;
+      blocks.push(coverHtml);
+
+      // Section Blocks
+      currentLesson.secoes.forEach((sec: any) => {
+        const secHtml = `
+          <div style="padding: 24px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b; background-color: #ffffff; border-radius: 8px;">
+            <h2 style="font-size: 18pt; font-weight: 700; margin: 0 0 16px 0; color: #0f172a; border-left: 4px solid ${colors.accent}; padding-left: 10px; line-height: 1.2;">
+              ${sec.subtitulo}
+            </h2>
+            <div style="font-size: 11pt; line-height: 1.6; color: #334155; text-align: justify; white-space: pre-wrap;">
+              ${formatSectionContentForPdf(sec.conteudo)}
+            </div>
+          </div>
+        `;
+        blocks.push(secHtml);
+      });
+
+      // Glossary Block
+      if (glossaryTerms.length > 0) {
+        const glossaryHtml = `
+          <div style="padding: 24px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b; background-color: #ffffff; border-radius: 8px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px;">
+              <div style="width: 8px; height: 24px; background-color: ${colors.accent}; border-radius: 4px;"></div>
+              <h2 style="font-size: 20pt; font-weight: 800; margin: 0; color: #0f172a;">
+                Glossário de Termos
+              </h2>
+            </div>
+            <p style="font-size: 10pt; color: #64748b; margin: 0 0 20px 0; font-style: italic;">
+              Definições e explicações contextualizadas para termos e conceitos-chave da aula.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              ${glossaryTerms.map(item => `
+                <div style="padding: 12px 16px; border-left: 4px solid ${colors.accent}; background-color: ${colors.bg}; border-radius: 0 8px 8px 0;">
+                  <strong style="color: ${colors.text}; font-size: 11.5pt; display: block; margin-bottom: 4px; text-transform: capitalize;">
+                    ${item.term}
+                  </strong>
+                  <div style="color: #475569; font-size: 10.5pt; line-height: 1.5;">
+                    ${item.explanation}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+        blocks.push(glossaryHtml);
+      }
+
+      // Convert blocks to PDF using html2canvas & jspdf
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const margin = 15;
+      const contentWidthPx = (pdfWidth - 2 * margin) * (96 / 25.4); 
+
+      let cursorY = margin;
+
+      for (let i = 0; i < blocks.length; i++) {
+        const block = blocks[i];
+        let tempDiv = document.createElement('div');
+        tempDiv.style.position = 'absolute';
+        tempDiv.style.left = '-9999px';
+        tempDiv.style.top = '0px';
+        tempDiv.style.width = `${contentWidthPx}px`;
+        tempDiv.style.padding = '0';
+        tempDiv.style.fontFamily = 'Helvetica, Arial, sans-serif';
+        tempDiv.style.fontSize = '12pt';
+        tempDiv.style.color = '#000000';
+        tempDiv.style.backgroundColor = '#ffffff';
+        tempDiv.innerHTML = block;
+        document.body.appendChild(tempDiv);
+
+        await new Promise(resolve => setTimeout(resolve, 150));
+
+        try {
+          const canvas = await html2canvas(tempDiv, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff',
+          });
+
+          const imgData = canvas.toDataURL('image/png');
+          const imgWidth = canvas.width;
+          const imgHeight = canvas.height;
+          const ratio = imgWidth / (pdfWidth - 2 * margin);
+          const imgHeightInPdf = imgHeight / ratio;
+
+          // If the block overflows the current page
+          if (cursorY + imgHeightInPdf > pdfHeight - margin) {
+            // If it's not the first element, we push to a new page
+            if (i > 0) {
+              pdf.addPage();
+              cursorY = margin;
+            }
+          }
+
+          pdf.addImage(imgData, 'PNG', margin, cursorY, pdfWidth - 2 * margin, imgHeightInPdf);
+          cursorY += imgHeightInPdf + 8;
+        } catch (e) {
+          console.error("Erro ao renderizar bloco para PDF:", e);
+        } finally {
+          if (document.body.contains(tempDiv)) {
+            document.body.removeChild(tempDiv);
+          }
+        }
+      }
+
+      const safeSubject = sanitizeFilename(settings.subject);
+      const safeLevel = sanitizeFilename(currentLevel);
+      pdf.save(`Aula_${safeSubject}_${safeLevel}.pdf`);
+    } catch (err: any) {
+      console.error(err);
+      alert("Falha ao exportar PDF: " + err.message);
+    }
   };
 
   const handleGeneratePracticeQuiz = async () => {

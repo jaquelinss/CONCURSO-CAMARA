@@ -1,6 +1,33 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { ENEM_AREAS } from './constants';
 
+/**
+ * Sanitiza uma string JSON mal formatada (com backslashes literais, como LaTeX ou caminhos) antes de fazer o parse.
+ * Tenta um parse direto primeiro, e só escapa os backslashes se o primeiro falhar.
+ */
+export const safeJsonParse = (str: any): any => {
+    if (typeof str !== 'string') {
+        if (typeof str === 'object' && str !== null) return str;
+        throw new Error("Input to safeJsonParse must be a string or object.");
+    }
+    
+    const jsonMatch = str.match(/\[.*\]|\{.*\}/s);
+    const stringToParse = jsonMatch ? jsonMatch[0] : str;
+
+    try {
+        return JSON.parse(stringToParse);
+    } catch (e1) {
+        try {
+            // Escapa apenas os backslashes (ex: \f de \frac vira \\f) to prevent JSON parse crashes
+            const sanitizedString = stringToParse.replace(/\\/g, "\\\\");
+            return JSON.parse(sanitizedString);
+        } catch (e2) {
+            console.error("safeJsonParse failed on e2 (likely literal newlines in string):", e2, "Sanitized string was:", stringToParse.replace(/\\/g, "\\\\"));
+            throw e2; 
+        }
+    }
+};
+
 export const generatePrompt = (settings: any) => {
     const { subject, model: studyModel, difficulty, quantity, topic, subTopic, specificTopic, lessonLevel } = settings;
     
@@ -10,6 +37,10 @@ export const generatePrompt = (settings: any) => {
         if (subTopic !== 'Todos') {
             subjectDetails += `, subtópico '${subTopic}'`;
         }
+    }
+
+    if (subject === 'Redação' && studyModel === 'Enem') {
+        return `Crie uma proposta de redação completa no modelo ENEM sobre o eixo temático: ${topic === 'Todos' || !topic ? 'qualquer tema relevante para 2025 no Brasil' : topic}. A proposta deve ser relevante para a realidade brasileira. Forneça um título para a proposta, a frase-tema, 3 textos motivadores curtos (cada um com cerca de 50-80 palavras), e 4 sugestões de repertório sociocultural. A resposta DEVE ser um único objeto JSON com as chaves "tema", "frase_tema", "textos_motivadores" (um array de strings), e "repertorios" (um array de objetos, cada um com as chaves "tipo" [ex: "Filme", "Livro", "Citação", "Dado Histórico"] e "sugestao").`;
     }
 
     if (studyModel === 'Aula Explicativa') {
@@ -33,10 +64,15 @@ A resposta DEVE ser estritamente um objeto JSON com o seguinte formato exato:
     }
 
     if (studyModel === 'Flashcard') {
+        let flashcardFormatInstruction = `Gere ${quantity} flashcards de estudo com dificuldade ${difficulty}.`;
+        if (subject === 'Redação' && topic === 'Repertório Sociocultural') {
+            flashcardFormatInstruction = `Gere ${quantity} flashcards de estudo com dificuldade ${difficulty}. O formato deve ser um gatilho de memória ou conceito na 'frente' e a informação completa (citação, dado, nome da obra, etc.) no 'verso', como uma ferramenta de memorização. Exemplo: {"frente": "Obra de Michel Foucault sobre vigilância", "verso": "'Vigiar e Punir' (1975)"}. Evite o formato de pergunta e resposta.`;
+        }
+
         return `Analise o tema solicitado: "${subjectDetails}".
 1. Identifique a Matéria oficial.
 2. Identifique o Tópico.
-3. Gere ${quantity} flashcards de estudo com dificuldade ${difficulty}.
+3. ${flashcardFormatInstruction}
 
 A resposta DEVE ser estritamente um objeto JSON com o seguinte formato exato:
 {
@@ -119,6 +155,64 @@ export const generateContentFromGemini = async (settings: any, apiKey: string, m
     }
 };
 
+export const correctEssayFromGemini = async (
+    proposal: any,
+    essayText: string | null,
+    essayImageBase64: string | null,
+    apiKey: string,
+    modelName: string = 'gemini-2.5-flash'
+) => {
+    if (!apiKey) {
+      throw new Error("Chave de API não configurada.");
+    }
+
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const textPrompt = essayText ? `A redação a ser corrigida é: "${essayText}"` : "A redação a ser corrigida está na imagem a seguir. Transcreva o texto e faça a análise.";
+    
+    const correctionPrompt = `Você é um corretor de redações especialista no modelo ENEM, baseado na matriz de correção oficial.
+Primeiro, se houver uma imagem, transcreva o texto dela com a máxima fidelidade. Preste atenção especial em reconhecer corretamente os acentos (como á, é, ç) e a pontuação. Seja extremamente cuidadoso com a pontuação, especialmente vírgulas. Respeite as vírgulas usadas corretamente pelo usuário e só aponte erro se a vírgula estiver comprovadamente mal empregada (ex: separando sujeito de predicado) ou ausente em um local obrigatório (ex: isolando um aposto). Se uma palavra estiver dividida no final de uma linha com um hífen, junte a palavra sem o hífen na transcrição. Atenção especial à estrutura sintática: Tenha cuidado ao identificar períodos justapostos. Por exemplo, em uma frase como '...continua utilizando termos preconceituosos e ofensivos e, com isso, ele não está mais incentivando...', o pronome 'ele' está corretamente inserido na oração. Evite sugerir um ponto final antes de pronomes que estão dando sequência lógica a uma ideia anterior dentro do mesmo período.
+Depois, analise a seguinte redação com base na proposta (Tema: '${proposal.tema || proposal.frase_tema}'). ${textPrompt}.
+Forneça uma correção completa e detalhada, estruturada como um objeto JSON. A resposta DEVE ser um objeto JSON válido, minificado em uma única linha, com todos os caracteres especiais dentro dos valores de string devidamente escapados (por exemplo, \\n, \\", \\\\). O objeto DEVE ter as seguintes chaves:
+1. "nota_final": um número de 0 a 1000.
+2. "analise_competencias": um objeto com chaves "c1" a "c5". Cada chave deve conter um objeto com "nota" (0 a 200) e "justificativa" (string explicando a nota).
+3. "texto_corrigido_html": uma string HTML contendo o texto original do usuário. Nesta string, você DEVE marcar os seguintes elementos usando tags <span> com as classes CSS especificadas:
+    - Regra de Ouro: NUNCA altere as palavras originais do usuário, apenas adicione as tags <span> ao redor delas. A única exceção é para erros de ortografia óbvios.
+    - Erros graves (gramática, ortografia, pontuação incorreta, truncamento): use a classe "erro-vermelho". Crucial: adicione um atributo 'title' a esta tag explicando o erro e sugerindo a forma correta. Exemplo: <span class="erro-vermelho" title="Erro de concordância. O correto seria: 'fazem'">fais</span>.
+    - Erros leves ou pontos a melhorar (repetição, clareza): class="erro-amarelo"
+    - Acertos notáveis (boa argumentação, uso de repertório): class="acerto-verde"
+    - Tese: class="tese"
+    - Repertório sociocultural: class="repertorio"
+    - Conectivos (operadores argumentativos): class="conectivo"
+    - Proposta de intervenção (o parágrafo inteiro): class="intervencao"
+    - Dentro da intervenção, marque os 5 elementos: Agente (class="agente"), Ação (class="acao"), Meio/Modo (class="meio"), Finalidade (class="finalidade"), Detalhamento (class="detalhamento").
+Seja rigoroso e detalhista como um corretor oficial do ENEM.`;
+
+    const modelConfig: any = {
+        model: modelName,
+        generationConfig: {
+            responseMimeType: "application/json",
+            temperature: 0.2, 
+            topP: 0.95,
+            topK: 40
+        }
+    };
+
+    const model = genAI.getGenerativeModel(modelConfig);
+    const parts: any[] = [{ text: correctionPrompt }];
+    if (essayImageBase64) {
+        parts.push({
+            inlineData: {
+                mimeType: 'image/jpeg',
+                data: essayImageBase64.split(',')[1]
+            }
+        });
+    }
+
+    const result = await model.generateContent(parts);
+    const responseText = result.response.text();
+    return safeJsonParse(responseText);
+};
+
 function buildPrompt(settings: any): string {
     const basePrompt = generatePrompt(settings);
     
@@ -158,19 +252,18 @@ async function callGemini(genAI: any, prompt: string, useSearch: boolean, modelN
 
     const sanitizeJSON = (raw: string) => {
         // Remove control characters that break JSON.parse (except actual \n which should be escaped)
-        // If responseMimeType is used, this is rarely needed.
         return raw.replace(/[\u0000-\u0019]+/g, "");
     };
 
     const jsonMatch = responseText.match(/\[.*\]|\{.*\}/s);
     if (jsonMatch) {
         try {
-            return JSON.parse(sanitizeJSON(jsonMatch[0]));
+            return safeJsonParse(jsonMatch[0]);
         } catch (e) {
-            return JSON.parse(jsonMatch[0]);
+            return safeJsonParse(responseText);
         }
     }
-    return JSON.parse(sanitizeJSON(responseText));
+    return safeJsonParse(sanitizeJSON(responseText));
 }
 
 export async function extractTopicsFromDoc(text: string, apiKey: string, modelName: string = 'gemini-2.5-flash') {
@@ -224,3 +317,4 @@ A resposta DEVE ser estritamente um objeto JSON com o formato:
 }`;
     return await callGemini(genAI, prompt, false, modelName);
 }
+

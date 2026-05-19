@@ -3,13 +3,172 @@ import { themes, defaultTheme } from '../lib/constants';
 import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp, doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
-import { generateContentFromGemini } from '../lib/gemini';
-import { DownloadIcon, BanIcon, CheckCircleIcon, XCircleIcon } from 'lucide-react';
+import { generateContentFromGemini, correctEssayFromGemini } from '../lib/gemini';
+import { DownloadIcon, BanIcon, CheckCircleIcon, XCircleIcon, UploadCloud, FileText, Bot, Sparkles, AlertCircle } from 'lucide-react';
 import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
+import mammoth from 'mammoth';
 import PracticeQuiz from './PracticeQuiz';
 import { getRevisionSuggestions, calculateNextStep } from '../lib/revision.service';
 
 const difficulties = ['Introdutório', 'Médio', 'Difícil'];
+
+const sanitize = (str: string) => {
+  if (typeof str !== 'string') return '';
+  const map: any = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return str.replace(/[&<>"']/g, (m) => map[m]);
+};
+
+const generateFlashcardsHtml = (flashcards: any[], settings: any) => {
+  const styles = `
+    <style>
+      @page {
+        margin: 10mm;
+      }
+      body {
+        font-family: Helvetica, Arial, sans-serif;
+      }
+      .page-title {
+        text-align: center;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+      }
+      .instructions {
+        text-align: center;
+        font-style: italic;
+        color: #555;
+        margin-bottom: 20px;
+      }
+      .card-row {
+        display: flex;
+        border: 1px dashed #aaa;
+        margin-bottom: 5mm;
+        page-break-inside: avoid !important;
+        height: 65mm;
+        box-sizing: border-box;
+      }
+      .card-cell {
+        box-sizing: border-box;
+        padding: 15px;
+        width: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+      .card-front {
+        background-color: #e9f7ff !important;
+        border-right: 1px dashed #aaa;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+      }
+      .card-back {
+        background-color: #fff8e1 !important;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+      }
+    </style>
+  `;
+
+  const cardsHtml = flashcards.map(card => `
+    <div class="card-row">
+      <div class="card-cell card-front">
+        <p>${sanitize(card.frente)}</p>
+      </div>
+      <div class="card-cell card-back">
+        <p>${sanitize(card.verso)}</p>
+      </div>
+    </div>
+  `).join('');
+
+  return `
+    ${styles}
+    <h1 class="page-title">Flashcards de ${sanitize(settings.subject)}</h1>
+    <p class="instructions">Instruções: Imprima, recorte nas linhas pontilhadas e dobre ao meio para criar seus cartões de estudo.</p>
+    <div>
+      ${cardsHtml}
+    </div>
+  `;
+};
+
+const generateCorrectionHtml = (correction: any, proposal: any) => {
+  const correctionStyles = `
+    <style>
+      body { font-family: Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; }
+      .erro-vermelho { background-color: #f8d7da; color: #721c24; padding: 1px 3px; border-radius: 3px; border-bottom: 1px dotted #b22222; }
+      .erro-amarelo { background-color: #fff3cd; color: #856404; padding: 1px 3px; border-radius: 3px; }
+      .acerto-verde { background-color: #d4edda; color: #155724; padding: 1px 3px; border-radius: 3px; }
+      .tese { border-bottom: 2px solid #007bff; }
+      .repertorio { border-bottom: 2px solid #6f42c1; }
+      .conectivo { border-bottom: 2px solid #fd7e14; font-weight: bold; }
+      .intervencao { display: block; background-color: rgba(32, 201, 151, 0.1); border-left: 3px solid #20c997; padding: 10px; margin: 5px 0; }
+      .agente { font-weight: bold; color: #17a2b8; }
+      .acao { font-weight: bold; color: #007bff; }
+      .meio { font-weight: bold; color: #28a745; }
+      .finalidade { font-weight: bold; color: #ffc107; }
+      .detalhamento { font-weight: bold; color: #6f42c1; }
+      .competency-card { border: 1px solid #eee; border-left: 5px solid #007bff; padding: 15px; margin-bottom: 10px; border-radius: 5px; page-break-inside: avoid; }
+      .competency-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+      .competency-score { background-color: #e7f3ff; color: #004085; padding: 5px 10px; border-radius: 15px; }
+      .whitespace-pre-wrap { white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+  `;
+
+  let competenciesHtml = Object.entries(correction.analise_competencias).map(([key, value]: any) => `
+    <div class="competency-card">
+      <div class="competency-header">
+        <span>${key.toUpperCase().replace('C', 'Competência ')}</span>
+        <span class="competency-score">${value.nota}</span>
+      </div>
+      <p>${sanitize(value.justificativa)}</p>
+    </div>
+  `).join('');
+
+  return `
+    ${correctionStyles}
+    <h1 style="text-align: center;">Relatório de Correção de Redação</h1>
+    <p><strong>Tema:</strong> ${sanitize(proposal.tema || proposal.frase_tema)}</p>
+    <div style="text-align: center; margin: 20px 0; padding: 20px; background-color: #f0f8ff; border-radius: 8px;">
+      <h2 style="margin:0;">Nota Final Estimada</h2>
+      <p style="font-size: 3em; font-weight: bold; margin: 0; color: #0056b3;">${correction.nota_final}</p>
+    </div>
+    
+    <h2>Análise por Competências</h2>
+    ${competenciesHtml}
+    
+    <h2 style="margin-top: 30px;">Texto Corrigido e Comentado</h2>
+    <div class="whitespace-pre-wrap" style="border: 1px solid #ccc; padding: 15px; border-radius: 5px; background-color: #fff;">
+      ${correction.texto_corrigido_html}
+    </div>
+  `;
+};
+
+const CorrectionLegend = () => (
+  <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg mb-4 text-sm border dark:border-gray-700">
+    <h5 className="font-bold text-md mb-2">Legenda da Correção:</h5>
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+      <div className="flex items-center"><span className="erro-vermelho h-4 w-4 mr-2 inline-block rounded"></span> Erro Grave</div>
+      <div className="flex items-center"><span className="erro-amarelo h-4 w-4 mr-2 inline-block rounded"></span> Ponto a Melhorar</div>
+      <div className="flex items-center"><span className="acerto-verde h-4 w-4 mr-2 inline-block rounded"></span> Acerto Notável</div>
+      <div className="flex items-center"><span className="tese border-b-2 border-blue-500 h-1 w-4 mr-2 inline-block"></span> Tese</div>
+      <div className="flex items-center"><span className="repertorio border-b-2 border-purple-500 h-1 w-4 mr-2 inline-block"></span> Repertório</div>
+      <div className="flex items-center"><span className="conectivo border-b-2 border-orange-500 font-bold h-1 w-4 mr-2 inline-block"></span> Conectivo</div>
+      <div className="flex items-center"><span className="intervencao h-4 w-4 mr-2 inline-block rounded-l-md border-l-4 border-emerald-500 bg-emerald-500/10"></span> Intervenção</div>
+      <div className="flex items-center"><span className="agente text-cyan-500 font-bold h-4 mr-2 inline-block">Agente</span></div>
+      <div className="flex items-center"><span className="acao text-blue-500 font-bold h-4 mr-2 inline-block">Ação</span></div>
+      <div className="flex items-center"><span className="meio text-green-500 font-bold h-4 mr-2 inline-block">Meio/Modo</span></div>
+      <div className="flex items-center"><span className="finalidade text-amber-500 font-bold h-4 mr-2 inline-block">Finalidade</span></div>
+      <div className="flex items-center"><span className="detalhamento text-purple-500 font-bold h-4 mr-2 inline-block">Detalhamento</span></div>
+    </div>
+  </div>
+);
 
 const Flashcard = ({ front, back, theme }: { front: string, back: string, theme: any }) => {
   const [isFlipped, setIsFlipped] = React.useState(false);
@@ -66,6 +225,26 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     return 0;
   });
 
+  // Redação-specific states
+  const [isCorrecting, setIsCorrecting] = useState(false);
+  const [correction, setCorrection] = useState<any>(null);
+  const [essayText, setEssayText] = useState("");
+  const [essayImage, setEssayImage] = useState<string | null>(null);
+  const [textFileName, setTextFileName] = useState("");
+  const [userEssayTheme, setUserEssayTheme] = useState("");
+  const [tooltip, setTooltip] = useState<any>(null);
+  const correctedTextRef = React.useRef<HTMLDivElement>(null);
+  const [essayDoubt, setEssayDoubt] = useState("");
+  const [essayDoubtResponse, setEssayDoubtResponse] = useState("");
+  const [isAskingEssayDoubt, setIsAskingEssayDoubt] = useState(false);
+
+  // Auto-initialize Redação module if mode is ready essay correction
+  React.useEffect(() => {
+    if (settings.subject === 'Redação' && settings.model === 'Corrigir Redação Pronta' && questions.length === 0) {
+      setQuestions([{}]);
+    }
+  }, [settings.subject, settings.model, questions.length]);
+
   React.useEffect(() => {
     if (storageKey && questions.length > 0) {
       if (currentIndex >= questions.length) {
@@ -109,7 +288,12 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
       const result = await generateContentFromGemini(settings, apiKey);
       if (result.materia_identificada) settings.subject = result.materia_identificada;
       if (result.topico_identificado) settings.topic = result.topico_identificado;
-      setQuestions(result.conteudo);
+      
+      if (settings.subject === 'Redação' && settings.model === 'Enem') {
+        setQuestions([result]);
+      } else {
+        setQuestions(result.conteudo);
+      }
     } catch (err: any) {
       setError("Falha ao gerar conteúdo: " + err.message);
     } finally {
@@ -233,6 +417,128 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
 
   // Função apenas para o nome do arquivo, pois caracteres especiais quebram o download no Chrome
   const sanitizeFilename = (str: string) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '_');
+
+  const exportHtmlToPdf = async (blocks: string[], fileName: string) => {
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const margin = 15;
+    const contentWidthPx = (pdfWidth - 2 * margin) * (96 / 25.4); 
+
+    let cursorY = margin;
+
+    for (let i = 0; i < blocks.length; i++) {
+      const block = blocks[i];
+      let tempDiv = document.createElement('div');
+      tempDiv.style.position = 'absolute';
+      tempDiv.style.left = '-9999px';
+      tempDiv.style.top = '0px';
+      tempDiv.style.width = `${contentWidthPx}px`;
+      tempDiv.style.padding = '0';
+      tempDiv.style.fontFamily = 'Helvetica, Arial, sans-serif';
+      tempDiv.style.fontSize = '12pt';
+      tempDiv.style.color = '#000000';
+      tempDiv.style.backgroundColor = '#ffffff';
+      tempDiv.innerHTML = block;
+      document.body.appendChild(tempDiv);
+
+      await new Promise(resolve => setTimeout(resolve, 150));
+
+      try {
+        const canvas = await html2canvas(tempDiv, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff',
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+        const ratio = imgWidth / (pdfWidth - 2 * margin);
+        const imgHeightInPdf = imgHeight / ratio;
+
+        if (cursorY + imgHeightInPdf > pdfHeight - margin && i > 0) {
+          pdf.addPage();
+          cursorY = margin;
+        }
+
+        pdf.addImage(imgData, 'PNG', margin, cursorY, pdfWidth - 2 * margin, imgHeightInPdf);
+        cursorY += imgHeightInPdf + 5;
+      } catch (e) {
+        console.error("Erro ao renderizar bloco para PDF:", e);
+      } finally {
+        if (document.body.contains(tempDiv)) {
+          document.body.removeChild(tempDiv);
+        }
+      }
+    }
+    
+    pdf.save(fileName);
+  };
+
+  const handleSavePdf = async (type: 'questions' | 'answers' | 'flashcards' | 'correction') => {
+    setError(null);
+    if (type === 'flashcards') {
+      try {
+        const flashcardHtml = generateFlashcardsHtml(questions, settings);
+        const tempDiv = document.createElement('div');
+        tempDiv.style.position = 'absolute';
+        tempDiv.style.left = '-9999px';
+        tempDiv.style.top = '0px';
+        tempDiv.style.width = '800px';
+        tempDiv.innerHTML = flashcardHtml;
+        document.body.appendChild(tempDiv);
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        const canvas = await html2canvas(tempDiv, { scale: 2, useCORS: true, logging: false });
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+        const ratio = imgWidth / pdfWidth;
+        const canvasHeightInPdf = imgHeight / ratio;
+        let position = 0;
+
+        while (position < canvasHeightInPdf) {
+          if (position > 0) pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, -position, pdfWidth, canvasHeightInPdf);
+          position += pdfHeight;
+        }
+        
+        const safeFilename = sanitizeFilename(settings.subject);
+        pdf.save(`Flashcards_${safeFilename}.pdf`);
+        document.body.removeChild(tempDiv);
+      } catch (e) {
+        console.error("Erro ao gerar PDF de flashcards:", e);
+        setError("Ocorreu um erro ao gerar o PDF dos flashcards.");
+      }
+      return;
+    }
+
+    if (type === 'correction' && correction) {
+      try {
+        const isCorrectionMode = settings.model === 'Corrigir Redação Pronta';
+        const proposal = isCorrectionMode ? { tema: userEssayTheme, frase_tema: 'Fornecida pelo usuário' } : questions[0];
+        const correctionHtml = generateCorrectionHtml(correction, proposal);
+        await exportHtmlToPdf([correctionHtml], `Correcao_${sanitizeFilename(proposal.tema || 'Redacao')}.pdf`);
+      } catch (e) {
+        console.error("Erro ao gerar PDF de correção:", e);
+        setError("Ocorreu um erro ao gerar o PDF da correção.");
+      }
+      return;
+    }
+
+    // Fallback to manual standard PDF writer
+    onSavePdf(type as any);
+  };
 
   const onSavePdf = (type: 'questions' | 'answers' | 'flashcards') => {
     const doc = new jsPDF({ unit: 'mm', format: 'a4' });
@@ -361,12 +667,148 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     doc.save(`${safeFilename}_${type}.pdf`);
   };
 
+  const handleCorrectEssay = async () => {
+    if (!apiKey) {
+      setError("Chave de API não configurada.");
+      return;
+    }
+    const isCorrectionMode = settings.model === 'Corrigir Redação Pronta';
+    const proposal = isCorrectionMode ? { tema: userEssayTheme, frase_tema: 'Fornecida pelo usuário' } : questions[0];
+
+    if (isCorrectionMode && !userEssayTheme.trim()) {
+      setError("Por favor, digite o tema da redação.");
+      return;
+    }
+
+    if (!essayText && !essayImage) {
+      setError("Por favor, digite o texto da redação ou envie um arquivo/imagem.");
+      return;
+    }
+
+    setIsCorrecting(true);
+    setCorrection(null);
+    setError(null);
+
+    try {
+      const result = await correctEssayFromGemini(proposal, essayText || null, essayImage || null, apiKey);
+      if (!result.nota_final || !result.analise_competencias || !result.texto_corrigido_html) {
+        throw new Error("A IA retornou uma correção em formato inesperado. Não foi possível exibir o feedback.");
+      }
+      setCorrection(result);
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "Falha técnica ao corrigir redação com IA.");
+    } finally {
+      setIsCorrecting(false);
+    }
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 4 * 1024 * 1024) { // 4MB limit
+        setError("O arquivo de imagem é muito grande. O limite é de 4MB.");
+        return;
+      }
+      setEssayText("");
+      setTextFileName("");
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEssayImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleTextFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 1 * 1024 * 1024) { // 1MB limit
+      setError("O arquivo de texto é muito grande. O limite é de 1MB.");
+      return;
+    }
+
+    setEssayImage(null);
+    setTextFileName(file.name);
+    const reader = new FileReader();
+
+    if (file.name.endsWith('.docx')) {
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          mammoth.extractRawText({ arrayBuffer: event.target.result as ArrayBuffer })
+            .then((result: any) => {
+              setEssayText(result.value);
+            })
+            .catch((err: any) => {
+              console.error("Error reading .docx file:", err);
+              setError("Não foi possível ler o arquivo .docx. Tente salvar como .txt e enviar novamente.");
+              setTextFileName("");
+            });
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setEssayText(event.target.result as string);
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const handleAskEssayDoubt = async (proposal: any) => {
+    if (!essayDoubt || !proposal || !apiKey) return;
+    setIsAskingEssayDoubt(true);
+    setEssayDoubtResponse("");
+
+    const doubtPrompt = `Você é um professor de redação especialista no modelo ENEM. Com base na proposta de redação (Tema: "${proposal.tema || proposal.frase_tema}"), responda à seguinte dúvida do aluno de forma clara e didática: "${essayDoubt}". Formate sua resposta usando HTML para melhor legibilidade (<p>, <strong>, <ul>, <li>). Não inclua tags <html>, <head> ou <body>.`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: doubtPrompt }] }],
+          tools: [{ googleSearch: {} }]
+        })
+      });
+      if (!response.ok) throw new Error("A API de dúvidas falhou em responder.");
+      const result = await response.json();
+      setEssayDoubtResponse(result.candidates?.[0]?.content?.parts?.[0]?.text || "<p>Não foi possível obter uma resposta.</p>");
+    } catch (error) {
+      console.error(error);
+      setEssayDoubtResponse("<p>Ocorreu um erro ao processar sua dúvida.</p>");
+    } finally {
+      setIsAskingEssayDoubt(false);
+    }
+  };
+
+  const handleCorrectedTextClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    if (target.classList.contains('erro-vermelho') && target.title) {
+      const rect = target.getBoundingClientRect();
+      const containerRect = correctedTextRef.current?.getBoundingClientRect();
+      if (containerRect) {
+        setTooltip({
+          content: target.title,
+          top: rect.top - containerRect.top - 10,
+          left: rect.left - containerRect.left + rect.width / 2,
+        });
+      }
+    } else {
+      setTooltip(null);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center space-y-4 my-16">
         <div className={`w-16 h-16 border-4 border-dashed rounded-full animate-spin ${theme.border}`}></div>
         <p className={`text-lg ${theme.text}`}>
-          {settings.model === 'Flashcard' ? 'Gerando seus flashcards...' : 'Gerando suas questões...'}
+          {settings.model === 'Flashcard' ? 'Gerando seus flashcards...' : 'Gerando suas propostas de redação...'}
         </p>
       </div>
     );
@@ -403,6 +845,230 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
           <button onClick={onBack} className="px-6 py-2 bg-gray-200 text-gray-800 dark:text-gray-200 rounded font-semibold hover:bg-gray-300">Voltar</button>
           <button onClick={generateQuiz} className={`px-6 py-2 text-white rounded font-bold ${theme.button}`}>Gerar Conteúdo</button>
         </div>
+      </div>
+    );
+  }
+
+  // INTERCEPT FOR REDAÇÃO MODULE
+  if (settings.subject === 'Redação' && settings.model !== 'Flashcard') {
+    const isCorrectionMode = settings.model === 'Corrigir Redação Pronta';
+    const proposal = isCorrectionMode ? { tema: userEssayTheme, frase_tema: 'Fornecida pelo usuário' } : questions[0];
+
+    return (
+      <div className="max-w-4xl mx-auto p-4 md:p-8 space-y-6">
+        <div className="w-full flex justify-between items-center mb-6">
+          <button onClick={onBack} className="text-sm bg-black/5 p-2 rounded-lg hover:bg-black/10 transition-colors">
+            Voltar
+          </button>
+          {correction && (
+            <button
+              onClick={() => handleSavePdf('correction')}
+              className="text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 p-2 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors flex items-center gap-2"
+            >
+              <DownloadIcon className="w-4 h-4" /> Baixar PDF da Correção
+            </button>
+          )}
+        </div>
+
+        {error && (
+          <div className="p-4 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-lg border border-red-300 dark:border-red-800 flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+            <p className="text-sm">{error}</p>
+          </div>
+        )}
+
+        {isCorrecting && (
+          <div className="flex flex-col items-center justify-center space-y-4 my-16">
+            <div className={`w-16 h-16 border-4 border-dashed rounded-full animate-spin ${theme.border}`}></div>
+            <p className="text-lg">Analisando e corrigindo sua redação com IA...</p>
+          </div>
+        )}
+
+        {!isCorrecting && !correction && (
+          <>
+            {!isCorrectionMode && proposal && (
+              <div className={`${theme.cardFront} backdrop-blur-sm p-6 rounded-2xl shadow-lg border-2 ${theme.border} space-y-6`}>
+                <h2 className="text-3xl font-bold mb-2 text-center">{proposal.tema}</h2>
+                <p className="text-xl mb-6 text-center italic opacity-95">"{proposal.frase_tema}"</p>
+                
+                <h3 className="text-2xl font-semibold border-b-2 pb-2 border-dashed">Textos Motivadores</h3>
+                {proposal.textos_motivadores?.map((texto: string, index: number) => (
+                  <div key={index} className="bg-black/5 p-4 rounded-lg">
+                     <p className="text-justify whitespace-pre-wrap leading-relaxed text-sm"><strong>Texto {index + 1}:</strong> {texto}</p>
+                  </div>
+                ))}
+
+                {proposal.repertorios && proposal.repertorios.length > 0 && (
+                  <>
+                    <h3 className="text-2xl font-semibold border-b-2 pb-2 border-dashed mt-6">Dicas de Repertório</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {proposal.repertorios.map((rep: any, index: number) => (
+                        <div key={index} className="bg-black/5 p-4 rounded-lg flex flex-col justify-between">
+                          <div>
+                            <span className={`inline-block px-3 py-1 text-xs text-white font-semibold rounded-full mb-2 ${theme.button}`}>{rep.tipo}</span>
+                            <p className="text-sm leading-relaxed">{rep.sugestao}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border-2 border-gray-100 dark:border-gray-700 space-y-6">
+              {isCorrectionMode && (
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-semibold border-b-2 pb-2 border-dashed">Corrigir Redação Pronta</h3>
+                  <label className="block text-sm font-medium">Tema da Redação</label>
+                  <input 
+                    type="text"
+                    value={userEssayTheme}
+                    onChange={(e) => setUserEssayTheme(e.target.value)}
+                    placeholder="Digite o tema da sua redação aqui..."
+                    className={`w-full p-3 rounded-lg bg-white dark:bg-gray-700 ${theme.text} ${theme.border} border-2 focus:outline-none focus:ring-2 ${theme.ring}`}
+                  />
+                </div>
+              )}
+              
+              <h3 className="text-2xl font-semibold border-b-2 pb-2 border-dashed">Escreva ou Envie sua Redação</h3>
+              <textarea 
+                value={essayText}
+                onChange={(e) => { setEssayText(e.target.value); setTextFileName(""); setEssayImage(null); }}
+                className="w-full h-96 p-4 rounded-lg bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono text-sm leading-relaxed" 
+                placeholder="Escreva ou cole seu texto aqui, ou envie uma foto/documento abaixo..."
+              />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <label className="flex items-center justify-center gap-3 p-3 rounded-lg border-2 border-dashed cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-gray-300 dark:border-gray-600">
+                  <UploadCloud className="h-6 w-6 text-gray-500" />
+                  <span>{essayImage ? "Foto Carregada! ✓" : "Carregar Foto (Manuscrita)"}</span>
+                  <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
+                </label>
+
+                <label className="flex items-center justify-center gap-3 p-3 rounded-lg border-2 border-dashed cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-gray-300 dark:border-gray-600">
+                  <FileText className="h-6 w-6 text-gray-500" />
+                  <span>{textFileName ? `${textFileName} ✓` : "Carregar Arquivo (.txt, .docx)"}</span>
+                  <input type="file" className="hidden" accept=".txt,.docx" onChange={handleTextFileUpload} />
+                </label>
+              </div>
+
+              <div className="text-xs text-justify text-yellow-800 dark:text-yellow-200 p-3 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                <strong>Aviso Multimodal:</strong> A leitura por imagem/arquivo é experimental. Certifique-se de que a caligrafia está nítida ou prefira digitar o texto diretamente na área acima.
+              </div>
+
+              {/* Doubt asking regarding Redação */}
+              <div className="space-y-3 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <h4 className="font-semibold text-lg flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-indigo-500" />
+                  Precisa de ajuda com o tema?
+                </h4>
+                <p className="text-sm opacity-70">Pergunte à IA algo rápido sobre a proposta ou o repertório sugerido.</p>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={essayDoubt}
+                    onChange={(e) => setEssayDoubt(e.target.value)}
+                    placeholder="Digite sua dúvida sobre o tema da redação..."
+                    className={`flex-grow p-3 rounded-lg border-2 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 focus:outline-none`}
+                  />
+                  <button
+                    onClick={() => handleAskEssayDoubt(proposal)}
+                    disabled={isAskingEssayDoubt || !essayDoubt}
+                    className={`py-3 px-6 font-bold rounded-lg text-white ${theme.button} disabled:opacity-50`}
+                  >
+                    {isAskingEssayDoubt ? "Pensando..." : "Perguntar"}
+                  </button>
+                </div>
+                {essayDoubtResponse && (
+                  <div className="mt-4 p-4 bg-blue-50 border-l-4 border-blue-500 dark:bg-blue-900/20 dark:border-blue-700 rounded-r-lg">
+                    <div className="prose prose-blue dark:prose-invert max-w-none text-sm text-blue-900 dark:text-blue-200 leading-relaxed" dangerouslySetInnerHTML={{ __html: essayDoubtResponse }} />
+                  </div>
+                )}
+              </div>
+
+              <button 
+                onClick={handleCorrectEssay}
+                disabled={isCorrecting || (!essayText && !essayImage)}
+                className={`w-full py-4 text-lg font-bold rounded-lg text-white ${theme.button} disabled:opacity-50 flex items-center justify-center gap-3 shadow-md hover:opacity-90 transition-opacity`}
+              >
+                <Bot className="w-6 h-6" />
+                {isCorrecting ? 'Corrigindo redação...' : 'Corrigir Redação com IA'}
+              </button>
+            </div>
+          </>
+        )}
+
+        {correction && !isCorrecting && (
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border-2 border-gray-100 dark:border-gray-700 space-y-6">
+            <h3 className="text-3xl font-bold border-b-2 pb-2 text-center">Feedback da Correção</h3>
+            
+            <div className="text-center bg-indigo-50 dark:bg-indigo-950/30 p-6 rounded-2xl max-w-sm mx-auto border border-indigo-100 dark:border-indigo-900">
+              <p className="text-lg opacity-70">Nota Final Estimada</p>
+              <p className={`text-6xl font-extrabold ${theme.accent} mt-1`}>{correction.nota_final}</p>
+            </div>
+
+            <div className="text-xs text-justify text-amber-800 dark:text-amber-200 mt-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+              <strong>Simulação ENEM:</strong> Esta nota simula os critérios reais C1-C5 da matriz oficial. Lembre-se de utilizar as sugestões de marcação e justificativa para ajustar a sua escrita.
+            </div>
+
+            <div className="space-y-4">
+              <h4 className="text-xl font-bold">Análise detalhada por Competências</h4>
+              <div className="grid grid-cols-1 gap-4">
+                {correction.analise_competencias && Object.entries(correction.analise_competencias).map(([key, value]: any) => (
+                  <div key={key} className="bg-black/5 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
+                    <div className="flex justify-between items-center mb-2">
+                      <strong className="uppercase font-bold text-sm tracking-wide text-indigo-600 dark:text-indigo-400">
+                        {key.toUpperCase().replace('C', 'Competência ')}
+                      </strong>
+                      <span className={`font-bold text-sm px-3 py-1 rounded-full ${value.nota >= 160 ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' : value.nota >= 120 ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'}`}>{value.nota} pts</span>
+                    </div>
+                    <p className="text-sm leading-relaxed opacity-90">{value.justificativa}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="relative pt-6 border-t border-gray-200 dark:border-gray-700">
+              <h4 className="text-xl font-bold mb-3">Texto Marcado e Comentado</h4>
+              <CorrectionLegend />
+              
+              <div 
+                ref={correctedTextRef}
+                className="whitespace-pre-wrap bg-gray-50 dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-700 leading-relaxed text-sm font-sans"
+                dangerouslySetInnerHTML={{ __html: correction.texto_corrigido_html }}
+                onClick={handleCorrectedTextClick}
+              ></div>
+
+              {tooltip && (
+                <div 
+                  className="absolute bg-gray-900 dark:bg-black text-white text-xs rounded-lg p-3 z-10 shadow-xl max-w-xs border border-gray-700 pointer-events-none transform -translate-x-1/2 -translate-y-full"
+                  style={{ 
+                    top: `${tooltip.top}px`, 
+                    left: `${tooltip.left}px`
+                  }}
+                >
+                  {tooltip.content}
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-center gap-4 mt-8 pt-6 border-t">
+              <button
+                onClick={() => { setCorrection(null); setEssayText(""); setEssayImage(null); }}
+                className="px-6 py-3 bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 rounded-lg font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+              >
+                Escrever Nova Redação
+              </button>
+              <button
+                onClick={() => handleSavePdf('correction')}
+                className={`px-6 py-3 text-white rounded-lg font-bold ${theme.button} hover:opacity-90 transition-opacity`}
+              >
+                Salvar PDF de Feedback
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -596,7 +1262,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
           )}
           {isFlashcard ? (
             <button
-              onClick={() => onSavePdf('flashcards')}
+              onClick={() => handleSavePdf('flashcards')}
               className="text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 p-2 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors flex items-center gap-2"
             >
               <DownloadIcon className="w-4 h-4" /> Baixar Flashcards
@@ -604,13 +1270,13 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
           ) : (
             <>
               <button
-                onClick={() => onSavePdf('questions')}
+                onClick={() => handleSavePdf('questions')}
                 className="text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 p-2 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors flex items-center gap-2"
               >
                 <DownloadIcon className="w-4 h-4" /> Baixar Questões
               </button>
               <button
-                onClick={() => onSavePdf('answers')}
+                onClick={() => handleSavePdf('answers')}
                 className="text-sm bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 p-2 rounded-lg hover:bg-green-200 dark:hover:bg-green-800/50 transition-colors flex items-center gap-2"
               >
                 <DownloadIcon className="w-4 h-4" /> Baixar Gabarito
@@ -785,7 +1451,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
                 </div>
 
                 <div className="flex justify-between mt-6 gap-4">
-                  <button onClick={handlePrevious} disabled={currentIndex === 0} className={`px-6 py-2 bg-gray-400 text-white rounded font-bold hover:bg-gray-50 dark:bg-gray-9000 disabled:opacity-50`}>
+                  <button onClick={handlePrevious} disabled={currentIndex === 0} className={`px-6 py-2 bg-gray-400 text-white rounded font-bold hover:bg-gray-50 dark:bg-gray-900 disabled:opacity-50`}>
                     Anterior
                   </button>
                   <button onClick={handleNext} className={`px-6 py-2 font-bold rounded-lg text-white ${theme.button}`}>

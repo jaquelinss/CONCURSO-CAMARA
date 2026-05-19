@@ -67,3 +67,112 @@ code {
     color: black !important;
   }
 }
+
+/* Custom Grids and Highlighter / Essay Correction styles */
+.grid-cols-18 {
+  grid-template-columns: repeat(18, minmax(0, 1fr));
+}
+
+/* Estilos para Correção de Redação */
+.erro-vermelho {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 2px 4px;
+  border-radius: 3px;
+  cursor: help;
+  border-bottom: 2px dotted #b22222;
+}
+.erro-amarelo {
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+.acerto-verde {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+.tese {
+  border-bottom: 2px solid #007bff;
+}
+.repertorio {
+  border-bottom: 2px solid #6f42c1;
+}
+.conectivo {
+  border-bottom: 2px solid #fd7e14;
+  font-weight: bold;
+}
+.intervencao {
+  display: block;
+  background-color: rgba(32, 201, 151, 0.1);
+  border-left: 4px solid #20c997;
+  padding-left: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.agente {
+  font-weight: bold;
+  color: #17a2b8;
+}
+.acao {
+  font-weight: bold;
+  color: #007bff;
+}
+.meio {
+  font-weight: bold;
+  color: #28a745;
+}
+.finalidade {
+  font-weight: bold;
+  color: #ffc107;
+}
+.detalhamento {
+  font-weight: bold;
+  color: #6f42c1;
+}
+
+/* Estilos para Termo Explicativo (Tooltip) */
+.term-highlight {
+  background-color: rgba(253, 224, 71, 0.4);
+  padding: 2px 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  border-bottom: 2px dotted #ca8a04;
+}
+
+.explanation-tooltip {
+  position: absolute;
+  transform: translate(-50%, -110%);
+  background-color: #1F2937;
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  z-index: 100;
+  width: 300px;
+  max-width: 90vw;
+  font-size: 14px;
+  line-height: 1.5;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  pointer-events: none;
+}
+
+/* Melhora a estilização do conteúdo gerado pela IA */
+.prose p {
+  margin-top: 0.75em;
+  margin-bottom: 0.75em;
+}
+.prose strong {
+  color: inherit;
+}
+.prose ul {
+  margin-top: 0.75em;
+  margin-bottom: 0.75em;
+  padding-left: 1.5em;
+}
+.prose li {
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+}
+

@@ -45,13 +45,29 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
   const isAula = settings.model === 'Aula Explicativa';
   
   const currentSubjects = getSubjectsByMode(settings.mode);
-  const currentModels = getModelsByMode(settings.mode);
+  const currentModels = settings.subject === 'Redação'
+    ? ['Enem', 'Corrigir Redação Pronta', 'Flashcard']
+    : getModelsByMode(settings.mode);
+
   const [activeTopicsMap, setActiveTopicsMap] = useState<Record<string, string[]>>({ 'Geral': [] });
   const { user } = useAuth();
 
   useEffect(() => {
     const fetchCustomTopics = async () => {
-      const defaultMap = topicsBySubject[settings.subject] || { 'Geral': [] };
+      let defaultMap = topicsBySubject[settings.subject] || { 'Geral': [] };
+      if (settings.subject === 'Redação') {
+        if (settings.model === 'Enem') {
+          defaultMap = { 'Eixos Temáticos': topicsBySubject.Redação['Eixos Temáticos'] || [] };
+        } else if (settings.model === 'Flashcard') {
+          defaultMap = {
+            'Técnicas de Escrita': topicsBySubject.Redação['Técnicas de Escrita'] || [],
+            'Repertório Sociocultural': topicsBySubject.Redação['Repertório Sociocultural'] || [],
+          };
+        } else {
+          defaultMap = { 'Geral': [] };
+        }
+      }
+
       if (!user) {
         setActiveTopicsMap(defaultMap);
         return;
@@ -93,9 +109,12 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
     };
 
     fetchCustomTopics();
-  }, [user, settings.subject]);
+  }, [user, settings.subject, settings.model]);
 
-  const availableTopics = ['Todos', ...Object.keys(activeTopicsMap)];
+  const availableTopics = settings.subject === 'Redação' && settings.model === 'Corrigir Redação Pronta'
+    ? ['Todos']
+    : ['Todos', ...Object.keys(activeTopicsMap)];
+
   const availableSubTopics = settings.topic !== 'Todos' && activeTopicsMap[settings.topic] && activeTopicsMap[settings.topic].length > 0
         ? ['Todos', ...activeTopicsMap[settings.topic]]
         : [];
@@ -103,7 +122,10 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
   const handleModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newMode = e.target.value as 'Geral' | 'ENEM' | 'Concurso';
     const newSubjects = getSubjectsByMode(newMode);
-    const newModels = getModelsByMode(newMode);
+    const newModels = newSubjects[0] === 'Redação'
+      ? ['Enem', 'Corrigir Redação Pronta', 'Flashcard']
+      : getModelsByMode(newMode);
+
     setSettings({
       ...settings,
       mode: newMode,
@@ -112,6 +134,35 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
       topic: 'Todos',
       subTopic: 'Todos',
     });
+  };
+
+  const handleSubjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const nextSubject = e.target.value;
+    let nextModel = settings.model;
+    if (nextSubject === 'Redação') {
+      nextModel = 'Enem';
+    } else if (settings.model === 'Enem' || settings.model === 'Corrigir Redação Pronta') {
+      const nextModels = getModelsByMode(settings.mode);
+      nextModel = nextModels[0];
+    }
+
+    setSettings({
+      ...settings,
+      subject: nextSubject,
+      model: nextModel,
+      topic: 'Todos',
+      subTopic: 'Todos',
+      specificTopic: ''
+    });
+  };
+
+  const getButtonLabel = () => {
+    if (settings.subject === 'Redação') {
+      if (settings.model === 'Enem') return 'Gerar Proposta de Redação';
+      if (settings.model === 'Corrigir Redação Pronta') return 'Entrar no Módulo de Redação';
+      if (settings.model === 'Flashcard') return 'Gerar Flashcards';
+    }
+    return isAula ? 'Gerar Aula Explicativa' : 'Gerar Questões';
   };
 
   return (
@@ -135,7 +186,7 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
         <CustomSelect 
           label="Matéria" 
           value={settings.subject} 
-          onChange={(e: any) => setSettings({...settings, subject: e.target.value, topic: 'Todos', subTopic: 'Todos'})} 
+          onChange={handleSubjectChange} 
           options={currentSubjects} 
           theme={theme} 
         />
@@ -144,7 +195,7 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
           <CustomSelect 
             label="Modelo" 
             value={settings.model} 
-            onChange={(e: any) => setSettings({...settings, model: e.target.value})} 
+            onChange={(e: any) => setSettings({...settings, model: e.target.value, topic: 'Todos', subTopic: 'Todos'})} 
             options={currentModels} 
             theme={theme} 
           />
@@ -163,6 +214,7 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
               onChange={(e: any) => setSettings({...settings, difficulty: e.target.value})} 
               options={difficulties} 
               theme={theme} 
+              disabled={settings.subject === 'Redação' && settings.model === 'Corrigir Redação Pronta'}
             />
           )}
         </div>
@@ -174,6 +226,7 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
             onChange={(e: any) => setSettings({...settings, topic: e.target.value, subTopic: 'Todos'})} 
             options={availableTopics} 
             theme={theme} 
+            disabled={settings.subject === 'Redação' && settings.model === 'Corrigir Redação Pronta'}
           />
           <CustomSelect 
             label="Subtópico" 
@@ -181,7 +234,7 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
             onChange={(e: any) => setSettings({...settings, subTopic: e.target.value})} 
             options={availableSubTopics.length > 0 ? availableSubTopics : ['Todos']} 
             theme={theme}
-            disabled={availableSubTopics.length === 0}
+            disabled={availableSubTopics.length === 0 || (settings.subject === 'Redação' && settings.model === 'Corrigir Redação Pronta')}
           />
         </div>
 
@@ -191,9 +244,10 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
           onChange={(e: any) => setSettings({...settings, specificTopic: e.target.value})}
           theme={theme}
           placeholder="Ex: Características dos glicerídios"
+          disabled={settings.subject === 'Redação' && settings.model === 'Corrigir Redação Pronta'}
         />
 
-        {!isAula && (
+        {!isAula && settings.model !== 'Corrigir Redação Pronta' && (
           <CustomInput 
             label={settings.model === 'Flashcard' ? "Quantidade de Flashcards" : "Quantidade de Questões"} 
             value={settings.quantity} 
@@ -207,7 +261,7 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
           onClick={onStart}
           className={`w-full py-4 text-lg font-bold ${theme.button} rounded-lg shadow-md transform hover:scale-105 transition-all duration-300`}
         >
-          {isAula ? 'Gerar Aula Explicativa' : 'Gerar Questões'}
+          {getButtonLabel()}
         </button>
       </div>
     </div>
