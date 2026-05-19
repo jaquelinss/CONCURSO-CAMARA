@@ -58,9 +58,10 @@ REGRAS RÍGIDAS PARA AS QUESTÕES:
 - Cada questão deve ter exatas 4 opções de resposta.
 - Apenas UMA alternativa deve estar correta. As outras TRÊS devem estar indiscutivelmente incorretas, mas devem ser distratores plausíveis.
 - Verifique a lógica da questão: se pedir a alternativa CORRETA, as outras 3 precisam estar absolutamente ERRADAS. Se pedir a INCORRETA, as outras 3 precisam estar CERTAS. Preste MUITA atenção a isso, especialmente em gramática e ortografia.
+- Não inclua as letras "A)", "B)", "C)", "D)" no texto das opções, apenas o conteúdo da resposta.
 - A "explicacao" deve justificar com base nas opções geradas, apontando os erros de cada alternativa incorreta de forma precisa e sem alucinar.
 
-A resposta DEVE ser estritamente um objeto JSON com o seguinte formato exato (não inclua "A)", "B)" no texto das opcoes):
+A resposta DEVE ser estritamente um objeto JSON com o seguinte formato exato:
 {
   "materia_identificada": "Nome da Matéria Oficial",
   "topico_identificado": "Nome do Tópico",
@@ -107,11 +108,13 @@ function buildPrompt(settings: any): string {
         || settings.subject?.toLowerCase().includes('lei')
         || settings.subject?.toLowerCase().includes('orgânica');
     
-    const searchContext = needsSearch
-        ? "\nImportante: Como o tema inclui legislação específica, use a ferramenta de busca do Google para encontrar a lei oficial mais atualizada do município/estado especificado antes de gerar o conteúdo."
-        : "";
+    if (needsSearch) {
+        // Inject search instruction before the JSON format block
+        const searchInstruction = "\nREQUISITO OBRIGATÓRIO: Como o tema inclui legislação específica, use a ferramenta de busca do Google para encontrar a lei oficial mais atualizada do município/estado especificado antes de gerar o conteúdo.\n";
+        return basePrompt.replace("A resposta DEVE ser estritamente um objeto JSON", searchInstruction + "\nA resposta DEVE ser estritamente um objeto JSON");
+    }
 
-    return basePrompt + searchContext;
+    return basePrompt;
 }
 
 async function callGemini(genAI: any, prompt: string, useSearch: boolean) {
