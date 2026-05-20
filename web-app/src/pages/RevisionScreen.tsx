@@ -3,7 +3,7 @@ import Navigation from '../components/Navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
 import { collection, query, getDocs, orderBy, doc, getDoc, setDoc, Timestamp, limit } from 'firebase/firestore';
-import { Calendar, Clock, BookOpen, CheckCircle, AlertCircle, PlusCircle, Brain, ChevronLeft, RefreshCw, Sparkles } from 'lucide-react';
+import { Calendar, Clock, BookOpen, CheckCircle, AlertCircle, PlusCircle, Brain, ChevronLeft, RefreshCw, Sparkles, Play, Trash2, Pencil, Check, X } from 'lucide-react';
 import { format, isBefore, isToday, startOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import LessonScreen from '../components/LessonScreen';
@@ -12,6 +12,26 @@ import LinkContentModal from '../components/LinkContentModal';
 import { getRevisionSuggestions, calculateNextStep } from '../lib/revision.service';
 import StudyPlanWizard from '../components/StudyPlanWizard';
 import StudyPlanView from '../components/StudyPlanView';
+
+function Youtube({ className }: { className?: string }) {
+  return (
+    <svg 
+      viewBox="0 0 24 24" 
+      width="24" 
+      height="24" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      fill="none" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className={className}
+    >
+      <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"></path>
+      <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"></polygon>
+    </svg>
+  );
+}
+
 
 // Helper: pega IDs vinculados de um tipo, compatível com formato antigo (singular) e novo (array)
 function getLinkedIds(contentLinks: any, type: string): string[] {
@@ -289,7 +309,7 @@ export default function RevisionScreen() {
                 {revisions
                   .filter(r => r.status === 'pending' && (isBefore(r.scheduledDate.toDate(), today) || isToday(r.scheduledDate.toDate())))
                   .map(rev => (
-                    <RevisionCard key={rev.id} revision={rev} onAction={handleStartRevision} onReschedule={handleReschedule} />
+                    <RevisionCard key={rev.id} revision={rev} onAction={handleStartRevision} onReschedule={handleReschedule} onUpdate={fetchRevisions} />
                   ))}
                 {revisions.filter(r => r.status === 'pending' && (isBefore(r.scheduledDate.toDate(), today) || isToday(r.scheduledDate.toDate()))).length === 0 && (
                   <p className="text-gray-400 italic bg-gray-100 dark:bg-gray-800 p-4 rounded-xl text-center">Tudo em dia por aqui! ✨</p>
@@ -306,7 +326,7 @@ export default function RevisionScreen() {
                 {revisions
                   .filter(r => r.status === 'pending' && !isBefore(r.scheduledDate.toDate(), today) && !isToday(r.scheduledDate.toDate()))
                   .map(rev => (
-                    <RevisionCard key={rev.id} revision={rev} onAction={handleStartRevision} onReschedule={handleReschedule} />
+                    <RevisionCard key={rev.id} revision={rev} onAction={handleStartRevision} onReschedule={handleReschedule} onUpdate={fetchRevisions} />
                   ))}
               </div>
             </section>
@@ -377,7 +397,8 @@ export default function RevisionScreen() {
   );
 }
 
-function RevisionCard({ revision, onAction, onReschedule }: { revision: any, onAction: any, onReschedule: any }) {
+function RevisionCard({ revision, onAction, onReschedule, onUpdate }: { revision: any, onAction: any, onReschedule: any, onUpdate: () => void }) {
+  const { user } = useAuth();
   const date = revision.scheduledDate.toDate();
   const isOverdue = isBefore(date, startOfDay(new Date()));
   const isTodayDate = isToday(date);
@@ -399,57 +420,184 @@ function RevisionCard({ revision, onAction, onReschedule }: { revision: any, onA
     (flashcardCount === 0 || flashcardsCompleted >= 1) &&
     (lessonsCompleted + quizzesCompleted + flashcardsCompleted) > 0;
 
+  // YouTube video states and operations
+  const [editingVideo, setEditingVideo] = useState(false);
+  const [videoUrl, setVideoUrl] = useState(revision.youtubeUrl || '');
+  const [savingVideo, setSavingVideo] = useState(false);
+
+  const handleSaveVideo = async () => {
+    if (!user) return;
+    setSavingVideo(true);
+    try {
+      const revisionRef = doc(db, 'users', user.uid, 'revisions', revision.id);
+      await setDoc(revisionRef, { youtubeUrl: videoUrl.trim() }, { merge: true });
+      revision.youtubeUrl = videoUrl.trim();
+      setEditingVideo(false);
+      onUpdate();
+    } catch (err) {
+      console.error('Erro ao salvar vídeo:', err);
+      alert('Erro ao salvar link do vídeo.');
+    } finally {
+      setSavingVideo(false);
+    }
+  };
+
+  const handleDeleteVideo = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user) return;
+    if (!window.confirm('Deseja realmente remover o vídeo desta revisão?')) return;
+    try {
+      const revisionRef = doc(db, 'users', user.uid, 'revisions', revision.id);
+      await setDoc(revisionRef, { youtubeUrl: '' }, { merge: true });
+      revision.youtubeUrl = '';
+      setVideoUrl('');
+      onUpdate();
+    } catch (err) {
+      console.error('Erro ao excluir vídeo:', err);
+      alert('Erro ao excluir vídeo.');
+    }
+  };
+
   return (
-    <div className={`p-6 rounded-2xl shadow-sm border-2 transition-all hover:shadow-md bg-white dark:bg-gray-800 ${isOverdue ? 'border-red-100 dark:border-red-900/50 bg-red-50/30 dark:bg-red-900/10' : 'border-gray-100 dark:border-gray-800'}`}>
-      <div className="flex justify-between items-start mb-4">
-        <div>
-          <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-md ${isOverdue ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300' : isTodayDate ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300' : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'}`}>
-            {isOverdue ? 'Atrasado' : isTodayDate ? 'Hoje' : format(date, "d 'de' MMMM", { locale: ptBR })}
-          </span>
-          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mt-2">{revision.subject}</h3>
-          <p className="text-gray-600 dark:text-gray-400">{revision.topic}</p>
-          {revision.reviewCount > 0 && (
-            <p className="text-xs text-gray-400 mt-1">Revisada {revision.reviewCount}x</p>
-          )}
+    <div className={`p-6 rounded-2xl shadow-sm border-2 transition-all hover:shadow-md bg-white dark:bg-gray-800 flex flex-col justify-between ${isOverdue ? 'border-red-100 dark:border-red-900/50 bg-red-50/30 dark:bg-red-900/10' : 'border-gray-100 dark:border-gray-800'}`}>
+      <div>
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-md ${isOverdue ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300' : isTodayDate ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300' : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'}`}>
+              {isOverdue ? 'Atrasado' : isTodayDate ? 'Hoje' : format(date, "d 'de' MMMM", { locale: ptBR })}
+            </span>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mt-2">{revision.subject}</h3>
+            <p className="text-gray-600 dark:text-gray-400">{revision.topic}</p>
+            {revision.reviewCount > 0 && (
+              <p className="text-xs text-gray-400 mt-1">Revisada {revision.reviewCount}x</p>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 mt-4">
+          <ActionButton 
+            icon={<BookOpen className="w-4 h-4" />} 
+            label="Aula" 
+            count={lessonCount}
+            completedCount={lessonsCompleted}
+            onClick={() => onAction(revision, 'lesson')}
+          />
+          <ActionButton 
+            icon={<CheckCircle className="w-4 h-4" />} 
+            label="Quiz" 
+            count={quizCount}
+            completedCount={quizzesCompleted}
+            onClick={() => onAction(revision, 'quiz')}
+          />
+          <ActionButton 
+            icon={<Brain className="w-4 h-4" />} 
+            label="Cards" 
+            count={flashcardCount}
+            completedCount={flashcardsCompleted}
+            onClick={() => onAction(revision, 'flashcard')}
+          />
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 mt-4">
-        <ActionButton 
-          icon={<BookOpen className="w-4 h-4" />} 
-          label="Aula" 
-          count={lessonCount}
-          completedCount={lessonsCompleted}
-          onClick={() => onAction(revision, 'lesson')}
-        />
-        <ActionButton 
-          icon={<CheckCircle className="w-4 h-4" />} 
-          label="Quiz" 
-          count={quizCount}
-          completedCount={quizzesCompleted}
-          onClick={() => onAction(revision, 'quiz')}
-        />
-        <ActionButton 
-          icon={<Brain className="w-4 h-4" />} 
-          label="Cards" 
-          count={flashcardCount}
-          completedCount={flashcardsCompleted}
-          onClick={() => onAction(revision, 'flashcard')}
-        />
-      </div>
+      {/* YouTube Class Video Module */}
+      <div className="mt-5 pt-4 border-t border-gray-100 dark:border-gray-700/60 flex flex-col gap-2">
+        {editingVideo ? (
+          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+            <div className="relative flex-grow">
+              <Youtube className="w-4 h-4 text-red-500 absolute left-3 top-2.5" />
+              <input
+                type="text"
+                value={videoUrl}
+                onChange={(e) => setVideoUrl(e.target.value)}
+                placeholder="Cole o link do YouTube aqui..."
+                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSaveVideo();
+                  if (e.key === 'Escape') setEditingVideo(false);
+                }}
+              />
+            </div>
+            <button
+              onClick={handleSaveVideo}
+              disabled={savingVideo}
+              className="p-1.5 text-green-600 hover:bg-green-50 dark:hover:bg-green-950/30 rounded-md transition-colors shrink-0"
+              title="Salvar vídeo"
+            >
+              <Check className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => {
+                setVideoUrl(revision.youtubeUrl || '');
+                setEditingVideo(false);
+              }}
+              className="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors shrink-0"
+              title="Cancelar"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        ) : revision.youtubeUrl ? (
+          <div className="flex items-center justify-between gap-2 bg-red-50/50 dark:bg-red-950/10 px-3 py-2 rounded-xl border border-red-100/50 dark:border-red-900/20">
+            <button
+              onClick={() => {
+                window.dispatchEvent(
+                  new CustomEvent('play-youtube-video', {
+                    detail: {
+                      url: revision.youtubeUrl,
+                      topic: revision.topic,
+                      subject: revision.subject,
+                    },
+                  })
+                );
+              }}
+              className="flex items-center gap-2 text-xs font-bold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
+            >
+              <Play className="w-4 h-4 fill-red-600 dark:fill-red-400 text-transparent" />
+              <span className="truncate max-w-[200px]" title="Assistir vídeo aula cadastrada">Assistir Vídeo Aula</span>
+            </button>
 
-      {canReschedule && (
-        <button
-          onClick={() => onReschedule(revision)}
-          className="w-full mt-4 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:from-green-600 hover:to-emerald-700 transition-all active:scale-95 shadow-md"
-        >
-          <RefreshCw className="w-4 h-4" />
-          Reagendar Revisão
-        </button>
-      )}
+            <div className="flex items-center gap-1 shrink-0">
+              <button
+                onClick={() => setEditingVideo(true)}
+                className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded transition-colors"
+                title="Editar link do vídeo"
+              >
+                <Pencil className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={handleDeleteVideo}
+                className="p-1 text-gray-400 hover:text-red-600 dark:hover:text-red-400 rounded transition-colors"
+                title="Remover vídeo"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setEditingVideo(true)}
+            className="flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-red-600 transition-colors bg-gray-50 dark:bg-gray-800/40 hover:bg-red-50 dark:hover:bg-red-950/10 px-3 py-2 rounded-xl border border-dashed border-gray-200 dark:border-gray-700 w-full justify-center"
+          >
+            <Youtube className="w-4 h-4 text-red-500 shrink-0" />
+            <span>+ Vídeo da Aula (YouTube)</span>
+          </button>
+        )}
+
+        {canReschedule && (
+          <button
+            onClick={() => onReschedule(revision)}
+            className="w-full py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:from-green-600 hover:to-emerald-700 transition-all active:scale-95 shadow-md animate-fade-in"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Reagendar Revisão
+          </button>
+        )}
+      </div>
     </div>
   );
 }
+
 
 function ActionButton({ icon, label, count, completedCount, onClick }: { icon: any, label: string, count: number, completedCount: number, onClick: any }) {
   const active = count > 0;

@@ -9,6 +9,7 @@ import RevisionScreen from './pages/RevisionScreen';
 import StudyProgressScreen from './pages/StudyProgressScreen';
 import ReportButton from './components/ReportButton';
 import StickyNotesManager from './components/StickyNotesManager';
+import FloatingYouTubePlayer from './components/FloatingYouTubePlayer';
 import TodayStudyButton from './components/TodayStudyButton';
 
 import React from 'react';
@@ -42,6 +43,7 @@ export default function App() {
             <AppRoutes />
             <ReportButton />
             <StickyNotesManager />
+            <FloatingYouTubePlayer />
             <TodayStudyButton />
           </div>
         </Router>
