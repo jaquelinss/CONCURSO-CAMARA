@@ -999,18 +999,23 @@ export default function WhiteboardOverlay() {
           className="absolute pointer-events-auto bg-[#fefce8] rounded-xl shadow-2xl overflow-hidden border border-gray-300 dark:border-gray-600 flex flex-col"
           style={{ width: `${size.w}px`, height: `${size.h}px`, touchAction: 'none' }}
         >
-          <div className="whiteboard-drag-handle whiteboard-toolbar h-8 bg-indigo-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-3 cursor-grab active:cursor-grabbing">
+          <div 
+            className={`whiteboard-drag-handle whiteboard-toolbar h-8 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-3 cursor-grab active:cursor-grabbing ${!activeNotebook ? 'bg-indigo-50 dark:bg-gray-800' : ''}`}
+            style={activeNotebook ? { backgroundColor: activeNotebook.coverColor, color: '#ffffff' } : {}}
+          >
             <div className="flex items-center gap-2">
-              <GripHorizontal className="w-4 h-4 text-gray-400" />
-              <span className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Caderno Digital</span>
+              <GripHorizontal className={`w-4 h-4 ${activeNotebook ? 'text-white/80' : 'text-gray-400'}`} />
+              <span className={`text-xs font-bold uppercase tracking-wider truncate max-w-[200px] sm:max-w-xs ${activeNotebook ? 'text-white' : 'text-gray-600 dark:text-gray-300'}`}>
+                {activeNotebook ? `Caderno Digital de ${activeNotebook.name}` : 'Rascunho Rápido'}
+              </span>
             </div>
-            <button onClick={handleClose} className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-gray-500">
+            <button onClick={handleClose} className={`p-1 rounded ${activeNotebook ? 'text-white hover:bg-white/20' : 'hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500'}`}>
               <X className="w-4 h-4" />
             </button>
           </div>
 
           {/* Active Notebook Title Display */}
-          {(showToolbar || windowMode === 'floating') && (
+          {showToolbar && windowMode === 'fullscreen' && (
             <div className="absolute top-[4.5rem] left-1/2 -translate-x-1/2 pointer-events-none z-[9998]">
               <span className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-gray-600 dark:text-gray-300 shadow-sm border border-gray-200/50 dark:border-gray-700/50">
                 {activeNotebook ? activeNotebook.name : 'Rascunho'}
