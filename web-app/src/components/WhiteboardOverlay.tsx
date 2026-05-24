@@ -535,7 +535,7 @@ export default function WhiteboardOverlay() {
 
       {/* Main Toolbar */}
       {showToolbar && (
-        <div className="whiteboard-toolbar absolute top-4 left-1/2 -translate-x-1/2 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center gap-1.5 sm:gap-2 z-[9999] max-w-[95vw] flex-wrap justify-center">
+        <div className="whiteboard-toolbar pointer-events-auto absolute top-4 left-1/2 -translate-x-1/2 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center gap-1.5 sm:gap-2 z-[9999] max-w-[95vw] flex-wrap justify-center">
           <button
             onClick={() => {
               const nextMode = windowMode === 'fullscreen' ? 'floating' : 'fullscreen';
@@ -660,7 +660,7 @@ export default function WhiteboardOverlay() {
 
       {/* Transparent Custom Sidebar (No Background) */}
       {!showToolbar && sidebarMode !== 'hidden' && (
-        <div className={`whiteboard-sidebar absolute z-[9999] ${sidebarMode === 'fixed' ? 'left-2 top-1/2 -translate-y-1/2' : 'left-4 top-20'}`}>
+        <div className={`whiteboard-sidebar pointer-events-auto absolute z-[9999] ${sidebarMode === 'fixed' ? 'left-2 top-1/2 -translate-y-1/2' : 'left-4 top-20'}`}>
           <Draggable disabled={sidebarMode === 'fixed'} handle=".sidebar-drag" nodeRef={sidebarRef}>
             <div ref={sidebarRef} className="flex flex-col items-center gap-1.5">
               {sidebarMode === 'floating' && (
@@ -814,7 +814,7 @@ export default function WhiteboardOverlay() {
       {!showToolbar && sidebarMode === 'hidden' && (
         <button
           onClick={toggleToolbar}
-          className="whiteboard-toolbar absolute top-4 right-4 z-[9999] w-10 h-10 rounded-full bg-white/90 shadow-lg flex items-center justify-center text-gray-600 hover:bg-white"
+          className="whiteboard-toolbar pointer-events-auto absolute top-4 right-4 z-[9999] w-10 h-10 rounded-full bg-white/90 shadow-lg flex items-center justify-center text-gray-600 hover:bg-white"
         >
           <PanelTop className="w-5 h-5" />
         </button>
@@ -840,7 +840,7 @@ export default function WhiteboardOverlay() {
     return createPortal(
       <div 
         ref={containerRef}
-        className={`fixed inset-0 z-[9998] ${mode !== 'transparent' ? 'bg-[#fefce8]' : ''}`} 
+        className={`fixed inset-0 z-[9998] ${mode !== 'transparent' ? 'bg-[#fefce8]' : ''} ${tool === 'pointer' ? 'pointer-events-none' : ''}`} 
         style={{ touchAction: 'none' }}
       >
         {content}
