@@ -44,6 +44,27 @@ export default function WhiteboardOverlay() {
   
   // Menu Principal Original
   const [tool, setTool] = useState<'pen' | 'eraser' | 'pointer'>('pen');
+  const previousTool = useRef<'pen' | 'eraser'>('pen');
+
+  useEffect(() => {
+    if (tool !== 'pointer') {
+      previousTool.current = tool as 'pen' | 'eraser';
+    }
+  }, [tool]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignorar se o usuário estiver digitando em um input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || (e.target as HTMLElement).isContentEditable) return;
+
+      // Atalho V ou Escape para alternar para o mouse
+      if (e.key.toLowerCase() === 'v' || e.key === 'Escape') {
+        setTool(prev => prev === 'pointer' ? previousTool.current : 'pointer');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
   const [showToolbar, _setShowToolbar] = useState(true);
   const toggleToolbar = () => _setShowToolbar(p => !p);
 
@@ -552,7 +573,8 @@ export default function WhiteboardOverlay() {
           
           <button
             onClick={() => setTool('pointer')}
-            className={`p-2 rounded-lg transition-all ${tool === 'pointer' ? 'bg-indigo-100 text-indigo-600 ring-2 ring-indigo-400' : 'text-gray-500 hover:bg-gray-100'}`}
+            className={`p-1.5 rounded-md transition-colors ${tool === 'pointer' ? 'bg-indigo-100 text-indigo-600' : 'text-gray-500 hover:bg-gray-100'}`}
+            title="Mouse / Alternar Lousa (Atalho: V ou Esc)"
           >
             <MousePointer2 className="w-5 h-5" />
           </button>
@@ -651,7 +673,7 @@ export default function WhiteboardOverlay() {
               <button
                 onClick={() => setTool('pointer')}
                 className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${tool === 'pointer' ? 'bg-indigo-50 text-indigo-600 ring-2 ring-indigo-400' : 'bg-white/90 shadow-sm text-gray-500 hover:text-indigo-600'} relative`}
-                title="Mouse (Interagir com a página)"
+                title="Mouse / Alternar Lousa (Atalho: V ou Esc)"
               >
                 <MousePointer2 className="w-4 h-4" />
               </button>
