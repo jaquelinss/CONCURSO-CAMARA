@@ -657,26 +657,38 @@ export default function WhiteboardOverlay() {
             {windowMode === 'fullscreen' ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
           </button>
           
-          <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
-          
-          <select 
-            value={mode} 
-            onChange={(e) => {
-              const newMode = e.target.value as any;
-              setMode(newMode);
-              if (newMode === 'transparent') {
+          <button
+            onClick={() => {
+              if (mode === 'transparent') {
+                setMode('lined');
+              } else {
+                setMode('transparent');
                 setWindowMode('fullscreen');
               }
             }}
-            className="px-2 py-1.5 rounded-lg text-xs font-bold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-none outline-none cursor-pointer"
+            className={`p-2 rounded-lg transition-colors flex items-center gap-1 ${mode === 'transparent' ? 'bg-indigo-100 text-indigo-600 ring-2 ring-indigo-400' : 'text-gray-500 hover:text-indigo-600 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+            title="Lousa Transparente (Desenhar por cima do site)"
           >
-            <option value="transparent">🔍 Lousa (Transp)</option>
-            <option value="lined">📝 Papel Pautado</option>
-            <option value="grid">📐 Quadriculado</option>
-            <option value="dotted">📌 Pontilhado</option>
-          </select>
+            <Focus className="w-5 h-5" />
+            <span className="text-xs font-bold hidden sm:inline">Transparente</span>
+          </button>
           
           <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
+          
+          {mode !== 'transparent' && (
+            <>
+              <select 
+                value={mode} 
+                onChange={(e) => setMode(e.target.value as any)}
+                className="px-2 py-1.5 rounded-lg text-xs font-bold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-none outline-none cursor-pointer"
+              >
+                <option value="lined">📝 Papel Pautado</option>
+                <option value="grid">📐 Quadriculado</option>
+                <option value="dotted">📌 Pontilhado</option>
+              </select>
+              <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
+            </>
+          )}
           
           <button
             onClick={() => setTool('pointer')}
