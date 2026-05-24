@@ -533,10 +533,16 @@ export default function WhiteboardOverlay() {
           
           <select 
             value={mode} 
-            onChange={(e) => setMode(e.target.value as any)}
+            onChange={(e) => {
+              const newMode = e.target.value as any;
+              setMode(newMode);
+              if (newMode === 'transparent') {
+                setWindowMode('fullscreen');
+              }
+            }}
             className="px-2 py-1.5 rounded-lg text-xs font-bold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-none outline-none cursor-pointer"
           >
-            {windowMode === 'fullscreen' && <option value="transparent">🔍 Lousa (Transp)</option>}
+            <option value="transparent">🔍 Lousa (Transp)</option>
             <option value="lined">📝 Papel Pautado</option>
             <option value="grid">📐 Quadriculado</option>
             <option value="dotted">📌 Pontilhado</option>
