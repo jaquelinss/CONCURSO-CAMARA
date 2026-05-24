@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Eraser, Trash2, X, Undo2, Redo2, Minus, Plus, PenTool, Maximize2, Minimize2, GripHorizontal, ChevronLeft, ChevronRight, FilePlus, PanelTopClose, PanelTop, Settings2, Focus, MousePointer2 } from 'lucide-react';
+import { Eraser, Trash2, X, Undo2, Redo2, Minus, Plus, PenTool, Maximize2, Minimize2, GripHorizontal, ChevronLeft, ChevronRight, FilePlus, PanelTopClose, PanelTop, Settings2, Focus, MousePointer2, Book } from 'lucide-react';
 import { getStroke } from 'perfect-freehand';
 import Draggable from 'react-draggable';
 import { useAuth } from '../contexts/AuthContext';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, query, getDocs } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import localforage from 'localforage';
 
 interface StrokePoint {
   x: number;
@@ -34,10 +35,17 @@ interface EraserPreset {
 
 const COLORS = ['#000000', '#ffffff', '#ef4444', '#3b82f6', '#22c55e', '#eab308', '#a855f7', '#f97316'];
 
+import NotebooksManager from './NotebooksManager';
+import type { Notebook } from '../types/notebook';
+
 export default function WhiteboardOverlay() {
   const { user } = useAuth();
   const [active, setActive] = useState(false);
   
+  // Notebooks
+  const [showNotebooksManager, setShowNotebooksManager] = useState(false);
+  const [activeNotebook, setActiveNotebook] = useState<Notebook | null>(null);
+
   // Modos de Lousa
   const [windowMode, setWindowMode] = useState<'fullscreen' | 'floating'>('floating');
   const [mode, setMode] = useState<'transparent' | 'lined' | 'grid' | 'dotted'>('lined');
@@ -103,6 +111,87 @@ export default function WhiteboardOverlay() {
   const [totalPages, setTotalPages] = useState(1);
   const [strokesByPage, setStrokesByPage] = useState<Record<number, Stroke[]>>({ 1: [] });
   const [redoStackByPage, setRedoStackByPage] = useState<Record<number, Stroke[]>>({ 1: [] });
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Carregar dados iniciais (Rascunho ou Caderno)
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoaded(false);
+      if (activeNotebook && user) {
+        // Load from Firebase
+        try {
+          const q = query(collection(db, 'users', user.uid, 'notebooks', activeNotebook.id, 'pages'));
+          const snap = await getDocs(q);
+          const loadedStrokes: Record<number, Stroke[]> = {};
+          snap.forEach(d => {
+            const data = d.data();
+            const pageNum = parseInt(d.id.replace('page_', ''));
+            if (!isNaN(pageNum) && data.strokes) {
+              loadedStrokes[pageNum] = JSON.parse(data.strokes);
+            }
+          });
+          if (Object.keys(loadedStrokes).length > 0) {
+            setStrokesByPage(loadedStrokes);
+          } else {
+            setStrokesByPage({ 1: [] });
+          }
+          setTotalPages(activeNotebook.totalPages || 1);
+          setCurrentPage(1);
+        } catch (e) {
+          console.error('Erro ao carregar caderno:', e);
+          setStrokesByPage({ 1: [] });
+        }
+      } else {
+        // Load Quick Draft from IndexedDB
+        try {
+          const savedStrokes = await localforage.getItem<Record<number, Stroke[]>>('whiteboard-quick-draft');
+          if (savedStrokes && Object.keys(savedStrokes).length > 0) {
+            setStrokesByPage(savedStrokes);
+            const maxPage = Math.max(...Object.keys(savedStrokes).map(Number));
+            if (maxPage > 1) {
+              setTotalPages(maxPage);
+            }
+          } else {
+            setStrokesByPage({ 1: [] });
+          }
+        } catch (e) {
+          console.error(e);
+          setStrokesByPage({ 1: [] });
+        }
+      }
+      setRedoStackByPage({ 1: [] });
+      setIsLoaded(true);
+    };
+
+    loadData();
+  }, [activeNotebook, user]);
+
+  // Auto-save: Salvar no IndexedDB ou Firebase sempre que mudar
+  useEffect(() => {
+    if (!isLoaded) return;
+
+    if (activeNotebook && user) {
+      // Save current page to Firebase (debounce or save immediately)
+      const currentStrokes = strokesByPage[currentPage] || [];
+      const pageRef = doc(db, 'users', user.uid, 'notebooks', activeNotebook.id, 'pages', `page_${currentPage}`);
+      setDoc(pageRef, {
+        strokes: JSON.stringify(currentStrokes),
+        updatedAt: Date.now()
+      }, { merge: true }).catch(console.error);
+
+      // Se o total de páginas aumentou, atualiza no caderno principal
+      if (totalPages > (activeNotebook.totalPages || 1)) {
+        setDoc(doc(db, 'users', user.uid, 'notebooks', activeNotebook.id), {
+          totalPages,
+          updatedAt: Date.now()
+        }, { merge: true }).catch(console.error);
+        setActiveNotebook(prev => prev ? { ...prev, totalPages } : prev);
+      }
+    } else {
+      // Save Quick Draft to IndexedDB
+      localforage.setItem('whiteboard-quick-draft', strokesByPage).catch(console.error);
+    }
+  }, [strokesByPage, isLoaded, currentPage, totalPages, activeNotebook, user]);
 
   const [isDrawing, setIsDrawing] = useState(false);
   
@@ -484,6 +573,10 @@ export default function WhiteboardOverlay() {
       if (e.ctrlKey && e.key === 'y') { e.preventDefault(); handleRedo(); }
       if (e.key === 'e') { setTool('eraser'); }
       if (e.key === 'p' || e.key === 'b') { setTool('pen'); }
+      if (e.shiftKey && e.key.toLowerCase() === 'l') {
+        e.preventDefault();
+        handleClear();
+      }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
@@ -536,6 +629,20 @@ export default function WhiteboardOverlay() {
       {/* Main Toolbar */}
       {showToolbar && (
         <div className="whiteboard-toolbar pointer-events-auto absolute top-4 left-1/2 -translate-x-1/2 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center gap-1.5 sm:gap-2 z-[9999] max-w-[95vw] flex-wrap justify-center">
+          
+          <button
+            onClick={() => setShowNotebooksManager(true)}
+            className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors flex items-center gap-1"
+            title="Meus Cadernos"
+          >
+            <Book className="w-5 h-5" />
+            <span className="text-xs font-bold hidden sm:inline">
+              {activeNotebook ? activeNotebook.name : 'Rascunho'}
+            </span>
+          </button>
+
+          <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
+
           <button
             onClick={() => {
               const nextMode = windowMode === 'fullscreen' ? 'floating' : 'fullscreen';
@@ -832,6 +939,22 @@ export default function WhiteboardOverlay() {
         >
           <div className="w-4 h-4 border-r-2 border-b-2 border-gray-500 dark:border-gray-400" />
         </div>
+      )}
+
+      {/* Notebooks Manager Modal */}
+      {showNotebooksManager && (
+        <NotebooksManager 
+          onClose={() => setShowNotebooksManager(false)} 
+          onSelectNotebook={(nb) => {
+            setActiveNotebook(nb);
+            setShowNotebooksManager(false);
+            // reset strokes array to empty or load from Firebase (to be implemented)
+            setStrokesByPage({ 1: [] });
+            setRedoStackByPage({ 1: [] });
+            setCurrentPage(1);
+            setTotalPages(nb.totalPages || 1);
+          }} 
+        />
       )}
     </>
   );
