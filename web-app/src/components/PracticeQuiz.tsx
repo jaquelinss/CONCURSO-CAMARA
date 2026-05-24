@@ -46,14 +46,14 @@ export default function PracticeQuiz({ questions, theme, onClose, quizTitle = "Q
 
   if (showResults) {
     return (
-      <div className="w-full text-center p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md mt-6">
+      <div className="w-full text-center p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md mt-6 text-gray-900 dark:text-gray-100">
         <h3 className="text-2xl font-bold mb-4">{quizTitle} - Finalizado!</h3>
         <p className="text-xl mb-6">Sua pontuação: <span className={`font-bold ${theme.accent}`}>{score}</span> de {questions.length}</p>
         <div className="flex gap-4 justify-center">
           <button onClick={handleRestart} className={`py-2 px-5 font-bold rounded-lg ${theme.button}`}>
             Tentar Novamente
           </button>
-          <button onClick={onClose} className={`py-2 px-5 font-bold rounded-lg bg-gray-50 dark:bg-gray-9000 hover:bg-gray-600 text-white`}>
+          <button onClick={onClose} className={`py-2 px-5 font-bold rounded-lg bg-gray-500 dark:bg-gray-700 hover:bg-gray-600 dark:hover:bg-gray-600 text-white`}>
             Fechar Quiz
           </button>
         </div>
@@ -62,7 +62,7 @@ export default function PracticeQuiz({ questions, theme, onClose, quizTitle = "Q
   }
 
   return (
-    <div className="w-full p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md mt-6">
+    <div className="w-full p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md mt-6 text-gray-900 dark:text-gray-100">
       <h3 className="text-2xl font-bold mb-4 text-center">{quizTitle}</h3>
       <p className="text-sm font-semibold mb-2 opacity-70">Questão {currentIndex + 1} de {questions.length}</p>
       <p className="text-lg font-semibold my-4">{currentQuestion.pergunta}</p>
@@ -91,8 +91,8 @@ export default function PracticeQuiz({ questions, theme, onClose, quizTitle = "Q
         })}
       </div>
       {selectedAnswer && (
-        <div className="mt-4 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 border">
-          <p className="text-sm">{currentQuestion.explicacao}</p>
+        <div className="mt-4 p-4 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
+          <p className="text-sm text-gray-800 dark:text-gray-200">{currentQuestion.explicacao}</p>
           <button onClick={handleNext} className={`w-full mt-4 py-2 font-bold rounded-lg text-white ${theme.button}`}>
             {currentIndex < questions.length - 1 ? 'Próxima' : 'Ver Resultados'}
           </button>

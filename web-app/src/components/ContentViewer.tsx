@@ -13,10 +13,10 @@ const Flashcard = ({ front, back, theme }: { front: string, back: string, theme:
   return (
     <div className="w-full h-80 perspective-1000 cursor-pointer mb-6" onClick={() => setIsFlipped(!isFlipped)}>
       <div className={`relative w-full h-full transition-transform duration-700 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
-        <div className={`absolute w-full h-full backface-hidden flex items-center justify-center p-6 rounded-2xl shadow-lg ${theme.cardFront} ${theme.border} border-2`}>
+        <div className={`absolute w-full h-full backface-hidden flex items-center justify-center p-6 rounded-2xl shadow-lg ${theme.cardFront} ${theme.border} border-2 text-gray-900 dark:text-gray-100`}>
           <p className="text-2xl text-center font-semibold">{front}</p>
         </div>
-        <div className={`absolute w-full h-full backface-hidden rotate-y-180 flex items-center justify-center p-6 rounded-2xl shadow-lg ${theme.cardBack} ${theme.border} border-2`}>
+        <div className={`absolute w-full h-full backface-hidden rotate-y-180 flex items-center justify-center p-6 rounded-2xl shadow-lg ${theme.cardBack} ${theme.border} border-2 text-gray-900 dark:text-gray-100`}>
           <p className="text-xl text-center">{back}</p>
         </div>
       </div>
@@ -97,7 +97,7 @@ export default function ContentViewer({ type, content, onBack }: ContentViewerPr
   };
 
   return (
-    <div ref={contentRef} className={`max-w-4xl mx-auto p-6 rounded-xl shadow-lg relative ${theme.cardFront}`}>
+    <div ref={contentRef} className={`max-w-4xl mx-auto p-6 rounded-xl shadow-lg relative ${theme.cardFront} text-gray-900 dark:text-gray-100`}>
       {tooltip.visible && (
         <div 
           ref={tooltipRef}
@@ -121,12 +121,12 @@ export default function ContentViewer({ type, content, onBack }: ContentViewerPr
       {type === 'lesson' && data && (
         <>
           <h2 className={`text-4xl font-bold mb-4 ${theme.accent}`}>{data.titulo}</h2>
-          <p className="text-lg italic mb-6">{data.introducao}</p>
+          <p className="text-lg italic mb-6 text-gray-700 dark:text-gray-300">{data.introducao}</p>
           <div className="space-y-6">
             {data.secoes?.map((sec: any, idx: number) => (
               <div key={idx} className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
                 <h3 className="text-2xl font-semibold mb-2">{sec.subtitulo}</h3>
-                <div className="text-base leading-relaxed whitespace-pre-wrap">
+                <div className="text-base leading-relaxed whitespace-pre-wrap text-gray-800 dark:text-gray-200">
                   {parseLessonContent(sec.conteudo).map((part, i) => 
                     part.type === 'term' ? (
                       <span 

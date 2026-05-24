@@ -1,9 +1,9 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import Navigation from '../components/Navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
 import { doc, getDoc, setDoc, serverTimestamp, collection, getDocs, query, where } from 'firebase/firestore';
-import { getSubjectsByMode, topicsBySubject, themes, defaultTheme } from '../lib/constants';
+import { getSubjectsByMode, topicsBySubject, themes, defaultTheme, ENEM_TOPICS, BANCAS_TOPICS } from '../lib/constants';
 import { ChevronDown, ChevronUp, Plus, Trash2, CheckCircle2, Circle } from 'lucide-react';
 
 interface ChecklistItem {
@@ -15,7 +15,7 @@ interface ChecklistItem {
 }
 
 export default function StudyProgressScreen() {
-  const { user } = useAuth();
+  const { user, selectedBanca, saveBanca } = useAuth();
   const [mode, setMode] = useState<'Geral' | 'ENEM' | 'Concurso'>('Concurso');
   const [subject, setSubject] = useState<string>('');
   
@@ -29,6 +29,7 @@ export default function StudyProgressScreen() {
   const [allSubjects, setAllSubjects] = useState<string[]>([]);
   const [isCreatingNewSubject, setIsCreatingNewSubject] = useState(false);
   const [newSubjectName, setNewSubjectName] = useState('');
+  const justCreatedSubjectRef = useRef<string | null>(null);
 
   // AI Modal States
   const { apiKey } = useAuth();
@@ -68,6 +69,8 @@ export default function StudyProgressScreen() {
   }, [user, mode]);
 
   useEffect(() => {
+    // Don't auto-reset if we just created a new subject (it may not be in the list yet)
+    if (justCreatedSubjectRef.current === subject) return;
     if (!isCreatingNewSubject && subjects.length > 0 && !subjects.includes(subject) && subject !== 'new') {
       setSubject(subjects[0]);
     }
@@ -81,7 +84,22 @@ export default function StudyProgressScreen() {
       const docSnap = await getDoc(docRef);
       
       const topicsMap = topicsBySubject[subject] || {};
-      const defaultItems: ChecklistItem[] = [];
+      let defaultItems: ChecklistItem[] = [];
+      
+      const fixedTopics: ChecklistItem[] = [];
+      if (mode === 'ENEM' && ENEM_TOPICS[subject]) {
+        const title = 'Assuntos Mais Cobrados no ENEM';
+        ENEM_TOPICS[subject].forEach(st => {
+          fixedTopics.push({ id: `${title}___${st}`, topic: title, subTopic: st, checked: false });
+        });
+      } else if (mode === 'Concurso' && selectedBanca && BANCAS_TOPICS[selectedBanca] && BANCAS_TOPICS[selectedBanca][subject]) {
+        const title = `Assuntos Mais Cobrados ${selectedBanca}`;
+        BANCAS_TOPICS[selectedBanca][subject].forEach(st => {
+          fixedTopics.push({ id: `${title}___${st}`, topic: title, subTopic: st, checked: false });
+        });
+      }
+
+      defaultItems = [...fixedTopics];
       
       Object.keys(topicsMap).forEach(topic => {
         const subTopics = topicsMap[topic] as string[];
@@ -103,7 +121,16 @@ export default function StudyProgressScreen() {
         setIsAiGeneratedPlan(isAiPlan);
 
         if (isAiPlan) {
-          setItems(savedItems);
+          const mergedItems = [...fixedTopics];
+          savedItems.forEach(si => {
+             const fIdx = mergedItems.findIndex(f => f.id === si.id);
+             if (fIdx !== -1) mergedItems[fIdx].checked = si.checked;
+          });
+          savedItems.forEach(si => {
+             const isFixed = fixedTopics.some(f => f.id === si.id);
+             if (!isFixed) mergedItems.push(si);
+          });
+          setItems(mergedItems);
         } else {
           // Merge saved items with default items (in case constants changed)
           const mergedItems = [...defaultItems];
@@ -112,7 +139,8 @@ export default function StudyProgressScreen() {
             if (index !== -1) {
               mergedItems[index].checked = savedItem.checked;
             } else if (savedItem.isCustom) {
-              mergedItems.push(savedItem);
+              const isFixed = fixedTopics.some(f => f.id === savedItem.id);
+              if (!isFixed) mergedItems.push(savedItem);
             }
           });
           setItems(mergedItems);
@@ -123,7 +151,10 @@ export default function StudyProgressScreen() {
       }
       
       // Expand first topic by default
-      if (Object.keys(topicsMap).length > 0) {
+      if (fixedTopics.length > 0) {
+        setExpandedTopics({ [fixedTopics[0].topic]: true });
+        setSelectedTopicForCustom(fixedTopics[0].topic);
+      } else if (Object.keys(topicsMap).length > 0) {
         setExpandedTopics({ [Object.keys(topicsMap)[0]]: true });
         setSelectedTopicForCustom(Object.keys(topicsMap)[0]);
       }
@@ -136,7 +167,7 @@ export default function StudyProgressScreen() {
 
   useEffect(() => {
     fetchProgress();
-  }, [user, subject]);
+  }, [user, subject, mode, selectedBanca]);
 
   const saveProgress = async (newItems: ChecklistItem[], aiGeneratedFlag?: boolean) => {
     if (!user || !subject) return;
@@ -247,10 +278,11 @@ Certifique-se de que a ordem dos tópicos seja a melhor ordem lógica de aprendi
         }
       });
 
-      setItems(newItems);
-      setExpandedTopics(newExpandedTopics);
+      const currentFixedItems = items.filter(item => item.topic.startsWith('Assuntos Mais Cobrados'));
+      setItems([...currentFixedItems, ...newItems]);
+      saveProgress([...currentFixedItems, ...newItems], true);
       setIsAiGeneratedPlan(true);
-      saveProgress(newItems, true);
+      setExpandedTopics(newExpandedTopics);
       setIsAIModalOpen(false);
       setAiContext('');
 
@@ -287,7 +319,7 @@ Certifique-se de que a ordem dos tópicos seja a melhor ordem lógica de aprendi
             disabled={!subject || isCreatingNewSubject}
             className="px-4 py-2 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 rounded-lg font-bold hover:bg-indigo-200 dark:hover:bg-indigo-800/50 transition-colors flex items-center gap-2 disabled:opacity-50"
           >
-            ✨ Plano com IA
+            ✨ Personalizar Tópicos
           </button>
         </div>
 
@@ -305,6 +337,22 @@ Certifique-se de que a ordem dos tópicos seja a melhor ordem lógica de aprendi
                 <option value="Geral">Geral</option>
               </select>
             </div>
+            
+            {mode === 'Concurso' && (
+              <div className="flex-1">
+                <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Banca</label>
+                <select
+                  value={selectedBanca || 'IBAM'}
+                  onChange={(e) => saveBanca(e.target.value)}
+                  className="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 outline-none"
+                >
+                  {['IBAM', 'CESPE', 'FGV', 'CESGRANRIO'].map((b) => (
+                    <option key={b} value={b}>{b}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+            
             <div className="flex-1">
               <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Matéria</label>
               <div className="flex gap-2">
@@ -338,11 +386,37 @@ Certifique-se de que a ordem dos tópicos seja a melhor ordem lógica de aprendi
                       autoFocus
                     />
                     <button 
-                      onClick={() => {
+                      onClick={async () => {
                         if (newSubjectName.trim()) {
-                          setSubject(newSubjectName.trim());
+                          const sName = newSubjectName.trim();
+                          
+                          // 1. Add to local list IMMEDIATELY to prevent auto-reset
+                          justCreatedSubjectRef.current = sName;
+                          setAllSubjects(prev => prev.includes(sName) ? prev : [...prev, sName]);
+                          
+                          // 2. Set the subject and close creation mode
+                          setSubject(sName);
                           setIsCreatingNewSubject(false);
                           setNewSubjectName('');
+                          setItems([]);
+                          
+                          // 3. Persist to Firestore
+                          if (user) {
+                            try {
+                              const docRef = doc(db, 'users', user.uid, 'studyProgress', sName);
+                              await setDoc(docRef, {
+                                subject: sName,
+                                mode: mode,
+                                items: [],
+                                updatedAt: serverTimestamp(),
+                              });
+                            } catch (err) {
+                              console.error("Erro ao registrar matéria:", err);
+                            }
+                          }
+                          
+                          // 4. Clear the guard after a short delay
+                          setTimeout(() => { justCreatedSubjectRef.current = null; }, 2000);
                         }
                       }}
                       disabled={!newSubjectName.trim()}
@@ -388,7 +462,42 @@ Certifique-se de que a ordem dos tópicos seja a melhor ordem lógica de aprendi
           </div>
         ) : Object.keys(groupedItems).length === 0 ? (
           <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
-            <p className="text-gray-500 dark:text-gray-400">Nenhum tópico mapeado para esta matéria ainda.</p>
+            <p className="text-gray-500 dark:text-gray-400 mb-6">Nenhum tópico mapeado para esta matéria ainda. Use a Inteligência Artificial ou adicione manualmente abaixo.</p>
+            <div className="max-w-md mx-auto flex flex-col gap-3 px-4 text-left">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Criar Primeiro Tópico Manualmente:</label>
+              <input 
+                type="text" 
+                placeholder="Nome do Tópico (Ex: Raciocínio Lógico)" 
+                className="w-full p-2.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 outline-none focus:ring-2 focus:ring-indigo-500"
+                value={selectedTopicForCustom}
+                onChange={(e) => setSelectedTopicForCustom(e.target.value)}
+              />
+              <div className="flex gap-2">
+                <input 
+                  type="text" 
+                  placeholder="Nome do Subtópico (Ex: Tabela Verdade)" 
+                  className="flex-1 p-2.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 outline-none focus:ring-2 focus:ring-indigo-500"
+                  value={newCustomItem}
+                  onChange={(e) => setNewCustomItem(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && newCustomItem.trim() && selectedTopicForCustom.trim()) {
+                      addCustomItem();
+                      setExpandedTopics({ [selectedTopicForCustom]: true });
+                    }
+                  }}
+                />
+                <button 
+                  onClick={() => {
+                    addCustomItem();
+                    setExpandedTopics({ [selectedTopicForCustom]: true });
+                  }}
+                  disabled={!newCustomItem.trim() || !selectedTopicForCustom.trim()}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 disabled:opacity-50"
+                >
+                  <Plus className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="space-y-4">
@@ -495,8 +604,8 @@ Certifique-se de que a ordem dos tópicos seja a melhor ordem lógica de aprendi
       {isAIModalOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-lg p-6 animate-in fade-in zoom-in duration-200">
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">Gerar Plano de Estudos com IA</h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">A IA criará uma ordem lógica de tópicos e subtópicos para <strong>{subject}</strong>.</p>
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">Personalizar Tópicos com IA</h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">A IA criará uma ordem lógica de tópicos e subtópicos personalizados para <strong>{subject}</strong>, que substituirão os tópicos padrão no painel de estudos.</p>
 
             <div className="space-y-4">
               <div>
@@ -535,7 +644,7 @@ Certifique-se de que a ordem dos tópicos seja a melhor ordem lógica de aprendi
                       Gerando...
                     </>
                   ) : (
-                    'Gerar Plano'
+                    'Personalizar'
                   )}
                 </button>
               </div>

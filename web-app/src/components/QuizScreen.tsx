@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { themes, defaultTheme } from '../lib/constants';
 import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp, doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
@@ -10,6 +10,7 @@ import html2canvas from 'html2canvas';
 import mammoth from 'mammoth';
 import PracticeQuiz from './PracticeQuiz';
 import { getRevisionSuggestions, calculateNextStep } from '../lib/revision.service';
+import ReadingLaser from './ReadingLaser';
 
 const difficulties = ['Introdutório', 'Médio', 'Difícil'];
 
@@ -180,10 +181,10 @@ const Flashcard = ({ front, back, theme }: { front: string, back: string, theme:
   return (
     <div className="w-full h-80 perspective-1000 cursor-pointer" onClick={() => setIsFlipped(!isFlipped)}>
       <div className={`relative w-full h-full transition-transform duration-700 transform-style-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
-        <div className={`absolute w-full h-full backface-hidden flex items-center justify-center p-6 rounded-2xl shadow-lg ${theme.cardFront} ${theme.border} border-2`}>
+        <div className={`absolute w-full h-full backface-hidden flex items-center justify-center p-6 rounded-2xl shadow-lg ${theme.cardFront} ${theme.border} border-2 text-gray-900 dark:text-gray-100`}>
           <p className="text-2xl text-center font-semibold">{front}</p>
         </div>
-        <div className={`absolute w-full h-full backface-hidden rotate-y-180 flex items-center justify-center p-6 rounded-2xl shadow-lg ${theme.cardBack} ${theme.border} border-2`}>
+        <div className={`absolute w-full h-full backface-hidden rotate-y-180 flex items-center justify-center p-6 rounded-2xl shadow-lg ${theme.cardBack} ${theme.border} border-2 text-gray-900 dark:text-gray-100`}>
           <p className="text-xl text-center">{back}</p>
         </div>
       </div>
@@ -198,7 +199,7 @@ interface QuizScreenProps {
 }
 
 export default function QuizScreen({ settings, onBack, savedData }: QuizScreenProps) {
-  const { user, apiKey } = useAuth();
+  const { user, apiKey, selectedBanca } = useAuth();
   const theme = themes[settings.subject] || defaultTheme;
   const isSavedMode = !!savedData;
   const [questions, setQuestions] = useState<any[]>(savedData || []);
@@ -216,7 +217,6 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     }
     return 0;
   });
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [score, setScore] = useState<number>(() => {
     if (storageKey) {
       const saved = localStorage.getItem(storageKey);
@@ -224,6 +224,9 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     }
     return 0;
   });
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [eliminatedAnswers, setEliminatedAnswers] = useState<Set<string>>(new Set());
+  const contentRef = useRef<HTMLDivElement>(null);
 
   // Redação-specific states
   const [isCorrecting, setIsCorrecting] = useState(false);
@@ -255,7 +258,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     }
   }, [currentIndex, score, storageKey, questions.length]);
 
-  const [eliminatedAnswers, setEliminatedAnswers] = useState<Set<string>>(new Set());
+
 
   // Tutor Chat States
   const [doubt, setDoubt] = useState("");
@@ -265,6 +268,8 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
   const [flashcardDoubt, setFlashcardDoubt] = useState("");
   const [flashcardDoubtResponse, setFlashcardDoubtResponse] = useState("");
   const [isAskingFlashcardDoubt, setIsAskingFlashcardDoubt] = useState(false);
+  const [savingFlashcardDoubt, setSavingFlashcardDoubt] = useState(false);
+  const [flashcardDoubtSaved, setFlashcardDoubtSaved] = useState(false);
 
   // Sub-quiz States
   const [subQuestions, setSubQuestions] = useState<any[]>([]);
@@ -285,7 +290,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     setLoading(true);
     setError(null);
     try {
-      const result = await generateContentFromGemini(settings, apiKey);
+      const result = await generateContentFromGemini({ ...settings, banca: selectedBanca }, apiKey);
       if (result.materia_identificada) settings.subject = result.materia_identificada;
       if (result.topico_identificado) settings.topic = result.topico_identificado;
       
@@ -351,6 +356,33 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
       alert('Erro ao salvar explicação.');
     } finally {
       setSavingDoubt(false);
+    }
+  };
+
+  const saveFlashcardDoubtResponse = async () => {
+    if (!user || !flashcardDoubtResponse || !flashcardDoubt) return;
+    setSavingFlashcardDoubt(true);
+    try {
+      const lessonsRef = collection(db, 'users', user.uid, 'lessons');
+      await addDoc(lessonsRef, {
+        subject: settings.subject,
+        topic: settings.specificTopic || settings.topic,
+        lessonLevel: 'Dúvida',
+        data: {
+          titulo: `Dúvida (Flashcard): ${flashcardDoubt.substring(0, 80)}${flashcardDoubt.length > 80 ? '...' : ''}`,
+          introducao: `Pergunta: ${flashcardDoubt}`,
+          secoes: [{ subtitulo: 'Resposta da IA', conteudo: flashcardDoubtResponse.replace(/<[^>]*>?/gm, '') }],
+        },
+        userComment: `Dúvida sobre flashcard - ${settings.subject} - ${settings.topic}`,
+        createdAt: serverTimestamp(),
+      });
+      setFlashcardDoubtSaved(true);
+      setTimeout(() => setFlashcardDoubtSaved(false), 3000);
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao salvar explicação.');
+    } finally {
+      setSavingFlashcardDoubt(false);
     }
   };
 
@@ -808,7 +840,11 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
       <div className="flex flex-col items-center justify-center space-y-4 my-16">
         <div className={`w-16 h-16 border-4 border-dashed rounded-full animate-spin ${theme.border}`}></div>
         <p className={`text-lg ${theme.text}`}>
-          {settings.model === 'Flashcard' ? 'Gerando seus flashcards...' : 'Gerando suas propostas de redação...'}
+          Gerando {
+            settings.model === 'Flashcard' ? 'flashcards' 
+            : settings.subject === 'Redação' && settings.model !== 'Questões' ? 'propostas de redação'
+            : 'questões'
+          } de {settings.specificTopic || settings.topic || settings.subject}...
         </p>
       </div>
     );
@@ -887,7 +923,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
         {!isCorrecting && !correction && (
           <>
             {!isCorrectionMode && proposal && (
-              <div className={`${theme.cardFront} backdrop-blur-sm p-6 rounded-2xl shadow-lg border-2 ${theme.border} space-y-6`}>
+              <div className={`${theme.cardFront} backdrop-blur-sm p-6 rounded-2xl shadow-lg border-2 ${theme.border} space-y-6 text-gray-900 dark:text-gray-100`}>
                 <h2 className="text-3xl font-bold mb-2 text-center">{proposal.tema}</h2>
                 <p className="text-xl mb-6 text-center italic opacity-95">"{proposal.frase_tema}"</p>
                 
@@ -1001,10 +1037,10 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
 
         {correction && !isCorrecting && (
           <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border-2 border-gray-100 dark:border-gray-700 space-y-6">
-            <h3 className="text-3xl font-bold border-b-2 pb-2 text-center">Feedback da Correção</h3>
+            <h3 className="text-3xl font-bold border-b-2 pb-2 text-center text-gray-900 dark:text-gray-100">Feedback da Correção</h3>
             
             <div className="text-center bg-indigo-50 dark:bg-indigo-950/30 p-6 rounded-2xl max-w-sm mx-auto border border-indigo-100 dark:border-indigo-900">
-              <p className="text-lg opacity-70">Nota Final Estimada</p>
+              <p className="text-lg text-gray-600 dark:text-gray-400">Nota Final Estimada</p>
               <p className={`text-6xl font-extrabold ${theme.accent} mt-1`}>{correction.nota_final}</p>
             </div>
 
@@ -1013,7 +1049,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
             </div>
 
             <div className="space-y-4">
-              <h4 className="text-xl font-bold">Análise detalhada por Competências</h4>
+              <h4 className="text-xl font-bold text-gray-900 dark:text-gray-100">Análise detalhada por Competências</h4>
               <div className="grid grid-cols-1 gap-4">
                 {correction.analise_competencias && Object.entries(correction.analise_competencias).map(([key, value]: any) => (
                   <div key={key} className="bg-black/5 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
@@ -1023,19 +1059,19 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
                       </strong>
                       <span className={`font-bold text-sm px-3 py-1 rounded-full ${value.nota >= 160 ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' : value.nota >= 120 ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'}`}>{value.nota} pts</span>
                     </div>
-                    <p className="text-sm leading-relaxed opacity-90">{value.justificativa}</p>
+                    <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">{value.justificativa}</p>
                   </div>
                 ))}
               </div>
             </div>
 
             <div className="relative pt-6 border-t border-gray-200 dark:border-gray-700">
-              <h4 className="text-xl font-bold mb-3">Texto Marcado e Comentado</h4>
+              <h4 className="text-xl font-bold mb-3 text-gray-900 dark:text-gray-100">Texto Marcado e Comentado</h4>
               <CorrectionLegend />
               
               <div 
                 ref={correctedTextRef}
-                className="whitespace-pre-wrap bg-gray-50 dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-700 leading-relaxed text-sm font-sans"
+                className="whitespace-pre-wrap bg-gray-50 dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-700 leading-relaxed text-sm font-sans text-gray-800 dark:text-gray-200"
                 dangerouslySetInnerHTML={{ __html: correction.texto_corrigido_html }}
                 onClick={handleCorrectedTextClick}
               ></div>
@@ -1286,7 +1322,8 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
         </div>
       </div>
       
-      <div className={`${theme.cardFront} backdrop-blur-sm p-6 rounded-2xl shadow-lg`}>
+      <div ref={contentRef} className={`${theme.cardFront} backdrop-blur-sm p-6 rounded-2xl shadow-lg relative overflow-hidden text-gray-900 dark:text-gray-100`}>
+        <ReadingLaser containerRef={contentRef} />
         <p className="text-sm font-semibold mb-2 opacity-70">{isFlashcard ? 'Flashcard' : 'Questão'} {currentIndex + 1} de {questions.length}</p>
 
         {isFlashcard ? (
@@ -1310,7 +1347,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
                   value={flashcardDoubt} 
                   onChange={(e) => setFlashcardDoubt(e.target.value)} 
                   placeholder="Digite sua pergunta sobre o flashcard..." 
-                  className={`flex-grow p-2 rounded-lg ${theme.border} border-2`} 
+                  className={`flex-grow p-2 rounded-lg ${theme.border} border-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100`} 
                 />
                 <button 
                   onClick={handleAskFlashcardDoubt} 
@@ -1323,6 +1360,16 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
               {flashcardDoubtResponse && (
                 <div className="mt-4 p-4 bg-blue-100 border-l-4 border-blue-400 dark:bg-blue-900/30 dark:border-blue-500 rounded-r-lg">
                   <div className="prose prose-blue dark:prose-invert max-w-none text-blue-900 dark:text-blue-100" dangerouslySetInnerHTML={{ __html: flashcardDoubtResponse }} />
+                  
+                  <div className="mt-3 flex justify-end">
+                    <button
+                      onClick={saveFlashcardDoubtResponse}
+                      disabled={savingFlashcardDoubt || flashcardDoubtSaved}
+                      className={`text-sm px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2 ${flashcardDoubtSaved ? 'bg-green-500 text-white' : 'bg-white dark:bg-gray-800 text-blue-700 dark:text-blue-400 border border-blue-300 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-gray-700'}`}
+                    >
+                      {savingFlashcardDoubt ? 'Salvando...' : flashcardDoubtSaved ? '✓ Salvo em Meus Salvamentos!' : '💾 Salvar Explicação'}
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -1383,7 +1430,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
                     value={doubt}
                     onChange={(e) => setDoubt(e.target.value)}
                     placeholder="Ainda com dúvidas? Pergunte à IA"
-                    className={`w-full p-2 rounded-lg ${theme.border} border-2 focus:outline-none focus:ring-2 ${theme.ring}`}
+                    className={`w-full p-2 rounded-lg ${theme.border} border-2 focus:outline-none focus:ring-2 ${theme.ring} bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100`}
                   />
                   <button
                     onClick={handleAskDoubt}
@@ -1415,7 +1462,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
                               type="number" 
                               value={subQuestionCount} 
                               onChange={(e) => setSubQuestionCount(Number(e.target.value))} 
-                              className={`w-full p-2 rounded-lg border-2 ${theme.border}`}
+                              className={`w-full p-2 rounded-lg border-2 ${theme.border} bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100`}
                               min="1" max="10"
                             />
                           </div>

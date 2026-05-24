@@ -8,6 +8,66 @@ import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import PracticeQuiz from './PracticeQuiz';
 import { generateContentFromGemini } from '../lib/gemini';
+import ReadingLaser from './ReadingLaser';
+
+const renderMarkdownText = (text: string) => {
+  if (!text) return null;
+  const parts = text.split(/(\*\*.*?\*\*|\*.*?\*)/g);
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={index}>{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith('*') && part.endsWith('*')) {
+      return <em key={index}>{part.slice(1, -1)}</em>;
+    }
+    return <React.Fragment key={index}>{part}</React.Fragment>;
+  });
+};
+
+const parseLessonContent = (content: string) => {
+  if (typeof content !== 'string') return [];
+  
+  const regex = /\[EXPLICACAO\](.*?):(.*?)\[\/EXPLICACAO\]/gs;
+  const parts = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = regex.exec(content)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push({ type: 'text', content: content.substring(lastIndex, match.index) });
+    }
+    const term = match[1]?.trim();
+    const explanation = match[2]?.trim();
+    if (term && explanation) {
+      parts.push({ type: 'term', term, explanation });
+    }
+    lastIndex = regex.lastIndex;
+  }
+  if (lastIndex < content.length) {
+    parts.push({ type: 'text', content: content.substring(lastIndex) });
+  }
+  return parts;
+};
+
+const ParsedSectionContent = React.memo(({ content, theme }: { content: string, theme: any }) => {
+  return (
+    <div>
+      {parseLessonContent(content).map((part, i) => 
+        part.type === 'term' ? (
+          <span 
+            key={i} 
+            className={`term-highlight cursor-help font-bold underline decoration-dotted underline-offset-4 ${theme.accent}`}
+            data-explanation={part.explanation}
+          >
+            {part.term}
+          </span>
+        ) : (
+          <span key={i}>{renderMarkdownText(part.content!)}</span>
+        )
+      )}
+    </div>
+  );
+});
 
 interface LessonScreenProps {
   settings: any;
@@ -48,7 +108,7 @@ const HighlighterPalette = ({ top, left, onHighlight }: { top: number, left: num
 };
 
 export default function LessonScreen({ settings, onBack, savedData }: LessonScreenProps) {
-  const { user, apiKey } = useAuth();
+  const { user, apiKey, selectedBanca } = useAuth();
   const theme = themes[settings.subject] || defaultTheme;
   const isSavedMode = !!savedData;
   
@@ -211,7 +271,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
     setLoading(true);
     setError(null);
     try {
-      const lessonSettings = { ...settings, lessonLevel: level, model: 'Aula Explicativa' };
+      const lessonSettings = { ...settings, lessonLevel: level, model: 'Aula Explicativa', banca: selectedBanca };
       const result = await generateContentFromGemini(lessonSettings, apiKey);
       
       let parsedLesson = result;
@@ -236,12 +296,16 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
     if (!user || !currentLesson) return;
     setSaving(true);
     try {
+      const savedHtml = contentRef.current?.querySelector('.lesson-content-container')?.innerHTML || null;
       const lessonsRef = collection(db, 'users', user.uid, 'lessons');
       await addDoc(lessonsRef, {
         subject: settings.subject,
         topic: settings.specificTopic || settings.topic,
         lessonLevel: currentLevel,
-        data: currentLesson,
+        data: {
+            ...currentLesson,
+            savedHtml: savedHtml
+        },
         userComment: '',
         createdAt: serverTimestamp(),
       });
@@ -578,33 +642,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
     }
   };
 
-  const parseLessonContent = (content: string) => {
-    if (typeof content !== 'string') return [];
-    
-    let processedContent = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    processedContent = processedContent.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    
-    const regex = /\[EXPLICACAO\](.*?):(.*?)\[\/EXPLICACAO\]/gs;
-    const parts = [];
-    let lastIndex = 0;
-    let match;
-
-    while ((match = regex.exec(processedContent)) !== null) {
-      if (match.index > lastIndex) {
-        parts.push({ type: 'text', content: processedContent.substring(lastIndex, match.index) });
-      }
-      const term = match[1]?.trim();
-      const explanation = match[2]?.trim();
-      if (term && explanation) {
-        parts.push({ type: 'term', term, explanation });
-      }
-      lastIndex = regex.lastIndex;
-    }
-    if (lastIndex < processedContent.length) {
-      parts.push({ type: 'text', content: processedContent.substring(lastIndex) });
-    }
-    return parts;
-  };
+  // Removed parseLessonContent (moved to top of file)
 
   // Se for o início, mostrar tela "Pronto para gerar?"
   if (!currentLesson && !loading && Object.keys(lessonData).length === 0) {
@@ -665,11 +703,11 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
       {loading ? (
         <div className="flex flex-col items-center justify-center space-y-4 my-16">
           <div className={`w-16 h-16 border-4 border-dashed rounded-full animate-spin ${theme.border}`}></div>
-          <p className={`text-lg ${theme.text}`}>Carregando aula {currentLevel.toLowerCase()}...</p>
+          <p className={`text-lg ${theme.text}`}>Gerando aula de {settings.specificTopic || settings.topic || settings.subject}...</p>
         </div>
       ) : currentLesson ? (
-        <div ref={contentRef} className={`${theme.cardFront} p-6 rounded-xl shadow-lg relative`}>
-          
+        <div ref={contentRef} className={`${theme.cardFront} p-6 rounded-xl shadow-lg relative overflow-hidden text-gray-900 dark:text-gray-100`}>
+          <ReadingLaser containerRef={contentRef} />
           {highlighter.visible && (
             <div ref={highlighterPaletteRef}>
               <HighlighterPalette top={highlighter.top} left={highlighter.left} onHighlight={applyHighlight} />
@@ -687,38 +725,56 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
             </div>
           )}
 
-          <h2 className={`text-4xl font-bold mb-4 ${theme.accent}`}>{currentLesson.titulo}</h2>
-          <p className="text-lg italic mb-6">{currentLesson.introducao}</p>
+          <div className="flex items-start justify-between mb-4 gap-4 flex-wrap">
+            <h2 className={`text-4xl font-bold ${theme.accent}`}>{currentLesson.titulo}</h2>
+            <div className="flex items-center gap-2 shrink-0">
+              <button onClick={onSavePdf} className="px-3 py-2 rounded-lg font-bold text-white text-sm shadow-md transition-all bg-green-600 hover:bg-green-700 hover:scale-105 flex items-center gap-1.5">
+                <DownloadIcon className="w-4 h-4" /> PDF
+              </button>
+              {!isSavedMode && (
+                <button onClick={saveLesson} disabled={saving || saved} className={`px-3 py-2 rounded-lg font-bold text-white text-sm shadow-md transition-all ${saved ? 'bg-green-500' : theme.button} hover:scale-105 flex items-center gap-1.5`}>
+                  {saving ? 'Salvando...' : (saved ? '✓ Salvo!' : '💾 Salvar')}
+                </button>
+              )}
+              {isSavedMode && (
+                <span className="px-3 py-2 rounded-lg font-bold text-white text-sm bg-green-500 shadow-md">✓ Salvo</span>
+              )}
+            </div>
+          </div>
+          <p className="text-lg italic mb-6 text-gray-700 dark:text-gray-300">{currentLesson.introducao}</p>
           
-          <div className="space-y-6">
-            {currentLesson.secoes?.map((section: any, index: number) => (
-              <div key={index} className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
-                <h3 className="text-2xl font-semibold mb-2">{section.subtitulo}</h3>
-                <div className="text-base leading-relaxed whitespace-pre-wrap">
-                  {parseLessonContent(section.conteudo).map((part, i) => 
-                    part.type === 'term' ? (
-                      <span 
-                        key={i} 
-                        className="term-highlight bg-yellow-100 dark:bg-yellow-900/30 border border-dashed border-yellow-400 dark:border-yellow-600 text-yellow-900 dark:text-yellow-200 rounded px-1 cursor-pointer"
-                        onClick={(e) => toggleTooltip(e, part.explanation || '')}
-                      >
-                        {part.term}
-                      </span>
-                    ) : (
-                      <span key={i} dangerouslySetInnerHTML={{ __html: part.content?.replace(/\\n/g, '<br />') || '' }} />
-                    )
-                  )}
-                </div>
-              </div>
-            ))}
+          <div 
+            className="space-y-6 lesson-content-container"
+            onPointerDown={(e) => {
+              const target = e.target as HTMLElement;
+              if (target.classList.contains('term-highlight')) {
+                const explanation = target.getAttribute('data-explanation');
+                if (explanation) {
+                  toggleTooltip(e as any, explanation);
+                }
+              }
+            }}
+          >
+            <div className="text-base leading-relaxed whitespace-pre-wrap text-gray-800 dark:text-gray-200">
+              {currentLesson.savedHtml ? (
+                <div dangerouslySetInnerHTML={{ __html: currentLesson.savedHtml }} />
+              ) : (
+                currentLesson.secoes?.map((section: any, index: number) => (
+                  <div key={index} className="mb-6 last:mb-0">
+                    <h3 className="text-2xl font-semibold mb-2 text-gray-900 dark:text-gray-100">{section.subtitulo}</h3>
+                    <ParsedSectionContent content={section.conteudo} theme={theme} />
+                  </div>
+                ))
+              )}
+            </div>
           </div>
 
           <div className="mt-8 border-t-2 pt-6 space-y-4">
-            <h3 className="text-2xl font-semibold text-yellow-800">Ferramentas de Estudo</h3>
+            <h3 className="text-2xl font-semibold text-yellow-800 dark:text-yellow-300">Ferramentas de Estudo</h3>
             <div className="flex flex-col sm:flex-row gap-4 items-end">
               <div className="flex-1">
                 <label className="block text-sm font-medium mb-1">Nível do Quiz</label>
-                <div className="flex p-1 bg-gray-200 rounded-lg">
+                <div className="flex p-1 bg-gray-200 dark:bg-gray-700 rounded-lg">
                   {difficulties.map(level => (
                     <button 
                       key={level}
@@ -749,14 +805,14 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
           </div>
 
           <div className="mt-8 border-t-2 pt-6">
-            <h3 className="text-2xl font-semibold mb-4 text-yellow-800">Ainda com dúvidas? Pergunte à IA</h3>
+            <h3 className="text-2xl font-semibold mb-4 text-yellow-800 dark:text-yellow-300">Ainda com dúvidas? Pergunte à IA</h3>
             <div className="flex gap-2">
               <input 
                 type="text" 
                 value={doubt} 
                 onChange={(e) => setDoubt(e.target.value)} 
                 placeholder="Digite sua pergunta sobre a aula aqui..." 
-                className={`flex-grow p-2 rounded-lg ${theme.border} border-2 focus:outline-none focus:ring-2`} 
+                className={`flex-grow p-2 rounded-lg ${theme.border} border-2 focus:outline-none focus:ring-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100`} 
               />
               <button onClick={handleAskLessonDoubt} disabled={isAsking || !doubt} className={`py-2 px-6 font-bold rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white disabled:opacity-50`}>
                 {isAsking ? "..." : "Perguntar"}

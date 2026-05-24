@@ -176,3 +176,11 @@ code {
   margin-bottom: 0.25em;
 }
 
+/* Custom Sticky Note Resizer for Mobile */
+.sticky-note::-webkit-resizer {
+  background-color: transparent;
+  border-left: 20px solid transparent;
+  border-top: 20px solid transparent;
+  border-bottom: 20px solid rgba(0,0,0,0.4);
+  border-right: 20px solid rgba(0,0,0,0.4);
+}

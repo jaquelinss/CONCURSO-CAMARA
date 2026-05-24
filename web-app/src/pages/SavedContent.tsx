@@ -65,6 +65,69 @@ function CommentBadge({ item, collectionName, userId }: { item: any, collectionN
   );
 }
 
+function TitleEditor({ item, collectionName, userId, currentTitle, onUpdate }: { item: any, collectionName: string, userId: string, currentTitle: string, onUpdate: (newTitle: string) => void }) {
+  const [editing, setEditing] = useState(false);
+  const [title, setTitle] = useState(currentTitle);
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    if (!title.trim()) return;
+    setSaving(true);
+    try {
+      const ref = doc(db, 'users', userId, collectionName, item.id);
+      if (collectionName === 'lessons') {
+        await updateDoc(ref, { 'data.titulo': title.trim() });
+        if (item.data) item.data.titulo = title.trim();
+      } else {
+        await updateDoc(ref, { customTitle: title.trim() });
+        item.customTitle = title.trim();
+      }
+      onUpdate(title.trim());
+      setEditing(false);
+    } catch (err) {
+      console.error('Erro ao salvar título:', err);
+      alert('Erro ao salvar título.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (editing) {
+    return (
+      <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Nome do conteúdo"
+          className="flex-grow text-sm font-bold p-1.5 rounded-md border border-indigo-300 dark:border-indigo-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          autoFocus
+          onKeyDown={(e) => { if (e.key === 'Enter') handleSave(); if (e.key === 'Escape') { setTitle(currentTitle); setEditing(false); }}}
+        />
+        <button onClick={handleSave} disabled={saving} className="p-1 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-md transition-colors shrink-0">
+          <Check className="w-4 h-4" />
+        </button>
+        <button onClick={() => { setTitle(currentTitle); setEditing(false); }} className="p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors shrink-0">
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-1.5 group/title">
+      <h3 className="font-bold">{currentTitle}</h3>
+      <button
+        onClick={(e) => { e.stopPropagation(); setEditing(true); }}
+        className="p-0.5 text-gray-300 dark:text-gray-600 hover:text-indigo-500 dark:hover:text-indigo-400 opacity-0 group-hover/title:opacity-100 transition-all"
+        title="Editar nome"
+      >
+        <Pencil className="w-3.5 h-3.5" />
+      </button>
+    </div>
+  );
+}
+
 export default function SavedContent() {
   const { user } = useAuth();
   const [lessons, setLessons] = useState<any[]>([]);
@@ -400,7 +463,13 @@ export default function SavedContent() {
                       className="group relative p-4 bg-white dark:bg-gray-800 rounded shadow hover:bg-gray-50 dark:hover:bg-gray-700 transition border-l-4 border-blue-500 flex justify-between items-start"
                     >
                       <div className="cursor-pointer flex-grow" onClick={() => { setViewingContent(lesson); setViewingType('lesson'); }}>
-                        <h3 className="font-bold">{lesson.data?.titulo || lesson.subject}</h3>
+                        <TitleEditor
+                          item={lesson}
+                          collectionName="lessons"
+                          userId={user!.uid}
+                          currentTitle={lesson.data?.titulo || lesson.subject}
+                          onUpdate={(newTitle) => setLessons(prev => prev.map(l => l.id === lesson.id ? { ...l, data: { ...l.data, titulo: newTitle } } : l))}
+                        />
                         <div className="flex items-center flex-wrap gap-2 text-sm text-gray-500 dark:text-gray-400 mt-1">
                           <span>Salvo em: {lesson.createdAt?.toDate().toLocaleDateString()}</span>
                           {lesson.folderId && folders.find(f => f.id === lesson.folderId) && (
@@ -453,7 +522,13 @@ export default function SavedContent() {
                       className="group relative p-4 bg-white dark:bg-gray-800 rounded shadow hover:bg-gray-50 dark:hover:bg-gray-700 transition border-l-4 border-green-500 flex justify-between items-start"
                     >
                       <div className="cursor-pointer flex-grow" onClick={() => { setViewingContent(quiz); setViewingType('quiz'); }}>
-                        <h3 className="font-bold">{quiz.subject} - {quiz.topic}</h3>
+                        <TitleEditor
+                          item={quiz}
+                          collectionName="quizzes"
+                          userId={user!.uid}
+                          currentTitle={quiz.customTitle || `${quiz.subject} - ${quiz.topic}`}
+                          onUpdate={(newTitle) => setQuizzes(prev => prev.map(q => q.id === quiz.id ? { ...q, customTitle: newTitle } : q))}
+                        />
                         <p className="text-sm text-gray-500 dark:text-gray-400">{quiz.data?.length || 0} questões</p>
                         <div className="flex items-center flex-wrap gap-2 text-sm text-gray-500 dark:text-gray-400 mt-1">
                           <span>Salvo em: {quiz.createdAt?.toDate().toLocaleDateString()}</span>
@@ -505,7 +580,13 @@ export default function SavedContent() {
                       className="group relative p-4 bg-white dark:bg-gray-800 rounded shadow hover:bg-gray-50 dark:hover:bg-gray-700 transition border-l-4 border-indigo-500 flex justify-between items-start"
                     >
                       <div className="cursor-pointer flex-grow" onClick={() => { setViewingContent(flash); setViewingType('flashcard'); }}>
-                        <h3 className="font-bold">{flash.subject} - {flash.topic}</h3>
+                        <TitleEditor
+                          item={flash}
+                          collectionName="flashcards"
+                          userId={user!.uid}
+                          currentTitle={flash.customTitle || `${flash.subject} - ${flash.topic}`}
+                          onUpdate={(newTitle) => setFlashcards(prev => prev.map(f => f.id === flash.id ? { ...f, customTitle: newTitle } : f))}
+                        />
                         <p className="text-sm text-gray-500 dark:text-gray-400">{flash.data?.length || 0} flashcards</p>
                         <div className="flex items-center flex-wrap gap-2 text-sm text-gray-500 dark:text-gray-400 mt-1">
                           <span>Salvo em: {flash.createdAt?.toDate().toLocaleDateString()}</span>

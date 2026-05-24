@@ -1,10 +1,12 @@
 import { useState, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { db } from '../lib/firebase';
+import { db, storage } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { extractTopicsFromDoc, generateStudyPlan } from '../lib/gemini';
-import { subjectsConcurso } from '../lib/constants';
-import { Upload, FileText, ListChecks, Sparkles, ChevronRight, ChevronLeft, X, Plus, Trash2 } from 'lucide-react';
+import { useCustomSubjects } from '../contexts/CustomSubjectsContext';
+import { Upload, FileText, ListChecks, Sparkles, ChevronRight, ChevronLeft, X, Plus, Trash2, Database, Loader2, CheckCircle2 } from 'lucide-react';
+import { useKnowledgeBase } from '../contexts/KnowledgeBaseContext';
+import { ref, getDownloadURL } from 'firebase/storage';
 import mammoth from 'mammoth';
 
 interface StudyPlanWizardProps {
@@ -27,8 +29,15 @@ export default function StudyPlanWizard({ onPlanCreated, onClose }: StudyPlanWiz
   const [step, setStep] = useState(1);
 
   // Step 1 — Source
-  const [sourceType, setSourceType] = useState<'file' | 'manual' | null>(null);
+  const [sourceType, setSourceType] = useState<'file' | 'manual' | 'cloud' | null>(null);
   const [subjects, setSubjects] = useState<{ name: string; topics: string[] }[]>([]);
+  const { getAllSubjectsByMode } = useCustomSubjects();
+  const allAvailableSubjects = getAllSubjectsByMode('Concurso');
+  
+  // Cloud mode
+  const { materials } = useKnowledgeBase();
+  const [selectedCloudMaterials, setSelectedCloudMaterials] = useState<Set<string>>(new Set());
+  const [cloudExtracting, setCloudExtracting] = useState(false);
   const [fileName, setFileName] = useState('');
   const [extracting, setExtracting] = useState(false);
   const [extractError, setExtractError] = useState('');
@@ -113,6 +122,40 @@ export default function StudyPlanWizard({ onPlanCreated, onClose }: StudyPlanWiz
     setStudyDays(prev =>
       prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
     );
+  };
+
+  const handleCloudExtraction = async () => {
+    if (!apiKey) return;
+    setCloudExtracting(true);
+    setExtractError('');
+    try {
+      let combinedText = '';
+      const selectedMats = materials.filter(m => selectedCloudMaterials.has(m.id));
+      
+      for (const mat of selectedMats) {
+        const url = await getDownloadURL(ref(storage, mat.storagePath));
+        const response = await fetch(url);
+        const text = await response.text();
+        combinedText += `\n--- MATERIAL: ${mat.title} ---\n${text}\n\n`;
+      }
+
+      if (!combinedText.trim()) {
+        setExtractError('Nenhum texto encontrado nos materiais selecionados.');
+        setCloudExtracting(false);
+        return;
+      }
+
+      const result = await extractTopicsFromDoc(combinedText, apiKey);
+      if (result.subjects && result.subjects.length > 0) {
+        setSubjects(result.subjects);
+      } else {
+        setExtractError('Não foi possível extrair tópicos dos materiais.');
+      }
+    } catch (err: any) {
+      setExtractError('Erro ao processar materiais da nuvem: ' + err.message);
+    } finally {
+      setCloudExtracting(false);
+    }
   };
 
   const canProceedStep1 = subjects.length > 0;
@@ -207,7 +250,15 @@ export default function StudyPlanWizard({ onPlanCreated, onClose }: StudyPlanWiz
 
               {/* Source selection */}
               {!sourceType && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <button
+                    onClick={() => setSourceType('cloud')}
+                    className="p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-2xl hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-all text-center group"
+                  >
+                    <Database className="w-10 h-10 mx-auto mb-3 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                    <p className="font-semibold text-gray-700 dark:text-gray-200">Meus Materiais</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Usar PDFs salvos</p>
+                  </button>
                   <button
                     onClick={() => setSourceType('file')}
                     className="p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-2xl hover:border-indigo-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 transition-all text-center group"
@@ -224,6 +275,73 @@ export default function StudyPlanWizard({ onPlanCreated, onClose }: StudyPlanWiz
                     <p className="font-semibold text-gray-700 dark:text-gray-200">Selecionar Manualmente</p>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Escolha as matérias</p>
                   </button>
+                </div>
+              )}
+
+              {/* Cloud Materials */}
+              {sourceType === 'cloud' && (
+                <div className="space-y-4">
+                  <button onClick={() => setSourceType(null)} className="text-sm text-indigo-500 hover:text-indigo-700 flex items-center gap-1">
+                    <ChevronLeft className="w-4 h-4" /> Voltar
+                  </button>
+                  
+                  {materials.length === 0 ? (
+                    <div className="text-center p-8 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700">
+                      <p className="text-gray-500 dark:text-gray-400 text-sm">Você ainda não enviou nenhum material para a Base da IA.</p>
+                      <p className="text-gray-500 dark:text-gray-400 text-xs mt-2">Vá no Chat da IA e clique no botão de Base de Dados para adicionar PDFs.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <p className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">Selecione os materiais que deseja usar para gerar o plano:</p>
+                      {materials.map(mat => {
+                        const isSelected = selectedCloudMaterials.has(mat.id);
+                        return (
+                          <div 
+                            key={mat.id} 
+                            onClick={() => {
+                              const newSelected = new Set(selectedCloudMaterials);
+                              if (isSelected) newSelected.delete(mat.id);
+                              else newSelected.add(mat.id);
+                              setSelectedCloudMaterials(newSelected);
+                            }}
+                            className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${
+                              isSelected 
+                                ? 'bg-blue-50 border-blue-300 dark:bg-blue-900/20 dark:border-blue-700' 
+                                : 'bg-white border-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700'
+                            }`}
+                          >
+                            <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${isSelected ? 'bg-blue-500 border-blue-500' : 'border-gray-300 dark:border-gray-600'}`}>
+                              {isSelected && <CheckCircle2 className="w-3 h-3 text-white" />}
+                            </div>
+                            <div className="flex-1 truncate">
+                              <h4 className={`font-medium text-sm truncate ${isSelected ? 'text-blue-900 dark:text-blue-100' : 'text-gray-700 dark:text-gray-300'}`}>{mat.title}</h4>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      
+                      {selectedCloudMaterials.size > 0 && (
+                        <button
+                          onClick={handleCloudExtraction}
+                          disabled={cloudExtracting}
+                          className="w-full mt-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all shadow-md flex items-center justify-center gap-2"
+                        >
+                          {cloudExtracting ? (
+                            <>
+                              <Loader2 className="w-5 h-5 animate-spin" />
+                              Lendo materiais selecionados...
+                            </>
+                          ) : (
+                            <>
+                              <Database className="w-5 h-5" />
+                              Extrair Tópicos dos Materiais ({selectedCloudMaterials.size})
+                            </>
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  )}
+                  {extractError && <p className="text-sm text-red-500 bg-red-50 dark:bg-red-900/30 p-3 rounded-lg">{extractError}</p>}
                 </div>
               )}
 
@@ -271,7 +389,7 @@ export default function StudyPlanWizard({ onPlanCreated, onClose }: StudyPlanWiz
                   <div>
                     <p className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">Adicionar rapidamente:</p>
                     <div className="flex flex-wrap gap-2">
-                      {subjectsConcurso.map(s => (
+                      {allAvailableSubjects.map(s => (
                         <button
                           key={s}
                           onClick={() => addPresetSubject(s)}

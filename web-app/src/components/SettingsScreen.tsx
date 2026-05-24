@@ -1,6 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { getSubjectsByMode, getModelsByMode, themes, defaultTheme, difficulties, lessonLevels, topicsBySubject } from '../lib/constants';
+import { getModelsByMode, themes, defaultTheme, difficulties, lessonLevels, topicsBySubject } from '../lib/constants';
 import { useAuth } from '../contexts/AuthContext';
+import { useCustomSubjects } from '../contexts/CustomSubjectsContext';
 import { db } from '../lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 
@@ -43,14 +44,15 @@ const CustomInput = ({ label, value, onChange, theme, type = "text", disabled = 
 export default function SettingsScreen({ settings, setSettings, onStart }: SettingsProps) {
   const theme = useMemo(() => themes[settings.subject] || defaultTheme, [settings.subject]);
   const isAula = settings.model === 'Aula Explicativa';
+  const { getAllSubjectsByMode } = useCustomSubjects();
   
-  const currentSubjects = getSubjectsByMode(settings.mode);
+  const currentSubjects = getAllSubjectsByMode(settings.mode);
   const currentModels = settings.subject === 'Redação'
     ? ['Enem', 'Corrigir Redação Pronta', 'Flashcard']
     : getModelsByMode(settings.mode);
 
   const [activeTopicsMap, setActiveTopicsMap] = useState<Record<string, string[]>>({ 'Geral': [] });
-  const { user } = useAuth();
+  const { user, selectedBanca, saveBanca } = useAuth();
 
   useEffect(() => {
     const fetchCustomTopics = async () => {
@@ -121,7 +123,7 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
 
   const handleModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newMode = e.target.value as 'Geral' | 'ENEM' | 'Concurso';
-    const newSubjects = getSubjectsByMode(newMode);
+    const newSubjects = getAllSubjectsByMode(newMode);
     const newModels = newSubjects[0] === 'Redação'
       ? ['Enem', 'Corrigir Redação Pronta', 'Flashcard']
       : getModelsByMode(newMode);
@@ -182,6 +184,20 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
             </button>
           ))}
         </div>
+
+        {settings.mode === 'Concurso' && (
+          <div className="flex justify-center mb-6 space-x-2 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm">
+            {['IBAM', 'CESPE', 'FGV', 'CESGRANRIO'].map((b) => (
+              <button
+                key={b}
+                onClick={() => saveBanca(b)}
+                className={`flex-1 py-1 px-2 text-sm rounded-md font-medium transition ${selectedBanca === b ? 'bg-amber-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}`}
+              >
+                {b}
+              </button>
+            ))}
+          </div>
+        )}
 
         <CustomSelect 
           label="Matéria" 

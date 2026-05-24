@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { db } from '../lib/firebase';
 import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
-import { CheckCircle, RotateCcw, Calendar, Clock, BookOpen, Trash2, ChevronDown, ChevronUp, Trophy } from 'lucide-react';
+import { CheckCircle, RotateCcw, Calendar, Clock, BookOpen, Trash2, ChevronDown, ChevronUp, Trophy, CirclePlay, Link, X } from 'lucide-react';
 import { format, isToday, isBefore, startOfDay, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -15,6 +15,35 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
   const { user } = useAuth();
   const [expandedDay, setExpandedDay] = useState<string | null>(null);
   const [updating, setUpdating] = useState<string | null>(null);
+  const [editingYoutube, setEditingYoutube] = useState<string | null>(null);
+  const [youtubeInput, setYoutubeInput] = useState('');
+
+  const updateBlockYoutube = async (dayDate: string, blockId: string, url: string) => {
+    if (!user) return;
+    try {
+      const newSchedule = schedule.map((day: any) => {
+        if (day.date !== dayDate) return day;
+        return {
+          ...day,
+          blocks: day.blocks.map((b: any) => b.id === blockId ? { ...b, youtubeUrl: url || null } : b),
+        };
+      });
+      const planRef = doc(db, 'users', user.uid, 'studyPlans', plan.id);
+      await updateDoc(planRef, { schedule: newSchedule });
+      plan.schedule = newSchedule;
+      onUpdate();
+      window.dispatchEvent(new Event('study-plan-updated'));
+    } catch (err) {
+      console.error('Erro ao salvar link do YouTube:', err);
+    }
+  };
+
+  const playYoutubeVideo = (block: any) => {
+    if (!block.youtubeUrl) return;
+    window.dispatchEvent(new CustomEvent('play-youtube-video', {
+      detail: { url: block.youtubeUrl, topic: block.topic, subject: block.subject }
+    }));
+  };
 
   const schedule: any[] = plan.schedule || [];
 
@@ -232,6 +261,16 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
                             {block.subject}
                           </p>
                           <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{block.topic} • {block.hours}h</p>
+                          {block.youtubeUrl && (
+                            <button
+                              onClick={() => playYoutubeVideo(block)}
+                              className="flex items-center gap-1 mt-1 text-[11px] text-red-600 hover:text-red-700 font-bold transition-colors"
+                              title="Assistir vídeo aula"
+                            >
+                              <CirclePlay className="w-3.5 h-3.5" />
+                              Assistir Vídeo Aula
+                            </button>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center gap-1 flex-shrink-0 ml-2">
@@ -265,7 +304,57 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
                             <RotateCcw className="w-4 h-4" />
                           </button>
                         )}
+                        <button
+                          onClick={() => {
+                            if (editingYoutube === block.id) {
+                              setEditingYoutube(null);
+                            } else {
+                              setEditingYoutube(block.id);
+                              setYoutubeInput(block.youtubeUrl || '');
+                            }
+                          }}
+                          className={`p-1.5 rounded-lg transition-colors ${block.youtubeUrl ? 'text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20' : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                          title={block.youtubeUrl ? 'Editar link do YouTube' : 'Vincular aula do YouTube'}
+                        >
+                          <CirclePlay className="w-4 h-4" />
+                        </button>
                       </div>
+                      {editingYoutube === block.id && (
+                        <div className="mt-2 flex items-center gap-2">
+                          <div className="relative flex-grow">
+                            <Link className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <input
+                              type="url"
+                              value={youtubeInput}
+                              onChange={(e) => setYoutubeInput(e.target.value)}
+                              placeholder="Cole o link do YouTube aqui..."
+                              className="w-full pl-8 pr-3 py-1.5 text-xs bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-400"
+                              autoFocus
+                            />
+                          </div>
+                          <button
+                            onClick={() => {
+                              updateBlockYoutube(day.date, block.id, youtubeInput.trim());
+                              setEditingYoutube(null);
+                            }}
+                            className="px-2.5 py-1.5 text-xs bg-red-500 text-white rounded-lg font-bold hover:bg-red-600 transition-colors whitespace-nowrap"
+                          >
+                            Salvar
+                          </button>
+                          {block.youtubeUrl && (
+                            <button
+                              onClick={() => {
+                                updateBlockYoutube(day.date, block.id, '');
+                                setEditingYoutube(null);
+                              }}
+                              className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                              title="Remover link"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

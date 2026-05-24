@@ -4,7 +4,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../lib/firebase';
 import { collection, query, getDocs, orderBy, doc, updateDoc } from 'firebase/firestore';
-import { Bug, ChevronDown, ChevronUp, CheckCircle, Clock } from 'lucide-react';
+import { Bug, ChevronDown, ChevronUp, CheckCircle, Clock, BookOpen } from 'lucide-react';
+import DocumentationModal from '../components/DocumentationModal';
 
 // Email da conta admin que pode ver os reportes
 const ADMIN_EMAILS = ['quelinalins@gmail.com'];
@@ -14,6 +15,8 @@ export default function ConfigScreen() {
   const [inputValue, setInputValue] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  const [showDocs, setShowDocs] = useState(false);
   const navigate = useNavigate();
 
   // Admin: reportes de erro
@@ -70,12 +73,35 @@ export default function ConfigScreen() {
     }
   };
 
+
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-800">
       <Navigation />
       <main className="flex-grow p-6 max-w-4xl mx-auto w-full">
         <h1 className="text-3xl font-bold mb-8 text-gray-800 dark:text-gray-200">Configurações</h1>
         
+        {/* Documentação */}
+        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-6 rounded-2xl shadow-lg mb-8 flex flex-col md:flex-row items-center justify-between gap-4 text-white">
+          <div>
+            <h2 className="text-xl font-bold flex items-center gap-2 mb-2">
+              <BookOpen className="w-6 h-6" />
+              Conheça todas as ferramentas
+            </h2>
+            <p className="text-indigo-100 text-sm">
+              Descubra como extrair o máximo do EduGenius. Veja o manual completo com todos os recursos e atalhos.
+            </p>
+          </div>
+          <button
+            onClick={() => setShowDocs(true)}
+            className="px-6 py-2.5 bg-white text-indigo-600 font-bold rounded-lg shadow-md hover:bg-indigo-50 transition-colors whitespace-nowrap"
+          >
+            Abrir Manual
+          </button>
+        </div>
+
+        <DocumentationModal isOpen={showDocs} onClose={() => setShowDocs(false)} />
+
         <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800">
           <h2 className="text-2xl font-semibold mb-4 text-indigo-700">Chave da API do Google (Gemini)</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
@@ -115,15 +141,17 @@ export default function ConfigScreen() {
               </button>
               {saved && (
                 <button 
-                  onClick={() => navigate('/dashboard')}
-                  className="px-8 py-3 bg-gray-200 text-gray-800 dark:text-gray-200 rounded-lg font-bold hover:bg-gray-300 transition-colors"
+                  onClick={() => navigate('/')} 
+                  className="px-6 py-3 text-indigo-600 border border-indigo-200 bg-indigo-50 rounded-lg font-bold hover:bg-indigo-100 transition-colors"
                 >
-                  Voltar para os Estudos
+                  Voltar para o Dashboard
                 </button>
               )}
             </div>
           </div>
         </div>
+
+
 
         {/* Painel de Admin - Reportes de Erro */}
         {isAdmin && (

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Navigation from '../components/Navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
-import { collection, query, getDocs, orderBy, doc, getDoc, setDoc, Timestamp, limit } from 'firebase/firestore';
+import { collection, query, getDocs, orderBy, doc, getDoc, setDoc, deleteDoc, Timestamp, limit } from 'firebase/firestore';
 import { Calendar, Clock, BookOpen, CheckCircle, AlertCircle, PlusCircle, Brain, ChevronLeft, RefreshCw, Sparkles, Play, Trash2, Pencil, Check, X } from 'lucide-react';
 import { format, isBefore, isToday, startOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -309,7 +309,7 @@ export default function RevisionScreen() {
                 {revisions
                   .filter(r => r.status === 'pending' && (isBefore(r.scheduledDate.toDate(), today) || isToday(r.scheduledDate.toDate())))
                   .map(rev => (
-                    <RevisionCard key={rev.id} revision={rev} onAction={handleStartRevision} onReschedule={handleReschedule} onUpdate={fetchRevisions} />
+                    <RevisionCard key={rev.id} revision={rev} onAction={handleStartRevision} onLink={(rev: any, type: 'lesson' | 'quiz' | 'flashcard') => setLinkModal({ revision: rev, type })} onReschedule={handleReschedule} onUpdate={fetchRevisions} />
                   ))}
                 {revisions.filter(r => r.status === 'pending' && (isBefore(r.scheduledDate.toDate(), today) || isToday(r.scheduledDate.toDate()))).length === 0 && (
                   <p className="text-gray-400 italic bg-gray-100 dark:bg-gray-800 p-4 rounded-xl text-center">Tudo em dia por aqui! ✨</p>
@@ -326,7 +326,7 @@ export default function RevisionScreen() {
                 {revisions
                   .filter(r => r.status === 'pending' && !isBefore(r.scheduledDate.toDate(), today) && !isToday(r.scheduledDate.toDate()))
                   .map(rev => (
-                    <RevisionCard key={rev.id} revision={rev} onAction={handleStartRevision} onReschedule={handleReschedule} onUpdate={fetchRevisions} />
+                    <RevisionCard key={rev.id} revision={rev} onAction={handleStartRevision} onLink={(rev: any, type: 'lesson' | 'quiz' | 'flashcard') => setLinkModal({ revision: rev, type })} onReschedule={handleReschedule} onUpdate={fetchRevisions} />
                   ))}
               </div>
             </section>
@@ -397,7 +397,7 @@ export default function RevisionScreen() {
   );
 }
 
-function RevisionCard({ revision, onAction, onReschedule, onUpdate }: { revision: any, onAction: any, onReschedule: any, onUpdate: () => void }) {
+function RevisionCard({ revision, onAction, onLink, onReschedule, onUpdate }: { revision: any, onAction: any, onLink: any, onReschedule: any, onUpdate: () => void }) {
   const { user } = useAuth();
   const date = revision.scheduledDate.toDate();
   const isOverdue = isBefore(date, startOfDay(new Date()));
@@ -458,8 +458,20 @@ function RevisionCard({ revision, onAction, onReschedule, onUpdate }: { revision
     }
   };
 
+  const handleDelete = async () => {
+    if (!user) return;
+    if (!window.confirm(`Deseja excluir a revisão de "${revision.subject} - ${revision.topic}"?`)) return;
+    try {
+      await deleteDoc(doc(db, 'users', user.uid, 'revisions', revision.id));
+      onUpdate();
+    } catch (err) {
+      console.error('Erro ao excluir revisão:', err);
+      alert('Erro ao excluir revisão.');
+    }
+  };
+
   return (
-    <div className={`p-6 rounded-2xl shadow-sm border-2 transition-all hover:shadow-md bg-white dark:bg-gray-800 flex flex-col justify-between ${isOverdue ? 'border-red-100 dark:border-red-900/50 bg-red-50/30 dark:bg-red-900/10' : 'border-gray-100 dark:border-gray-800'}`}>
+    <div className={`p-6 rounded-2xl shadow-sm border-2 transition-all hover:shadow-md bg-white dark:bg-gray-800 flex flex-col justify-between group ${isOverdue ? 'border-red-100 dark:border-red-900/50 bg-red-50/30 dark:bg-red-900/10' : 'border-gray-100 dark:border-gray-800'}`}>
       <div>
         <div className="flex justify-between items-start mb-4">
           <div>
@@ -472,6 +484,13 @@ function RevisionCard({ revision, onAction, onReschedule, onUpdate }: { revision
               <p className="text-xs text-gray-400 mt-1">Revisada {revision.reviewCount}x</p>
             )}
           </div>
+          <button
+            onClick={handleDelete}
+            className="p-1.5 text-gray-300 hover:text-red-500 dark:text-gray-600 dark:hover:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/20 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
+            title="Excluir revisão"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
         </div>
 
         <div className="grid grid-cols-3 gap-2 mt-4">
@@ -481,6 +500,7 @@ function RevisionCard({ revision, onAction, onReschedule, onUpdate }: { revision
             count={lessonCount}
             completedCount={lessonsCompleted}
             onClick={() => onAction(revision, 'lesson')}
+            onAdd={() => onLink(revision, 'lesson')}
           />
           <ActionButton 
             icon={<CheckCircle className="w-4 h-4" />} 
@@ -488,6 +508,7 @@ function RevisionCard({ revision, onAction, onReschedule, onUpdate }: { revision
             count={quizCount}
             completedCount={quizzesCompleted}
             onClick={() => onAction(revision, 'quiz')}
+            onAdd={() => onLink(revision, 'quiz')}
           />
           <ActionButton 
             icon={<Brain className="w-4 h-4" />} 
@@ -495,6 +516,7 @@ function RevisionCard({ revision, onAction, onReschedule, onUpdate }: { revision
             count={flashcardCount}
             completedCount={flashcardsCompleted}
             onClick={() => onAction(revision, 'flashcard')}
+            onAdd={() => onLink(revision, 'flashcard')}
           />
         </div>
       </div>
@@ -599,34 +621,45 @@ function RevisionCard({ revision, onAction, onReschedule, onUpdate }: { revision
 }
 
 
-function ActionButton({ icon, label, count, completedCount, onClick }: { icon: any, label: string, count: number, completedCount: number, onClick: any }) {
+function ActionButton({ icon, label, count, completedCount, onClick, onAdd }: { icon: any, label: string, count: number, completedCount: number, onClick: any, onAdd?: any }) {
   const active = count > 0;
   const allDone = active && completedCount >= count;
   const someDone = active && completedCount > 0 && !allDone;
   return (
-    <button 
-      onClick={onClick}
-      className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all relative ${
-        allDone
-          ? 'border-green-200 bg-green-50 text-green-700'
-          : active 
-            ? 'border-indigo-100 bg-indigo-50 text-indigo-700 hover:border-indigo-300' 
-            : 'border-dashed border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-400 hover:border-indigo-300 hover:text-indigo-500'
-      }`}
-    >
-      {allDone ? <CheckCircle className="w-4 h-4 text-green-600" /> : active ? icon : <PlusCircle className="w-4 h-4" />}
-      <span className="text-xs font-bold">{active ? label : 'Vincular'}</span>
-      {someDone && (
-        <span className="text-[10px] text-indigo-500 font-semibold">{completedCount}/{count}</span>
+    <div className="relative">
+      <button 
+        onClick={onClick}
+        className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all relative w-full ${
+          allDone
+            ? 'border-green-200 bg-green-50 text-green-700'
+            : active 
+              ? 'border-indigo-100 bg-indigo-50 text-indigo-700 hover:border-indigo-300' 
+              : 'border-dashed border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-400 hover:border-indigo-300 hover:text-indigo-500'
+        }`}
+      >
+        {allDone ? <CheckCircle className="w-4 h-4 text-green-600" /> : active ? icon : <PlusCircle className="w-4 h-4" />}
+        <span className="text-xs font-bold">{active ? label : 'Vincular'}</span>
+        {someDone && (
+          <span className="text-[10px] text-indigo-500 font-semibold">{completedCount}/{count}</span>
+        )}
+        {count > 1 && !allDone && (
+          <span className="absolute -top-1.5 -right-1.5 bg-indigo-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
+            {count}
+          </span>
+        )}
+        {allDone && (
+          <span className="absolute -top-1.5 -right-1.5 bg-green-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">✓</span>
+        )}
+      </button>
+      {active && onAdd && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onAdd(); }}
+          className="absolute -bottom-1.5 -right-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow-md transition-all hover:scale-110 z-10"
+          title={`Vincular mais ${label.toLowerCase()}`}
+        >
+          +
+        </button>
       )}
-      {count > 1 && !allDone && (
-        <span className="absolute -top-1.5 -right-1.5 bg-indigo-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">
-          {count}
-        </span>
-      )}
-      {allDone && (
-        <span className="absolute -top-1.5 -right-1.5 bg-green-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">✓</span>
-      )}
-    </button>
+    </div>
   );
 }

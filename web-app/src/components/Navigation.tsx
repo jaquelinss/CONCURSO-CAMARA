@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { LogOut, Menu, X, Home, CalendarDays, FolderHeart, Sun, Moon, TrendingUp } from 'lucide-react';
+import { LogOut, Menu, X, Home, CalendarDays, FolderHeart, Sun, Moon, TrendingUp, Database, HelpCircle } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Navigation() {
@@ -68,27 +68,18 @@ export default function Navigation() {
                 <TrendingUp className="w-4 h-4 mr-2" /> Progresso
               </Link>
               <Link 
-                to="/config"
+                to="/questions"
                 className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                  location.pathname === '/config'
+                  location.pathname === '/questions'
                     ? 'border-indigo-500 text-gray-900 dark:text-white'
                     : 'border-transparent text-gray-500 dark:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-100'
                 }`}
               >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                Configurações
+                <Database className="w-4 h-4 mr-2" /> Banco de Questões
               </Link>
             </div>
           </div>
-          <div className="flex items-center gap-1 sm:gap-2">
-            <button
-              onClick={toggleTheme}
-              className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none transition-colors"
-              title={theme === 'light' ? 'Modo Escuro' : 'Modo Claro'}
-            >
-              {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-            </button>
-            <div className="hidden sm:block w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1"></div>
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <button
               onClick={() => window.dispatchEvent(new Event('toggle-archive'))}
               className="inline-flex items-center px-2 sm:px-3 py-2 border border-yellow-300 dark:border-yellow-600 text-xs sm:text-sm leading-4 font-bold rounded-md text-yellow-900 dark:text-yellow-100 bg-yellow-100 dark:bg-yellow-900/50 hover:bg-yellow-200 dark:hover:bg-yellow-800/50 focus:outline-none transition shadow-sm"
@@ -104,7 +95,39 @@ export default function Navigation() {
             >
               +
             </button>
+
             <div className="hidden sm:block w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1"></div>
+
+            <Link 
+              to="/config"
+              className={`p-2 rounded-lg focus:outline-none transition-colors ${
+                location.pathname === '/config'
+                  ? 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
+              }`}
+              title="Configurações"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            </Link>
+
+            <button
+              onClick={() => window.dispatchEvent(new Event('open-tutorial'))}
+              className="p-2 text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 rounded-lg focus:outline-none transition-colors"
+              title="Ajuda e Tutorial"
+            >
+              <HelpCircle className="w-5 h-5 animate-pulse" />
+            </button>
+
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg focus:outline-none transition-colors"
+              title={theme === 'light' ? 'Modo Escuro' : 'Modo Claro'}
+            >
+              {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+            </button>
+            
+            <div className="hidden sm:block w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1"></div>
+            
             <button
               onClick={signOut}
               className="hidden sm:inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-transparent hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none transition"
@@ -168,6 +191,19 @@ export default function Navigation() {
                   <TrendingUp className="w-5 h-5 mr-3" /> Progresso
                 </div>
               </Link>
+              <Link
+                to="/questions"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
+                  location.pathname === '/questions'
+                    ? 'bg-indigo-50 dark:bg-indigo-900/50 border-indigo-500 text-indigo-700 dark:text-indigo-200'
+                    : 'border-transparent text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-800 dark:hover:text-white'
+                }`}
+              >
+                <div className="flex items-center">
+                  <Database className="w-5 h-5 mr-3" /> Banco de Questões
+                </div>
+              </Link>
               <Link to="/config"
               onClick={() => setMobileMenuOpen(false)}
               className={`block pl-3 pr-4 py-3 border-l-4 text-base font-medium ${
@@ -181,6 +217,15 @@ export default function Navigation() {
                 Configurações
               </div>
             </Link>
+            <button
+              onClick={() => { setMobileMenuOpen(false); window.dispatchEvent(new Event('open-tutorial')); }}
+              className="w-full text-left block pl-3 pr-4 py-3 border-l-4 border-transparent text-base font-medium text-indigo-600 dark:text-indigo-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+            >
+              <div className="flex items-center">
+                <HelpCircle className="w-5 h-5 mr-3 animate-pulse" />
+                Tutorial &amp; Ajuda
+              </div>
+            </button>
             <button
               onClick={() => { setMobileMenuOpen(false); toggleTheme(); }}
               className="w-full text-left block pl-3 pr-4 py-3 border-l-4 border-transparent text-base font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200"

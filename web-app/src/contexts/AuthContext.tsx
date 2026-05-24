@@ -10,7 +10,9 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   apiKey: string | null;
   hasSeenWelcome: boolean;
+  selectedBanca: string | null;
   saveApiKey: (key: string) => Promise<void>;
+  saveBanca: (banca: string) => Promise<void>;
   markWelcomeAsSeen: () => Promise<void>;
 }
 
@@ -20,7 +22,9 @@ const AuthContext = createContext<AuthContextType>({
   signOut: async () => {},
   apiKey: null,
   hasSeenWelcome: false,
+  selectedBanca: null,
   saveApiKey: async () => {},
+  saveBanca: async () => {},
   markWelcomeAsSeen: async () => {},
 });
 
@@ -31,6 +35,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [hasSeenWelcome, setHasSeenWelcome] = useState<boolean>(false);
+  const [selectedBanca, setSelectedBanca] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -43,10 +48,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const data = docSnap.data();
             setApiKey(data.apiKey || null);
             setHasSeenWelcome(data.hasSeenWelcome || false);
+            setSelectedBanca(data.selectedBanca || 'IBAM');
           } else {
             // Document doesn't exist yet
             setApiKey(null);
             setHasSeenWelcome(false);
+            setSelectedBanca('IBAM');
           }
         } catch (error) {
           console.error("Error fetching user settings:", error);
@@ -54,6 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         setApiKey(null);
         setHasSeenWelcome(false);
+        setSelectedBanca(null);
       }
       setLoading(false);
     });
@@ -73,6 +81,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+
+
+  const saveBanca = async (banca: string) => {
+    if (!user) return;
+    try {
+      const docRef = doc(db, 'users', user.uid, 'settings', 'config');
+      await setDoc(docRef, { selectedBanca: banca }, { merge: true });
+      setSelectedBanca(banca);
+    } catch (error) {
+      console.error("Error saving Banca:", error);
+      throw error;
+    }
+  };
+
   const markWelcomeAsSeen = async () => {
     if (!user) return;
     try {
@@ -87,7 +109,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = () => firebaseSignOut(auth);
 
   return (
-    <AuthContext.Provider value={{ user, loading, signOut, apiKey, hasSeenWelcome, saveApiKey, markWelcomeAsSeen }}>
+    <AuthContext.Provider value={{ user, loading, signOut, apiKey, hasSeenWelcome, selectedBanca, saveApiKey, saveBanca, markWelcomeAsSeen }}>
       {!loading && children}
     </AuthContext.Provider>
   );
