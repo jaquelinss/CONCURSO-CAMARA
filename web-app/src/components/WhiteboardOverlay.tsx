@@ -44,8 +44,6 @@ export default function WhiteboardOverlay() {
   
   // Menu Principal Original
   const [tool, setTool] = useState<'pen' | 'eraser'>('pen');
-  const [color, setColor] = useState('#000000');
-  const [strokeWidth, setStrokeWidth] = useState(4);
   const [showToolbar, _setShowToolbar] = useState(true);
   const toggleToolbar = () => _setShowToolbar(p => !p);
 
@@ -57,38 +55,24 @@ export default function WhiteboardOverlay() {
   const [sidebarMode, setSidebarMode] = useState<'fixed' | 'floating' | 'hidden'>('fixed');
   const [editingPreset, setEditingPreset] = useState<string | null>(null);
 
+  // Derived values from active presets (single source of truth)
+  const activePen = penPresets.find(p => p.id === activePenId) || penPresets[0];
   const activeEraser = eraserPresets.find(p => p.id === activeEraserId) || eraserPresets[0];
-
-  // Sincronizar Menu Principal com o Preset Ativo
-  useEffect(() => {
-    if (tool === 'pen') {
-      const p = penPresets.find(x => x.id === activePenId);
-      if (p) {
-        if (p.color !== color) setColor(p.color);
-        if (p.width !== strokeWidth) setStrokeWidth(p.width);
-      }
-    } else {
-      const e = eraserPresets.find(x => x.id === activeEraserId);
-      if (e) {
-        if (e.width !== strokeWidth) setStrokeWidth(e.width);
-      }
-    }
-  }, [activePenId, activeEraserId, tool]);
+  const color = tool === 'pen' ? activePen.color : '#000000';
+  const strokeWidth = tool === 'pen' ? activePen.width : activeEraser.width;
 
   // Atualizar Preset Ativo quando mudar pelo Menu Principal
   const handleColorChange = (c: string) => {
-    setColor(c);
-    if (tool === 'pen') {
-      updatePenPreset(activePenId, { color: c });
-    }
+    updatePenPreset(activePenId, { color: c });
   };
 
-  const handleWidthChange = (w: number) => {
-    setStrokeWidth(w);
+  const handleWidthChange = (delta: number) => {
     if (tool === 'pen') {
-      updatePenPreset(activePenId, { width: w });
+      const newW = Math.max(1, Math.min(30, activePen.width + delta));
+      updatePenPreset(activePenId, { width: newW });
     } else {
-      updateEraserPreset(activeEraserId, { width: w });
+      const newW = Math.max(4, Math.min(50, activeEraser.width + delta));
+      updateEraserPreset(activeEraserId, { width: newW });
     }
   };
 
@@ -166,6 +150,24 @@ export default function WhiteboardOverlay() {
     saveSettings(penPresets, newErasers, sidebarMode);
     setActiveEraserId(newId);
     setTool('eraser');
+  };
+
+  const deletePenPreset = (id: string) => {
+    if (penPresets.length <= 1) return;
+    const newPens = penPresets.filter(p => p.id !== id);
+    setPenPresets(newPens);
+    if (activePenId === id) setActivePenId(newPens[0].id);
+    setEditingPreset(null);
+    saveSettings(newPens, eraserPresets, sidebarMode);
+  };
+
+  const deleteEraserPreset = (id: string) => {
+    if (eraserPresets.length <= 1) return;
+    const newErasers = eraserPresets.filter(p => p.id !== id);
+    setEraserPresets(newErasers);
+    if (activeEraserId === id) setActiveEraserId(newErasers[0].id);
+    setEditingPreset(null);
+    saveSettings(penPresets, newErasers, sidebarMode);
   };
 
   // Listen for global toggle event
@@ -557,7 +559,7 @@ export default function WhiteboardOverlay() {
           {/* Stroke Width Original */}
           <div className="flex items-center gap-1">
             <button
-              onClick={() => handleWidthChange(Math.max(1, strokeWidth - 2))}
+              onClick={() => handleWidthChange(-2)}
               className="p-1 text-gray-500 hover:bg-gray-100 rounded"
             >
               <Minus className="w-4 h-4" />
@@ -573,7 +575,7 @@ export default function WhiteboardOverlay() {
               />
             </div>
             <button
-              onClick={() => handleWidthChange(Math.min(30, strokeWidth + 2))}
+              onClick={() => handleWidthChange(2)}
               className="p-1 text-gray-500 hover:bg-gray-100 rounded"
             >
               <Plus className="w-4 h-4" />
@@ -642,6 +644,11 @@ export default function WhiteboardOverlay() {
                         <span className="text-xs font-bold w-6 text-center">{preset.width}</span>
                         <button onClick={() => updatePenPreset(preset.id, { width: Math.min(30, preset.width + 2) })}><Plus className="w-4 h-4" /></button>
                       </div>
+                      {penPresets.length > 1 && (
+                        <button onClick={() => deletePenPreset(preset.id)} className="flex items-center gap-1 text-xs text-red-500 hover:bg-red-50 rounded p-1 mt-1">
+                          <Trash2 className="w-3 h-3" /> Excluir
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -688,6 +695,11 @@ export default function WhiteboardOverlay() {
                           <span className="text-xs font-bold w-6 text-center">{preset.width}</span>
                           <button onClick={() => updateEraserPreset(preset.id, { width: Math.min(50, preset.width + 4) })}><Plus className="w-4 h-4" /></button>
                         </div>
+                      )}
+                      {eraserPresets.length > 1 && (
+                        <button onClick={() => deleteEraserPreset(preset.id)} className="flex items-center gap-1 text-xs text-red-500 hover:bg-red-50 rounded p-1 mt-1">
+                          <Trash2 className="w-3 h-3" /> Excluir
+                        </button>
                       )}
                     </div>
                   )}
