@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Eraser, Trash2, X, Undo2, Redo2, Minus, Plus, PenTool, Maximize2, Minimize2, GripHorizontal, ChevronLeft, ChevronRight, FilePlus, PanelTopClose, PanelTop, Settings2, Focus, MousePointer2, Book } from 'lucide-react';
+import { Eraser, Trash2, X, Undo2, Redo2, Minus, Plus, PenTool, Maximize2, Minimize2, GripHorizontal, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, FilePlus, PanelTopClose, PanelTop, Settings2, Focus, MousePointer2, Book } from 'lucide-react';
 import { getStroke } from 'perfect-freehand';
 import Draggable from 'react-draggable';
 import { useAuth } from '../contexts/AuthContext';
-import { doc, getDoc, setDoc, collection, query, getDocs } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, query, getDocs, orderBy } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import localforage from 'localforage';
 
@@ -45,6 +45,7 @@ export default function WhiteboardOverlay() {
   // Notebooks
   const [showNotebooksManager, setShowNotebooksManager] = useState(false);
   const [activeNotebook, setActiveNotebook] = useState<Notebook | null>(null);
+  const [allNotebooks, setAllNotebooks] = useState<Notebook[]>([]);
 
   // Modos de Lousa
   const [windowMode, setWindowMode] = useState<'fullscreen' | 'floating'>('floating');
@@ -282,12 +283,58 @@ export default function WhiteboardOverlay() {
     saveSettings(penPresets, newErasers, sidebarMode);
   };
 
-  // Listen for global toggle event
+  // Listen for global toggle events
   useEffect(() => {
+    const handleTransparent = () => {
+      setActive(true);
+      setMode('transparent');
+      setWindowMode('fullscreen');
+    };
+    const handleNotebook = () => {
+      setActive(true);
+      setMode('lined');
+      setWindowMode('floating');
+      setShowNotebooksManager(true);
+    };
     const handleToggle = () => setActive(prev => !prev);
+    window.addEventListener('toggle-whiteboard-transparent', handleTransparent);
+    window.addEventListener('toggle-whiteboard-notebook', handleNotebook);
     window.addEventListener('toggle-whiteboard', handleToggle);
-    return () => window.removeEventListener('toggle-whiteboard', handleToggle);
+    return () => {
+      window.removeEventListener('toggle-whiteboard-transparent', handleTransparent);
+      window.removeEventListener('toggle-whiteboard-notebook', handleNotebook);
+      window.removeEventListener('toggle-whiteboard', handleToggle);
+    };
   }, []);
+
+  // Load all notebooks for sidebar navigation
+  useEffect(() => {
+    if (!user) return;
+    const loadAllNotebooks = async () => {
+      try {
+        const q2 = query(collection(db, 'users', user.uid, 'notebooks'), orderBy('updatedAt', 'desc'));
+        const snap = await getDocs(q2);
+        const loaded: Notebook[] = [];
+        snap.forEach(d => loaded.push({ id: d.id, ...d.data() } as Notebook));
+        setAllNotebooks(loaded);
+      } catch (e) {
+        console.error('Erro ao carregar lista de cadernos:', e);
+      }
+    };
+    loadAllNotebooks();
+  }, [user, showNotebooksManager]);
+
+  const navigateNotebook = (direction: 'prev' | 'next') => {
+    if (allNotebooks.length === 0) return;
+    const currentIdx = activeNotebook ? allNotebooks.findIndex(n => n.id === activeNotebook.id) : -1;
+    let nextIdx;
+    if (direction === 'next') {
+      nextIdx = (currentIdx + 1) % allNotebooks.length;
+    } else {
+      nextIdx = currentIdx <= 0 ? allNotebooks.length - 1 : currentIdx - 1;
+    }
+    setActiveNotebook(allNotebooks[nextIdx]);
+  };
 
   const strokes = strokesByPage[currentPage] || [];
   const redoStack = redoStackByPage[currentPage] || [];
@@ -636,7 +683,7 @@ export default function WhiteboardOverlay() {
             title="Alterar Caderno"
           >
             <Book className="w-5 h-5" />
-            <span className="text-xs font-bold hidden sm:inline">Cadernos</span>
+            <span className="text-xs font-bold hidden sm:inline">Alterar</span>
           </button>
 
           <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
@@ -775,6 +822,26 @@ export default function WhiteboardOverlay() {
         </div>
       )}
 
+      {/* Fullscreen Notebook Name Indicator */}
+      {windowMode === 'fullscreen' && (
+        <div className="pointer-events-none absolute top-16 left-1/2 -translate-x-1/2 z-[9998]">
+          <span 
+            className="px-4 py-1.5 rounded-full text-xs font-bold shadow-lg backdrop-blur-md border"
+            style={activeNotebook ? {
+              backgroundColor: activeNotebook.coverColor + 'dd',
+              color: '#ffffff',
+              borderColor: activeNotebook.coverColor
+            } : {
+              backgroundColor: 'rgba(255,255,255,0.7)',
+              color: '#4b5563',
+              borderColor: 'rgba(209,213,219,0.5)'
+            }}
+          >
+            {activeNotebook ? `Caderno Digital de ${activeNotebook.name}` : 'Rascunho Rápido'}
+          </span>
+        </div>
+      )}
+
       {/* Transparent Custom Sidebar (No Background) */}
       {!showToolbar && sidebarMode !== 'hidden' && (
         <div className={`whiteboard-sidebar pointer-events-auto absolute z-[9999] ${sidebarMode === 'fixed' ? 'left-2 top-1/2 -translate-y-1/2' : 'left-4 top-20'}`}>
@@ -797,11 +864,31 @@ export default function WhiteboardOverlay() {
 
               <button
                 onClick={() => setShowNotebooksManager(true)}
-                className="w-8 h-8 rounded-full flex items-center justify-center transition-all bg-white/90 shadow-sm text-gray-500 hover:text-indigo-600 relative"
-                title="Cadernos"
+                className="w-8 h-8 rounded-full flex items-center justify-center transition-all bg-white/90 shadow-sm text-gray-500 hover:text-purple-600 relative"
+                title="Alterar Caderno"
               >
                 <Book className="w-4 h-4" />
               </button>
+
+              {/* Notebook Navigation */}
+              {allNotebooks.length > 1 && (
+                <>
+                  <button
+                    onClick={() => navigateNotebook('prev')}
+                    className="w-7 h-7 rounded-full flex items-center justify-center transition-all bg-white/90 shadow-sm text-gray-500 hover:text-purple-600"
+                    title="Caderno Anterior"
+                  >
+                    <ChevronUp className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => navigateNotebook('next')}
+                    className="w-7 h-7 rounded-full flex items-center justify-center transition-all bg-white/90 shadow-sm text-gray-500 hover:text-purple-600"
+                    title="Próximo Caderno"
+                  >
+                    <ChevronDown className="w-4 h-4" />
+                  </button>
+                </>
+              )}
 
               <div className="w-4 h-px bg-gray-300 dark:bg-gray-600 my-1 drop-shadow-md" />
 
@@ -1014,14 +1101,7 @@ export default function WhiteboardOverlay() {
             </button>
           </div>
 
-          {/* Active Notebook Title Display */}
-          {showToolbar && windowMode === 'fullscreen' && (
-            <div className="absolute top-[4.5rem] left-1/2 -translate-x-1/2 pointer-events-none z-[9998]">
-              <span className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-gray-600 dark:text-gray-300 shadow-sm border border-gray-200/50 dark:border-gray-700/50">
-                {activeNotebook ? activeNotebook.name : 'Rascunho'}
-              </span>
-            </div>
-          )}
+
 
           <div className="relative flex-1">
             {content}

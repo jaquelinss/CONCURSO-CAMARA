@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { LogOut, Menu, X, Home, CalendarDays, FolderHeart, Sun, Moon, TrendingUp, Database, HelpCircle, PenTool, Focus, Book } from 'lucide-react';
+import { LogOut, Menu, X, Home, CalendarDays, FolderHeart, Sun, Moon, TrendingUp, Database, HelpCircle, Focus, Book } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Navigation() {
