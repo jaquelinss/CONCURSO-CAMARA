@@ -647,6 +647,17 @@ export default function WhiteboardOverlay() {
                 </div>
               )}
               
+              {/* Mouse / Pointer Tool */}
+              <button
+                onClick={() => setTool('pointer')}
+                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${tool === 'pointer' ? 'bg-indigo-50 text-indigo-600 ring-2 ring-indigo-400' : 'bg-white/90 shadow-sm text-gray-500 hover:text-indigo-600'} relative`}
+                title="Mouse (Interagir com a página)"
+              >
+                <MousePointer2 className="w-4 h-4" />
+              </button>
+
+              <div className="w-4 h-px bg-gray-300 dark:bg-gray-600 my-1 drop-shadow-md" />
+
               {/* PEN PRESETS */}
               {penPresets.map((preset) => (
                 <div key={preset.id} className="relative group">
