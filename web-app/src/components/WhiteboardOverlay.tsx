@@ -54,6 +54,7 @@ export default function WhiteboardOverlay() {
   const [activeEraserId, setActiveEraserId] = useState<string>('e1');
   const [sidebarMode, setSidebarMode] = useState<'fixed' | 'floating' | 'hidden'>('fixed');
   const [editingPreset, setEditingPreset] = useState<string | null>(null);
+  const [showSidebarSettings, setShowSidebarSettings] = useState(false);
 
   // Derived values from active presets (single source of truth)
   const activePen = penPresets.find(p => p.id === activePenId) || penPresets[0];
@@ -717,15 +718,20 @@ export default function WhiteboardOverlay() {
               <div className="w-4 h-px bg-gray-300 dark:bg-gray-600 my-1 drop-shadow-md" />
               
               {/* Settings Toggle & Restore Toolbar */}
-              <div className="relative group">
-                <button className="w-8 h-8 rounded-full bg-white/90 shadow-md backdrop-blur-sm flex items-center justify-center text-gray-500 hover:text-indigo-600">
+              <div className="relative">
+                <button 
+                  onClick={() => setShowSidebarSettings(!showSidebarSettings)}
+                  className={`w-8 h-8 rounded-full shadow-md backdrop-blur-sm flex items-center justify-center transition-all ${showSidebarSettings ? 'bg-indigo-50 text-indigo-600 ring-2 ring-indigo-400' : 'bg-white/90 text-gray-500 hover:text-indigo-600'}`}
+                >
                   <Settings2 className="w-4 h-4" />
                 </button>
-                <div className="absolute left-full ml-3 bottom-0 hidden group-hover:flex bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 p-2 flex-col gap-1 z-[10000] w-36">
-                  <button onClick={() => { setSidebarMode('fixed'); saveSettings(penPresets, eraserPresets, 'fixed'); }} className={`text-xs p-1.5 rounded text-left ${sidebarMode === 'fixed' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}> Sidebar Fixa</button>
-                  <button onClick={() => { setSidebarMode('floating'); saveSettings(penPresets, eraserPresets, 'floating'); }} className={`text-xs p-1.5 rounded text-left ${sidebarMode === 'floating' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}> Sidebar Flutuante</button>
-                  <button onClick={() => { setSidebarMode('hidden'); saveSettings(penPresets, eraserPresets, 'hidden'); }} className={`text-xs p-1.5 rounded text-left text-red-500 hover:bg-red-50`}> Ocultar Sidebar</button>
-                </div>
+                {showSidebarSettings && (
+                  <div className="absolute left-full ml-3 bottom-0 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 p-2 flex flex-col gap-1 z-[10000] w-36">
+                    <button onClick={() => { setSidebarMode('fixed'); saveSettings(penPresets, eraserPresets, 'fixed'); setShowSidebarSettings(false); }} className={`text-xs p-1.5 rounded text-left ${sidebarMode === 'fixed' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}> Sidebar Fixa</button>
+                    <button onClick={() => { setSidebarMode('floating'); saveSettings(penPresets, eraserPresets, 'floating'); setShowSidebarSettings(false); }} className={`text-xs p-1.5 rounded text-left ${sidebarMode === 'floating' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}> Sidebar Flutuante</button>
+                    <button onClick={() => { setSidebarMode('hidden'); saveSettings(penPresets, eraserPresets, 'hidden'); setShowSidebarSettings(false); }} className={`text-xs p-1.5 rounded text-left text-red-500 hover:bg-red-50`}> Ocultar Sidebar</button>
+                  </div>
+                )}
               </div>
 
               <button
