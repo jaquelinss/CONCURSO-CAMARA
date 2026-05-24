@@ -633,12 +633,10 @@ export default function WhiteboardOverlay() {
           <button
             onClick={() => setShowNotebooksManager(true)}
             className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors flex items-center gap-1"
-            title="Meus Cadernos"
+            title="Alterar Caderno"
           >
             <Book className="w-5 h-5" />
-            <span className="text-xs font-bold hidden sm:inline">
-              {activeNotebook ? activeNotebook.name : 'Rascunho'}
-            </span>
+            <span className="text-xs font-bold hidden sm:inline">Cadernos</span>
           </button>
 
           <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
@@ -795,6 +793,14 @@ export default function WhiteboardOverlay() {
                 title="Mouse / Alternar Lousa (Atalho: V ou Esc)"
               >
                 <MousePointer2 className="w-4 h-4" />
+              </button>
+
+              <button
+                onClick={() => setShowNotebooksManager(true)}
+                className="w-8 h-8 rounded-full flex items-center justify-center transition-all bg-white/90 shadow-sm text-gray-500 hover:text-indigo-600 relative"
+                title="Cadernos"
+              >
+                <Book className="w-4 h-4" />
               </button>
 
               <div className="w-4 h-px bg-gray-300 dark:bg-gray-600 my-1 drop-shadow-md" />
@@ -1002,6 +1008,16 @@ export default function WhiteboardOverlay() {
               <X className="w-4 h-4" />
             </button>
           </div>
+
+          {/* Active Notebook Title Display */}
+          {(showToolbar || windowMode === 'floating') && (
+            <div className="absolute top-[4.5rem] left-1/2 -translate-x-1/2 pointer-events-none z-[9998]">
+              <span className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-gray-600 dark:text-gray-300 shadow-sm border border-gray-200/50 dark:border-gray-700/50">
+                {activeNotebook ? activeNotebook.name : 'Rascunho'}
+              </span>
+            </div>
+          )}
+
           <div className="relative flex-1">
             {content}
           </div>
