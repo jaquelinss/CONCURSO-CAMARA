@@ -483,7 +483,7 @@ export default function WhiteboardOverlay() {
       if (e.ctrlKey && e.key === 'z') { e.preventDefault(); handleUndo(); }
       if (e.ctrlKey && e.key === 'y') { e.preventDefault(); handleRedo(); }
       if (e.key === 'e') { setTool('eraser'); }
-      if (e.key === 'p') { setTool('pen'); }
+      if (e.key === 'p' || e.key === 'b') { setTool('pen'); }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
