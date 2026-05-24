@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Pencil, Eraser, Trash2, X, Undo2, Redo2, Minus, Plus, PenTool } from 'lucide-react';
+import { Eraser, Trash2, X, Undo2, Redo2, Minus, Plus, PenTool, Maximize2, Minimize2, GripHorizontal, ChevronLeft, ChevronRight, FilePlus, PanelTopClose, PanelTop } from 'lucide-react';
 import { getStroke } from 'perfect-freehand';
+import Draggable from 'react-draggable';
 
 interface StrokePoint {
   x: number;
@@ -20,17 +21,32 @@ const COLORS = ['#000000', '#ffffff', '#ef4444', '#3b82f6', '#22c55e', '#eab308'
 
 export default function WhiteboardOverlay() {
   const [active, setActive] = useState(false);
-  const [mode, setMode] = useState<'transparent' | 'lined' | 'grid' | 'dotted'>('transparent');
+  
+  // Modos de Lousa
+  const [windowMode, setWindowMode] = useState<'fullscreen' | 'floating'>('floating');
+  const [mode, setMode] = useState<'transparent' | 'lined' | 'grid' | 'dotted'>('lined');
   const [tool, setTool] = useState<'pen' | 'eraser'>('pen');
   const [color, setColor] = useState('#000000');
   const [strokeWidth, setStrokeWidth] = useState(4);
-  const [strokes, setStrokes] = useState<Stroke[]>([]);
-  const [redoStack, setRedoStack] = useState<Stroke[]>([]);
+  const [showToolbar, _setShowToolbar] = useState(true);
+  const toggleToolbar = () => _setShowToolbar(p => !p);
+  
+  // Páginas do Caderninho
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [strokesByPage, setStrokesByPage] = useState<Record<number, Stroke[]>>({ 1: [] });
+  const [redoStackByPage, setRedoStackByPage] = useState<Record<number, Stroke[]>>({ 1: [] });
+
   const [isDrawing, setIsDrawing] = useState(false);
-  const [showToolbar, setShowToolbar] = useState(true);
+  
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const currentStrokeRef = useRef<Stroke | null>(null);
   const animFrameRef = useRef<number>(0);
+
+  // Floating Window Size
+  const [size, setSize] = useState({ w: Math.min(600, window.innerWidth - 40), h: Math.min(800, window.innerHeight - 100) });
+  const resizeRef = useRef<{ startX: number; startY: number; startW: number; startH: number } | null>(null);
 
   // Listen for global toggle event
   useEffect(() => {
@@ -39,34 +55,39 @@ export default function WhiteboardOverlay() {
     return () => window.removeEventListener('toggle-whiteboard', handleToggle);
   }, []);
 
-  // Resize canvas to match window
+  const strokes = strokesByPage[currentPage] || [];
+  const redoStack = redoStackByPage[currentPage] || [];
+
+  // Redimensionar Canvas
   useEffect(() => {
-    if (!active || !canvasRef.current) return;
+    if (!active || !canvasRef.current || !containerRef.current) return;
     const canvas = canvasRef.current;
+    const container = containerRef.current;
+    
     const resize = () => {
       const dpr = window.devicePixelRatio || 1;
-      canvas.width = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
-      canvas.style.width = `${window.innerWidth}px`;
-      canvas.style.height = `${window.innerHeight}px`;
+      const rect = container.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      canvas.style.width = `${rect.width}px`;
+      canvas.style.height = `${rect.height}px`;
       const ctx = canvas.getContext('2d');
       if (ctx) ctx.scale(dpr, dpr);
       redrawAll();
     };
-    resize();
+    
+    // Pequeno delay para garantir que o container já assumiu o tamanho
+    setTimeout(resize, 10);
     window.addEventListener('resize', resize);
     return () => window.removeEventListener('resize', resize);
-  }, [active, strokes]);
+  }, [active, strokes, windowMode, size.w, size.h, currentPage, mode]);
 
-  const drawPaperPattern = (ctx: CanvasRenderingContext2D) => {
+  const drawPaperPattern = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
     if (mode === 'transparent') return;
     
     ctx.save();
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-
     // Fill background
-    ctx.fillStyle = '#fefce8'; // Light amber/yellowish background like paper
+    ctx.fillStyle = '#fefce8';
     ctx.fillRect(0, 0, width, height);
 
     ctx.globalAlpha = 0.4;
@@ -119,10 +140,12 @@ export default function WhiteboardOverlay() {
 
   const redrawAll = useCallback(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const container = containerRef.current;
+    if (!canvas || !container) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    const rect = container.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
     ctx.save();
     ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -130,13 +153,11 @@ export default function WhiteboardOverlay() {
     ctx.scale(dpr, dpr);
     ctx.restore();
 
-    drawPaperPattern(ctx);
+    drawPaperPattern(ctx, rect.width, rect.height);
 
-    // Render all strokes
     for (const stroke of strokes) {
       drawStroke(ctx, stroke);
     }
-    // Render current in-progress stroke
     if (currentStrokeRef.current) {
       drawStroke(ctx, currentStrokeRef.current);
     }
@@ -154,26 +175,28 @@ export default function WhiteboardOverlay() {
       ctx.fillStyle = stroke.color;
     }
 
-    // Convert points to perfect-freehand array format
-    const pointsArray = stroke.points.map(p => [p.x, p.y, p.pressure] as [number, number, number]);
-    
-    // Use perfect-freehand algorithm
-    const outlinePoints = getStroke(pointsArray, {
-      size: stroke.width,
-      thinning: 0.5,
-      smoothing: 0.5,
-      streamline: 0.5,
-      simulatePressure: false, // We pass real pressure from stylus if available
-    });
+    try {
+      const pointsArray = stroke.points.map(p => [p.x, p.y, p.pressure] as [number, number, number]);
+      const outlinePoints = getStroke(pointsArray, {
+        size: stroke.width,
+        thinning: 0.5,
+        smoothing: 0.5,
+        streamline: 0.5,
+        simulatePressure: false,
+      });
 
-    if (outlinePoints.length > 0) {
-      ctx.beginPath();
-      ctx.moveTo(outlinePoints[0][0], outlinePoints[0][1]);
-      for (let i = 1; i < outlinePoints.length; i++) {
-        ctx.lineTo(outlinePoints[i][0], outlinePoints[i][1]);
+      if (outlinePoints && outlinePoints.length > 0) {
+        ctx.beginPath();
+        ctx.moveTo(outlinePoints[0][0], outlinePoints[0][1]);
+        for (let i = 1; i < outlinePoints.length; i++) {
+          ctx.lineTo(outlinePoints[i][0], outlinePoints[i][1]);
+        }
+        ctx.closePath();
+        ctx.fill();
       }
-      ctx.closePath();
-      ctx.fill();
+    } catch (e) {
+      // Ignorar erros na geração de geometria de um traço corrompido
+      console.warn("Erro ao desenhar traço", e);
     }
     
     ctx.restore();
@@ -189,7 +212,7 @@ export default function WhiteboardOverlay() {
 
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    const pressure = e.pressure !== undefined && e.pressure !== 0 ? e.pressure : 0.5;
+    const pressure = e.pressure !== undefined && e.pressure > 0 ? e.pressure : 0.5;
 
     currentStrokeRef.current = {
       points: [{ x, y, pressure }],
@@ -208,7 +231,7 @@ export default function WhiteboardOverlay() {
 
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    const pressure = e.pressure !== undefined && e.pressure !== 0 ? e.pressure : 0.5;
+    const pressure = e.pressure !== undefined && e.pressure > 0 ? e.pressure : 0.5;
 
     currentStrokeRef.current.points.push({ x, y, pressure });
 
@@ -222,40 +245,66 @@ export default function WhiteboardOverlay() {
     setIsDrawing(false);
 
     if (currentStrokeRef.current.points.length > 0) {
-      setStrokes(prev => [...prev, currentStrokeRef.current!]);
-      setRedoStack([]);
+      const newStroke = currentStrokeRef.current;
+      setStrokesByPage(prev => ({
+        ...prev,
+        [currentPage]: [...(prev[currentPage] || []), newStroke]
+      }));
+      setRedoStackByPage(prev => ({
+        ...prev,
+        [currentPage]: []
+      }));
     }
     currentStrokeRef.current = null;
     redrawAll();
   };
 
   const handleUndo = () => {
-    setStrokes(prev => {
-      if (prev.length === 0) return prev;
-      const last = prev[prev.length - 1];
-      setRedoStack(r => [...r, last]);
-      return prev.slice(0, -1);
+    if (strokes.length === 0) return;
+    setStrokesByPage(prev => {
+      const pageStrokes = prev[currentPage] || [];
+      const newStrokes = pageStrokes.slice(0, -1);
+      const last = pageStrokes[pageStrokes.length - 1];
+      
+      setRedoStackByPage(r => ({
+        ...r,
+        [currentPage]: [...(r[currentPage] || []), last]
+      }));
+      
+      return { ...prev, [currentPage]: newStrokes };
     });
   };
 
   const handleRedo = () => {
-    setRedoStack(prev => {
-      if (prev.length === 0) return prev;
-      const last = prev[prev.length - 1];
-      setStrokes(s => [...s, last]);
-      return prev.slice(0, -1);
+    if (redoStack.length === 0) return;
+    setRedoStackByPage(prev => {
+      const pageRedo = prev[currentPage] || [];
+      const last = pageRedo[pageRedo.length - 1];
+      const newRedo = pageRedo.slice(0, -1);
+      
+      setStrokesByPage(s => ({
+        ...s,
+        [currentPage]: [...(s[currentPage] || []), last]
+      }));
+      
+      return { ...prev, [currentPage]: newRedo };
     });
   };
 
   const handleClear = () => {
     if (strokes.length === 0) return;
-    if (!window.confirm('Limpar toda a lousa?')) return;
-    setStrokes([]);
-    setRedoStack([]);
+    if (!window.confirm('Limpar toda a lousa atual?')) return;
+    setStrokesByPage(prev => ({ ...prev, [currentPage]: [] }));
+    setRedoStackByPage(prev => ({ ...prev, [currentPage]: [] }));
   };
 
   const handleClose = () => {
     setActive(false);
+  };
+
+  const addNewPage = () => {
+    setTotalPages(p => p + 1);
+    setCurrentPage(totalPages + 1);
   };
 
   // Keyboard shortcuts
@@ -272,12 +321,44 @@ export default function WhiteboardOverlay() {
     return () => window.removeEventListener('keydown', handler);
   }, [active, strokes]);
 
+  // Resize handler for floating window
+  const onResizeStart = (e: React.PointerEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const el = e.currentTarget as HTMLElement;
+    el.setPointerCapture(e.pointerId);
+    resizeRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      startW: size.w,
+      startH: size.h,
+    };
+  };
+
+  const onResizeMove = (e: React.PointerEvent) => {
+    if (!resizeRef.current) return;
+    e.preventDefault();
+    const dx = e.clientX - resizeRef.current.startX;
+    const dy = e.clientY - resizeRef.current.startY;
+    setSize({
+      w: Math.max(300, resizeRef.current.startW + dx),
+      h: Math.max(300, resizeRef.current.startH + dy),
+    });
+  };
+
+  const onResizeEnd = (e: React.PointerEvent) => {
+    resizeRef.current = null;
+    (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+  };
+
   if (!active) return null;
 
-  return createPortal(
-    <div className="fixed inset-0 z-[9998]" style={{ touchAction: 'none' }}>
-      {/* Background layer for clicks when transparent (prevents interacting with elements behind) */}
-      <div className="absolute inset-0 bg-transparent" />
+  const content = (
+    <>
+      {/* Background layer for fullscreen transparent mode */}
+      {windowMode === 'fullscreen' && mode === 'transparent' && (
+        <div className="absolute inset-0 bg-transparent pointer-events-none" />
+      )}
 
       {/* Canvas */}
       <canvas
@@ -295,16 +376,32 @@ export default function WhiteboardOverlay() {
       {showToolbar && (
         <div className="whiteboard-toolbar absolute top-4 left-1/2 -translate-x-1/2 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center gap-1.5 sm:gap-2 z-[9999] max-w-[95vw] flex-wrap justify-center">
           
+          {/* View Mode Toggle */}
+          <button
+            onClick={() => {
+              setWindowMode(windowMode === 'fullscreen' ? 'floating' : 'fullscreen');
+              if (windowMode === 'fullscreen' && mode === 'transparent') {
+                 setMode('lined'); // fallback se entrar em flutuante
+              }
+            }}
+            className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors"
+            title={windowMode === 'fullscreen' ? 'Modo Caderninho (Janela)' : 'Modo Tela Cheia'}
+          >
+            {windowMode === 'fullscreen' ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+          </button>
+
+          <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
+
           {/* Mode Selector */}
           <select 
             value={mode} 
             onChange={(e) => setMode(e.target.value as any)}
             className="px-2 py-1.5 rounded-lg text-xs font-bold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-none outline-none cursor-pointer"
           >
-            <option value="transparent">🔍 Lousa (Transp)</option>
+            {windowMode === 'fullscreen' && <option value="transparent">🔍 Lousa (Transp)</option>}
             <option value="lined">📝 Papel Pautado</option>
-            <option value="grid">📐 Papel Quadriculado</option>
-            <option value="dotted">📌 Papel Pontilhado</option>
+            <option value="grid">📐 Quadriculado</option>
+            <option value="dotted">📌 Pontilhado</option>
           </select>
 
           <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
@@ -403,7 +500,39 @@ export default function WhiteboardOverlay() {
             <Redo2 className="w-5 h-5" />
           </button>
 
-          {/* Clear */}
+          <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
+
+          {/* Pagination Controls */}
+          <div className="flex items-center gap-1 px-1 bg-gray-50 dark:bg-gray-900 rounded-lg">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="p-1.5 text-gray-600 dark:text-gray-400 disabled:opacity-30 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <span className="text-xs font-bold w-12 text-center text-gray-700 dark:text-gray-300">
+              Pág {currentPage}
+            </span>
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="p-1.5 text-gray-600 dark:text-gray-400 disabled:opacity-30 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+            <button
+              onClick={addNewPage}
+              className="p-1.5 text-indigo-600 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 rounded ml-1"
+              title="Nova Página"
+            >
+              <FilePlus className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
+
+          {/* Clear & Close */}
           <button
             onClick={handleClear}
             className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-all"
@@ -412,7 +541,14 @@ export default function WhiteboardOverlay() {
             <Trash2 className="w-5 h-5" />
           </button>
 
-          {/* Close */}
+          <button
+            onClick={toggleToolbar}
+            className="p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all"
+            title="Minimizar Barra"
+          >
+            <PanelTopClose className="w-5 h-5" />
+          </button>
+          
           <button
             onClick={handleClose}
             className="p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all"
@@ -423,25 +559,69 @@ export default function WhiteboardOverlay() {
         </div>
       )}
 
-      {/* Toggle toolbar visibility on mobile */}
-      {!showToolbar && (
-        <button
-          onClick={() => setShowToolbar(true)}
-          className="whiteboard-toolbar absolute top-4 right-4 z-[9999] w-10 h-10 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-lg flex items-center justify-center text-gray-600 dark:text-gray-300"
+      {/* Resize Handle for Floating Window - larger touch target */}
+      {windowMode === 'floating' && (
+        <div
+          className="absolute bottom-0 right-0 w-10 h-10 cursor-nwse-resize flex items-end justify-end p-2 opacity-50 hover:opacity-100 whiteboard-toolbar"
+          onPointerDown={onResizeStart}
+          onPointerMove={onResizeMove}
+          onPointerUp={onResizeEnd}
+          onPointerCancel={onResizeEnd}
+          style={{ touchAction: 'none', zIndex: 10000 }}
         >
-          <Pencil className="w-5 h-5" />
-        </button>
+          <div className="w-4 h-4 border-r-2 border-b-2 border-gray-500 dark:border-gray-400" />
+        </div>
       )}
 
-      {/* Minimize toolbar button (inside toolbar) */}
-      {showToolbar && (
+      {/* Toggle toolbar visibility */}
+      {!showToolbar && (
         <button
-          onClick={() => setShowToolbar(false)}
-          className="whiteboard-toolbar absolute top-4 right-4 z-[9999] text-xs text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hidden sm:block"
+          onClick={toggleToolbar}
+          className="whiteboard-toolbar absolute top-4 right-4 z-[9999] w-10 h-10 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-lg flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700"
+          title="Mostrar ferramentas"
         >
-          minimizar
+          <PanelTop className="w-5 h-5" />
         </button>
       )}
+    </>
+  );
+
+  if (windowMode === 'fullscreen') {
+    return createPortal(
+      <div 
+        ref={containerRef}
+        className={`fixed inset-0 z-[9998] ${mode !== 'transparent' ? 'bg-[#fefce8]' : ''}`} 
+        style={{ touchAction: 'none' }}
+      >
+        {content}
+      </div>,
+      document.body
+    );
+  }
+
+  // Modo Caderninho Flutuante
+  return createPortal(
+    <div className="fixed inset-0 z-[9998] pointer-events-none flex items-center justify-center">
+      <Draggable handle=".whiteboard-drag-handle" bounds="parent" defaultPosition={{x: 0, y: 0}}>
+        <div 
+          ref={containerRef}
+          className="absolute pointer-events-auto bg-[#fefce8] rounded-xl shadow-2xl overflow-hidden border border-gray-300 dark:border-gray-600 flex flex-col"
+          style={{ width: `${size.w}px`, height: `${size.h}px`, touchAction: 'none' }}
+        >
+          <div className="whiteboard-drag-handle whiteboard-toolbar h-8 bg-indigo-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-3 cursor-grab active:cursor-grabbing">
+            <div className="flex items-center gap-2">
+              <GripHorizontal className="w-4 h-4 text-gray-400" />
+              <span className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Caderno Digital</span>
+            </div>
+            <button onClick={handleClose} className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-gray-500">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          <div className="relative flex-1">
+            {content}
+          </div>
+        </div>
+      </Draggable>
     </div>,
     document.body
   );

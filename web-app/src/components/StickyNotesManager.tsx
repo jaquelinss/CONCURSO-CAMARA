@@ -315,7 +315,11 @@ function SidebarNoteItem({
                 Mostrar na Tela
               </button>
             ) : (
-              <button onClick={() => onUpdate({ isArchived: true })} className="text-xs font-bold text-gray-600 hover:text-gray-800 bg-gray-200 px-2 py-1 rounded">
+              <button 
+                onClick={() => onUpdate({ isArchived: true })} 
+                onTouchEnd={(e) => { e.stopPropagation(); onUpdate({ isArchived: true }); }}
+                className="text-xs font-bold text-gray-600 hover:text-gray-800 bg-gray-200 px-2 py-1 rounded"
+              >
                 Ocultar
               </button>
             )}

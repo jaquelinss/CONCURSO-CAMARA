@@ -80,7 +80,8 @@ export default function StudyProgressScreen() {
     if (!user || !subject) return;
     setLoading(true);
     try {
-      const docRef = doc(db, 'users', user.uid, 'studyProgress', subject);
+      const docId = subject.trim().replace(/\//g, '-');
+      const docRef = doc(db, 'users', user.uid, 'studyProgress', docId);
       const docSnap = await getDoc(docRef);
       
       const topicsMap = topicsBySubject[subject] || {};
@@ -172,14 +173,15 @@ export default function StudyProgressScreen() {
   const saveProgress = async (newItems: ChecklistItem[], aiGeneratedFlag?: boolean) => {
     if (!user || !subject) return;
     try {
-      const docRef = doc(db, 'users', user.uid, 'studyProgress', subject);
+      const docId = subject.trim().replace(/\//g, '-');
+      const docRef = doc(db, 'users', user.uid, 'studyProgress', docId);
       await setDoc(docRef, {
-        subject,
+        subject: subject.trim(),
         mode,
         items: newItems,
-        isAiGenerated: aiGeneratedFlag !== undefined ? aiGeneratedFlag : isAiGeneratedPlan,
+        isAiGenerated: aiGeneratedFlag !== undefined ? aiGeneratedFlag : !!isAiGeneratedPlan,
         updatedAt: serverTimestamp(),
-      });
+      }, { merge: true });
     } catch (error) {
       console.error("Erro ao salvar progresso:", error);
     }
@@ -403,13 +405,14 @@ Certifique-se de que a ordem dos tópicos seja a melhor ordem lógica de aprendi
                           // 3. Persist to Firestore
                           if (user) {
                             try {
-                              const docRef = doc(db, 'users', user.uid, 'studyProgress', sName);
+                              const docId = sName.trim().replace(/\//g, '-');
+                              const docRef = doc(db, 'users', user.uid, 'studyProgress', docId);
                               await setDoc(docRef, {
-                                subject: sName,
+                                subject: sName.trim(),
                                 mode: mode,
                                 items: [],
                                 updatedAt: serverTimestamp(),
-                              });
+                              }, { merge: true });
                             } catch (err) {
                               console.error("Erro ao registrar matéria:", err);
                             }
