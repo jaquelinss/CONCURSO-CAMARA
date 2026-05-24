@@ -85,6 +85,7 @@ export default function WhiteboardOverlay() {
 
   const [isDrawing, setIsDrawing] = useState(false);
   
+  const bgCanvasRef = useRef<HTMLCanvasElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
@@ -183,19 +184,34 @@ export default function WhiteboardOverlay() {
 
   // Redimensionar Canvas
   useEffect(() => {
-    if (!active || !canvasRef.current || !containerRef.current) return;
+    if (!active || !canvasRef.current || !bgCanvasRef.current || !containerRef.current) return;
     const canvas = canvasRef.current;
+    const bgCanvas = bgCanvasRef.current;
     const container = containerRef.current;
     
     const resize = () => {
       const dpr = window.devicePixelRatio || 1;
       const rect = container.getBoundingClientRect();
+      
       canvas.width = rect.width * dpr;
       canvas.height = rect.height * dpr;
       canvas.style.width = `${rect.width}px`;
       canvas.style.height = `${rect.height}px`;
+      
+      bgCanvas.width = rect.width * dpr;
+      bgCanvas.height = rect.height * dpr;
+      bgCanvas.style.width = `${rect.width}px`;
+      bgCanvas.style.height = `${rect.height}px`;
+      
       const ctx = canvas.getContext('2d');
       if (ctx) ctx.scale(dpr, dpr);
+      
+      const bgCtx = bgCanvas.getContext('2d');
+      if (bgCtx) {
+        bgCtx.scale(dpr, dpr);
+        drawPaperPattern(bgCtx, rect.width, rect.height);
+      }
+      
       redrawAll();
     };
     
@@ -205,6 +221,7 @@ export default function WhiteboardOverlay() {
   }, [active, strokes, windowMode, size.w, size.h, currentPage, mode]);
 
   const drawPaperPattern = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+    ctx.clearRect(0, 0, width, height);
     if (windowMode === 'fullscreen' && mode === 'transparent') return;
     
     ctx.save();
@@ -265,15 +282,12 @@ export default function WhiteboardOverlay() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const rect = container.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
     ctx.save();
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.scale(dpr, dpr);
     ctx.restore();
-
-    drawPaperPattern(ctx, rect.width, rect.height);
 
     for (const stroke of strokes) {
       drawStroke(ctx, stroke);
@@ -482,6 +496,11 @@ export default function WhiteboardOverlay() {
         <div className="absolute inset-0 bg-transparent pointer-events-none" />
       )}
 
+      <canvas
+        ref={bgCanvasRef}
+        className="absolute inset-0 pointer-events-none"
+        style={{ touchAction: 'none' }}
+      />
       <canvas
         ref={canvasRef}
         className="absolute inset-0 cursor-crosshair"
