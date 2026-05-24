@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Eraser, Trash2, X, Undo2, Redo2, Minus, Plus, PenTool, Maximize2, Minimize2, GripHorizontal, ChevronLeft, ChevronRight, FilePlus, PanelTopClose, PanelTop, Settings2, Focus } from 'lucide-react';
+import { Eraser, Trash2, X, Undo2, Redo2, Minus, Plus, PenTool, Maximize2, Minimize2, GripHorizontal, ChevronLeft, ChevronRight, FilePlus, PanelTopClose, PanelTop, Settings2, Focus, MousePointer2 } from 'lucide-react';
 import { getStroke } from 'perfect-freehand';
 import Draggable from 'react-draggable';
 import { useAuth } from '../contexts/AuthContext';
@@ -43,7 +43,7 @@ export default function WhiteboardOverlay() {
   const [mode, setMode] = useState<'transparent' | 'lined' | 'grid' | 'dotted'>('lined');
   
   // Menu Principal Original
-  const [tool, setTool] = useState<'pen' | 'eraser'>('pen');
+  const [tool, setTool] = useState<'pen' | 'eraser' | 'pointer'>('pen');
   const [showToolbar, _setShowToolbar] = useState(true);
   const toggleToolbar = () => _setShowToolbar(p => !p);
 
@@ -503,7 +503,7 @@ export default function WhiteboardOverlay() {
       />
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 cursor-crosshair"
+        className={`absolute inset-0 ${tool === 'pointer' ? 'pointer-events-none' : 'cursor-crosshair'}`}
         style={{ touchAction: 'none' }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -550,6 +550,12 @@ export default function WhiteboardOverlay() {
           
           <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
           
+          <button
+            onClick={() => setTool('pointer')}
+            className={`p-2 rounded-lg transition-all ${tool === 'pointer' ? 'bg-indigo-100 text-indigo-600 ring-2 ring-indigo-400' : 'text-gray-500 hover:bg-gray-100'}`}
+          >
+            <MousePointer2 className="w-5 h-5" />
+          </button>
           <button
             onClick={() => setTool('pen')}
             className={`p-2 rounded-lg transition-all ${tool === 'pen' ? 'bg-indigo-100 text-indigo-600 ring-2 ring-indigo-400' : 'text-gray-500 hover:bg-gray-100'}`}
