@@ -34,19 +34,6 @@ interface EraserPreset {
 
 const COLORS = ['#000000', '#ffffff', '#ef4444', '#3b82f6', '#22c55e', '#eab308', '#a855f7', '#f97316'];
 
-const DEFAULT_PENS: PenPreset[] = [
-  { id: 'p1', color: '#000000', width: 4 },
-  { id: 'p2', color: '#3b82f6', width: 4 },
-  { id: 'p3', color: '#ef4444', width: 4 },
-  { id: 'p4', color: '#22c55e', width: 4 },
-  { id: 'p5', color: '#eab308', width: 8 },
-];
-
-const DEFAULT_ERASERS: EraserPreset[] = [
-  { id: 'e1', type: 'normal', width: 16 },
-  { id: 'e2', type: 'stroke', width: 16 },
-];
-
 export default function WhiteboardOverlay() {
   const { user } = useAuth();
   const [active, setActive] = useState(false);
@@ -55,22 +42,56 @@ export default function WhiteboardOverlay() {
   const [windowMode, setWindowMode] = useState<'fullscreen' | 'floating'>('floating');
   const [mode, setMode] = useState<'transparent' | 'lined' | 'grid' | 'dotted'>('lined');
   
-  // Presets and Tools
+  // Menu Principal Original
   const [tool, setTool] = useState<'pen' | 'eraser'>('pen');
-  const [penPresets, setPenPresets] = useState<PenPreset[]>(DEFAULT_PENS);
-  const [eraserPresets, setEraserPresets] = useState<EraserPreset[]>(DEFAULT_ERASERS);
-  const [activePresetId, setActivePresetId] = useState<string>('p1');
-  const [sidebarMode, setSidebarMode] = useState<'fixed' | 'floating' | 'hidden'>('fixed');
-  
+  const [color, setColor] = useState('#000000');
+  const [strokeWidth, setStrokeWidth] = useState(4);
   const [showToolbar, _setShowToolbar] = useState(true);
   const toggleToolbar = () => _setShowToolbar(p => !p);
 
-  const activePen = penPresets.find(p => p.id === activePresetId) || penPresets[0];
-  const activeEraser = eraserPresets.find(p => p.id === activePresetId) || eraserPresets[0];
+  // Sidebar e Presets
+  const [penPresets, setPenPresets] = useState<PenPreset[]>([{ id: 'p1', color: '#000000', width: 4 }]);
+  const [eraserPresets, setEraserPresets] = useState<EraserPreset[]>([{ id: 'e1', type: 'normal', width: 16 }]);
+  const [activePenId, setActivePenId] = useState<string>('p1');
+  const [activeEraserId, setActiveEraserId] = useState<string>('e1');
+  const [sidebarMode, setSidebarMode] = useState<'fixed' | 'floating' | 'hidden'>('fixed');
+  const [editingPreset, setEditingPreset] = useState<string | null>(null);
 
-  const strokeColor = tool === 'pen' ? activePen.color : '#000000';
-  const strokeWidth = tool === 'pen' ? activePen.width : activeEraser.width;
-  
+  const activeEraser = eraserPresets.find(p => p.id === activeEraserId) || eraserPresets[0];
+
+  // Sincronizar Menu Principal com o Preset Ativo
+  useEffect(() => {
+    if (tool === 'pen') {
+      const p = penPresets.find(x => x.id === activePenId);
+      if (p) {
+        if (p.color !== color) setColor(p.color);
+        if (p.width !== strokeWidth) setStrokeWidth(p.width);
+      }
+    } else {
+      const e = eraserPresets.find(x => x.id === activeEraserId);
+      if (e) {
+        if (e.width !== strokeWidth) setStrokeWidth(e.width);
+      }
+    }
+  }, [activePenId, activeEraserId, tool]);
+
+  // Atualizar Preset Ativo quando mudar pelo Menu Principal
+  const handleColorChange = (c: string) => {
+    setColor(c);
+    if (tool === 'pen') {
+      updatePenPreset(activePenId, { color: c });
+    }
+  };
+
+  const handleWidthChange = (w: number) => {
+    setStrokeWidth(w);
+    if (tool === 'pen') {
+      updatePenPreset(activePenId, { width: w });
+    } else {
+      updateEraserPreset(activeEraserId, { width: w });
+    }
+  };
+
   // Páginas do Caderninho
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -78,7 +99,6 @@ export default function WhiteboardOverlay() {
   const [redoStackByPage, setRedoStackByPage] = useState<Record<number, Stroke[]>>({ 1: [] });
 
   const [isDrawing, setIsDrawing] = useState(false);
-  const [editingPreset, setEditingPreset] = useState<string | null>(null);
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -96,8 +116,8 @@ export default function WhiteboardOverlay() {
     getDoc(doc(db, 'users', user.uid, 'settings', 'whiteboard')).then(d => {
       if (d.exists()) {
         const data = d.data();
-        if (data.penPresets) setPenPresets(data.penPresets);
-        if (data.eraserPresets) setEraserPresets(data.eraserPresets);
+        if (data.penPresets && data.penPresets.length > 0) setPenPresets(data.penPresets);
+        if (data.eraserPresets && data.eraserPresets.length > 0) setEraserPresets(data.eraserPresets);
         if (data.sidebarMode) setSidebarMode(data.sidebarMode);
       }
     });
@@ -113,15 +133,39 @@ export default function WhiteboardOverlay() {
   }, [user]);
 
   const updatePenPreset = (id: string, updates: Partial<PenPreset>) => {
-    const newPens = penPresets.map(p => p.id === id ? { ...p, ...updates } : p);
-    setPenPresets(newPens);
-    saveSettings(newPens, eraserPresets, sidebarMode);
+    setPenPresets(prev => {
+      const newPens = prev.map(p => p.id === id ? { ...p, ...updates } : p);
+      saveSettings(newPens, eraserPresets, sidebarMode);
+      return newPens;
+    });
   };
 
   const updateEraserPreset = (id: string, updates: Partial<EraserPreset>) => {
-    const newErasers = eraserPresets.map(p => p.id === id ? { ...p, ...updates } : p);
+    setEraserPresets(prev => {
+      const newErasers = prev.map(p => p.id === id ? { ...p, ...updates } : p);
+      saveSettings(penPresets, newErasers, sidebarMode);
+      return newErasers;
+    });
+  };
+
+  const addPenPreset = () => {
+    if (penPresets.length >= 5) return;
+    const newId = `p${Date.now()}`;
+    const newPens = [...penPresets, { id: newId, color: '#000000', width: 4 }];
+    setPenPresets(newPens);
+    saveSettings(newPens, eraserPresets, sidebarMode);
+    setActivePenId(newId);
+    setTool('pen');
+  };
+
+  const addEraserPreset = () => {
+    if (eraserPresets.length >= 2) return;
+    const newId = `e${Date.now()}`;
+    const newErasers: EraserPreset[] = [...eraserPresets, { id: newId, type: 'stroke', width: 16 }];
     setEraserPresets(newErasers);
     saveSettings(penPresets, newErasers, sidebarMode);
+    setActiveEraserId(newId);
+    setTool('eraser');
   };
 
   // Listen for global toggle event
@@ -158,7 +202,7 @@ export default function WhiteboardOverlay() {
   }, [active, strokes, windowMode, size.w, size.h, currentPage, mode]);
 
   const drawPaperPattern = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
-    if (mode === 'transparent') return;
+    if (windowMode === 'fullscreen' && mode === 'transparent') return;
     
     ctx.save();
     ctx.fillStyle = '#fefce8';
@@ -234,7 +278,7 @@ export default function WhiteboardOverlay() {
     if (currentStrokeRef.current) {
       drawStroke(ctx, currentStrokeRef.current);
     }
-  }, [strokes, mode]);
+  }, [strokes, mode, windowMode]);
 
   const drawStroke = (ctx: CanvasRenderingContext2D, stroke: Stroke) => {
     if (stroke.points.length === 0) return;
@@ -273,34 +317,6 @@ export default function WhiteboardOverlay() {
     ctx.restore();
   };
 
-  const handlePointerDown = (e: React.PointerEvent) => {
-    if ((e.target as HTMLElement).closest('.whiteboard-toolbar') || (e.target as HTMLElement).closest('.whiteboard-sidebar')) {
-      return;
-    }
-    setEditingPreset(null); // Close any open preset editor
-    e.preventDefault();
-    setIsDrawing(true);
-
-    const rect = canvasRef.current?.getBoundingClientRect();
-    if (!rect) return;
-
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const pressure = e.pressure !== undefined && e.pressure > 0 ? e.pressure : 0.5;
-
-    if (tool === 'eraser' && activeEraser.type === 'stroke') {
-      // Stroke eraser logic
-      eraseIntersectingStrokes(x, y);
-    } else {
-      currentStrokeRef.current = {
-        points: [{ x, y, pressure }],
-        color: tool === 'eraser' ? '#000000' : strokeColor,
-        width: tool === 'eraser' ? strokeWidth * 4 : strokeWidth,
-        isEraser: tool === 'eraser',
-      };
-    }
-  };
-
   const eraseIntersectingStrokes = (x: number, y: number) => {
     const threshold = 15; // pixels
     const strokesToKeep: Stroke[] = [];
@@ -321,6 +337,33 @@ export default function WhiteboardOverlay() {
         ...prev,
         [currentPage]: [...(prev[currentPage] || []), ...strokesToRemove]
       }));
+    }
+  };
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if ((e.target as HTMLElement).closest('.whiteboard-toolbar') || (e.target as HTMLElement).closest('.whiteboard-sidebar')) {
+      return;
+    }
+    setEditingPreset(null);
+    e.preventDefault();
+    setIsDrawing(true);
+
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const pressure = e.pressure !== undefined && e.pressure > 0 ? e.pressure : 0.5;
+
+    if (tool === 'eraser' && activeEraser.type === 'stroke') {
+      eraseIntersectingStrokes(x, y);
+    } else {
+      currentStrokeRef.current = {
+        points: [{ x, y, pressure }],
+        color: tool === 'eraser' ? '#000000' : color,
+        width: tool === 'eraser' ? strokeWidth * 4 : strokeWidth,
+        isEraser: tool === 'eraser',
+      };
     }
   };
 
@@ -401,12 +444,12 @@ export default function WhiteboardOverlay() {
       if (e.key === 'Escape') handleClose();
       if (e.ctrlKey && e.key === 'z') { e.preventDefault(); handleUndo(); }
       if (e.ctrlKey && e.key === 'y') { e.preventDefault(); handleRedo(); }
-      if (e.key === 'e') { setTool('eraser'); setActivePresetId(eraserPresets[0].id); }
-      if (e.key === 'p') { setTool('pen'); setActivePresetId(penPresets[0].id); }
+      if (e.key === 'e') { setTool('eraser'); }
+      if (e.key === 'p') { setTool('pen'); }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [active, strokes, penPresets, eraserPresets]);
+  }, [active, strokes]);
 
   const onResizeStart = (e: React.PointerEvent) => {
     e.preventDefault(); e.stopPropagation();
@@ -451,41 +494,97 @@ export default function WhiteboardOverlay() {
       {showToolbar && (
         <div className="whiteboard-toolbar absolute top-4 left-1/2 -translate-x-1/2 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center gap-1.5 sm:gap-2 z-[9999] max-w-[95vw] flex-wrap justify-center">
           <button
-            onClick={() => setWindowMode(windowMode === 'fullscreen' ? 'floating' : 'fullscreen')}
+            onClick={() => {
+              const nextMode = windowMode === 'fullscreen' ? 'floating' : 'fullscreen';
+              setWindowMode(nextMode);
+              if (nextMode === 'floating' && mode === 'transparent') {
+                setMode('lined'); // fallback to lined if switching to floating while transparent
+              }
+            }}
             className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors"
             title={windowMode === 'fullscreen' ? 'Modo Caderninho (Janela)' : 'Modo Tela Cheia'}
           >
             {windowMode === 'fullscreen' ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
           </button>
+          
           <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
+          
           <select 
             value={mode} 
             onChange={(e) => setMode(e.target.value as any)}
             className="px-2 py-1.5 rounded-lg text-xs font-bold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-none outline-none cursor-pointer"
           >
-            <option value="transparent">🔍 Lousa (Transp)</option>
+            {windowMode === 'fullscreen' && <option value="transparent">🔍 Lousa (Transp)</option>}
             <option value="lined">📝 Papel Pautado</option>
             <option value="grid">📐 Quadriculado</option>
             <option value="dotted">📌 Pontilhado</option>
           </select>
+          
           <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
           
           <button
-            onClick={() => { setTool('pen'); setActivePresetId(penPresets[0].id); }}
-            className={`p-2 rounded-lg transition-all ${tool === 'pen' ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 ring-2 ring-indigo-400' : 'text-gray-500 hover:bg-gray-100'}`}
+            onClick={() => setTool('pen')}
+            className={`p-2 rounded-lg transition-all ${tool === 'pen' ? 'bg-indigo-100 text-indigo-600 ring-2 ring-indigo-400' : 'text-gray-500 hover:bg-gray-100'}`}
           >
             <PenTool className="w-5 h-5" />
           </button>
           <button
-            onClick={() => { setTool('eraser'); setActivePresetId(eraserPresets[0].id); }}
-            className={`p-2 rounded-lg transition-all ${tool === 'eraser' ? 'bg-pink-100 dark:bg-pink-900/40 text-pink-600 ring-2 ring-pink-400' : 'text-gray-500 hover:bg-gray-100'}`}
+            onClick={() => setTool('eraser')}
+            className={`p-2 rounded-lg transition-all ${tool === 'eraser' ? 'bg-pink-100 text-pink-600 ring-2 ring-pink-400' : 'text-gray-500 hover:bg-gray-100'}`}
           >
             <Eraser className="w-5 h-5" />
           </button>
+          
+          <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
+          
+          {/* Colors Original */}
+          {tool === 'pen' && (
+            <div className="flex gap-1 items-center">
+              {COLORS.map(c => (
+                <button
+                  key={c}
+                  onClick={() => handleColorChange(c)}
+                  className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${
+                    color === c ? 'border-indigo-500 scale-110 ring-2 ring-indigo-300' : 'border-gray-300'
+                  }`}
+                  style={{ backgroundColor: c }}
+                  title={c}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Stroke Width Original */}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => handleWidthChange(Math.max(1, strokeWidth - 2))}
+              className="p-1 text-gray-500 hover:bg-gray-100 rounded"
+            >
+              <Minus className="w-4 h-4" />
+            </button>
+            <div className="w-8 h-8 flex items-center justify-center" title={`Espessura: ${strokeWidth}px`}>
+              <div
+                className="rounded-full"
+                style={{
+                  width: `${Math.min(strokeWidth * 2, 24)}px`,
+                  height: `${Math.min(strokeWidth * 2, 24)}px`,
+                  backgroundColor: tool === 'eraser' ? '#9ca3af' : color,
+                }}
+              />
+            </div>
+            <button
+              onClick={() => handleWidthChange(Math.min(30, strokeWidth + 2))}
+              className="p-1 text-gray-500 hover:bg-gray-100 rounded"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          </div>
+
           <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
           
           <button onClick={handleUndo} disabled={strokes.length === 0} className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg disabled:opacity-30"><Undo2 className="w-5 h-5" /></button>
           <button onClick={handleRedo} disabled={redoStack.length === 0} className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg disabled:opacity-30"><Redo2 className="w-5 h-5" /></button>
+          
           <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
           
           <div className="flex items-center gap-1 px-1 bg-gray-50 dark:bg-gray-900 rounded-lg">
@@ -494,6 +593,7 @@ export default function WhiteboardOverlay() {
             <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="p-1.5 text-gray-600 disabled:opacity-30 hover:bg-gray-200 rounded"><ChevronRight className="w-4 h-4" /></button>
             <button onClick={addNewPage} className="p-1.5 text-indigo-600 hover:bg-indigo-100 rounded ml-1"><FilePlus className="w-4 h-4" /></button>
           </div>
+          
           <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
           
           <button onClick={handleClear} className="p-2 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 className="w-5 h-5" /></button>
@@ -502,38 +602,39 @@ export default function WhiteboardOverlay() {
         </div>
       )}
 
-      {/* Custom Sidebar when main toolbar is hidden */}
+      {/* Transparent Custom Sidebar (No Background) */}
       {!showToolbar && sidebarMode !== 'hidden' && (
         <div className={`whiteboard-sidebar absolute z-[9999] ${sidebarMode === 'fixed' ? 'left-2 top-1/2 -translate-y-1/2' : 'left-4 top-20'}`}>
           <Draggable disabled={sidebarMode === 'fixed'} handle=".sidebar-drag" nodeRef={sidebarRef}>
-            <div ref={sidebarRef} className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-2 flex flex-col items-center gap-2">
+            <div ref={sidebarRef} className="flex flex-col items-center gap-1.5">
               {sidebarMode === 'floating' && (
-                <div className="sidebar-drag w-full flex justify-center py-1 cursor-grab active:cursor-grabbing text-gray-400">
+                <div className="sidebar-drag w-full flex justify-center py-1 cursor-grab active:cursor-grabbing text-gray-400 drop-shadow-md">
                   <GripHorizontal className="w-4 h-4" />
                 </div>
               )}
               
-              <div className="text-[10px] font-bold text-gray-400 uppercase">Canetas</div>
+              {/* PEN PRESETS */}
               {penPresets.map((preset) => (
-                <div key={preset.id} className="relative">
+                <div key={preset.id} className="relative group">
                   <button
                     onClick={() => {
-                      if (activePresetId === preset.id && tool === 'pen') setEditingPreset(editingPreset === preset.id ? null : preset.id);
-                      else { setTool('pen'); setActivePresetId(preset.id); setEditingPreset(null); }
+                      if (activePenId === preset.id && tool === 'pen') setEditingPreset(editingPreset === preset.id ? null : preset.id);
+                      else { setTool('pen'); setActivePenId(preset.id); setEditingPreset(null); }
                     }}
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${tool === 'pen' && activePresetId === preset.id ? 'bg-indigo-100 ring-2 ring-indigo-400' : 'hover:bg-gray-100'}`}
+                    className={`w-7 h-7 rounded-full flex items-center justify-center transition-all drop-shadow-md
+                      ${tool === 'pen' && activePenId === preset.id ? 'ring-2 ring-indigo-500 scale-110' : 'opacity-80 hover:opacity-100'}`}
+                    style={{ backgroundColor: preset.color }}
                   >
-                    <div className="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center" style={{ backgroundColor: preset.color }}>
-                      <div className="bg-white/50 rounded-full" style={{ width: Math.min(preset.width, 16), height: Math.min(preset.width, 16) }} />
-                    </div>
+                    {/* Inner dot reflecting width */}
+                    <div className="bg-white/40 rounded-full" style={{ width: Math.min(preset.width, 12), height: Math.min(preset.width, 12) }} />
                   </button>
                   
                   {/* Edit Popover */}
                   {editingPreset === preset.id && tool === 'pen' && (
-                    <div className="absolute left-full ml-2 top-0 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 p-2 flex flex-col gap-2 z-[10000]">
-                      <div className="flex gap-1 flex-wrap w-32">
+                    <div className="absolute left-full ml-3 top-0 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 p-2 flex flex-col gap-2 z-[10000]">
+                      <div className="flex gap-1 flex-wrap w-24">
                         {COLORS.map(c => (
-                          <button key={c} onClick={() => updatePenPreset(preset.id, { color: c })} className={`w-6 h-6 rounded-full border-2 ${preset.color === c ? 'border-indigo-500 scale-110' : 'border-gray-300'}`} style={{ backgroundColor: c }} />
+                          <button key={c} onClick={() => updatePenPreset(preset.id, { color: c })} className={`w-5 h-5 rounded-full border-2 ${preset.color === c ? 'border-indigo-500 scale-110' : 'border-gray-300'}`} style={{ backgroundColor: c }} />
                         ))}
                       </div>
                       <div className="flex items-center gap-2">
@@ -545,24 +646,34 @@ export default function WhiteboardOverlay() {
                   )}
                 </div>
               ))}
-
-              <div className="w-full h-px bg-gray-200 dark:bg-gray-700 my-1" />
-              <div className="text-[10px] font-bold text-gray-400 uppercase">Borrachas</div>
               
+              {/* Add Pen Button */}
+              {penPresets.length < 5 && (
+                <button onClick={addPenPreset} className="w-7 h-7 rounded-full bg-white/80 border border-gray-200 text-gray-500 hover:text-indigo-600 flex items-center justify-center shadow-sm backdrop-blur-sm">
+                  <Plus className="w-4 h-4" />
+                </button>
+              )}
+
+              {/* Separator */}
+              <div className="w-4 h-px bg-gray-300 dark:bg-gray-600 my-1 drop-shadow-md" />
+              
+              {/* ERASER PRESETS */}
               {eraserPresets.map((preset) => (
-                <div key={preset.id} className="relative">
+                <div key={preset.id} className="relative group">
                   <button
                     onClick={() => {
-                      if (activePresetId === preset.id && tool === 'eraser') setEditingPreset(editingPreset === preset.id ? null : preset.id);
-                      else { setTool('eraser'); setActivePresetId(preset.id); setEditingPreset(null); }
+                      if (activeEraserId === preset.id && tool === 'eraser') setEditingPreset(editingPreset === preset.id ? null : preset.id);
+                      else { setTool('eraser'); setActiveEraserId(preset.id); setEditingPreset(null); }
                     }}
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${tool === 'eraser' && activePresetId === preset.id ? 'bg-pink-100 ring-2 ring-pink-400' : 'hover:bg-gray-100'}`}
+                    className={`w-8 h-8 rounded-full flex items-center justify-center bg-white/90 shadow-md backdrop-blur-sm transition-all
+                      ${tool === 'eraser' && activeEraserId === preset.id ? 'ring-2 ring-pink-500 text-pink-600 scale-110' : 'text-gray-600 hover:text-pink-500'}`}
                   >
-                    {preset.type === 'stroke' ? <Focus className="w-5 h-5 text-gray-600" /> : <Eraser className="w-5 h-5 text-gray-600" />}
+                    {preset.type === 'stroke' ? <Focus className="w-4 h-4" /> : <Eraser className="w-4 h-4" />}
                   </button>
 
+                  {/* Edit Popover */}
                   {editingPreset === preset.id && tool === 'eraser' && (
-                    <div className="absolute left-full ml-2 top-0 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 p-2 flex flex-col gap-2 z-[10000] w-40">
+                    <div className="absolute left-full ml-3 top-0 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 p-2 flex flex-col gap-2 z-[10000] w-40">
                       <select 
                         value={preset.type} 
                         onChange={e => updateEraserPreset(preset.id, { type: e.target.value as 'normal' | 'stroke' })}
@@ -583,14 +694,22 @@ export default function WhiteboardOverlay() {
                 </div>
               ))}
 
-              <div className="w-full h-px bg-gray-200 dark:bg-gray-700 my-1" />
-              
-              {/* Settings Toggle */}
-              <div className="relative group">
-                <button className="w-10 h-10 rounded-xl flex items-center justify-center text-gray-400 hover:bg-gray-100">
-                  <Settings2 className="w-5 h-5" />
+              {/* Add Eraser Button */}
+              {eraserPresets.length < 2 && (
+                <button onClick={addEraserPreset} className="w-7 h-7 rounded-full bg-white/80 border border-gray-200 text-gray-500 hover:text-pink-600 flex items-center justify-center shadow-sm backdrop-blur-sm">
+                  <Plus className="w-4 h-4" />
                 </button>
-                <div className="absolute left-full ml-2 bottom-0 hidden group-hover:flex bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 p-2 flex-col gap-1 z-[10000] w-36">
+              )}
+
+              {/* Separator */}
+              <div className="w-4 h-px bg-gray-300 dark:bg-gray-600 my-1 drop-shadow-md" />
+              
+              {/* Settings Toggle & Restore Toolbar */}
+              <div className="relative group">
+                <button className="w-8 h-8 rounded-full bg-white/90 shadow-md backdrop-blur-sm flex items-center justify-center text-gray-500 hover:text-indigo-600">
+                  <Settings2 className="w-4 h-4" />
+                </button>
+                <div className="absolute left-full ml-3 bottom-0 hidden group-hover:flex bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 p-2 flex-col gap-1 z-[10000] w-36">
                   <button onClick={() => { setSidebarMode('fixed'); saveSettings(penPresets, eraserPresets, 'fixed'); }} className={`text-xs p-1.5 rounded text-left ${sidebarMode === 'fixed' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}> Sidebar Fixa</button>
                   <button onClick={() => { setSidebarMode('floating'); saveSettings(penPresets, eraserPresets, 'floating'); }} className={`text-xs p-1.5 rounded text-left ${sidebarMode === 'floating' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}> Sidebar Flutuante</button>
                   <button onClick={() => { setSidebarMode('hidden'); saveSettings(penPresets, eraserPresets, 'hidden'); }} className={`text-xs p-1.5 rounded text-left text-red-500 hover:bg-red-50`}> Ocultar Sidebar</button>
@@ -599,10 +718,10 @@ export default function WhiteboardOverlay() {
 
               <button
                 onClick={toggleToolbar}
-                className="w-10 h-10 rounded-xl flex items-center justify-center text-indigo-500 hover:bg-indigo-50 mt-1"
+                className="w-8 h-8 rounded-full bg-white/90 shadow-md backdrop-blur-sm flex items-center justify-center text-indigo-600 hover:bg-indigo-50"
                 title="Expandir Menu Principal"
               >
-                <PanelTop className="w-5 h-5" />
+                <PanelTop className="w-4 h-4" />
               </button>
             </div>
           </Draggable>
@@ -654,7 +773,7 @@ export default function WhiteboardOverlay() {
       <Draggable nodeRef={containerRef} handle=".whiteboard-drag-handle" bounds="parent" defaultPosition={{x: 0, y: 0}}>
         <div 
           ref={containerRef}
-          className={`absolute pointer-events-auto rounded-xl shadow-2xl overflow-hidden border border-gray-300 dark:border-gray-600 flex flex-col ${mode !== 'transparent' ? 'bg-[#fefce8]' : 'bg-transparent'}`}
+          className="absolute pointer-events-auto bg-[#fefce8] rounded-xl shadow-2xl overflow-hidden border border-gray-300 dark:border-gray-600 flex flex-col"
           style={{ width: `${size.w}px`, height: `${size.h}px`, touchAction: 'none' }}
         >
           <div className="whiteboard-drag-handle whiteboard-toolbar h-8 bg-indigo-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-3 cursor-grab active:cursor-grabbing">
