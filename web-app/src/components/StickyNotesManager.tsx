@@ -357,6 +357,39 @@ function StickyNoteItem({
     return () => clearTimeout(timeoutId);
   }, [content, title]);
 
+  // Custom resize handler (native resize:both doesn't work on mobile)
+  const [size, setSize] = useState({ w: 256, h: 280 });
+  const resizeRef = useRef<{ startX: number; startY: number; startW: number; startH: number } | null>(null);
+
+  const onResizeStart = (e: React.PointerEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const el = e.currentTarget as HTMLElement;
+    el.setPointerCapture(e.pointerId);
+    resizeRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      startW: size.w,
+      startH: size.h,
+    };
+  };
+
+  const onResizeMove = (e: React.PointerEvent) => {
+    if (!resizeRef.current) return;
+    e.preventDefault();
+    const dx = e.clientX - resizeRef.current.startX;
+    const dy = e.clientY - resizeRef.current.startY;
+    setSize({
+      w: Math.max(180, resizeRef.current.startW + dx),
+      h: Math.max(180, resizeRef.current.startH + dy),
+    });
+  };
+
+  const onResizeEnd = (e: React.PointerEvent) => {
+    resizeRef.current = null;
+    (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+  };
+
   return (
     <Draggable
       nodeRef={nodeRef}
@@ -370,10 +403,10 @@ function StickyNoteItem({
         ref={nodeRef}
         className="sticky-note absolute rounded-lg shadow-xl overflow-hidden pointer-events-auto border-t-8 flex flex-col group transition-shadow hover:shadow-2xl"
         style={{ 
-          width: '256px',
-          minWidth: '200px',
-          minHeight: '200px',
-          resize: 'both',
+          width: `${size.w}px`,
+          height: `${size.h}px`,
+          minWidth: '180px',
+          minHeight: '180px',
           backgroundColor: note.color || '#fef08a', 
           borderColor: darkenColor(note.color || '#fef08a', 20),
           zIndex: note.zIndex || 100 
@@ -457,9 +490,25 @@ function StickyNoteItem({
           }}
           onFocus={onFocus}
           placeholder="Escreva algo..."
-          className="w-full flex-grow min-h-[160px] p-3 bg-transparent resize-none outline-none placeholder-black/30 text-gray-800 font-medium"
+          className="w-full flex-grow min-h-[80px] p-3 bg-transparent resize-none outline-none placeholder-black/30 text-gray-800 font-medium"
           style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }} // Post-it feel
         />
+
+        {/* Custom Resize Handle - large touch target */}
+        <div
+          onPointerDown={onResizeStart}
+          onPointerMove={onResizeMove}
+          onPointerUp={onResizeEnd}
+          onPointerCancel={onResizeEnd}
+          className="absolute bottom-0 right-0 w-10 h-10 cursor-se-resize touch-none flex items-end justify-end"
+          style={{ zIndex: 10 }}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" className="mr-1 mb-1 opacity-40">
+            <line x1="14" y1="2" x2="2" y2="14" stroke="currentColor" strokeWidth="1.5" />
+            <line x1="14" y1="7" x2="7" y2="14" stroke="currentColor" strokeWidth="1.5" />
+            <line x1="14" y1="12" x2="12" y2="14" stroke="currentColor" strokeWidth="1.5" />
+          </svg>
+        </div>
       </div>
     </Draggable>
   );

@@ -18,6 +18,7 @@ import AITeacherChat from './components/AITeacherChat';
 import NavigationTutorial from './components/NavigationTutorial';
 import TextSelectionPopover from './components/TextSelectionPopover';
 import KnowledgeBaseManager from './components/KnowledgeBaseManager';
+import WhiteboardOverlay from './components/WhiteboardOverlay';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import React, { useState } from 'react';
 
@@ -61,6 +62,7 @@ export default function App() {
                 <AITeacherChat isHidden={!showTools} />
                 <TextSelectionPopover />
                 <KnowledgeBaseManager />
+                <WhiteboardOverlay />
 
                 {/* Toggle Tools Button */}
                 <button
