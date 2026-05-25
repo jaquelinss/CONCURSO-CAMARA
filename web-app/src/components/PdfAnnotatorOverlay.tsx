@@ -198,6 +198,12 @@ export default function PdfAnnotatorOverlay() {
     setRedoStackByPage({});
 
     try {
+      if (!savedDoc.fileUrl) {
+        alert('O upload deste arquivo ainda não foi concluído ou falhou. Aguarde alguns segundos ou faça o upload novamente.');
+        setLoading(false);
+        return;
+      }
+
       // Download file from storage
       const response = await fetch(savedDoc.fileUrl);
       const arrayBuffer = await response.arrayBuffer();
@@ -335,16 +341,15 @@ export default function PdfAnnotatorOverlay() {
         const book = ePub(arrayBuffer);
         setEpubBook(book);
         
-        book.ready.then(() => {
-          const spineLength = (book.spine as any)?.length || (book.spine as any)?.items?.length || 1;
-          setTotalPages(spineLength);
-          // Auto-save the actual total pages back to Firestore if needed later
-        }).catch(err => {
-            console.warn("EPUB ready error", err);
-        });
+        try {
+          await book.ready;
+          parsedTotalPages = (book.spine as any)?.length || (book.spine as any)?.items?.length || 1;
+        } catch (err) {
+          console.warn("EPUB ready error", err);
+          parsedTotalPages = 1;
+        }
 
-        parsedTotalPages = 1;
-        setTotalPages(1);
+        setTotalPages(parsedTotalPages);
         setCurrentPage(1);
       } else if (extension === 'docx' || extension === 'doc') {
         setFileType('docx');
@@ -659,8 +664,13 @@ export default function PdfAnnotatorOverlay() {
 
               <div className="w-px h-6 bg-gray-300 mx-1" />
 
-              <button onClick={exportPdf} disabled={loading} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold flex items-center gap-2 text-sm">
-                <Download className="w-4 h-4" /> Exportar
+              <button 
+                onClick={exportPdf} 
+                disabled={loading || fileType === 'epub'} 
+                className={`px-4 py-2 rounded-lg font-bold flex items-center gap-2 text-sm transition-colors ${fileType === 'epub' ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 text-white'}`}
+                title={fileType === 'epub' ? 'Exportação indisponível para EPUB' : 'Exportar PDF'}
+              >
+                <Download className="w-4 h-4" /> {fileType === 'epub' ? 'Não Exporta' : 'Exportar'}
               </button>
             </div>
           </div>
