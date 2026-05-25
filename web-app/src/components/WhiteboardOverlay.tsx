@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Eraser, Trash2, X, Undo2, Redo2, Minus, Plus, Maximize2, Minimize2, GripHorizontal, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, FilePlus, PanelTop, Settings2, Focus, MousePointer2, Book } from 'lucide-react';
+import { Eraser, Trash2, X, Undo2, Redo2, Minus, Plus, Maximize2, Minimize2, GripHorizontal, ChevronLeft, ChevronRight, FilePlus, PanelTop, Settings2, Focus, MousePointer2, Book } from 'lucide-react';
 import { getStroke } from 'perfect-freehand';
 import Draggable from 'react-draggable';
 import { useAuth } from '../contexts/AuthContext';
@@ -45,7 +45,6 @@ export default function WhiteboardOverlay() {
   // Notebooks
   const [showNotebooksManager, setShowNotebooksManager] = useState(false);
   const [activeNotebook, setActiveNotebook] = useState<Notebook | null>(null);
-  const [allNotebooks, setAllNotebooks] = useState<Notebook[]>([]);
 
   // Modos de Lousa
   const [windowMode, setWindowMode] = useState<'fullscreen' | 'floating'>('fullscreen');
@@ -123,7 +122,7 @@ export default function WhiteboardOverlay() {
             setStrokesByPage({ 1: [] });
           }
           setTotalPages(activeNotebook.totalPages || 1);
-          setCurrentPage(1);
+          setCurrentPage((activeNotebook as any).lastPage || 1);
         } catch (e) {
           console.error('Erro ao carregar caderno:', e);
           setStrokesByPage({ 1: [] });
@@ -166,12 +165,14 @@ export default function WhiteboardOverlay() {
         updatedAt: Date.now()
       }, { merge: true }).catch(console.error);
 
-      // Se o total de páginas aumentou, atualiza no caderno principal
+      // Se o total de páginas aumentou ou a página mudou, atualiza no caderno principal
+      setDoc(doc(db, 'users', user.uid, 'notebooks', activeNotebook.id), {
+        totalPages: Math.max(totalPages, activeNotebook.totalPages || 1),
+        lastPage: currentPage,
+        updatedAt: Date.now()
+      }, { merge: true }).catch(console.error);
+      
       if (totalPages > (activeNotebook.totalPages || 1)) {
-        setDoc(doc(db, 'users', user.uid, 'notebooks', activeNotebook.id), {
-          totalPages,
-          updatedAt: Date.now()
-        }, { merge: true }).catch(console.error);
         setActiveNotebook(prev => prev ? { ...prev, totalPages } : prev);
       }
     } else {
@@ -260,14 +261,6 @@ export default function WhiteboardOverlay() {
     saveSettings(newPens, eraserPresets, sidebarMode);
   };
 
-  const deleteEraserPreset = (id: string) => {
-    if (eraserPresets.length <= 1) return;
-    const newErasers = eraserPresets.filter(p => p.id !== id);
-    setEraserPresets(newErasers);
-    if (activeEraserId === id) setActiveEraserId(newErasers[0].id);
-    setEditingPreset(null);
-    saveSettings(penPresets, newErasers, sidebarMode);
-  };
 
   // Listen for global toggle events
   useEffect(() => {
@@ -280,7 +273,6 @@ export default function WhiteboardOverlay() {
       setActive(true);
       setMode('lined');
       setWindowMode('floating');
-      setShowNotebooksManager(true);
     };
     const handleToggle = () => setActive(prev => !prev);
     window.addEventListener('toggle-whiteboard-transparent', handleTransparent);
@@ -302,7 +294,9 @@ export default function WhiteboardOverlay() {
         const snap = await getDocs(q2);
         const loaded: Notebook[] = [];
         snap.forEach(d => loaded.push({ id: d.id, ...d.data() } as Notebook));
-        setAllNotebooks(loaded);
+        if (loaded.length > 0) {
+          setActiveNotebook(prev => prev || loaded[0]);
+        }
       } catch (e) {
         console.error('Erro ao carregar lista de cadernos:', e);
       }
@@ -310,17 +304,6 @@ export default function WhiteboardOverlay() {
     loadAllNotebooks();
   }, [user, showNotebooksManager]);
 
-  const navigateNotebook = (direction: 'prev' | 'next') => {
-    if (allNotebooks.length === 0) return;
-    const currentIdx = activeNotebook ? allNotebooks.findIndex(n => n.id === activeNotebook.id) : -1;
-    let nextIdx;
-    if (direction === 'next') {
-      nextIdx = (currentIdx + 1) % allNotebooks.length;
-    } else {
-      nextIdx = currentIdx <= 0 ? allNotebooks.length - 1 : currentIdx - 1;
-    }
-    setActiveNotebook(allNotebooks[nextIdx]);
-  };
 
   const strokes = strokesByPage[currentPage] || [];
   const redoStack = redoStackByPage[currentPage] || [];
@@ -707,36 +690,26 @@ export default function WhiteboardOverlay() {
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
         onPointerLeave={handlePointerUp}
-        onWheel={(e) => {
-          if (mode === 'transparent') return;
-          setScrollY(y => Math.max(0, y + e.deltaY));
-        }}
       />
 
       {/* Transparent Custom Sidebar */}
       {sidebarMode !== 'hidden' && (
         <div className={`whiteboard-sidebar pointer-events-auto absolute z-[9999] ${sidebarMode === 'fixed' ? 'left-2 top-1/2 -translate-y-1/2' : 'left-4 top-20'}`}>
           <Draggable disabled={sidebarMode === 'fixed'} handle=".sidebar-drag" nodeRef={sidebarRef}>
-            <div ref={sidebarRef} className="flex flex-col items-center gap-1.5 p-1.5 bg-white/40 dark:bg-gray-800/40 backdrop-blur-md rounded-2xl shadow-xl border border-white/50 dark:border-gray-700/50">
+            <div ref={sidebarRef} className="flex flex-col items-center gap-1 p-1.5 bg-white/40 dark:bg-gray-800/40 backdrop-blur-md rounded-2xl shadow-xl border border-white/50 dark:border-gray-700/50">
               {sidebarMode === 'floating' && (
                 <div className="sidebar-drag w-full flex justify-center py-1 cursor-grab active:cursor-grabbing text-gray-400 drop-shadow-md">
                   <GripHorizontal className="w-4 h-4" />
                 </div>
               )}
               
-              {/* Close Button */}
-              <button
-                onClick={handleClose}
-                className="w-8 h-8 rounded-full flex items-center justify-center transition-all bg-red-100 text-red-600 hover:bg-red-200 shadow-sm"
-                title="Fechar Lousa"
-              >
-                <X className="w-4 h-4" />
-              </button>
-              
-              <div className="w-4 h-px bg-gray-300 dark:bg-gray-600 my-1 drop-shadow-md" />
-
-              {/* View / Window Controls */}
-              <div className="relative group">
+              <div className="grid grid-cols-2 gap-1 w-full place-items-center">
+                {/* Close Button */}
+                <button onClick={handleClose} className="w-8 h-8 rounded-full flex items-center justify-center transition-all bg-red-100 text-red-600 hover:bg-red-200 shadow-sm" title="Fechar Lousa">
+                  <X className="w-4 h-4" />
+                </button>
+                
+                {/* Window Mode */}
                 <button
                   onClick={() => {
                     const nextMode = windowMode === 'fullscreen' ? 'floating' : 'fullscreen';
@@ -748,198 +721,138 @@ export default function WhiteboardOverlay() {
                 >
                   {windowMode === 'fullscreen' ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                 </button>
-              </div>
 
-              {/* Background Mode */}
-              <div className="relative group">
-                <button
-                  className={`w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-sm ${mode === 'transparent' ? 'bg-indigo-100 text-indigo-600 ring-2 ring-indigo-400' : 'bg-white/90 text-gray-500 hover:text-indigo-600'}`}
-                  title="Fundo / Modo"
-                >
-                  {mode === 'transparent' ? <Focus className="w-4 h-4" /> : <PanelTop className="w-4 h-4" />}
-                </button>
-                <div className="absolute left-full ml-3 top-0 hidden group-hover:flex bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 p-2 flex-col gap-1 z-[10000] w-40">
-                  <button onClick={() => { setMode('transparent'); setWindowMode('fullscreen'); }} className={`text-xs p-1.5 rounded text-left ${mode === 'transparent' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}> Lousa Transparente</button>
-                  <button onClick={() => setMode('lined')} className={`text-xs p-1.5 rounded text-left ${mode === 'lined' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}> 📝 Pautado</button>
-                  <button onClick={() => setMode('grid')} className={`text-xs p-1.5 rounded text-left ${mode === 'grid' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}> 📐 Quadriculado</button>
-                  <button onClick={() => setMode('dotted')} className={`text-xs p-1.5 rounded text-left ${mode === 'dotted' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}> 📌 Pontilhado</button>
+                {/* Background Mode */}
+                <div className="relative group">
+                  <button className={`w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-sm ${mode === 'transparent' ? 'bg-indigo-100 text-indigo-600 ring-2 ring-indigo-400' : 'bg-white/90 text-gray-500 hover:text-indigo-600'}`} title="Fundo / Modo">
+                    {mode === 'transparent' ? <Focus className="w-4 h-4" /> : <PanelTop className="w-4 h-4" />}
+                  </button>
+                  <div className="absolute left-full ml-3 top-0 hidden group-hover:flex bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 p-2 flex-col gap-1 z-[10000] w-40">
+                    <button onClick={() => { setMode('transparent'); setWindowMode('fullscreen'); }} className={`text-xs p-1.5 rounded text-left ${mode === 'transparent' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}> Lousa Transparente</button>
+                    <button onClick={() => setMode('lined')} className={`text-xs p-1.5 rounded text-left ${mode === 'lined' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}> 📝 Pautado</button>
+                    <button onClick={() => setMode('grid')} className={`text-xs p-1.5 rounded text-left ${mode === 'grid' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}> 📐 Quadriculado</button>
+                    <button onClick={() => setMode('dotted')} className={`text-xs p-1.5 rounded text-left ${mode === 'dotted' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}> 📌 Pontilhado</button>
+                  </div>
                 </div>
-              </div>
 
-              <div className="w-4 h-px bg-gray-300 dark:bg-gray-600 my-1 drop-shadow-md" />
-
-              {/* Mouse / Pointer Tool */}
-              <button
-                onClick={() => setTool('pointer')}
-                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${tool === 'pointer' ? 'bg-indigo-50 text-indigo-600 ring-2 ring-indigo-400' : 'bg-white/90 shadow-sm text-gray-500 hover:text-indigo-600'} relative`}
-                title="Mouse / Alternar Lousa (Atalho: V ou Esc)"
-              >
-                <MousePointer2 className="w-4 h-4" />
-              </button>
-
-              <button
-                onClick={() => setShowNotebooksManager(true)}
-                className="w-8 h-8 rounded-full flex items-center justify-center transition-all bg-white/90 shadow-sm text-gray-500 hover:text-purple-600 relative"
-                title="Alterar Caderno"
-              >
-                <Book className="w-4 h-4" />
-              </button>
-
-              {/* Notebook Navigation */}
-              {allNotebooks.length > 1 && (
-                <>
-                  <button
-                    onClick={() => navigateNotebook('prev')}
-                    className="w-7 h-7 rounded-full flex items-center justify-center transition-all bg-white/90 shadow-sm text-gray-500 hover:text-purple-600"
-                    title="Caderno Anterior"
-                  >
-                    <ChevronUp className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => navigateNotebook('next')}
-                    className="w-7 h-7 rounded-full flex items-center justify-center transition-all bg-white/90 shadow-sm text-gray-500 hover:text-purple-600"
-                    title="Próximo Caderno"
-                  >
-                    <ChevronDown className="w-4 h-4" />
-                  </button>
-                </>
-              )}
-
-              <div className="w-4 h-px bg-gray-300 dark:bg-gray-600 my-1 drop-shadow-md" />
-
-              {/* PEN PRESETS */}
-              {penPresets.map((preset) => (
-                <div key={preset.id} className="relative group">
-                  <button
-                    onClick={() => {
-                      if (activePenId === preset.id && tool === 'pen') setEditingPreset(editingPreset === preset.id ? null : preset.id);
-                      else { setTool('pen'); setActivePenId(preset.id); setEditingPreset(null); }
-                    }}
-                    className={`w-7 h-7 rounded-full flex items-center justify-center transition-all drop-shadow-md
-                      ${tool === 'pen' && activePenId === preset.id ? 'ring-2 ring-indigo-500 scale-110' : 'opacity-80 hover:opacity-100'}`}
-                    style={{ backgroundColor: preset.color }}
-                  >
-                    {/* Inner dot reflecting width */}
-                    <div className="bg-white/40 rounded-full" style={{ width: Math.min(preset.width, 12), height: Math.min(preset.width, 12) }} />
-                  </button>
-                  
-                  {/* Edit Popover */}
-                  {editingPreset === preset.id && tool === 'pen' && (
-                    <div className="absolute left-full ml-3 top-0 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 p-2 flex flex-col gap-2 z-[10000]">
-                      <div className="flex gap-1 flex-wrap w-24">
-                        {COLORS.map(c => (
-                          <button key={c} onClick={() => updatePenPreset(preset.id, { color: c })} className={`w-5 h-5 rounded-full border-2 ${preset.color === c ? 'border-indigo-500 scale-110' : 'border-gray-300'}`} style={{ backgroundColor: c }} />
-                        ))}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button onClick={() => updatePenPreset(preset.id, { width: Math.max(1, preset.width - 2) })}><Minus className="w-4 h-4" /></button>
-                        <span className="text-xs font-bold w-6 text-center">{preset.width}</span>
-                        <button onClick={() => updatePenPreset(preset.id, { width: Math.min(30, preset.width + 2) })}><Plus className="w-4 h-4" /></button>
-                      </div>
-                      {penPresets.length > 1 && (
-                        <button onClick={() => deletePenPreset(preset.id)} className="flex items-center gap-1 text-xs text-red-500 hover:bg-red-50 rounded p-1 mt-1">
-                          <Trash2 className="w-3 h-3" /> Excluir
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))}
-              
-              {/* Add Pen Button */}
-              {penPresets.length < 5 && (
-                <button onClick={addPenPreset} className="w-7 h-7 rounded-full bg-white/80 border border-gray-200 text-gray-500 hover:text-indigo-600 flex items-center justify-center shadow-sm backdrop-blur-sm">
-                  <Plus className="w-4 h-4" />
+                {/* Mouse / Pointer Tool */}
+                <button onClick={() => setTool('pointer')} className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${tool === 'pointer' ? 'bg-indigo-50 text-indigo-600 ring-2 ring-indigo-400' : 'bg-white/90 shadow-sm text-gray-500 hover:text-indigo-600'}`} title="Mouse (Atalho: V ou Esc)">
+                  <MousePointer2 className="w-4 h-4" />
                 </button>
-              )}
 
-              {/* Separator */}
-              <div className="w-4 h-px bg-gray-300 dark:bg-gray-600 my-1 drop-shadow-md" />
-              
-              {/* ERASER PRESETS */}
-              {eraserPresets.map((preset) => (
-                <div key={preset.id} className="relative group">
-                  <button
-                    onClick={() => {
-                      if (activeEraserId === preset.id && tool === 'eraser') setEditingPreset(editingPreset === preset.id ? null : preset.id);
-                      else { setTool('eraser'); setActiveEraserId(preset.id); setEditingPreset(null); }
-                    }}
-                    className={`w-8 h-8 rounded-full flex items-center justify-center bg-white/90 shadow-md backdrop-blur-sm transition-all
-                      ${tool === 'eraser' && activeEraserId === preset.id ? 'ring-2 ring-pink-500 text-pink-600 scale-110' : 'text-gray-600 hover:text-pink-500'}`}
-                  >
-                    {preset.type === 'stroke' ? <Focus className="w-4 h-4" /> : <Eraser className="w-4 h-4" />}
-                  </button>
-
-                  {/* Edit Popover */}
-                  {editingPreset === preset.id && tool === 'eraser' && (
-                    <div className="absolute left-full ml-3 top-0 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 p-2 flex flex-col gap-2 z-[10000] w-40">
-                      <select 
-                        value={preset.type} 
-                        onChange={e => updateEraserPreset(preset.id, { type: e.target.value as 'normal' | 'stroke' })}
-                        className="text-xs p-1 rounded border"
-                      >
-                        <option value="normal">Borracha Normal</option>
-                        <option value="stroke">Apagar Traços (Inteiros)</option>
-                      </select>
-                      {preset.type === 'normal' && (
-                        <div className="flex items-center justify-center gap-2 mt-1">
-                          <button onClick={() => updateEraserPreset(preset.id, { width: Math.max(4, preset.width - 4) })}><Minus className="w-4 h-4" /></button>
-                          <span className="text-xs font-bold w-6 text-center">{preset.width}</span>
-                          <button onClick={() => updateEraserPreset(preset.id, { width: Math.min(50, preset.width + 4) })}><Plus className="w-4 h-4" /></button>
-                        </div>
-                      )}
-                      {eraserPresets.length > 1 && (
-                        <button onClick={() => deleteEraserPreset(preset.id)} className="flex items-center gap-1 text-xs text-red-500 hover:bg-red-50 rounded p-1 mt-1">
-                          <Trash2 className="w-3 h-3" /> Excluir
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))}
-
-              {/* Add Eraser Button */}
-              {eraserPresets.length < 2 && (
-                <button onClick={addEraserPreset} className="w-7 h-7 rounded-full bg-white/80 border border-gray-200 text-gray-500 hover:text-pink-600 flex items-center justify-center shadow-sm backdrop-blur-sm">
-                  <Plus className="w-4 h-4" />
+                {/* Notebooks Menu */}
+                <button onClick={() => setShowNotebooksManager(true)} className="w-8 h-8 rounded-full flex items-center justify-center transition-all bg-white/90 shadow-sm text-gray-500 hover:text-purple-600" title="Alterar Caderno">
+                  <Book className="w-4 h-4" />
                 </button>
-              )}
 
-              <div className="w-4 h-px bg-gray-300 dark:bg-gray-600 my-1 drop-shadow-md" />
+                {/* Clear Board */}
+                <button onClick={handleClear} className="w-8 h-8 rounded-full flex items-center justify-center transition-all bg-white/90 shadow-sm text-red-500 hover:text-red-600 hover:bg-red-50" title="Limpar Lousa">
+                  <Trash2 className="w-4 h-4" />
+                </button>
 
-              {/* Undo / Redo */}
-              <div className="flex flex-col gap-1">
+                {/* Undo / Redo */}
                 <button onClick={handleUndo} disabled={strokes.length === 0} className="w-8 h-8 rounded-full bg-white/90 shadow-sm flex items-center justify-center text-gray-500 hover:text-indigo-600 disabled:opacity-30"><Undo2 className="w-4 h-4" /></button>
                 <button onClick={handleRedo} disabled={redoStack.length === 0} className="w-8 h-8 rounded-full bg-white/90 shadow-sm flex items-center justify-center text-gray-500 hover:text-indigo-600 disabled:opacity-30"><Redo2 className="w-4 h-4" /></button>
               </div>
 
-              {/* Pagination */}
-              <div className="relative group mt-1">
-                <button className="w-8 h-8 rounded-full bg-indigo-50 shadow-sm flex items-center justify-center text-indigo-600 text-xs font-bold ring-1 ring-indigo-200">
-                  {currentPage}
-                </button>
-                <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 hidden group-hover:flex bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 p-1 items-center gap-1 z-[10000]">
-                  <button onClick={() => setPageWithScrollReset(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-1.5 text-gray-600 disabled:opacity-30 hover:bg-gray-200 rounded"><ChevronLeft className="w-4 h-4" /></button>
-                  <span className="text-xs font-bold w-12 text-center text-gray-700 dark:text-gray-300">Pág {currentPage}</span>
-                  <button onClick={() => setPageWithScrollReset(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="p-1.5 text-gray-600 disabled:opacity-30 hover:bg-gray-200 rounded"><ChevronRight className="w-4 h-4" /></button>
-                  <div className="w-px h-4 bg-gray-300 mx-1" />
-                  <button onClick={addNewPage} className="p-1.5 text-indigo-600 hover:bg-indigo-100 rounded" title="Nova Página"><FilePlus className="w-4 h-4" /></button>
+              <div className="w-full h-px bg-gray-300 dark:bg-gray-600 my-1 drop-shadow-md" />
+
+              {/* PENS GRID */}
+              <div className="grid grid-cols-2 gap-1 w-full place-items-center">
+                {penPresets.map((preset) => (
+                  <div key={preset.id} className="relative group">
+                    <button
+                      onClick={() => {
+                        if (activePenId === preset.id && tool === 'pen') setEditingPreset(editingPreset === preset.id ? null : preset.id);
+                        else { setTool('pen'); setActivePenId(preset.id); setEditingPreset(null); }
+                      }}
+                      className={`w-7 h-7 rounded-full flex items-center justify-center transition-all drop-shadow-md ${tool === 'pen' && activePenId === preset.id ? 'ring-2 ring-indigo-500 scale-110' : 'opacity-80 hover:opacity-100'}`}
+                      style={{ backgroundColor: preset.color }}
+                    >
+                      <div className="bg-white/40 rounded-full" style={{ width: Math.min(preset.width, 12), height: Math.min(preset.width, 12) }} />
+                    </button>
+                    {editingPreset === preset.id && tool === 'pen' && (
+                      <div className="absolute left-full ml-3 top-0 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 p-2 flex flex-col gap-2 z-[10000]">
+                        <div className="flex gap-1 flex-wrap w-24">
+                          {COLORS.map(c => (
+                            <button key={c} onClick={() => updatePenPreset(preset.id, { color: c })} className={`w-5 h-5 rounded-full border-2 ${preset.color === c ? 'border-indigo-500 scale-110' : 'border-gray-300'}`} style={{ backgroundColor: c }} />
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => updatePenPreset(preset.id, { width: Math.max(1, preset.width - 2) })}><Minus className="w-4 h-4" /></button>
+                          <span className="text-xs font-bold w-6 text-center">{preset.width}</span>
+                          <button onClick={() => updatePenPreset(preset.id, { width: Math.min(30, preset.width + 2) })}><Plus className="w-4 h-4" /></button>
+                        </div>
+                        {penPresets.length > 1 && (
+                          <button onClick={() => deletePenPreset(preset.id)} className="flex items-center gap-1 text-xs text-red-500 hover:bg-red-50 rounded p-1 mt-1"><Trash2 className="w-3 h-3" /> Excluir</button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+                {penPresets.length < 5 && (
+                  <button onClick={addPenPreset} className="w-7 h-7 rounded-full bg-white/80 border border-gray-200 text-gray-500 hover:text-indigo-600 flex items-center justify-center shadow-sm backdrop-blur-sm"><Plus className="w-4 h-4" /></button>
+                )}
+              </div>
+
+              <div className="w-full h-px bg-gray-300 dark:bg-gray-600 my-1 drop-shadow-md" />
+              
+              {/* ERASERS GRID */}
+              <div className="grid grid-cols-2 gap-1 w-full place-items-center">
+                {eraserPresets.map((preset) => (
+                  <div key={preset.id} className="relative group">
+                    <button
+                      onClick={() => {
+                        if (activeEraserId === preset.id && tool === 'eraser') setEditingPreset(editingPreset === preset.id ? null : preset.id);
+                        else { setTool('eraser'); setActiveEraserId(preset.id); setEditingPreset(null); }
+                      }}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center bg-white/90 shadow-md backdrop-blur-sm transition-all ${tool === 'eraser' && activeEraserId === preset.id ? 'ring-2 ring-pink-500 text-pink-600 scale-110' : 'text-gray-600 hover:text-pink-500'}`}
+                    >
+                      {preset.type === 'stroke' ? <Focus className="w-4 h-4" /> : <Eraser className="w-4 h-4" />}
+                    </button>
+                    {editingPreset === preset.id && tool === 'eraser' && (
+                      <div className="absolute left-full ml-3 top-0 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 p-2 flex flex-col gap-2 z-[10000] w-40">
+                        <select value={preset.type} onChange={e => updateEraserPreset(preset.id, { type: e.target.value as 'normal' | 'stroke' })} className="text-xs p-1 rounded border">
+                          <option value="normal">Borracha Normal</option>
+                          <option value="stroke">Apagar Traços</option>
+                        </select>
+                        {preset.type === 'normal' && (
+                          <div className="flex items-center justify-center gap-2 mt-1">
+                            <button onClick={() => updateEraserPreset(preset.id, { width: Math.max(4, preset.width - 4) })}><Minus className="w-4 h-4" /></button>
+                            <span className="text-xs font-bold w-6 text-center">{preset.width}</span>
+                            <button onClick={() => updateEraserPreset(preset.id, { width: Math.min(50, preset.width + 4) })}><Plus className="w-4 h-4" /></button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+                {eraserPresets.length < 2 && (
+                  <button onClick={addEraserPreset} className="w-7 h-7 rounded-full bg-white/80 border border-gray-200 text-gray-500 hover:text-pink-600 flex items-center justify-center shadow-sm backdrop-blur-sm"><Plus className="w-4 h-4" /></button>
+                )}
+              </div>
+
+              <div className="w-full h-px bg-gray-300 dark:bg-gray-600 my-1 drop-shadow-md" />
+
+              {/* Bottom Row */}
+              <div className="grid grid-cols-2 gap-1 w-full place-items-center relative group">
+                <div className="relative group col-span-2 flex justify-center w-full">
+                  <button className="w-full max-w-[4rem] h-8 rounded-full bg-indigo-50 shadow-sm flex items-center justify-center text-indigo-600 text-xs font-bold ring-1 ring-indigo-200">
+                    Pág {currentPage}
+                  </button>
+                  <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 hidden group-hover:flex bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 p-1 items-center gap-1 z-[10000]">
+                    <button onClick={() => setPageWithScrollReset(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-1.5 text-gray-600 disabled:opacity-30 hover:bg-gray-200 rounded"><ChevronLeft className="w-4 h-4" /></button>
+                    <span className="text-xs font-bold w-12 text-center text-gray-700 dark:text-gray-300">Pág {currentPage}</span>
+                    <button onClick={() => setPageWithScrollReset(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="p-1.5 text-gray-600 disabled:opacity-30 hover:bg-gray-200 rounded"><ChevronRight className="w-4 h-4" /></button>
+                    <div className="w-px h-4 bg-gray-300 mx-1" />
+                    <button onClick={addNewPage} className="p-1.5 text-indigo-600 hover:bg-indigo-100 rounded" title="Nova Página"><FilePlus className="w-4 h-4" /></button>
+                  </div>
                 </div>
               </div>
 
-              {/* Clear */}
-              <button onClick={handleClear} className="w-8 h-8 rounded-full bg-white/90 shadow-sm flex items-center justify-center text-red-500 hover:bg-red-50 hover:text-red-600 mt-1" title="Limpar Lousa">
-                <Trash2 className="w-4 h-4" />
-              </button>
-
-              <div className="w-4 h-px bg-gray-300 dark:bg-gray-600 my-1 drop-shadow-md" />
-              
-              {/* Settings Toggle & Restore Toolbar */}
-              <div className="relative">
-                <button 
-                  onClick={() => setShowSidebarSettings(!showSidebarSettings)}
-                  className={`w-8 h-8 rounded-full shadow-md backdrop-blur-sm flex items-center justify-center transition-all ${showSidebarSettings ? 'bg-indigo-50 text-indigo-600 ring-2 ring-indigo-400' : 'bg-white/90 text-gray-500 hover:text-indigo-600'}`}
-                >
+              {/* Settings Toggle */}
+              <div className="relative mt-1 w-full flex justify-center">
+                <button onClick={() => setShowSidebarSettings(!showSidebarSettings)} className={`w-8 h-8 rounded-full shadow-md backdrop-blur-sm flex items-center justify-center transition-all ${showSidebarSettings ? 'bg-indigo-50 text-indigo-600 ring-2 ring-indigo-400' : 'bg-white/90 text-gray-500 hover:text-indigo-600'}`}>
                   <Settings2 className="w-4 h-4" />
                 </button>
                 {showSidebarSettings && (
@@ -998,12 +911,20 @@ export default function WhiteboardOverlay() {
     </>
   );
 
+  const handleWheel = (e: React.WheelEvent) => {
+    if (mode === 'transparent') return;
+    // Intercept scroll event to scroll notebook instead of the app
+    e.stopPropagation();
+    setScrollY(y => Math.max(0, y + e.deltaY));
+  };
+
   if (windowMode === 'fullscreen') {
     return createPortal(
       <div 
         ref={containerRef}
-        className={`fixed inset-0 z-[9998] ${mode !== 'transparent' ? 'bg-[#fefce8]' : ''} ${tool === 'pointer' ? 'pointer-events-none' : ''}`} 
+        className={`fixed inset-0 z-[9998] ${mode !== 'transparent' ? 'bg-[#fefce8]' : ''} ${tool === 'pointer' && mode === 'transparent' ? 'pointer-events-none' : ''}`} 
         style={{ touchAction: 'none' }}
+        onWheel={handleWheel}
       >
         {content}
       </div>,
@@ -1019,6 +940,7 @@ export default function WhiteboardOverlay() {
           ref={containerRef}
           className="absolute pointer-events-auto bg-[#fefce8] rounded-xl shadow-2xl overflow-hidden border border-gray-300 dark:border-gray-600 flex flex-col"
           style={{ width: `${size.w}px`, height: `${size.h}px`, touchAction: 'none' }}
+          onWheel={handleWheel}
         >
           <div 
             className={`whiteboard-drag-handle whiteboard-toolbar h-8 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-3 cursor-grab active:cursor-grabbing ${!activeNotebook ? 'bg-indigo-50 dark:bg-gray-800' : ''}`}
