@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Eraser, X, Undo2, Redo2, ChevronLeft, ChevronRight, Download, PenTool, Highlighter, MousePointer2, BookOpen, File as FileIcon } from 'lucide-react';
+import { Eraser, X, Undo2, Redo2, ChevronLeft, ChevronRight, Download, PenTool, Highlighter, MousePointer2, BookOpen, File as FileIcon, Save, BookMarked, Trash2, FolderOpen, Loader2, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import { getStroke } from 'perfect-freehand';
 import * as pdfjsLib from 'pdfjs-dist';
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
@@ -10,11 +10,28 @@ import ePub from 'epubjs';
 import mammoth from 'mammoth';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import { db, storage } from '../lib/firebase';
+import { collection, doc, setDoc, getDocs, deleteDoc, query, orderBy } from 'firebase/firestore';
+import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { getAuth } from 'firebase/auth';
+import ReadingLaser from './ReadingLaser';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 interface StrokePoint { x: number; y: number; pressure: number; }
 interface Stroke { points: StrokePoint[]; color: string; width: number; type: 'pen' | 'highlighter' | 'eraser'; }
+interface SavedDocument {
+  id: string;
+  name: string;
+  fileType: 'pdf' | 'epub' | 'docx';
+  fileUrl: string;
+  storagePath: string;
+  currentPage: number;
+  totalPages: number;
+  strokesByPage: Record<number, Stroke[]>;
+  createdAt: number;
+  updatedAt: number;
+}
 
 const COLORS = ['#000000', '#ffffff', '#ef4444', '#3b82f6', '#22c55e', '#eab308', '#a855f7', '#f97316'];
 const HIGHLIGHTER_COLORS = ['#ffff00', '#fce7f3', '#dbeafe', '#dcfce3', '#f3e8ff', '#ffedd5'];
@@ -22,6 +39,7 @@ const HIGHLIGHTER_COLORS = ['#ffff00', '#fce7f3', '#dbeafe', '#dcfce3', '#f3e8ff
 export default function PdfAnnotatorOverlay() {
   const [active, setActive] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [fileType, setFileType] = useState<'pdf' | 'epub' | 'docx' | null>(null);
   const [pdfFile, setPdfFile] = useState<ArrayBuffer | null>(null);
   const [pdfName, setPdfName] = useState<string>('documento');
@@ -43,7 +61,20 @@ export default function PdfAnnotatorOverlay() {
   const highlighterWidth = 20;
   const eraserWidth = 20;
 
+  // Zoom state
+  const [zoom, setZoom] = useState(1);
+  const zoomIn = () => setZoom(z => Math.min(3, +(z + 0.25).toFixed(2)));
+  const zoomOut = () => setZoom(z => Math.max(0.25, +(z - 0.25).toFixed(2)));
+  const zoomReset = () => setZoom(1);
+
+  // Library state
+  const [showLibrary, setShowLibrary] = useState(false);
+  const [savedDocs, setSavedDocs] = useState<SavedDocument[]>([]);
+  const [loadingLibrary, setLoadingLibrary] = useState(false);
+  const [currentDocId, setCurrentDocId] = useState<string | null>(null);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const contentAreaRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     const handleOpen = () => {
@@ -53,6 +84,152 @@ export default function PdfAnnotatorOverlay() {
     return () => window.removeEventListener('open-pdf-annotator', handleOpen);
   }, []);
 
+  // Get current user
+  const getUid = () => {
+    const auth = getAuth();
+    return auth.currentUser?.uid;
+  };
+
+  // Load library
+  const loadLibrary = async () => {
+    const uid = getUid();
+    if (!uid) return;
+    setLoadingLibrary(true);
+    try {
+      const q = query(collection(db, 'users', uid, 'documents'), orderBy('updatedAt', 'desc'));
+      const snapshot = await getDocs(q);
+      const docs: SavedDocument[] = [];
+      snapshot.forEach(docSnap => {
+        docs.push({ id: docSnap.id, ...docSnap.data() } as SavedDocument);
+      });
+      setSavedDocs(docs);
+    } catch (err) {
+      console.error('Erro ao carregar biblioteca:', err);
+    } finally {
+      setLoadingLibrary(false);
+    }
+  };
+
+  // Save document
+  const saveDocument = async () => {
+    const uid = getUid();
+    if (!uid || !pdfFile || !fileType) return;
+    setSaving(true);
+    try {
+      const docId = currentDocId || `doc_${Date.now()}`;
+      const storagePath = `users/${uid}/documents/${docId}`;
+      
+      // Upload file to storage
+      const fileRef = storageRef(storage, storagePath);
+      await uploadBytes(fileRef, new Uint8Array(pdfFile));
+      const fileUrl = await getDownloadURL(fileRef);
+
+      // Save metadata + strokes to Firestore
+      const docData: Omit<SavedDocument, 'id'> = {
+        name: pdfName,
+        fileType,
+        fileUrl,
+        storagePath,
+        currentPage,
+        totalPages,
+        strokesByPage,
+        createdAt: currentDocId ? (savedDocs.find(d => d.id === currentDocId)?.createdAt || Date.now()) : Date.now(),
+        updatedAt: Date.now(),
+      };
+
+      await setDoc(doc(db, 'users', uid, 'documents', docId), docData);
+      setCurrentDocId(docId);
+      
+      // Refresh library
+      await loadLibrary();
+      
+      alert('Documento salvo com sucesso!');
+    } catch (err) {
+      console.error('Erro ao salvar documento:', err);
+      alert('Erro ao salvar o documento. Tente novamente.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Load a saved document
+  const openSavedDocument = async (savedDoc: SavedDocument) => {
+    setLoading(true);
+    setShowLibrary(false);
+    setActive(true);
+    setPdfName(savedDoc.name);
+    setCurrentDocId(savedDoc.id);
+    setStrokesByPage(savedDoc.strokesByPage || {});
+    setRedoStackByPage({});
+
+    try {
+      // Download file from storage
+      const response = await fetch(savedDoc.fileUrl);
+      const arrayBuffer = await response.arrayBuffer();
+      setPdfFile(arrayBuffer);
+
+      if (savedDoc.fileType === 'pdf') {
+        setFileType('pdf');
+        const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+        const pdf = await loadingTask.promise;
+        setPdfDoc(pdf);
+        setTotalPages(pdf.numPages);
+        setCurrentPage(savedDoc.currentPage || 1);
+      } else if (savedDoc.fileType === 'epub') {
+        if (epubBook) {
+          try { epubBook.destroy(); } catch (_e) { /* ignore */ }
+        }
+        setFileType('epub');
+        setPdfDoc(null);
+        setDocxHtml('');
+        const book = ePub(arrayBuffer);
+        setEpubBook(book);
+        book.ready.then(() => {
+          const spineLength = (book.spine as any)?.length || (book.spine as any)?.items?.length || 1;
+          setTotalPages(spineLength);
+          setCurrentPage(savedDoc.currentPage || 1);
+        }).catch(err => {
+          console.warn("EPUB ready error", err);
+          setTotalPages(1);
+          setCurrentPage(1);
+        });
+      } else if (savedDoc.fileType === 'docx') {
+        setFileType('docx');
+        setPdfDoc(null);
+        setEpubBook(null);
+        const result = await mammoth.convertToHtml({ arrayBuffer });
+        setDocxHtml(result.value);
+        setTotalPages(1);
+        setCurrentPage(1);
+      }
+    } catch (err) {
+      console.error('Erro ao abrir documento salvo:', err);
+      alert('Erro ao abrir o documento. Tente novamente.');
+      setActive(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Delete a saved document
+  const deleteSavedDocument = async (savedDoc: SavedDocument) => {
+    const uid = getUid();
+    if (!uid) return;
+    if (!confirm(`Excluir "${savedDoc.name}"?`)) return;
+    try {
+      // Delete from storage
+      try {
+        const fileRef = storageRef(storage, savedDoc.storagePath);
+        await deleteObject(fileRef);
+      } catch (_e) { /* file might not exist */ }
+      // Delete from Firestore
+      await deleteDoc(doc(db, 'users', uid, 'documents', savedDoc.id));
+      await loadLibrary();
+    } catch (err) {
+      console.error('Erro ao excluir documento:', err);
+    }
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -60,14 +237,15 @@ export default function PdfAnnotatorOverlay() {
     setLoading(true);
     setActive(true);
     setPdfName(file.name.replace(/\.[^/.]+$/, ""));
+    setCurrentDocId(null); // New file, not saved yet
     const extension = file.name.split('.').pop()?.toLowerCase();
     
     try {
       const arrayBuffer = await file.arrayBuffer();
+      setPdfFile(arrayBuffer);
       
       if (extension === 'pdf') {
         setFileType('pdf');
-        setPdfFile(arrayBuffer);
         const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
         const pdf = await loadingTask.promise;
         setPdfDoc(pdf);
@@ -97,7 +275,7 @@ export default function PdfAnnotatorOverlay() {
         setFileType('docx');
         const result = await mammoth.convertToHtml({ arrayBuffer });
         setDocxHtml(result.value);
-        setTotalPages(1); // DOCX renderizado como pagina longa unica
+        setTotalPages(1);
         setCurrentPage(1);
       } else {
         throw new Error('Formato não suportado');
@@ -224,11 +402,9 @@ export default function PdfAnnotatorOverlay() {
         saveAs(blob, `${pdfName}_anotado.pdf`);
 
       } else {
-        // EPUB or DOCX -> Export using html2canvas & jspdf
         const container = document.getElementById('document-render-container');
         if (!container) throw new Error('Container not found');
         
-        // Hide UI elements if any, we capture the content directly
         const canvas = await html2canvas(container, {
           allowTaint: true,
           useCORS: true,
@@ -255,6 +431,15 @@ export default function PdfAnnotatorOverlay() {
   };
 
   const pagesToRender = viewMode === 'book' && fileType === 'pdf' ? [currentPage, currentPage + 1].filter(p => p <= totalPages) : [currentPage];
+
+  const fileTypeLabel = (ft: string) => {
+    switch (ft) {
+      case 'pdf': return 'PDF';
+      case 'epub': return 'EPUB';
+      case 'docx': return 'DOCX';
+      default: return ft.toUpperCase();
+    }
+  };
 
   return (
     <>
@@ -283,7 +468,7 @@ export default function PdfAnnotatorOverlay() {
               <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
                 <button onClick={() => setTool('pointer')} className={`p-2 rounded ${tool === 'pointer' ? 'bg-white shadow text-indigo-600' : 'text-gray-500 hover:text-gray-800'}`} title="Mouse"><MousePointer2 className="w-4 h-4" /></button>
                 <button onClick={() => setTool('pen')} className={`p-2 rounded ${tool === 'pen' ? 'bg-white shadow text-indigo-600' : 'text-gray-500 hover:text-gray-800'}`} title="Caneta"><PenTool className="w-4 h-4" /></button>
-                <button onClick={() => setTool('highlighter')} className={`p-2 rounded ${tool === 'highlighter' ? 'bg-white shadow text-yellow-500' : 'text-gray-500 hover:text-gray-800'}`} title="Marca-Texto (Atrás do Texto)"><Highlighter className="w-4 h-4" /></button>
+                <button onClick={() => setTool('highlighter')} className={`p-2 rounded ${tool === 'highlighter' ? 'bg-white shadow text-yellow-500' : 'text-gray-500 hover:text-gray-800'}`} title="Marca-Texto"><Highlighter className="w-4 h-4" /></button>
                 <button onClick={() => setTool('eraser')} className={`p-2 rounded ${tool === 'eraser' ? 'bg-white shadow text-pink-500' : 'text-gray-500 hover:text-gray-800'}`} title="Borracha"><Eraser className="w-4 h-4" /></button>
               </div>
 
@@ -307,6 +492,27 @@ export default function PdfAnnotatorOverlay() {
 
               <div className="w-px h-6 bg-gray-300 mx-1" />
 
+              {/* Save button */}
+              <button 
+                onClick={saveDocument} 
+                disabled={saving || !pdfFile} 
+                className="p-2 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg disabled:opacity-30 transition-colors" 
+                title="Salvar na conta"
+              >
+                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              </button>
+
+              {/* Library button */}
+              <button 
+                onClick={() => { setShowLibrary(!showLibrary); if (!showLibrary) loadLibrary(); }} 
+                className={`p-2 rounded-lg transition-colors ${showLibrary ? 'bg-indigo-100 text-indigo-600' : 'text-gray-500 hover:text-indigo-600 hover:bg-gray-100'}`}
+                title="Minha Biblioteca"
+              >
+                <BookMarked className="w-4 h-4" />
+              </button>
+
+              <div className="w-px h-6 bg-gray-300 mx-1" />
+
               <button onClick={exportPdf} disabled={loading} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold flex items-center gap-2 text-sm">
                 <Download className="w-4 h-4" /> Exportar
               </button>
@@ -314,86 +520,178 @@ export default function PdfAnnotatorOverlay() {
           </div>
 
           {/* Main Content Area */}
-          <div className="flex-1 overflow-auto bg-gray-100 dark:bg-gray-900 flex justify-center items-start p-8 gap-8 relative">
-            {loading && (
-              <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/50 backdrop-blur-sm">
-                <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+          <div className="flex-1 flex overflow-hidden relative">
+            {/* Library Sidebar */}
+            {showLibrary && (
+              <div className="w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col flex-shrink-0 overflow-hidden">
+                <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                  <h3 className="font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                    <BookMarked className="w-5 h-5 text-indigo-500" />
+                    Minha Biblioteca
+                  </h3>
+                  <button onClick={() => setShowLibrary(false)} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"><X className="w-4 h-4" /></button>
+                </div>
+                
+                {/* Open new file button */}
+                <div className="p-3 border-b border-gray-100 dark:border-gray-700">
+                  <button 
+                    onClick={() => { if (fileInputRef.current) fileInputRef.current.click(); }}
+                    className="w-full flex items-center gap-2 px-3 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors text-sm font-medium"
+                  >
+                    <FolderOpen className="w-4 h-4" />
+                    Abrir novo arquivo
+                  </button>
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-2">
+                  {loadingLibrary ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="w-6 h-6 animate-spin text-indigo-500" />
+                    </div>
+                  ) : savedDocs.length === 0 ? (
+                    <div className="text-center text-gray-400 py-8 text-sm">
+                      <BookMarked className="w-10 h-10 mx-auto mb-2 opacity-30" />
+                      Nenhum documento salvo ainda.
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      {savedDocs.map(savedDoc => (
+                        <div
+                          key={savedDoc.id}
+                          className={`group flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
+                            currentDocId === savedDoc.id 
+                              ? 'bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700' 
+                              : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                          }`}
+                          onClick={() => openSavedDocument(savedDoc)}
+                        >
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-bold ${
+                            savedDoc.fileType === 'pdf' ? 'bg-red-100 text-red-600' :
+                            savedDoc.fileType === 'epub' ? 'bg-green-100 text-green-600' :
+                            'bg-blue-100 text-blue-600'
+                          }`}>
+                            {fileTypeLabel(savedDoc.fileType)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-gray-800 dark:text-gray-200 text-sm truncate">{savedDoc.name}</p>
+                            <p className="text-xs text-gray-400">
+                              Pag. {savedDoc.currentPage}/{savedDoc.totalPages} &middot; {new Date(savedDoc.updatedAt).toLocaleDateString('pt-BR')}
+                            </p>
+                          </div>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); deleteSavedDocument(savedDoc); }}
+                            className="p-1 text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                            title="Excluir"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
-            
-            <div id="document-render-container" className="flex justify-center gap-8 relative w-full">
-              {fileType === 'pdf' && pdfDoc && pagesToRender.map(pageNum => (
-                <PdfPage
-                  key={`${pdfDoc.fingerprints?.[0] || 'doc'}-${pageNum}`}
-                  pageNum={pageNum}
-                  pdfDoc={pdfDoc}
-                  tool={tool}
-                  penColor={penColor}
-                  highlighterColor={highlighterColor}
-                  penWidth={penWidth}
-                  highlighterWidth={highlighterWidth}
-                  eraserWidth={eraserWidth}
-                  strokes={strokesByPage[pageNum] || []}
-                  onUpdateStrokes={(newStrokes: Stroke[]) => setStrokesByPage(prev => ({ ...prev, [pageNum]: newStrokes }))}
-                  onUpdateRedo={(newRedos: Stroke[]) => setRedoStackByPage(prev => ({ ...prev, [pageNum]: newRedos }))}
-                  drawStroke={drawStroke}
-                />
-              ))}
 
-              {fileType === 'docx' && docxHtml && (
-                <DocxPage 
-                  html={docxHtml} 
-                  tool={tool}
-                  penColor={penColor}
-                  highlighterColor={highlighterColor}
-                  penWidth={penWidth}
-                  highlighterWidth={highlighterWidth}
-                  eraserWidth={eraserWidth}
-                  strokes={strokesByPage[1] || []}
-                  onUpdateStrokes={(newStrokes: Stroke[]) => setStrokesByPage(prev => ({ ...prev, 1: newStrokes }))}
-                  onUpdateRedo={(newRedos: Stroke[]) => setRedoStackByPage(prev => ({ ...prev, 1: newRedos }))}
-                  drawStroke={drawStroke}
-                />
+            {/* Document Area */}
+            <div ref={contentAreaRef} className="flex-1 overflow-auto bg-gray-100 dark:bg-gray-900 flex justify-center items-start p-8 gap-8 relative">
+              {loading && (
+                <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/50 backdrop-blur-sm">
+                  <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                </div>
               )}
+              
+              <div id="document-render-container" className="flex justify-center gap-8 relative" style={{ transform: `scale(${zoom})`, transformOrigin: 'top center', transition: 'transform 0.15s ease' }}>
+                {fileType === 'pdf' && pdfDoc && pagesToRender.map(pageNum => (
+                  <PdfPage
+                    key={`${pdfDoc.fingerprints?.[0] || 'doc'}-${pageNum}`}
+                    pageNum={pageNum}
+                    pdfDoc={pdfDoc}
+                    tool={tool}
+                    penColor={penColor}
+                    highlighterColor={highlighterColor}
+                    penWidth={penWidth}
+                    highlighterWidth={highlighterWidth}
+                    eraserWidth={eraserWidth}
+                    strokes={strokesByPage[pageNum] || []}
+                    onUpdateStrokes={(newStrokes: Stroke[]) => setStrokesByPage(prev => ({ ...prev, [pageNum]: newStrokes }))}
+                    onUpdateRedo={(newRedos: Stroke[]) => setRedoStackByPage(prev => ({ ...prev, [pageNum]: newRedos }))}
+                    drawStroke={drawStroke}
+                  />
+                ))}
 
-              {fileType === 'epub' && epubBook && (
-                <EpubPage 
-                  book={epubBook} 
-                  pageNum={currentPage}
-                  tool={tool}
-                  penColor={penColor}
-                  highlighterColor={highlighterColor}
-                  penWidth={penWidth}
-                  highlighterWidth={highlighterWidth}
-                  eraserWidth={eraserWidth}
-                  strokes={strokesByPage[currentPage] || []}
-                  onUpdateStrokes={(newStrokes: Stroke[]) => setStrokesByPage(prev => ({ ...prev, [currentPage]: newStrokes }))}
-                  onUpdateRedo={(newRedos: Stroke[]) => setRedoStackByPage(prev => ({ ...prev, [currentPage]: newRedos }))}
-                  drawStroke={drawStroke}
-                />
-              )}
+                {fileType === 'docx' && docxHtml && (
+                  <DocxPage 
+                    html={docxHtml} 
+                    tool={tool}
+                    penColor={penColor}
+                    highlighterColor={highlighterColor}
+                    penWidth={penWidth}
+                    highlighterWidth={highlighterWidth}
+                    eraserWidth={eraserWidth}
+                    strokes={strokesByPage[1] || []}
+                    onUpdateStrokes={(newStrokes: Stroke[]) => setStrokesByPage(prev => ({ ...prev, 1: newStrokes }))}
+                    onUpdateRedo={(newRedos: Stroke[]) => setRedoStackByPage(prev => ({ ...prev, 1: newRedos }))}
+                    drawStroke={drawStroke}
+                  />
+                )}
+
+                {fileType === 'epub' && epubBook && (
+                  <EpubPage 
+                    book={epubBook} 
+                    pageNum={currentPage}
+                    tool={tool}
+                    penColor={penColor}
+                    highlighterColor={highlighterColor}
+                    penWidth={penWidth}
+                    highlighterWidth={highlighterWidth}
+                    eraserWidth={eraserWidth}
+                    strokes={strokesByPage[currentPage] || []}
+                    onUpdateStrokes={(newStrokes: Stroke[]) => setStrokesByPage(prev => ({ ...prev, [currentPage]: newStrokes }))}
+                    onUpdateRedo={(newRedos: Stroke[]) => setRedoStackByPage(prev => ({ ...prev, [currentPage]: newRedos }))}
+                    drawStroke={drawStroke}
+                  />
+                )}
+              </div>
+
+              {/* Reading Laser */}
+              <ReadingLaser containerRef={contentAreaRef} />
             </div>
           </div>
 
-          {/* Bottom Toolbar (Pagination) */}
-          <div className="h-14 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex items-center justify-center gap-4 flex-shrink-0 toolbar">
-            <button 
-              onClick={() => setCurrentPage(p => Math.max(1, p - (viewMode === 'book' && fileType === 'pdf' ? 2 : 1)))} 
-              disabled={currentPage === 1}
-              className="p-2 hover:bg-gray-100 rounded-lg disabled:opacity-30"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <span className="font-medium text-gray-700 dark:text-gray-300">
-              Página {currentPage} {viewMode === 'book' && fileType === 'pdf' && currentPage < totalPages ? `e ${currentPage + 1}` : ''} de {totalPages}
-            </span>
-            <button 
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + (viewMode === 'book' && fileType === 'pdf' ? 2 : 1)))} 
-              disabled={currentPage >= (viewMode === 'book' && fileType === 'pdf' ? totalPages - 1 : totalPages)}
-              className="p-2 hover:bg-gray-100 rounded-lg disabled:opacity-30"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
+          {/* Bottom Toolbar (Pagination + Zoom) */}
+          <div className="h-14 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between px-4 flex-shrink-0 toolbar">
+            {/* Zoom Controls - Left */}
+            <div className="flex items-center gap-1">
+              <button onClick={zoomOut} disabled={zoom <= 0.25} className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 rounded-lg disabled:opacity-30 transition-colors" title="Diminuir zoom"><ZoomOut className="w-4 h-4" /></button>
+              <button onClick={zoomReset} className="px-2 py-1 text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg min-w-[48px] transition-colors" title="Resetar zoom">{Math.round(zoom * 100)}%</button>
+              <button onClick={zoomIn} disabled={zoom >= 3} className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 rounded-lg disabled:opacity-30 transition-colors" title="Aumentar zoom"><ZoomIn className="w-4 h-4" /></button>
+              {zoom !== 1 && <button onClick={zoomReset} className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-gray-100 rounded-lg transition-colors" title="Resetar zoom"><RotateCcw className="w-3 h-3" /></button>}
+            </div>
+
+            {/* Pagination - Center */}
+            <div className="flex items-center gap-4">
+              <button 
+                onClick={() => setCurrentPage(p => Math.max(1, p - (viewMode === 'book' && fileType === 'pdf' ? 2 : 1)))} 
+                disabled={currentPage === 1}
+                className="p-2 hover:bg-gray-100 rounded-lg disabled:opacity-30"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <span className="font-medium text-gray-700 dark:text-gray-300 text-sm">
+                Página {currentPage} {viewMode === 'book' && fileType === 'pdf' && currentPage < totalPages ? `e ${currentPage + 1}` : ''} de {totalPages}
+              </span>
+              <button 
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + (viewMode === 'book' && fileType === 'pdf' ? 2 : 1)))} 
+                disabled={currentPage >= (viewMode === 'book' && fileType === 'pdf' ? totalPages - 1 : totalPages)}
+                className="p-2 hover:bg-gray-100 rounded-lg disabled:opacity-30"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Spacer - Right (to balance the layout) */}
+            <div className="w-[140px]" />
           </div>
         </div>,
         document.body
@@ -562,7 +860,7 @@ function DocxPage({ html, tool, penColor, highlighterColor, penWidth, highlighte
     if (containerRef.current) {
       setTimeout(() => {
         if (containerRef.current) {
-          const w = 800; // Fixed width for DOCX
+          const w = 800;
           const h = containerRef.current.scrollHeight;
           
           if (highlighterCanvasRef.current) {
@@ -601,19 +899,15 @@ function EpubPage({ book, pageNum, tool, penColor, highlighterColor, penWidth, h
   useEffect(() => {
     if (!book || !viewerRef.current) return;
 
-    // Get a unique ID for this book to detect changes
     const bookId = book.key || Math.random().toString();
     
-    // If same book, skip
     if (bookIdRef.current === bookId && renditionRef.current) return;
     
-    // Destroy old rendition
     if (renditionRef.current) {
       try { renditionRef.current.destroy(); } catch (_e) { /* ignore */ }
       renditionRef.current = null;
     }
     
-    // Clear the viewer container
     if (viewerRef.current) {
       viewerRef.current.innerHTML = '';
     }
@@ -643,7 +937,6 @@ function EpubPage({ book, pageNum, tool, penColor, highlighterColor, penWidth, h
       penCanvasRef.current.height = height;
     }
     
-    // Cleanup on unmount
     return () => {
       if (renditionRef.current) {
         try { renditionRef.current.destroy(); } catch (_e) { /* ignore */ }
