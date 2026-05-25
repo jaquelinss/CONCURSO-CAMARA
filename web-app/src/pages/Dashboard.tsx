@@ -9,30 +9,58 @@ import { useAuth } from '../contexts/AuthContext';
 import { FlaskConical } from 'lucide-react';
 import { PeriodicTable, ElementDetailModal } from '../components/PeriodicTable';
 
+const SESSION_SCREEN_KEY = 'dashboard_screen';
+const SESSION_SETTINGS_KEY = 'dashboard_settings';
+
 export default function Dashboard() {
   const { hasSeenWelcome, apiKey } = useAuth();
   const location = useLocation();
   const stateFromNav = location.state as any;
 
-  const [screen, setScreen] = useState<'settings' | 'lesson' | 'quiz'>('settings');
+  // Restaurar tela do sessionStorage (persiste F5), mas navegação explícita tem prioridade
+  const savedScreen = sessionStorage.getItem(SESSION_SCREEN_KEY) as 'settings' | 'lesson' | 'quiz' | null;
+  const savedSettings = (() => {
+    try { return JSON.parse(sessionStorage.getItem(SESSION_SETTINGS_KEY) || 'null'); } catch { return null; }
+  })();
+
+  const defaultSettings = {
+    mode: 'Concurso',
+    subject: 'Língua Portuguesa',
+    model: 'Aula Explicativa',
+    difficulty: 'Médio',
+    quantity: 5,
+    topic: 'Todos',
+    subTopic: 'Todos',
+    specificTopic: '',
+    lessonLevel: 'Introdutória',
+  };
+
+  const [screen, setScreen] = useState<'settings' | 'lesson' | 'quiz'>(
+    stateFromNav?.mode ? 'settings' : (savedScreen || 'settings')
+  );
   const [settings, setSettings] = useState({
-    mode: stateFromNav?.mode || 'Concurso',
-    subject: stateFromNav?.subject || 'Língua Portuguesa',
-    model: stateFromNav?.model || 'Aula Explicativa',
-    difficulty: stateFromNav?.difficulty || 'Médio',
-    quantity: stateFromNav?.quantity || 5,
-    topic: stateFromNav?.topic || 'Todos',
-    subTopic: stateFromNav?.subTopic || 'Todos',
-    specificTopic: stateFromNav?.specificTopic || '',
-    lessonLevel: stateFromNav?.lessonLevel || 'Introdutória',
+    ...defaultSettings,
+    ...(savedSettings || {}),
+    ...(stateFromNav || {}),
   });
+
+  // Salvar estado no sessionStorage sempre que mudar
+  useEffect(() => {
+    sessionStorage.setItem(SESSION_SCREEN_KEY, screen);
+  }, [screen]);
+
+  useEffect(() => {
+    sessionStorage.setItem(SESSION_SETTINGS_KEY, JSON.stringify(settings));
+  }, [settings]);
 
   useEffect(() => {
     if (location.state) {
-      setSettings(prev => ({
+      setSettings((prev: typeof defaultSettings) => ({
         ...prev,
         ...location.state
       }));
+      setScreen('settings');
+      // Limpar location.state para não replicar em próximos renders
     }
   }, [location.state]);
 

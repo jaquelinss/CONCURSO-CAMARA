@@ -44,13 +44,22 @@ function getLinkedIds(contentLinks: any, type: string): string[] {
   return ids;
 }
 
+const REV_SESSION_KEY = 'revision_active';
+const REV_TAB_KEY = 'revision_tab';
+
 export default function RevisionScreen() {
   const { user } = useAuth();
   const [revisions, setRevisions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  
-  const [activeContent, setActiveContent] = useState<any>(null);
-  const [activeType, setActiveType] = useState<'lesson' | 'quiz' | 'flashcard' | null>(null);
+
+  // Restaurar estado ativo do sessionStorage ao dar F5
+  const savedActive = (() => {
+    try { return JSON.parse(sessionStorage.getItem(REV_SESSION_KEY) || 'null'); } catch { return null; }
+  })();
+  const savedTab = (sessionStorage.getItem(REV_TAB_KEY) as 'revisions' | 'studyPlan') || 'revisions';
+
+  const [activeContent, setActiveContent] = useState<any>(savedActive?.content || null);
+  const [activeType, setActiveType] = useState<'lesson' | 'quiz' | 'flashcard' | null>(savedActive?.type || null);
 
   // Modal de vinculação
   const [linkModal, setLinkModal] = useState<{ revision: any, type: 'lesson' | 'quiz' | 'flashcard' } | null>(null);
@@ -59,10 +68,24 @@ export default function RevisionScreen() {
   const [pickModal, setPickModal] = useState<{ revision: any, type: 'lesson' | 'quiz' | 'flashcard', items: any[] } | null>(null);
 
   // Study Plan
-  const [activeTab, setActiveTab] = useState<'revisions' | 'studyPlan'>('revisions');
+  const [activeTab, setActiveTab] = useState<'revisions' | 'studyPlan'>(savedTab);
   const [studyPlan, setStudyPlan] = useState<any>(null);
   const [loadingPlan, setLoadingPlan] = useState(true);
   const [showWizard, setShowWizard] = useState(false);
+
+  // Persistir activeType + activeContent no sessionStorage
+  useEffect(() => {
+    if (activeType && activeContent) {
+      sessionStorage.setItem(REV_SESSION_KEY, JSON.stringify({ type: activeType, content: activeContent }));
+    } else {
+      sessionStorage.removeItem(REV_SESSION_KEY);
+    }
+  }, [activeType, activeContent]);
+
+  // Persistir tab
+  useEffect(() => {
+    sessionStorage.setItem(REV_TAB_KEY, activeTab);
+  }, [activeTab]);
 
   const fetchRevisions = async () => {
     if (!user) return;
@@ -188,12 +211,18 @@ export default function RevisionScreen() {
     fetchRevisions();
   };
 
+  const handleBack = () => {
+    setActiveType(null);
+    setActiveContent(null);
+    fetchRevisions();
+  };
+
   const renderContent = () => {
     if (activeType === 'lesson') {
-      return <LessonScreen settings={activeContent} onBack={() => { setActiveType(null); fetchRevisions(); }} savedData={activeContent.data} />;
+      return <LessonScreen settings={activeContent} onBack={handleBack} savedData={activeContent.data} />;
     }
     if (activeType === 'quiz' || activeType === 'flashcard') {
-      return <QuizScreen settings={activeContent} onBack={() => { setActiveType(null); fetchRevisions(); }} savedData={activeContent.data} />;
+      return <QuizScreen settings={activeContent} onBack={handleBack} savedData={activeContent.data} />;
     }
     return null;
   };
