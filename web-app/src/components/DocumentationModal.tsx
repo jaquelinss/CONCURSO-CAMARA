@@ -37,7 +37,7 @@ export default function DocumentationModal({ isOpen, onClose }: DocumentationMod
     {
       title: "Laser de Leitura",
       icon: <Crosshair className="w-5 h-5 text-red-500" />,
-      content: "Um guia de leitura que segue o mouse para te ajudar a manter o foco em textos longos. Você pode ativá-lo pelo ícone flutuante e arrastar o menu para onde preferir."
+      content: "Um guia de leitura que segue o mouse para te ajudar a manter o foco em textos longos. Você pode ativá-lo pelo ícone flutuante ou usando o atalho Alt + R de qualquer tela de estudo, e arrastar o menu para onde preferir."
     },
     {
       title: "Simulados e Questões",

@@ -18,14 +18,44 @@ interface ReadingLaserProps {
   containerRef: React.RefObject<HTMLElement | null>;
 }
 
+const getSavedSetting = <T,>(key: string, defaultVal: T): T => {
+  try {
+    const saved = localStorage.getItem(`laser_${key}`);
+    return saved ? JSON.parse(saved) : defaultVal;
+  } catch {
+    return defaultVal;
+  }
+};
+
 export default function ReadingLaser({ containerRef }: ReadingLaserProps) {
   const [active, setActive] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [color, setColor] = useState('#FBBF24');
-  const [opacity, setOpacity] = useState(0.25);
-  const [height, setHeight] = useState(36);
-  const [mode, setMode] = useState<'bar' | 'pointer'>('bar');
-  const [fadeDuration, setFadeDuration] = useState(500);
+  const [color, setColor] = useState(() => getSavedSetting('color', '#FBBF24'));
+  const [opacity, setOpacity] = useState(() => getSavedSetting('opacity', 0.25));
+  const [height, setHeight] = useState(() => getSavedSetting('height', 36));
+  const [mode, setMode] = useState<'bar' | 'pointer'>(() => getSavedSetting('mode', 'bar'));
+  const [fadeDuration, setFadeDuration] = useState(() => getSavedSetting('fadeDuration', 500));
+  
+  useEffect(() => {
+    localStorage.setItem('laser_color', JSON.stringify(color));
+    localStorage.setItem('laser_opacity', JSON.stringify(opacity));
+    localStorage.setItem('laser_height', JSON.stringify(height));
+    localStorage.setItem('laser_mode', JSON.stringify(mode));
+    localStorage.setItem('laser_fadeDuration', JSON.stringify(fadeDuration));
+  }, [color, opacity, height, mode, fadeDuration]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
+
+      if (e.altKey && e.key.toLowerCase() === 'r') {
+        e.preventDefault();
+        setActive(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
   const [mouseY, setMouseY] = useState<number | null>(null);
   const settingsRef = useRef<HTMLDivElement>(null);
   
@@ -407,7 +437,7 @@ export default function ReadingLaser({ containerRef }: ReadingLaserProps) {
                 ? 'bg-indigo-600 text-white ring-2 ring-indigo-300'
                 : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700'
             }`}
-            title={active ? 'Desativar laser' : 'Ativar laser de leitura'}
+            title={active ? 'Desativar laser (Alt+R)' : 'Ativar laser de leitura (Alt+R)'}
           >
             <Crosshair className="w-5 h-5" />
           </button>
