@@ -331,9 +331,9 @@ export default function ReadingLaser({ containerRef }: ReadingLaserProps) {
       {/* Toggle + Settings button (Draggable via Portal) */}
       {createPortal(
         <Draggable bounds="body" nodeRef={settingsRef} handle=".drag-handle">
-          <div className="fixed top-24 right-4 z-[9998] flex flex-col gap-2 items-end" ref={settingsRef}>
+          <div className="fixed bottom-8 left-4 z-[10000] flex flex-col gap-2 items-start" ref={settingsRef}>
         {showSettings && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 w-64 animate-fade-in">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 w-64 animate-fade-in mb-2">
             <div className="flex items-center justify-between mb-3">
               <h4 className="font-bold text-sm text-gray-800 dark:text-gray-200">Laser de Leitura</h4>
               <button onClick={() => setShowSettings(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
@@ -427,7 +427,7 @@ export default function ReadingLaser({ containerRef }: ReadingLaserProps) {
           </div>
         )}
 
-        <div className="flex gap-2 items-center bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 p-1 pr-2">
+        <div className="flex gap-2 items-center bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 p-1 pl-2">
           <div className="drag-handle cursor-grab active:cursor-grabbing p-2 text-gray-400 hover:text-gray-600 transition-colors">
             <GripVertical className="w-5 h-5" />
           </div>

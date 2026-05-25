@@ -749,7 +749,20 @@ export default function PdfAnnotatorOverlay() {
               
               <div id="document-render-container" className="flex justify-center gap-8 relative" style={{ transform: `scale(${zoom})`, transformOrigin: 'top center', transition: 'transform 0.15s ease' }}>
                 {fileType === 'pdf' && pdfDoc && (
-                  <div className={`flex ${viewMode === 'scroll' ? 'flex-col overflow-y-auto w-full items-center gap-8 py-8' : 'justify-center items-center gap-4'} relative`}>
+                  <div 
+                    ref={useCallback((node: HTMLDivElement) => {
+                      if (node && viewMode === 'scroll' && currentPage > 1 && !node.dataset.scrolled) {
+                        setTimeout(() => {
+                          const pageEl = document.getElementById(`pdf-page-${currentPage}`);
+                          if (pageEl && contentAreaRef.current) {
+                            contentAreaRef.current.scrollTo({ top: pageEl.offsetTop - 20, behavior: 'auto' });
+                            node.dataset.scrolled = "true";
+                          }
+                        }, 100);
+                      }
+                    }, [viewMode, currentPage])}
+                    className={`flex ${viewMode === 'scroll' ? 'flex-col overflow-y-auto w-full items-center gap-8 py-8' : 'justify-center items-center gap-4'} relative`}
+                  >
                     {pagesToRender.map(pageNum => (
                       <PdfPage
                         key={`${pdfDoc.fingerprints?.[0] || 'doc'}-${pageNum}`}
@@ -1020,7 +1033,7 @@ function PdfPage({ pageNum, pdfDoc, tool, penColor, highlighterColor, penWidth, 
   }, [hasRendered, renderPage]);
 
   return (
-    <div ref={containerRef} className="relative shadow-2xl bg-white flex-shrink-0" style={{ width: dimensions.width, height: dimensions.height }}>
+    <div id={`pdf-page-${pageNum}`} ref={containerRef} className="relative shadow-2xl bg-white flex-shrink-0" style={{ width: dimensions.width, height: dimensions.height }}>
       {hasRendered ? (
         <>
           <canvas ref={bgCanvasRef} className="absolute inset-0 pointer-events-none z-0" style={{ width: '100%', height: '100%' }} />
@@ -1111,7 +1124,14 @@ function EpubPage({ book, pageNum, viewMode, tool, penColor, highlighterColor, p
       manager: viewMode === 'scroll' ? 'continuous' : 'default'
     });
     renditionRef.current = rendition;
-    rendition.display();
+    
+    // Initialize exactly on the targeted page
+    const targetSpine = book.spine && book.spine.get ? book.spine.get(pageNum - 1) : null;
+    if (targetSpine && targetSpine.href) {
+      rendition.display(targetSpine.href);
+    } else {
+      rendition.display();
+    }
     
     if (highlighterCanvasRef.current) {
       highlighterCanvasRef.current.width = width;
@@ -1139,10 +1159,15 @@ function EpubPage({ book, pageNum, viewMode, tool, penColor, highlighterColor, p
     
     if (diff === 0) return;
     
-    if (diff > 0) {
-      renditionRef.current.next();
-    } else if (diff < 0) {
-      renditionRef.current.prev();
+    const targetSpine = book.spine && book.spine.get ? book.spine.get(pageNum - 1) : null;
+    if (targetSpine && targetSpine.href) {
+      renditionRef.current.display(targetSpine.href);
+    } else {
+      if (diff > 0) {
+        renditionRef.current.next();
+      } else if (diff < 0) {
+        renditionRef.current.prev();
+      }
     }
   }, [pageNum, viewMode]);
 
