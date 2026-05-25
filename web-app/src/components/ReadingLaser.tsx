@@ -290,22 +290,23 @@ export default function ReadingLaser({ containerRef }: ReadingLaserProps) {
   return (
     <>
       {/* Laser overlay - Bar Mode */}
-      {active && mode === 'bar' && mouseY !== null && containerRef.current && (
+      {active && mode === 'bar' && mouseY !== null && containerRef.current && createPortal(
         <div
           style={{
-            position: 'absolute',
-            top: mouseY - height / 2,
-            left: 0,
-            right: 0,
+            position: 'fixed',
+            top: containerRef.current.getBoundingClientRect().top + mouseY - height / 2,
+            left: containerRef.current.getBoundingClientRect().left,
+            width: containerRef.current.getBoundingClientRect().width,
             height: `${height}px`,
             backgroundColor: color,
             opacity: opacity,
             pointerEvents: 'none',
-            zIndex: 20,
+            zIndex: 9999,
             borderRadius: '4px',
             transition: 'top 0.05s ease-out',
           }}
-        />
+        />,
+        document.body
       )}
 
       {/* Laser overlay - Pointer Mode (Canvas via Portal) */}
@@ -330,7 +331,7 @@ export default function ReadingLaser({ containerRef }: ReadingLaserProps) {
       {/* Toggle + Settings button (Draggable via Portal) */}
       {createPortal(
         <Draggable bounds="body" nodeRef={settingsRef} handle=".drag-handle">
-          <div className="fixed bottom-24 left-4 z-[9998] flex flex-col gap-2" ref={settingsRef}>
+          <div className="fixed top-24 right-4 z-[9998] flex flex-col gap-2 items-end" ref={settingsRef}>
         {showSettings && (
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 w-64 animate-fade-in">
             <div className="flex items-center justify-between mb-3">

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Eraser, X, Undo2, Redo2, ChevronLeft, ChevronRight, Download, PenTool, Highlighter, MousePointer2, BookOpen, File as FileIcon, Save, BookMarked, Trash2, FolderOpen, Loader2, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { Eraser, X, Undo2, Redo2, ChevronLeft, ChevronRight, Download, PenTool, Highlighter, MousePointer2, BookOpen, File as FileIcon, Save, BookMarked, Trash2, FolderOpen, Loader2, ZoomIn, ZoomOut, RotateCcw, ChevronDown } from 'lucide-react';
 import { getStroke } from 'perfect-freehand';
 import * as pdfjsLib from 'pdfjs-dist';
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
@@ -32,6 +32,7 @@ interface SavedDocument {
   strokesByPage: Record<number, Stroke[]>;
   createdAt: number;
   updatedAt: number;
+  fileSize?: number;
 }
 
 const COLORS = ['#000000', '#ffffff', '#ef4444', '#3b82f6', '#22c55e', '#eab308', '#a855f7', '#f97316'];
@@ -51,7 +52,7 @@ export default function PdfAnnotatorOverlay() {
   
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [viewMode, setViewMode] = useState<'single' | 'book'>('single');
+  const [viewMode, setViewMode] = useState<'single' | 'book' | 'scroll'>('single');
   
   const [strokesByPage, setStrokesByPage] = useState<Record<number, Stroke[]>>({});
   const [redoStackByPage, setRedoStackByPage] = useState<Record<number, Stroke[]>>({});
@@ -99,7 +100,7 @@ export default function PdfAnnotatorOverlay() {
   
   useEffect(() => {
     const handleOpen = () => {
-      if (fileInputRef.current) fileInputRef.current.click();
+      setActive(true);
     };
     window.addEventListener('open-pdf-annotator', handleOpen);
     return () => window.removeEventListener('open-pdf-annotator', handleOpen);
@@ -107,14 +108,19 @@ export default function PdfAnnotatorOverlay() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (!active) return;
       if (e.ctrlKey && e.key.toLowerCase() === 'z') {
         e.preventDefault();
         handleUndo();
+      } else if (e.key === 'ArrowRight' && viewMode !== 'scroll') {
+        setCurrentPage(p => Math.min(totalPages, p + (viewMode === 'book' && fileType === 'pdf' ? 2 : 1)));
+      } else if (e.key === 'ArrowLeft' && viewMode !== 'scroll') {
+        setCurrentPage(p => Math.max(1, p - (viewMode === 'book' && fileType === 'pdf' ? 2 : 1)));
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [strokesByPage, currentPage]);
+  }, [strokesByPage, currentPage, active, viewMode, fileType, totalPages]);
 
 
 
@@ -144,47 +150,41 @@ export default function PdfAnnotatorOverlay() {
     }
   };
 
-  // Save document
+  // Save document metadata and strokes only
   const saveDocument = async () => {
     const uid = getUid();
-    if (!uid || !pdfFile || !fileType) return;
+    if (!uid || !currentDocId) return;
     setSaving(true);
     try {
-      const docId = currentDocId || `doc_${Date.now()}`;
-      const storagePath = `users/${uid}/documents/${docId}`;
-      
-      // Upload file to storage
-      const fileRef = storageRef(storage, storagePath);
-      await uploadBytes(fileRef, new Uint8Array(pdfFile));
-      const fileUrl = await getDownloadURL(fileRef);
-
-      // Save metadata + strokes to Firestore
-      const docData: Omit<SavedDocument, 'id'> = {
-        name: pdfName,
-        fileType,
-        fileUrl,
-        storagePath,
-        currentPage,
-        totalPages,
-        strokesByPage,
-        createdAt: currentDocId ? (savedDocs.find(d => d.id === currentDocId)?.createdAt || Date.now()) : Date.now(),
-        updatedAt: Date.now(),
-      };
-
-      await setDoc(doc(db, 'users', uid, 'documents', docId), docData);
-      setCurrentDocId(docId);
-      
-      // Refresh library
+      const docRef = doc(db, 'users', uid, 'documents', currentDocId);
+      await setDoc(docRef, { strokesByPage, currentPage, updatedAt: Date.now() }, { merge: true });
       await loadLibrary();
-      
-      alert('Documento salvo com sucesso!');
     } catch (err) {
       console.error('Erro ao salvar documento:', err);
-      alert('Erro ao salvar o documento. Tente novamente.');
     } finally {
       setSaving(false);
     }
   };
+
+  // Auto-save useEffect
+  useEffect(() => {
+    if (!currentDocId || !active) return;
+    const timeout = setTimeout(async () => {
+      const uid = getUid();
+      if (!uid) return;
+      try {
+        setSaving(true);
+        const docRef = doc(db, 'users', uid, 'documents', currentDocId);
+        await setDoc(docRef, { strokesByPage, currentPage, updatedAt: Date.now() }, { merge: true });
+        setSaving(false);
+      } catch (e) {
+        console.error("Auto-save failed", e);
+        setSaving(false);
+      }
+    }, 2000); // 2 second debounce
+
+    return () => clearTimeout(timeout);
+  }, [strokesByPage, currentPage, currentDocId, active]);
 
   // Load a saved document
   const openSavedDocument = async (savedDoc: SavedDocument) => {
@@ -264,6 +264,34 @@ export default function PdfAnnotatorOverlay() {
     }
   };
 
+  const checkStorageQuota = async (fileType: string, newFileSize: number) => {
+    const uid = getUid();
+    if (!uid) return false;
+    const q = query(collection(db, 'users', uid, 'documents'));
+    const snapshot = await getDocs(q);
+    let totalSize = 0;
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (data.fileType === fileType && data.fileSize) {
+        totalSize += data.fileSize;
+      }
+    });
+
+    const limits = {
+      pdf: 200 * 1024 * 1024,
+      epub: 50 * 1024 * 1024,
+      docx: 50 * 1024 * 1024,
+      doc: 50 * 1024 * 1024
+    };
+
+    const limit = limits[fileType as keyof typeof limits] || 0;
+    if (totalSize + newFileSize > limit) {
+      alert(`Limite excedido para arquivos ${fileType.toUpperCase()}. Espaço usado: ${Math.round(totalSize / 1024 / 1024)}MB. Arquivo atual: ${Math.round(newFileSize / 1024 / 1024)}MB. Limite: ${Math.round(limit / 1024 / 1024)}MB.`);
+      return false;
+    }
+    return true;
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -271,40 +299,52 @@ export default function PdfAnnotatorOverlay() {
     setLoading(true);
     setActive(true);
     setPdfName(file.name.replace(/\.[^/.]+$/, ""));
-    setCurrentDocId(null); // New file, not saved yet
+    setCurrentDocId(null); 
     const extension = file.name.split('.').pop()?.toLowerCase();
+    const typeAlias = (extension === 'doc' ? 'docx' : extension) as 'pdf' | 'epub' | 'docx';
     
     try {
+      const hasQuota = await checkStorageQuota(typeAlias, file.size);
+      if (!hasQuota) {
+        setLoading(false);
+        setActive(false);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        return;
+      }
+
       const arrayBuffer = await file.arrayBuffer();
       setPdfFile(arrayBuffer);
+      let parsedTotalPages = 1;
       
       if (extension === 'pdf') {
         setFileType('pdf');
         const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
         const pdf = await loadingTask.promise;
         setPdfDoc(pdf);
-        setTotalPages(pdf.numPages);
+        parsedTotalPages = pdf.numPages;
+        setTotalPages(parsedTotalPages);
         setCurrentPage(1);
       } else if (extension === 'epub') {
-        // Destroy previous epub if any
         if (epubBook) {
-          try { epubBook.destroy(); } catch (_e) { /* ignore */ }
+          try { epubBook.destroy(); } catch (_e) { }
         }
         setFileType('epub');
         setPdfDoc(null);
         setDocxHtml('');
         const book = ePub(arrayBuffer);
         setEpubBook(book);
-        // We use spine-based navigation (next/prev), so total pages = spine items count
+        
         book.ready.then(() => {
           const spineLength = (book.spine as any)?.length || (book.spine as any)?.items?.length || 1;
           setTotalPages(spineLength);
-          setCurrentPage(1);
+          // Auto-save the actual total pages back to Firestore if needed later
         }).catch(err => {
             console.warn("EPUB ready error", err);
-            setTotalPages(1);
-            setCurrentPage(1);
         });
+
+        parsedTotalPages = 1;
+        setTotalPages(1);
+        setCurrentPage(1);
       } else if (extension === 'docx' || extension === 'doc') {
         setFileType('docx');
         const result = await mammoth.convertToHtml({ arrayBuffer });
@@ -317,6 +357,42 @@ export default function PdfAnnotatorOverlay() {
       
       setStrokesByPage({});
       setRedoStackByPage({});
+
+      // Auto-upload immediately in background
+      const uid = getUid();
+      if (uid) {
+        (async () => {
+          setSaving(true);
+          try {
+            const docId = `doc_${Date.now()}`;
+            const storagePath = `users/${uid}/documents/${docId}`;
+            const fileRef = storageRef(storage, storagePath);
+            await uploadBytes(fileRef, file);
+            const fileUrl = await getDownloadURL(fileRef);
+
+            const docData: Omit<SavedDocument, 'id'> = {
+              name: file.name.replace(/\.[^/.]+$/, ""),
+              fileType: typeAlias,
+              fileUrl,
+              storagePath,
+              currentPage: 1,
+              totalPages: parsedTotalPages,
+              strokesByPage: {},
+              createdAt: Date.now(),
+              updatedAt: Date.now(),
+              fileSize: file.size
+            };
+            await setDoc(doc(db, 'users', uid, 'documents', docId), docData);
+            setCurrentDocId(docId);
+            await loadLibrary();
+          } catch (e) {
+            console.error("Auto-upload failed", e);
+          } finally {
+            setSaving(false);
+          }
+        })();
+      }
+
     } catch (err) {
       console.error('Error loading file:', err);
       alert('Erro ao carregar o arquivo. Verifique se o formato é suportado.');
@@ -464,7 +540,14 @@ export default function PdfAnnotatorOverlay() {
     }
   };
 
-  const pagesToRender = viewMode === 'book' && fileType === 'pdf' ? [currentPage, currentPage + 1].filter(p => p <= totalPages) : [currentPage];
+  let pagesToRender: number[] = [];
+  if (viewMode === 'scroll' && fileType === 'pdf') {
+    pagesToRender = Array.from({ length: totalPages }, (_, i) => i + 1);
+  } else if (viewMode === 'book' && fileType === 'pdf') {
+    pagesToRender = [currentPage, currentPage + 1].filter(p => p <= totalPages);
+  } else {
+    pagesToRender = [currentPage];
+  }
 
   const fileTypeLabel = (ft: string) => {
     switch (ft) {
@@ -489,11 +572,14 @@ export default function PdfAnnotatorOverlay() {
             </div>
 
             <div className="flex items-center gap-2">
-              {fileType === 'pdf' && (
+              {(fileType === 'pdf' || fileType === 'epub') && (
                 <>
                   <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
                     <button onClick={() => setViewMode('single')} className={`p-2 rounded ${viewMode === 'single' ? 'bg-white shadow text-indigo-600' : 'text-gray-500 hover:text-gray-800'}`} title="Modo Página Única"><FileIcon className="w-4 h-4" /></button>
-                    <button onClick={() => setViewMode('book')} className={`p-2 rounded ${viewMode === 'book' ? 'bg-white shadow text-indigo-600' : 'text-gray-500 hover:text-gray-800'}`} title="Modo Livro (2 Páginas)"><BookOpen className="w-4 h-4" /></button>
+                    {fileType === 'pdf' && (
+                      <button onClick={() => setViewMode('book')} className={`p-2 rounded ${viewMode === 'book' ? 'bg-white shadow text-indigo-600' : 'text-gray-500 hover:text-gray-800'}`} title="Modo Livro (2 Páginas)"><BookOpen className="w-4 h-4" /></button>
+                    )}
+                    <button onClick={() => setViewMode('scroll')} className={`p-2 rounded ${viewMode === 'scroll' ? 'bg-white shadow text-indigo-600' : 'text-gray-500 hover:text-gray-800'}`} title="Modo Scroll Contínuo"><ChevronDown className="w-4 h-4" /></button>
                   </div>
                   <div className="w-px h-6 bg-gray-300 mx-1" />
                 </>
@@ -649,23 +735,28 @@ export default function PdfAnnotatorOverlay() {
               )}
               
               <div id="document-render-container" className="flex justify-center gap-8 relative" style={{ transform: `scale(${zoom})`, transformOrigin: 'top center', transition: 'transform 0.15s ease' }}>
-                {fileType === 'pdf' && pdfDoc && pagesToRender.map(pageNum => (
-                  <PdfPage
-                    key={`${pdfDoc.fingerprints?.[0] || 'doc'}-${pageNum}`}
-                    pageNum={pageNum}
-                    pdfDoc={pdfDoc}
-                    tool={tool}
-                    penColor={penColor}
-                    highlighterColor={highlighterColor}
-                    penWidth={penWidth}
-                    highlighterWidth={highlighterWidth}
-                    eraserWidth={eraserWidth}
-                    strokes={strokesByPage[pageNum] || []}
-                    onUpdateStrokes={(newStrokes: Stroke[]) => setStrokesByPage(prev => ({ ...prev, [pageNum]: newStrokes }))}
-                    onUpdateRedo={(newRedos: Stroke[]) => setRedoStackByPage(prev => ({ ...prev, [pageNum]: newRedos }))}
-                    drawStroke={drawStroke}
-                  />
-                ))}
+                {fileType === 'pdf' && pdfDoc && (
+                  <div className={`flex ${viewMode === 'scroll' ? 'flex-col overflow-y-auto w-full items-center gap-8 py-8' : 'justify-center items-center gap-4'} relative`}>
+                    {pagesToRender.map(pageNum => (
+                      <PdfPage
+                        key={`${pdfDoc.fingerprints?.[0] || 'doc'}-${pageNum}`}
+                        pageNum={pageNum}
+                        pdfDoc={pdfDoc}
+                        tool={tool}
+                        penColor={penColor}
+                        highlighterColor={highlighterColor}
+                        penWidth={penWidth}
+                        highlighterWidth={highlighterWidth}
+                        eraserWidth={eraserWidth}
+                        strokes={strokesByPage[pageNum] || []}
+                        onUpdateStrokes={(newStrokes: Stroke[]) => setStrokesByPage(prev => ({ ...prev, [pageNum]: newStrokes }))}
+                        onUpdateRedo={(newRedos: Stroke[]) => setRedoStackByPage(prev => ({ ...prev, [pageNum]: newRedos }))}
+                        drawStroke={drawStroke}
+                        onVisible={() => { if (viewMode === 'scroll') setCurrentPage(pageNum); }}
+                      />
+                    ))}
+                  </div>
+                )}
 
                 {fileType === 'docx' && docxHtml && (
                   <DocxPage 
@@ -687,6 +778,7 @@ export default function PdfAnnotatorOverlay() {
                   <EpubPage 
                     book={epubBook} 
                     pageNum={currentPage}
+                    viewMode={viewMode}
                     tool={tool}
                     penColor={penColor}
                     highlighterColor={highlighterColor}
@@ -863,12 +955,24 @@ function useCanvasDrawing(tool: string, penColor: string, highlighterColor: stri
 }
 
 // Subcomponent for each PDF page
-function PdfPage({ pageNum, pdfDoc, tool, penColor, highlighterColor, penWidth, highlighterWidth, eraserWidth, strokes, onUpdateStrokes, onUpdateRedo, drawStroke }: any) {
+function PdfPage({ pageNum, pdfDoc, tool, penColor, highlighterColor, penWidth, highlighterWidth, eraserWidth, strokes, onUpdateStrokes, onUpdateRedo, drawStroke, onVisible }: any) {
   const containerRef = useRef<HTMLDivElement>(null);
   const bgCanvasRef = useRef<HTMLCanvasElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 1131 });
+  const [hasRendered, setHasRendered] = useState(false);
 
   const { highlighterCanvasRef, penCanvasRef, handlePointerDown, handlePointerMove, handlePointerUp, redrawStrokes } = useCanvasDrawing(tool, penColor, highlighterColor, penWidth, highlighterWidth, eraserWidth, strokes, onUpdateStrokes, onUpdateRedo, drawStroke);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setHasRendered(true);
+        if (onVisible) onVisible();
+      }
+    }, { rootMargin: '500px' });
+    if (containerRef.current) observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, [onVisible]);
 
   const renderPage = useCallback(async () => {
     if (!pdfDoc || !bgCanvasRef.current || !highlighterCanvasRef.current || !penCanvasRef.current || !containerRef.current) return;
@@ -886,7 +990,6 @@ function PdfPage({ pageNum, pdfDoc, tool, penColor, highlighterColor, penWidth, 
 
       setDimensions({ width: cssWidth, height: cssHeight });
 
-      // Set canvas buffer to high-res size
       bgCanvasRef.current.width = viewport.width;
       bgCanvasRef.current.height = viewport.height;
       highlighterCanvasRef.current.width = viewport.width;
@@ -899,14 +1002,21 @@ function PdfPage({ pageNum, pdfDoc, tool, penColor, highlighterColor, penWidth, 
     } catch (err) {}
   }, [pdfDoc, pageNum, redrawStrokes, highlighterCanvasRef, penCanvasRef]);
 
-  useEffect(() => { renderPage(); }, [renderPage]);
+  useEffect(() => { 
+    if (hasRendered) renderPage(); 
+  }, [hasRendered, renderPage]);
 
   return (
     <div ref={containerRef} className="relative shadow-2xl bg-white flex-shrink-0" style={{ width: dimensions.width, height: dimensions.height }}>
-      <canvas ref={bgCanvasRef} className="absolute inset-0 pointer-events-none z-0" style={{ width: '100%', height: '100%' }} />
-      <ReadingLaser containerRef={containerRef} />
-      <canvas ref={highlighterCanvasRef} className="absolute inset-0 pointer-events-none z-10" style={{ mixBlendMode: 'multiply', width: '100%', height: '100%' }} />
-      <canvas ref={penCanvasRef} className={`absolute inset-0 z-20 ${tool === 'pointer' ? 'pointer-events-none' : 'cursor-crosshair'}`} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onPointerLeave={handlePointerUp} style={{ touchAction: 'none', width: '100%', height: '100%' }} />
+      {hasRendered ? (
+        <>
+          <canvas ref={bgCanvasRef} className="absolute inset-0 pointer-events-none z-0" style={{ width: '100%', height: '100%' }} />
+          <canvas ref={highlighterCanvasRef} className="absolute inset-0 pointer-events-none z-10" style={{ mixBlendMode: 'multiply', width: '100%', height: '100%' }} />
+          <canvas ref={penCanvasRef} className={`absolute inset-0 z-20 ${tool === 'pointer' ? 'pointer-events-none' : 'cursor-crosshair'}`} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onPointerLeave={handlePointerUp} style={{ touchAction: 'none', width: '100%', height: '100%' }} />
+        </>
+      ) : (
+        <div className="flex items-center justify-center w-full h-full text-gray-400">Carregando página...</div>
+      )}
     </div>
   );
 }
@@ -940,7 +1050,6 @@ function DocxPage({ html, tool, penColor, highlighterColor, penWidth, highlighte
   return (
     <div className="relative shadow-2xl bg-white flex-shrink-0 mx-auto" style={{ width: '800px', minHeight: '1131px' }}>
       <div ref={containerRef} className="p-12 prose max-w-none text-black w-full min-h-[1131px]" dangerouslySetInnerHTML={{ __html: html }} />
-      <ReadingLaser containerRef={containerRef} />
       <canvas ref={highlighterCanvasRef} className="absolute inset-0 pointer-events-none z-10" style={{ mixBlendMode: 'multiply' }} />
       <canvas ref={penCanvasRef} className={`absolute inset-0 z-20 ${tool === 'pointer' ? 'pointer-events-none' : 'cursor-crosshair'}`} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onPointerLeave={handlePointerUp} style={{ touchAction: 'none' }} />
     </div>
@@ -948,7 +1057,7 @@ function DocxPage({ html, tool, penColor, highlighterColor, penWidth, highlighte
 }
 
 // Subcomponent for EPUB rendering
-function EpubPage({ book, pageNum, tool, penColor, highlighterColor, penWidth, highlighterWidth, eraserWidth, strokes, onUpdateStrokes, onUpdateRedo, drawStroke }: any) {
+function EpubPage({ book, pageNum, viewMode, tool, penColor, highlighterColor, penWidth, highlighterWidth, eraserWidth, strokes, onUpdateStrokes, onUpdateRedo, drawStroke }: any) {
   const viewerRef = useRef<HTMLDivElement>(null);
   const renditionRef = useRef<any>(null);
   const bookIdRef = useRef<string>('');
@@ -984,7 +1093,9 @@ function EpubPage({ book, pageNum, tool, penColor, highlighterColor, penWidth, h
     const rendition = book.renderTo(viewerRef.current, {
       width: width,
       height: height,
-      spread: 'none'
+      spread: 'none',
+      flow: viewMode === 'scroll' ? 'scrolled-doc' : 'paginated',
+      manager: viewMode === 'scroll' ? 'continuous' : 'default'
     });
     renditionRef.current = rendition;
     rendition.display();
@@ -1009,7 +1120,7 @@ function EpubPage({ book, pageNum, tool, penColor, highlighterColor, penWidth, h
   // Navigate using spine-based next/prev when pageNum changes
   const prevPageRef = useRef<number>(1);
   useEffect(() => {
-    if (!renditionRef.current) return;
+    if (!renditionRef.current || viewMode === 'scroll') return;
     const diff = pageNum - prevPageRef.current;
     prevPageRef.current = pageNum;
     
@@ -1020,12 +1131,11 @@ function EpubPage({ book, pageNum, tool, penColor, highlighterColor, penWidth, h
     } else if (diff < 0) {
       renditionRef.current.prev();
     }
-  }, [pageNum]);
+  }, [pageNum, viewMode]);
 
   return (
     <div className="relative shadow-2xl bg-white flex-shrink-0" style={{ width: dimensions.width, height: dimensions.height }}>
       <div ref={viewerRef} className="absolute inset-0 overflow-hidden" />
-      <ReadingLaser containerRef={viewerRef} />
       <canvas ref={highlighterCanvasRef} className="absolute inset-0 pointer-events-none z-10" style={{ mixBlendMode: 'multiply', width: '100%', height: '100%' }} />
       <canvas ref={penCanvasRef} className={`absolute inset-0 z-20 ${tool === 'pointer' ? 'pointer-events-none' : 'cursor-crosshair'}`} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onPointerLeave={handlePointerUp} style={{ touchAction: 'none', width: '100%', height: '100%' }} />
     </div>

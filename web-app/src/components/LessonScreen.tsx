@@ -6,122 +6,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { DownloadIcon, ClipboardListIcon, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
-import { getStroke } from 'perfect-freehand';
 import PracticeQuiz from './PracticeQuiz';
 import { generateContentFromGemini } from '../lib/gemini';
 import ReadingLaser from './ReadingLaser';
-import DrawingSidebar from './DrawingSidebar';
-
-interface StrokePoint { x: number; y: number; pressure: number; }
-interface Stroke { points: StrokePoint[]; color: string; width: number; type: 'pen' | 'highlighter' | 'eraser'; }
-
-
-function useCanvasDrawing(
-  tool: string, penColor: string, highlighterColor: string, 
-  penWidth: number, highlighterWidth: number, eraserWidth: number, 
-  strokes: Stroke[], onUpdateStrokes: (s: Stroke[]) => void, 
-  onUpdateRedo: (s: Stroke[]) => void, drawStroke: any
-) {
-  const highlighterCanvasRef = useRef<HTMLCanvasElement>(null);
-  const penCanvasRef = useRef<HTMLCanvasElement>(null);
-  const [isDrawing, setIsDrawing] = useState(false);
-  const currentStrokeRef = useRef<Stroke | null>(null);
-  const animFrameRef = useRef<number>(0);
-
-  const redrawStrokes = useCallback(() => {
-    const hCtx = highlighterCanvasRef.current?.getContext('2d');
-    const pCtx = penCanvasRef.current?.getContext('2d');
-    if (!hCtx || !pCtx || !highlighterCanvasRef.current || !penCanvasRef.current) return;
-
-    hCtx.clearRect(0, 0, highlighterCanvasRef.current.width, highlighterCanvasRef.current.height);
-    pCtx.clearRect(0, 0, penCanvasRef.current.width, penCanvasRef.current.height);
-
-    for (const stroke of strokes) {
-      if (stroke.type === 'highlighter') drawStroke(hCtx, stroke);
-      else if (stroke.type === 'pen') drawStroke(pCtx, stroke);
-      else if (stroke.type === 'eraser') { drawStroke(hCtx, stroke); drawStroke(pCtx, stroke); }
-    }
-
-    if (currentStrokeRef.current) {
-      const stroke = currentStrokeRef.current;
-      if (stroke.type === 'highlighter') drawStroke(hCtx, stroke);
-      else if (stroke.type === 'pen') drawStroke(pCtx, stroke);
-      else if (stroke.type === 'eraser') { drawStroke(hCtx, stroke); drawStroke(pCtx, stroke); }
-    }
-  }, [strokes, drawStroke]);
-
-  useEffect(() => { redrawStrokes(); }, [strokes, redrawStrokes]);
-
-  const eraseIntersecting = (x: number, y: number) => {
-    const threshold = eraserWidth / 2;
-    const strokesToKeep: Stroke[] = [];
-    const strokesToRemove: Stroke[] = [];
-    for (const stroke of strokes) {
-      if (stroke.type === 'eraser') continue;
-      const isHit = stroke.points.some((p: StrokePoint) => Math.hypot(p.x - x, p.y - y) < threshold);
-      if (isHit) strokesToRemove.push(stroke);
-      else strokesToKeep.push(stroke);
-    }
-    if (strokesToRemove.length > 0) {
-      onUpdateStrokes(strokesToKeep);
-      setTimeout(redrawStrokes, 0);
-    }
-  };
-
-  const handlePointerDown = (e: React.PointerEvent) => {
-    if (tool === 'pointer') return;
-    e.preventDefault();
-    setIsDrawing(true);
-    const rect = penCanvasRef.current?.getBoundingClientRect();
-    if (!rect) return;
-
-    const x = (e.clientX - rect.left) * (penCanvasRef.current!.width / rect.width);
-    const y = (e.clientY - rect.top) * (penCanvasRef.current!.height / rect.height);
-    const pressure = e.pressure !== undefined && e.pressure > 0 ? e.pressure : 0.5;
-
-    if (tool === 'eraser') {
-      eraseIntersecting(x, y);
-      currentStrokeRef.current = { points: [{ x, y, pressure }], color: '#000000', width: eraserWidth, type: 'eraser' };
-    } else {
-      currentStrokeRef.current = {
-        points: [{ x, y, pressure }],
-        color: tool === 'highlighter' ? highlighterColor : penColor,
-        width: tool === 'highlighter' ? highlighterWidth : penWidth,
-        type: tool as any,
-      };
-    }
-  };
-
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDrawing || !currentStrokeRef.current) return;
-    e.preventDefault();
-    const rect = penCanvasRef.current?.getBoundingClientRect();
-    if (!rect) return;
-
-    const x = (e.clientX - rect.left) * (penCanvasRef.current!.width / rect.width);
-    const y = (e.clientY - rect.top) * (penCanvasRef.current!.height / rect.height);
-    const pressure = e.pressure !== undefined && e.pressure > 0 ? e.pressure : 0.5;
-
-    currentStrokeRef.current.points.push({ x, y, pressure });
-    if (tool === 'eraser') eraseIntersecting(x, y);
-
-    if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-    animFrameRef.current = requestAnimationFrame(() => redrawStrokes());
-  };
-
-  const handlePointerUp = (e: React.PointerEvent) => {
-    e.preventDefault();
-    setIsDrawing(false);
-    if (currentStrokeRef.current && currentStrokeRef.current.points.length > 0 && tool !== 'eraser') {
-      onUpdateStrokes([...strokes, currentStrokeRef.current]);
-      onUpdateRedo([]);
-    }
-    currentStrokeRef.current = null;
-    redrawStrokes();
-  };
-
-  return { highlighterCanvasRef, penCanvasRef, handlePointerDown, handlePointerMove, handlePointerUp, redrawStrokes };
-}
 
 const renderMarkdownText = (text: string) => {
   if (!text) return null;
@@ -270,116 +157,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
   const zoomOut = () => setZoom(z => Math.max(0.5, +(z - 0.1).toFixed(2)));
   const zoomReset = () => setZoom(1);
 
-  // Drawing State
-  const [tool, setTool] = useState<'pointer' | 'pen' | 'highlighter' | 'eraser'>('pointer');
-  const [penColor, setPenColor] = useState('#ef4444');
-  const highlighterColor = '#ffff00';
-  const [strokes, setStrokes] = useState<Stroke[]>([]);
-  const [redoStack, setRedoStack] = useState<Stroke[]>([]);
-  const [penWidth, setPenWidth] = useState(3);
-  const highlighterWidth = 20;
-  const [eraserWidth, setEraserWidth] = useState(20);
 
-  const [penPresets, setPenPresets] = useState([{ id: 'p1', color: '#ef4444', width: 3 }]);
-  const [eraserPresets, setEraserPresets] = useState([{ id: 'e1', type: 'normal', width: 20 }]);
-  const [activePenId, setActivePenId] = useState('p1');
-  const [activeEraserId, setActiveEraserId] = useState('e1');
-
-  useEffect(() => {
-    const activePen = penPresets.find(p => p.id === activePenId);
-    if (activePen) { setPenColor(activePen.color); setPenWidth(activePen.width); }
-  }, [activePenId, penPresets]);
-
-  useEffect(() => {
-    const activeEraser = eraserPresets.find(p => p.id === activeEraserId);
-    if (activeEraser) { setEraserWidth(activeEraser.width); }
-  }, [activeEraserId, eraserPresets]);
-
-  const drawStroke = useCallback((ctx: CanvasRenderingContext2D, stroke: Stroke) => {
-    if (stroke.points.length === 0) return;
-    ctx.save();
-    if (stroke.type === 'eraser') {
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.fillStyle = 'rgba(0,0,0,1)';
-    } else {
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.fillStyle = stroke.color;
-    }
-    try {
-      const pointsArray = stroke.points.map(p => [p.x, p.y, p.pressure] as [number, number, number]);
-      const outlinePoints = getStroke(pointsArray, {
-        size: stroke.width,
-        thinning: stroke.type === 'highlighter' ? 0 : 0.5,
-        smoothing: 0.5,
-        streamline: 0.5,
-        simulatePressure: false,
-      });
-      if (outlinePoints && outlinePoints.length > 0) {
-        ctx.beginPath();
-        ctx.moveTo(outlinePoints[0][0], outlinePoints[0][1]);
-        for (let i = 1; i < outlinePoints.length; i++) ctx.lineTo(outlinePoints[i][0], outlinePoints[i][1]);
-        ctx.closePath();
-        ctx.fill();
-      }
-    } catch (e) {
-      console.warn("Erro ao desenhar traço", e);
-    }
-    ctx.restore();
-  }, []);
-
-  const handleUndo = () => {
-    if (strokes.length === 0) return;
-    const newStrokes = [...strokes];
-    const undone = newStrokes.pop();
-    setStrokes(newStrokes);
-    if (undone) setRedoStack([...redoStack, undone]);
-  };
-
-  const handleRedo = () => {
-    if (redoStack.length === 0) return;
-    const newRedos = [...redoStack];
-    const redone = newRedos.pop();
-    setRedoStack(newRedos);
-    if (redone) setStrokes([...strokes, redone]);
-  };
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key.toLowerCase() === 'z') {
-        e.preventDefault();
-        handleUndo();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [strokes, redoStack]);
-
-  const { 
-    highlighterCanvasRef, 
-    penCanvasRef, 
-    handlePointerDown, 
-    handlePointerMove, 
-    handlePointerUp, 
-    redrawStrokes 
-  } = useCanvasDrawing(tool, penColor, highlighterColor, penWidth, highlighterWidth, eraserWidth, strokes, setStrokes, setRedoStack, drawStroke);
-
-  // Auto-resize canvases to match content height
-  useEffect(() => {
-    const observer = new ResizeObserver(() => {
-      if (contentRef.current && highlighterCanvasRef.current && penCanvasRef.current) {
-        const { scrollWidth, scrollHeight } = contentRef.current;
-        if (highlighterCanvasRef.current.height !== scrollHeight) {
-          highlighterCanvasRef.current.width = scrollWidth;
-          highlighterCanvasRef.current.height = scrollHeight;
-          penCanvasRef.current.width = scrollWidth;
-          penCanvasRef.current.height = scrollHeight;
-          redrawStrokes();
-        }
-      }
-    });
-    if (contentRef.current) observer.observe(contentRef.current);
-    return () => observer.disconnect();
-  }, [redrawStrokes, highlighterCanvasRef, penCanvasRef]);
 
 
 
@@ -950,13 +728,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
           <div style={{ transform: `scale(${zoom})`, transformOrigin: 'top center', transition: 'transform 0.15s ease' }}>
             <div ref={contentRef} className={`${theme.cardFront} p-6 rounded-xl shadow-lg relative text-gray-900 dark:text-gray-100 w-full`}>
               
-              <canvas ref={highlighterCanvasRef} className="absolute inset-0 pointer-events-none z-10" style={{ mixBlendMode: 'multiply' }} />
-              <canvas 
-                ref={penCanvasRef} 
-                className={`absolute inset-0 z-20 ${tool === 'pointer' ? 'pointer-events-none' : 'cursor-crosshair'}`} 
-                onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onPointerLeave={handlePointerUp} 
-                style={{ touchAction: 'none' }} 
-              />
+
 
               <ReadingLaser containerRef={contentRef} />
               {highlighter.visible && (
@@ -1123,16 +895,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
           </div>
         </div>
     </div>
-      <DrawingSidebar
-        tool={tool} setTool={setTool}
-        penPresets={penPresets} setPenPresets={setPenPresets}
-        activePenId={activePenId} setActivePenId={setActivePenId}
-        eraserPresets={eraserPresets} setEraserPresets={setEraserPresets}
-        activeEraserId={activeEraserId} setActiveEraserId={setActiveEraserId}
-        strokes={strokes}
-        handleUndo={handleUndo} handleRedo={handleRedo}
-        redoStack={redoStack}
-      />
+
     </div>
     ) : null}
   </div>
