@@ -3,7 +3,7 @@ import { themes, defaultTheme } from '../lib/constants';
 import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
-import { DownloadIcon, ClipboardListIcon, Eraser, PenTool, Highlighter, MousePointer2, Undo2, Redo2, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { DownloadIcon, ClipboardListIcon, Eraser, PenTool, MousePointer2, Undo2, Redo2, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import { getStroke } from 'perfect-freehand';
@@ -14,7 +14,6 @@ import ReadingLaser from './ReadingLaser';
 interface StrokePoint { x: number; y: number; pressure: number; }
 interface Stroke { points: StrokePoint[]; color: string; width: number; type: 'pen' | 'highlighter' | 'eraser'; }
 const PEN_COLORS = ['#ef4444', '#3b82f6', '#000000', '#22c55e', '#eab308', '#a855f7'];
-const HIGHLIGHTER_COLORS = ['#ffff00', '#fce7f3', '#dbeafe', '#dcfce3', '#f3e8ff', '#ffedd5'];
 
 function useCanvasDrawing(
   tool: string, penColor: string, highlighterColor: string, 
@@ -273,7 +272,6 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
   // Drawing State
   const [tool, setTool] = useState<'pointer' | 'pen' | 'highlighter' | 'eraser'>('pointer');
   const [penColor, setPenColor] = useState('#ef4444');
-  const [highlighterColor, setHighlighterColor] = useState('#ffff00');
   const [strokes, setStrokes] = useState<Stroke[]>([]);
   const [redoStack, setRedoStack] = useState<Stroke[]>([]);
   const penWidth = 3;
@@ -319,7 +317,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
     handlePointerMove, 
     handlePointerUp, 
     redrawStrokes 
-  } = useCanvasDrawing(tool, penColor, highlighterColor, penWidth, highlighterWidth, eraserWidth, strokes, setStrokes, setRedoStack, drawStroke);
+  } = useCanvasDrawing(tool, penColor, '#ffff00', penWidth, highlighterWidth, eraserWidth, strokes, setStrokes, setRedoStack, drawStroke);
 
   // Auto-resize canvases to match content height
   useEffect(() => {
@@ -929,13 +927,6 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
               <button key={c} onClick={() => setPenColor(c)} className={`w-6 h-6 rounded-full border-2 transition-transform ${penColor === c ? 'border-indigo-400 scale-125 shadow-md' : 'border-transparent scale-100'}`} style={{ backgroundColor: c }} />
             ))}
             
-            <div className="w-8 h-px bg-gray-200 dark:bg-gray-700 my-1"></div>
-            <button onClick={() => setTool('highlighter')} className={`p-2.5 rounded-xl transition-all ${tool === 'highlighter' ? 'bg-yellow-100 text-yellow-600 shadow-inner' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900'}`} title="Marca-texto Livre"><Highlighter className="w-5 h-5" /></button>
-            {tool === 'highlighter' && HIGHLIGHTER_COLORS.map(c => (
-              <button key={c} onClick={() => setHighlighterColor(c)} className={`w-6 h-6 rounded-full border-2 transition-transform ${highlighterColor === c ? 'border-yellow-400 scale-125 shadow-md' : 'border-transparent scale-100'}`} style={{ backgroundColor: c }} />
-            ))}
-
-            <div className="w-8 h-px bg-gray-200 dark:bg-gray-700 my-1"></div>
             <button onClick={() => setTool('eraser')} className={`p-2.5 rounded-xl transition-all ${tool === 'eraser' ? 'bg-pink-100 text-pink-600 shadow-inner' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900'}`} title="Borracha"><Eraser className="w-5 h-5" /></button>
 
             <div className="w-8 h-px bg-gray-200 dark:bg-gray-700 my-1"></div>
