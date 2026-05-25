@@ -3,7 +3,7 @@ import { db } from '../lib/firebase';
 import { collection, query, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import Draggable from 'react-draggable';
-import { Palette, X, GripHorizontal, Tag, PlusCircle } from 'lucide-react';
+import { Palette, X, GripHorizontal, Tag, PlusCircle, Layers } from 'lucide-react';
 import { generateNoteTag } from '../lib/gemini';
 
 interface Note {
@@ -35,6 +35,8 @@ export default function StickyNotesManager() {
   const [highestZ, setHighestZ] = useState(100);
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
   const [isCascadeMode, setIsCascadeMode] = useState(false);
+  const [cascadePos, setCascadePos] = useState({ x: 100, y: 100 });
+  const [cascadeSize, setCascadeSize] = useState({ w: 256, h: 280 });
   const [isDraggingFromSidebar, setIsDraggingFromSidebar] = useState(false);
   const { apiKey } = useAuth();
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
@@ -173,6 +175,18 @@ export default function StickyNotesManager() {
     handleUpdateNote(id, { zIndex: lowestZ - 1 });
   };
 
+  const handleToggleCascade = () => {
+    if (!isCascadeMode) {
+      const savedPos = (() => { try { return JSON.parse(localStorage.getItem('last_note_pos') || 'null'); } catch { return null; } })();
+      const savedSize = (() => { try { return JSON.parse(localStorage.getItem('last_note_size') || 'null'); } catch { return null; } })();
+      if (savedPos) setCascadePos(savedPos);
+      else setCascadePos({ x: window.innerWidth / 2 - 150, y: window.innerHeight / 2 - 150 });
+      
+      if (savedSize) setCascadeSize(savedSize);
+    }
+    setIsCascadeMode(!isCascadeMode);
+  };
+
   if (!user) return null;
 
   const activeNotes = notes.filter(n => !n.isArchived);
@@ -185,9 +199,18 @@ export default function StickyNotesManager() {
             key={note.id} 
             note={note} 
             isCascadeMode={isCascadeMode}
+            cascadePos={cascadePos}
+            cascadeSize={cascadeSize}
+            onCascadeDrag={(pos) => setCascadePos(pos)}
+            onCascadeResize={(size) => setCascadeSize(size)}
+            onCascadeStop={(pos) => {
+              setCascadePos(pos);
+              localStorage.setItem('last_note_pos', JSON.stringify(pos));
+            }}
             onUpdate={(updates) => handleUpdateNote(note.id, updates)}
             onFocus={() => bringToFront(note.id)}
             onSendToBack={() => sendToBack(note.id)}
+            onToggleCascade={handleToggleCascade}
           />
         ))}
       </div>
@@ -207,10 +230,11 @@ export default function StickyNotesManager() {
             <div className={`p-6 flex-1 bg-gray-50 dark:bg-gray-900 ${isDraggingFromSidebar ? 'overflow-visible' : 'overflow-y-auto'}`}>
               <div className="flex justify-between items-center mb-4">
                 <button
-                  onClick={() => setIsCascadeMode(!isCascadeMode)}
-                  className={`px-4 py-2 rounded-lg font-bold text-sm transition-all shadow-sm ${isCascadeMode ? 'bg-indigo-600 text-white' : 'bg-white text-indigo-600 border border-indigo-200 hover:bg-indigo-50 dark:bg-gray-800 dark:border-indigo-900 dark:hover:bg-gray-700'}`}
+                  onClick={handleToggleCascade}
+                  className={`px-4 py-2 rounded-lg font-bold text-sm transition-all shadow-sm flex items-center gap-2 ${isCascadeMode ? 'bg-indigo-600 text-white' : 'bg-white text-indigo-600 border border-indigo-200 hover:bg-indigo-50 dark:bg-gray-800 dark:border-indigo-900 dark:hover:bg-gray-700'}`}
                 >
-                  {isCascadeMode ? '✓ Modo Cascata Ativo' : 'Modo Cascata'}
+                  <Layers className="w-4 h-4" />
+                  {isCascadeMode ? 'Modo Cascata Ativo' : 'Modo Cascata'}
                 </button>
               </div>
               {notes.length === 0 ? (
@@ -367,15 +391,27 @@ function SidebarNoteItem({
 function StickyNoteItem({ 
   note, 
   isCascadeMode,
+  cascadePos,
+  cascadeSize,
+  onCascadeDrag,
+  onCascadeResize,
+  onCascadeStop,
   onUpdate, 
   onFocus,
-  onSendToBack
+  onSendToBack,
+  onToggleCascade
 }: { 
   note: Note; 
   isCascadeMode: boolean;
+  cascadePos?: {x: number, y: number};
+  cascadeSize?: {w: number, h: number};
+  onCascadeDrag?: (pos: {x: number, y: number}) => void;
+  onCascadeResize?: (size: {w: number, h: number}) => void;
+  onCascadeStop?: (pos: {x: number, y: number}) => void;
   onUpdate: (u: Partial<Note>) => void; 
   onFocus: () => void;
   onSendToBack: () => void;
+  onToggleCascade: () => void;
 }) {
   const [showPalette, setShowPalette] = useState(false);
   const nodeRef = useRef<HTMLDivElement>(null);
@@ -416,37 +452,51 @@ function StickyNoteItem({
     e.preventDefault();
     const dx = e.clientX - resizeRef.current.startX;
     const dy = e.clientY - resizeRef.current.startY;
-    setSize({
-      w: Math.max(180, resizeRef.current.startW + dx),
-      h: Math.max(180, resizeRef.current.startH + dy),
-    });
+    const newW = Math.max(180, resizeRef.current.startW + dx);
+    const newH = Math.max(180, resizeRef.current.startH + dy);
+    
+    if (isCascadeMode && onCascadeResize) {
+      onCascadeResize({ w: newW, h: newH });
+    } else {
+      setSize({ w: newW, h: newH });
+    }
   };
 
   const onResizeEnd = (e: React.PointerEvent) => {
     resizeRef.current = null;
     (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
-    onUpdate({ w: size.w, h: size.h });
-    localStorage.setItem('last_note_size', JSON.stringify({ w: size.w, h: size.h }));
+    if (!isCascadeMode) {
+      onUpdate({ w: size.w, h: size.h });
+      localStorage.setItem('last_note_size', JSON.stringify({ w: size.w, h: size.h }));
+    } else if (cascadeSize) {
+      localStorage.setItem('last_note_size', JSON.stringify({ w: cascadeSize.w, h: cascadeSize.h }));
+    }
   };
 
   return (
     <Draggable
       nodeRef={nodeRef}
       handle=".drag-handle"
+      position={isCascadeMode ? cascadePos : undefined}
       defaultPosition={{ x: note.x || 0, y: note.y || 0 }}
+      onDrag={isCascadeMode ? (_e, data) => onCascadeDrag?.({x: data.x, y: data.y}) : undefined}
       onStop={(_e, data) => {
-        onUpdate({ x: data.x, y: data.y });
-        localStorage.setItem('last_note_pos', JSON.stringify({ x: data.x, y: data.y }));
+        if (isCascadeMode) {
+          onCascadeStop?.({x: data.x, y: data.y});
+        } else {
+          onUpdate({ x: data.x, y: data.y });
+          localStorage.setItem('last_note_pos', JSON.stringify({ x: data.x, y: data.y }));
+        }
       }}
       onStart={onFocus}
       bounds="parent"
     >
       <div 
         ref={nodeRef}
-        className={`sticky-note absolute rounded-lg shadow-xl overflow-hidden pointer-events-auto border-t-8 flex flex-col group transition-shadow hover:shadow-2xl ${isCascadeMode ? 'cascade-mode' : ''}`}
+        className="sticky-note absolute rounded-lg shadow-xl overflow-hidden pointer-events-auto border-t-8 flex flex-col group transition-shadow hover:shadow-2xl"
         style={{ 
-          width: `${size.w}px`,
-          height: `${size.h}px`,
+          width: isCascadeMode && cascadeSize ? `${cascadeSize.w}px` : `${size.w}px`,
+          height: isCascadeMode && cascadeSize ? `${cascadeSize.h}px` : `${size.h}px`,
           minWidth: '180px',
           minHeight: '180px',
           backgroundColor: note.color || '#fef08a', 
@@ -470,6 +520,15 @@ function StickyNoteItem({
           <GripHorizontal className="w-4 h-4 text-black/30" />
           
           <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+            <button 
+              onClick={(e) => { e.stopPropagation(); onToggleCascade(); }}
+              onTouchStart={(e) => { e.stopPropagation(); onToggleCascade(); }}
+              onPointerDown={(e) => e.stopPropagation()}
+              className={`p-1 hover:bg-black/10 rounded ${isCascadeMode ? 'bg-indigo-100 text-indigo-600' : 'text-gray-700'}`}
+              title={isCascadeMode ? "Sair do Modo Cascata" : "Modo Cascata"}
+            >
+              <Layers className="w-3.5 h-3.5 pointer-events-none" />
+            </button>
             <button 
               onClick={(e) => { e.stopPropagation(); setShowPalette(!showPalette); }}
               onTouchStart={(e) => { e.stopPropagation(); setShowPalette(!showPalette); }}
