@@ -263,16 +263,28 @@ export default function WhiteboardOverlay() {
 
 
   // Listen for global toggle events
+  const lastActiveNotebookRef = useRef<Notebook | null>(null);
+
   useEffect(() => {
     const handleTransparent = () => {
       setActive(true);
       setMode('transparent');
       setWindowMode('fullscreen');
+      setActiveNotebook(prev => {
+        if (prev) lastActiveNotebookRef.current = prev;
+        return null;
+      });
     };
     const handleNotebook = () => {
       setActive(true);
       setMode('lined');
       setWindowMode('floating');
+      setActiveNotebook(prev => {
+        if (!prev && lastActiveNotebookRef.current) {
+          return lastActiveNotebookRef.current;
+        }
+        return prev;
+      });
     };
     const handleToggle = () => setActive(prev => !prev);
     window.addEventListener('toggle-whiteboard-transparent', handleTransparent);
@@ -295,7 +307,18 @@ export default function WhiteboardOverlay() {
         const loaded: Notebook[] = [];
         snap.forEach(d => loaded.push({ id: d.id, ...d.data() } as Notebook));
         if (loaded.length > 0) {
-          setActiveNotebook(prev => prev || loaded[0]);
+          setActiveNotebook(prev => {
+            if (prev) return prev;
+            // Define lastActiveNotebookRef para podermos restaurar depois
+            lastActiveNotebookRef.current = loaded[0];
+            
+            // Se o usuário já abriu a lousa transparente, não defina o activeNotebook
+            // (Isso evita carregar o caderno por cima da lousa transparente no load inicial)
+            const isTransparentEvent = window.document.querySelector('.whiteboard-transparent-active');
+            if (isTransparentEvent) return null;
+            
+            return loaded[0];
+          });
         }
       } catch (e) {
         console.error('Erro ao carregar lista de cadernos:', e);
