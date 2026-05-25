@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { Headphones, Play, Pause, Volume2, VolumeX, Music, Waves, CloudRain } from 'lucide-react';
+import { Headphones, Play, Pause, Volume2, VolumeX, Waves, CloudRain } from 'lucide-react';
 
-type TrackType = 'none' | 'white-noise' | 'binaural' | 'classic';
+type TrackType = 'none' | 'white-noise' | 'binaural';
 
 export default function FocusPlayer() {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,8 +18,7 @@ export default function FocusPlayer() {
   // HTML Audio para a rádio
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Rádio de Música Clássica (Venice Classic Radio)
-  const CLASSIC_RADIO_URL = "https://uk7.internet-radio.com/proxy/veniceclassic?mp=/stream";
+
 
   // Fechar popover ao clicar fora
   useEffect(() => {
@@ -136,13 +135,7 @@ export default function FocusPlayer() {
     binauralNodesRef.current = { osc1, osc2 };
   };
 
-  const playClassic = () => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio(CLASSIC_RADIO_URL);
-      audioRef.current.volume = volume;
-    }
-    audioRef.current.play().catch(e => console.error("Error playing radio:", e));
-  };
+
 
   const handleTogglePlay = () => {
     if (activeTrack === 'none') {
@@ -165,7 +158,6 @@ export default function FocusPlayer() {
     stopAll();
     if (track === 'white-noise') playWhiteNoise();
     else if (track === 'binaural') playBinaural();
-    else if (track === 'classic') playClassic();
   };
 
   const handleTrackChange = (track: TrackType) => {
@@ -229,16 +221,7 @@ export default function FocusPlayer() {
             >
               <Waves className="w-4 h-4" /> Ondas Alpha (Binaural)
             </button>
-            <button
-              onClick={() => handleTrackChange('classic')}
-              className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 text-sm transition-colors ${
-                activeTrack === 'classic' 
-                  ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-medium' 
-                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
-              }`}
-            >
-              <Music className="w-4 h-4" /> Rádio Clássica
-            </button>
+
           </div>
 
           <div className="flex items-center gap-3">

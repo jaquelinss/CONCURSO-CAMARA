@@ -16,6 +16,8 @@ interface Note {
   zIndex: number;
   isArchived?: boolean;
   subjectTag?: string;
+  w?: number;
+  h?: number;
 }
 
 const COLORS = [
@@ -108,9 +110,16 @@ export default function StickyNotesManager() {
         initialContent = e.detail.content || '';
       }
 
-      // Criar no centro aproximado da tela
-      const x = Math.max(100, window.innerWidth / 2 - 120 + (Math.random() * 40 - 20));
-      const y = Math.max(100, window.innerHeight / 2 - 120 + (Math.random() * 40 - 20));
+      // Tamanho e posições da última nota
+      const savedPos = (() => { try { return JSON.parse(localStorage.getItem('last_note_pos') || 'null'); } catch { return null; } })();
+      const savedSize = (() => { try { return JSON.parse(localStorage.getItem('last_note_size') || 'null'); } catch { return null; } })();
+      
+      let x = Math.max(100, window.innerWidth / 2 - 120 + (Math.random() * 40 - 20));
+      let y = Math.max(100, window.innerHeight / 2 - 120 + (Math.random() * 40 - 20));
+      if (savedPos) {
+        x = savedPos.x + (Math.random() * 20 - 10);
+        y = savedPos.y + (Math.random() * 20 - 10);
+      }
 
       await addDoc(collection(db, 'users', user.uid, 'notes'), {
         title: initialTitle,
@@ -118,6 +127,8 @@ export default function StickyNotesManager() {
         color: COLORS[0],
         x,
         y,
+        w: savedSize?.w || 256,
+        h: savedSize?.h || 280,
         zIndex: newZ,
         isArchived: false,
         createdAt: serverTimestamp()
@@ -272,6 +283,7 @@ function SidebarNoteItem({
     <Draggable
       nodeRef={nodeRef}
       position={{x: 0, y: 0}}
+      cancel="button, input"
       onStart={onDragStart}
       onStop={(e, data) => {
         onDragEnd();
@@ -362,7 +374,7 @@ function StickyNoteItem({
   }, [content, title]);
 
   // Custom resize handler (native resize:both doesn't work on mobile)
-  const [size, setSize] = useState({ w: 256, h: 280 });
+  const [size, setSize] = useState({ w: note.w || 256, h: note.h || 280 });
   const resizeRef = useRef<{ startX: number; startY: number; startW: number; startH: number } | null>(null);
 
   const onResizeStart = (e: React.PointerEvent) => {
@@ -392,6 +404,8 @@ function StickyNoteItem({
   const onResizeEnd = (e: React.PointerEvent) => {
     resizeRef.current = null;
     (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    onUpdate({ w: size.w, h: size.h });
+    localStorage.setItem('last_note_size', JSON.stringify({ w: size.w, h: size.h }));
   };
 
   return (
@@ -399,7 +413,10 @@ function StickyNoteItem({
       nodeRef={nodeRef}
       handle=".drag-handle"
       defaultPosition={{ x: note.x || 0, y: note.y || 0 }}
-      onStop={(_e, data) => onUpdate({ x: data.x, y: data.y })}
+      onStop={(_e, data) => {
+        onUpdate({ x: data.x, y: data.y });
+        localStorage.setItem('last_note_pos', JSON.stringify({ x: data.x, y: data.y }));
+      }}
       onStart={onFocus}
       bounds="parent"
     >

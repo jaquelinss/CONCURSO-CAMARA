@@ -210,8 +210,14 @@ export default function WhiteboardOverlay() {
   const animFrameRef = useRef<number>(0);
 
   // Floating Window Size
-  const [size, setSize] = useState({ w: Math.min(600, window.innerWidth - 40), h: Math.min(800, window.innerHeight - 100) });
+  const savedSize = (() => { try { return JSON.parse(localStorage.getItem('wb_size') || 'null'); } catch { return null; } })();
+  const [size, setSize] = useState({ 
+    w: savedSize?.w || Math.min(600, window.innerWidth - 40), 
+    h: savedSize?.h || Math.min(800, window.innerHeight - 100) 
+  });
   const resizeRef = useRef<{ startX: number; startY: number; startW: number; startH: number } | null>(null);
+
+  const savedPos = (() => { try { return JSON.parse(localStorage.getItem('wb_pos') || 'null'); } catch { return null; } })();
 
   // Carregar/Salvar Settings do Firestore
   useEffect(() => {
@@ -710,6 +716,7 @@ export default function WhiteboardOverlay() {
   const onResizeEnd = (e: React.PointerEvent) => {
     resizeRef.current = null;
     (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    localStorage.setItem('wb_size', JSON.stringify(size));
   };
 
   if (!active) return null;
@@ -979,7 +986,13 @@ export default function WhiteboardOverlay() {
   // Modo Caderninho Flutuante
   return createPortal(
     <div className="fixed inset-0 z-[9998] pointer-events-none flex items-center justify-center">
-      <Draggable nodeRef={containerRef} handle=".whiteboard-drag-handle" bounds="parent" defaultPosition={{x: 0, y: 0}}>
+      <Draggable 
+        nodeRef={containerRef} 
+        handle=".whiteboard-drag-handle" 
+        bounds="parent" 
+        defaultPosition={savedPos || {x: 0, y: 0}}
+        onStop={(_e, data) => localStorage.setItem('wb_pos', JSON.stringify({ x: data.x, y: data.y }))}
+      >
         <div 
           ref={containerRef}
           className="absolute pointer-events-auto bg-[#fefce8] rounded-xl shadow-2xl overflow-hidden border border-gray-300 dark:border-gray-600 flex flex-col"

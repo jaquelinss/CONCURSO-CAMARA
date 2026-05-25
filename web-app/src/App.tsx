@@ -19,6 +19,7 @@ import NavigationTutorial from './components/NavigationTutorial';
 import TextSelectionPopover from './components/TextSelectionPopover';
 import KnowledgeBaseManager from './components/KnowledgeBaseManager';
 import WhiteboardOverlay from './components/WhiteboardOverlay';
+import PdfAnnotatorOverlay from './components/PdfAnnotatorOverlay';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import React, { useState } from 'react';
 
@@ -63,6 +64,7 @@ export default function App() {
                 <TextSelectionPopover />
                 <KnowledgeBaseManager />
                 <WhiteboardOverlay />
+                <PdfAnnotatorOverlay />
 
                 {/* Toggle Tools Button */}
                 <button

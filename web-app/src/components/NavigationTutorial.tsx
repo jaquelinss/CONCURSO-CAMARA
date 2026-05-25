@@ -121,7 +121,9 @@ export default function NavigationTutorial() {
       bullets: [
         "Chat com Professores IA: Clique no chapéu de formando flutuante para iniciar um chat com professores virtuais especialistas de cada disciplina.",
         "Histórico Salvo: Guarde suas discussões mais importantes para resgatar na nuvem sem precisar recomeçar o diálogo.",
-        "Post-its Flutuantes: Clique no painel para abrir anotações coloridas (estilo sticky notes) que se organizam livremente pela tela."
+        "Post-its Flutuantes: Clique no painel para abrir anotações coloridas (estilo sticky notes) que se organizam livremente pela tela.",
+        "⌨️ Ctrl+Shift+P — Abrir/fechar o painel 'Meus Post-its' (ver, arrastar e gerenciar).",
+        "⌨️ Ctrl+Shift+N — Criar um novo Post-it instantaneamente na tela."
       ]
     },
     {

@@ -1190,7 +1190,8 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     setDoubtResponse("");
     setSubQuestions([]);
     
-    const doubtPrompt = `Você é um professor extremamente rigoroso e preciso. Com base na seguinte questão do quiz: "${currentQ.pergunta}" e sua explicação: "${currentQ.explicacao}", responda a seguinte dúvida do aluno: "${doubt}". \n\nREGRAS RÍGIDAS:\n1. NUNCA invente ou alucine regras de gramática, ortografia, matemática ou leis. Siga ESTRITAMENTE as normas oficiais (ex: Novo Acordo Ortográfico da Língua Portuguesa).\n2. Se a dúvida do aluno apontar um erro real na questão original, reconheça o erro com honestidade intelectual.\n3. Formate sua resposta usando HTML para melhor legibilidade (<p>, <strong>, <ul>, <li>). Não inclua <html>, <head>, ou <body>.`;
+    const formatOpcoes = (opcoes?: string[]) => opcoes ? opcoes.map((opt, i) => `${String.fromCharCode(65 + i)}) ${opt}`).join(' | ') : 'N/A';
+    const doubtPrompt = `Você é um professor extremamente rigoroso e preciso. Com base na seguinte questão do quiz: "${currentQ.pergunta}", nas alternativas: "${formatOpcoes(currentQ.opcoes)}", na resposta correta: "${currentQ.correta}" e na sua explicação: "${currentQ.explicacao}", responda a seguinte dúvida do aluno: "${doubt}". \n\nREGRAS RÍGIDAS:\n1. NUNCA invente ou alucine regras de gramática, ortografia, matemática ou leis. Siga ESTRITAMENTE as normas oficiais (ex: Novo Acordo Ortográfico da Língua Portuguesa).\n2. Se a dúvida do aluno apontar um erro real na questão original, reconheça o erro com honestidade intelectual.\n3. Formate sua resposta usando HTML para melhor legibilidade (<p>, <strong>, <ul>, <li>). Não inclua <html>, <head>, ou <body>.`;
     
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 

@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { LogOut, Menu, X, CalendarDays, FolderHeart, Sun, Moon, TrendingUp, Database, HelpCircle, Focus, Book, Home } from 'lucide-react';
+import { LogOut, Menu, X, CalendarDays, FolderHeart, Sun, Moon, TrendingUp, Database, HelpCircle, Focus, Book, Home, BookOpen } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import FocusPlayer from './FocusPlayer';
 
@@ -21,6 +21,14 @@ export default function Navigation() {
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'c') {
         e.preventDefault();
         window.dispatchEvent(new Event('toggle-whiteboard-notebook'));
+      }
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'p') {
+        e.preventDefault();
+        window.dispatchEvent(new Event('toggle-archive'));
+      }
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'n') {
+        e.preventDefault();
+        window.dispatchEvent(new Event('add-note'));
       }
     };
     window.addEventListener('keydown', handleGlobalKeyDown);
@@ -92,12 +100,22 @@ export default function Navigation() {
           <div className="flex items-center gap-1 flex-shrink-0">
             {/* Ferramentas de estudo */}
             <button
-              onClick={() => window.dispatchEvent(new Event('add-note'))}
+              onClick={() => window.dispatchEvent(new Event('toggle-archive'))}
               className="p-2 rounded-lg text-yellow-500 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/30 transition-colors"
-              title="Novo Post-it"
+              title="Meus Post-its (Ctrl+Shift+P)"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </button>
+
+            <button
+              onClick={() => window.dispatchEvent(new Event('add-note'))}
+              className="p-2 rounded-lg text-yellow-600 dark:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/30 transition-colors"
+              title="Novo Post-it (Ctrl+Shift+N)"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
               </svg>
             </button>
 
@@ -109,6 +127,14 @@ export default function Navigation() {
               title="Lousa Transparente (Ctrl+Shift+L)"
             >
               <Focus className="w-5 h-5" />
+            </button>
+
+            <button
+              onClick={() => window.dispatchEvent(new Event('open-pdf-annotator'))}
+              className="p-2 rounded-lg text-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
+              title="Leitor de PDF"
+            >
+              <BookOpen className="w-5 h-5" />
             </button>
 
             <button
