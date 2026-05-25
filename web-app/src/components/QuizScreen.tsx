@@ -226,6 +226,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
   });
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [eliminatedAnswers, setEliminatedAnswers] = useState<Set<string>>(new Set());
+  const [answersRecord, setAnswersRecord] = useState<Record<number, string>>({});
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Redação-specific states
@@ -1117,9 +1118,10 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     return (
       <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md max-w-2xl mx-auto">
         <h2 className="text-3xl font-bold mb-4">{isFlashcard ? 'Flashcards Finalizados!' : 'Quiz Finalizado!'}</h2>
-        {!isFlashcard && (
-          <p className="text-xl mb-8">Sua pontuação: <span className={`font-bold ${theme.accent}`}>{score}</span> de {questions.length}</p>
-        )}
+        {!isFlashcard && (() => {
+          const finalScore = questions.reduce((acc, q, idx) => acc + (answersRecord[idx] === q.correta ? 1 : 0), 0);
+          return <p className="text-xl mb-8">Sua pontuação: <span className={`font-bold ${theme.accent}`}>{finalScore}</span> de {questions.length}</p>;
+        })()}
         <div className="flex justify-center gap-4 mt-8">
           <button onClick={onBack} className="px-6 py-2 bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200 rounded font-semibold hover:bg-gray-300 dark:hover:bg-gray-600">{isSavedMode ? 'Voltar aos Salvamentos' : 'Novo Quiz'}</button>
           {!isSavedMode && (
@@ -1135,6 +1137,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
   const handleAnswer = (option: string) => {
     if (selectedAnswer !== null) return;
     setSelectedAnswer(option);
+    setAnswersRecord(prev => ({ ...prev, [currentIndex]: option }));
     if (option === currentQ.correta) {
       const newScore = score + 1;
       setScore(newScore);
@@ -1164,8 +1167,9 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
-      setCurrentIndex(i => i - 1);
-      setSelectedAnswer(null);
+      const prevIndex = currentIndex - 1;
+      setCurrentIndex(prevIndex);
+      setSelectedAnswer(answersRecord[prevIndex] || null);
       setEliminatedAnswers(new Set());
       setDoubt("");
       setDoubtResponse("");
