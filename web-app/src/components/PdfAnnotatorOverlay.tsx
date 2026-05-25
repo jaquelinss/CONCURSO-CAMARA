@@ -358,32 +358,36 @@ export default function PdfAnnotatorOverlay() {
       setStrokesByPage({});
       setRedoStackByPage({});
 
-      // Auto-upload immediately in background
+      // Create Firestore record immediately so save works right away
       const uid = getUid();
       if (uid) {
+        const docId = `doc_${Date.now()}`;
+        const storagePath = `users/${uid}/documents/${docId}`;
+        setCurrentDocId(docId);
+
+        // Create doc record immediately (without fileUrl yet)
+        const docData: Omit<SavedDocument, 'id'> = {
+          name: file.name.replace(/\.[^/.]+$/, ""),
+          fileType: typeAlias,
+          fileUrl: '',
+          storagePath,
+          currentPage: 1,
+          totalPages: parsedTotalPages,
+          strokesByPage: {},
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+          fileSize: file.size
+        };
+        setDoc(doc(db, 'users', uid, 'documents', docId), docData).catch(e => console.error("Firestore create failed", e));
+
+        // Upload file in background and update the fileUrl when done
         (async () => {
           setSaving(true);
           try {
-            const docId = `doc_${Date.now()}`;
-            const storagePath = `users/${uid}/documents/${docId}`;
             const fileRef = storageRef(storage, storagePath);
             await uploadBytes(fileRef, file);
             const fileUrl = await getDownloadURL(fileRef);
-
-            const docData: Omit<SavedDocument, 'id'> = {
-              name: file.name.replace(/\.[^/.]+$/, ""),
-              fileType: typeAlias,
-              fileUrl,
-              storagePath,
-              currentPage: 1,
-              totalPages: parsedTotalPages,
-              strokesByPage: {},
-              createdAt: Date.now(),
-              updatedAt: Date.now(),
-              fileSize: file.size
-            };
-            await setDoc(doc(db, 'users', uid, 'documents', docId), docData);
-            setCurrentDocId(docId);
+            await setDoc(doc(db, 'users', uid, 'documents', docId), { fileUrl }, { merge: true });
             await loadLibrary();
           } catch (e) {
             console.error("Auto-upload failed", e);
