@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { db } from '../lib/firebase';
 import { collection, query, getDocs, orderBy, doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { Link } from 'react-router-dom';
 import { X, BookOpen, CheckCircle, Brain, ArrowRight, Search, Check } from 'lucide-react';
 
 interface LinkContentModalProps {
@@ -131,13 +132,18 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
                 Você ainda não tem {config.label.toLowerCase()} salvo(a) para <strong>{revision.subject}</strong>. 
                 Vá na tela inicial, gere e salve, depois volte aqui para vincular.
               </p>
-              <a 
-                href="/dashboard"
+              <Link 
+                to="/dashboard"
+                state={{
+                  subject: revision.subject,
+                  topic: revision.topic,
+                  model: type === 'lesson' ? 'Aula Explicativa' : type === 'flashcard' ? 'Flashcards' : 'Quiz (Múltipla Escolha)'
+                }}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-colors shadow-lg"
               >
                 Ir para Gerar Conteúdo
                 <ArrowRight className="w-4 h-4" />
-              </a>
+              </Link>
             </div>
           ) : (
             <div className="space-y-3">

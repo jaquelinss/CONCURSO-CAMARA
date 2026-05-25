@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import SettingsScreen from '../components/SettingsScreen';
 import LessonScreen from '../components/LessonScreen';
@@ -10,18 +11,30 @@ import { PeriodicTable, ElementDetailModal } from '../components/PeriodicTable';
 
 export default function Dashboard() {
   const { hasSeenWelcome, apiKey } = useAuth();
+  const location = useLocation();
+  const stateFromNav = location.state as any;
+
   const [screen, setScreen] = useState<'settings' | 'lesson' | 'quiz'>('settings');
   const [settings, setSettings] = useState({
-    mode: 'Concurso',
-    subject: 'Língua Portuguesa',
-    model: 'Aula Explicativa',
-    difficulty: 'Médio',
-    quantity: 5,
-    topic: 'Todos',
-    subTopic: 'Todos',
-    specificTopic: '',
-    lessonLevel: 'Introdutória',
+    mode: stateFromNav?.mode || 'Concurso',
+    subject: stateFromNav?.subject || 'Língua Portuguesa',
+    model: stateFromNav?.model || 'Aula Explicativa',
+    difficulty: stateFromNav?.difficulty || 'Médio',
+    quantity: stateFromNav?.quantity || 5,
+    topic: stateFromNav?.topic || 'Todos',
+    subTopic: stateFromNav?.subTopic || 'Todos',
+    specificTopic: stateFromNav?.specificTopic || '',
+    lessonLevel: stateFromNav?.lessonLevel || 'Introdutória',
   });
+
+  useEffect(() => {
+    if (location.state) {
+      setSettings(prev => ({
+        ...prev,
+        ...location.state
+      }));
+    }
+  }, [location.state]);
 
   const [showPeriodicTable, setShowPeriodicTable] = useState(false);
   const [hoveredElement, setHoveredElement] = useState<any>(null);
