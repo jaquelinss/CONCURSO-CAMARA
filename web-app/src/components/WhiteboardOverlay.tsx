@@ -609,19 +609,21 @@ export default function WhiteboardOverlay() {
 
   useEffect(() => {
     if (!active) return;
-    const handler = (e: KeyboardEvent) => {
+     const handler = (e: KeyboardEvent) => {
+      // Escape e Ctrl+Z/Y sempre funcionam, mesmo em inputs
       if (e.key === 'Escape') handleClose();
       if (e.ctrlKey && e.key === 'z') { e.preventDefault(); handleUndo(); }
       if (e.ctrlKey && e.key === 'y') { e.preventDefault(); handleRedo(); }
+
+      // Guard: Não acionar atalhos de tecla única enquanto estiver digitando
+      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
+
       if (e.key === 'e') { setTool('eraser'); }
       if (e.key === 'p' || e.key === 'b') { setTool('pen'); }
       if (e.shiftKey && e.key.toLowerCase() === 'l') {
         e.preventDefault();
         handleClear();
       }
-      
-      // Focus element check to avoid triggering when typing in inputs
-      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
 
       if (e.key === 'ArrowUp') {
         e.preventDefault();

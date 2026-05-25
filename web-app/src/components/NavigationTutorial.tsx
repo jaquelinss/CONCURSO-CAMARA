@@ -123,6 +123,36 @@ export default function NavigationTutorial() {
         "Histórico Salvo: Guarde suas discussões mais importantes para resgatar na nuvem sem precisar recomeçar o diálogo.",
         "Post-its Flutuantes: Clique no painel para abrir anotações coloridas (estilo sticky notes) que se organizam livremente pela tela."
       ]
+    },
+    {
+      title: "Lousa Transparente 🖊️",
+      badge: "Desenho Livre",
+      color: "from-emerald-600 to-teal-600 dark:from-emerald-500 dark:to-teal-500",
+      icon: <Sparkles className="w-16 h-16 text-white" />,
+      content: "Desenhe, anote e rabisque por cima de qualquer tela do app! A lousa transparente é uma camada de desenho flutuante, perfeita para resolver questões, grifar trechos e fazer cálculos rápidos.",
+      bullets: [
+        "⌨️ Alt+L — Abrir/fechar a lousa transparente de qualquer tela.",
+        "⌨️ E — Selecionar borracha | P ou B — Selecionar caneta.",
+        "⌨️ Ctrl+Z / Ctrl+Y — Desfazer / Refazer traços.",
+        "⌨️ Shift+L — Limpar toda a lousa (cuidado!).",
+        "⌨️ Escape — Fechar a lousa e voltar à tela normal.",
+        "Arraste pela borda para reposicionar e redimensione pelo canto inferior direito."
+      ]
+    },
+    {
+      title: "Cadernos de Anotações 📓",
+      badge: "Estudo Ativo",
+      color: "from-purple-600 to-fuchsia-600 dark:from-purple-500 dark:to-fuchsia-500",
+      icon: <GraduationCap className="w-16 h-16 text-white" />,
+      content: "Crie cadernos ilimitados com múltiplas páginas para organizar suas anotações manuscritas! O caderno sempre abre no último caderno e página acessados.",
+      bullets: [
+        "⌨️ Alt+C — Abrir/fechar cadernos de qualquer tela.",
+        "⌨️ ← / → — Navegar entre páginas (→ cria nova página no final).",
+        "⌨️ ↑ / ↓ — Scroll vertical dentro da página do caderno.",
+        "⌨️ E — Borracha | P ou B — Caneta | Shift+L — Limpar página.",
+        "⌨️ Ctrl+Z / Ctrl+Y — Desfazer / Refazer traços.",
+        "Use a sidebar lateral para gerenciar cadernos: criar, renomear, duplicar e excluir."
+      ]
     }
   ];
 
