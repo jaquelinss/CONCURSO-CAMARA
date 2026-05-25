@@ -322,11 +322,10 @@ export const formatTextToPostIt = async (text: string, apiKey: string, contextPr
     if (!apiKey) throw new Error("Chave de API não configurada.");
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    const prompt = `Atue como um estudante de alta performance. Crie um resumo conciso (estilo post-it de parede) a partir do seguinte texto:\n"${text}"\n\nRegras:\n1. Resuma as informações principais em tópicos (bullet points) usando o caractere "•".\n2. Seja MUITO visual, objetivo e didático. Se necessário, use "→" ou "⇒" para conectar ideias.\n3. Crie um Título curto e chamativo para o post-it na PRIMEIRA LINHA.\n4. O título DEVE estar na primeira linha e NÃO deve ter marcadores.\n5. O restante do texto (os tópicos) deve vir a partir da segunda linha.\n6. ABSOLUTAMENTE NENHUMA formatação Markdown (NÃO use ** para negrito ou * para itálico) em NENHUM lugar. O sistema de post-it só aceita texto puro.\n\nRetorne SOMENTE o título na linha 1 e o resumo na linha 2 em diante. Nada mais.`;
+    const prompt = `${contextPromptSuffix ? `Instrução do Sistema: Você é um assistente focado em resumir informações cruciais em formatos curtos para post-its. ${contextPromptSuffix}\n\n` : ''}Atue como um estudante de alta performance. Crie um resumo conciso (estilo post-it de parede) a partir do seguinte texto:\n"${text}"\n\nRegras:\n1. Resuma as informações principais em tópicos (bullet points) usando o caractere "•".\n2. Seja MUITO visual, objetivo e didático. Se necessário, use "→" ou "⇒" para conectar ideias.\n3. Crie um Título curto e chamativo para o post-it na PRIMEIRA LINHA.\n4. O título DEVE estar na primeira linha e NÃO deve ter marcadores.\n5. O restante do texto (os tópicos) deve vir a partir da segunda linha.\n6. ABSOLUTAMENTE NENHUMA formatação Markdown (NÃO use ** para negrito ou * para itálico) em NENHUM lugar. O sistema de post-it só aceita texto puro.\n\nRetorne SOMENTE o título na linha 1 e o resumo na linha 2 em diante. Nada mais.`;
     
     const modelConfig: any = {
         model: 'gemini-2.5-flash',
-        systemInstruction: "Você é um assistente focado em resumir informações cruciais em formatos curtos para post-its." + contextPromptSuffix,
         generationConfig: {
             temperature: 0.3, 
         }

@@ -3,7 +3,7 @@ import { themes, defaultTheme } from '../lib/constants';
 import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
-import { DownloadIcon, ClipboardListIcon, Eraser, PenTool, MousePointer2, Undo2, Redo2, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { DownloadIcon, ClipboardListIcon, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import { getStroke } from 'perfect-freehand';
@@ -13,7 +13,7 @@ import ReadingLaser from './ReadingLaser';
 
 interface StrokePoint { x: number; y: number; pressure: number; }
 interface Stroke { points: StrokePoint[]; color: string; width: number; type: 'pen' | 'highlighter' | 'eraser'; }
-const PEN_COLORS = ['#ef4444', '#3b82f6', '#000000', '#22c55e', '#eab308', '#a855f7'];
+
 
 function useCanvasDrawing(
   tool: string, penColor: string, highlighterColor: string, 
@@ -270,10 +270,9 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
   const zoomReset = () => setZoom(1);
 
   // Drawing State
-  const [tool, setTool] = useState<'pointer' | 'pen' | 'highlighter' | 'eraser'>('pointer');
-  const [penColor, setPenColor] = useState('#ef4444');
+  const [tool] = useState<'pointer' | 'pen' | 'highlighter' | 'eraser'>('pointer');
+  const [penColor] = useState('#ef4444');
   const [strokes, setStrokes] = useState<Stroke[]>([]);
-  const [redoStack, setRedoStack] = useState<Stroke[]>([]);
   const penWidth = 3;
   const highlighterWidth = 20;
   const eraserWidth = 20;
@@ -317,7 +316,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
     handlePointerMove, 
     handlePointerUp, 
     redrawStrokes 
-  } = useCanvasDrawing(tool, penColor, '#ffff00', penWidth, highlighterWidth, eraserWidth, strokes, setStrokes, setRedoStack, drawStroke);
+  } = useCanvasDrawing(tool, penColor, '#ffff00', penWidth, highlighterWidth, eraserWidth, strokes, setStrokes, () => {}, drawStroke);
 
   // Auto-resize canvases to match content height
   useEffect(() => {
@@ -337,21 +336,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
     return () => observer.disconnect();
   }, [redrawStrokes, highlighterCanvasRef, penCanvasRef]);
 
-  const handleUndo = () => {
-    if (strokes.length === 0) return;
-    const newStrokes = [...strokes];
-    const undone = newStrokes.pop();
-    setStrokes(newStrokes);
-    if (undone) setRedoStack(prev => [...prev, undone]);
-  };
 
-  const handleRedo = () => {
-    if (redoStack.length === 0) return;
-    const newRedos = [...redoStack];
-    const redone = newRedos.pop();
-    setRedoStack(newRedos);
-    if (redone) setStrokes(prev => [...prev, redone]);
-  };
 
   const showTooltip = (e: React.MouseEvent, explanation: string) => {
     const rect = (e.target as HTMLElement).getBoundingClientRect();
@@ -917,23 +902,6 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
         </div>
       ) : currentLesson ? (
         <div className="relative">
-          {/* Vertical Floating Toolbar for Drawing */}
-          <div className="fixed left-4 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-2 flex flex-col items-center gap-2 z-50">
-            <button onClick={() => setTool('pointer')} className={`p-2.5 rounded-xl transition-all ${tool === 'pointer' ? 'bg-indigo-100 text-indigo-600 shadow-inner' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900'}`} title="Cursor"><MousePointer2 className="w-5 h-5" /></button>
-            <div className="w-8 h-px bg-gray-200 dark:bg-gray-700 my-1"></div>
-            
-            <button onClick={() => setTool('pen')} className={`p-2.5 rounded-xl transition-all ${tool === 'pen' ? 'bg-indigo-100 text-indigo-600 shadow-inner' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900'}`} title="Caneta"><PenTool className="w-5 h-5" /></button>
-            {tool === 'pen' && PEN_COLORS.map(c => (
-              <button key={c} onClick={() => setPenColor(c)} className={`w-6 h-6 rounded-full border-2 transition-transform ${penColor === c ? 'border-indigo-400 scale-125 shadow-md' : 'border-transparent scale-100'}`} style={{ backgroundColor: c }} />
-            ))}
-            
-            <button onClick={() => setTool('eraser')} className={`p-2.5 rounded-xl transition-all ${tool === 'eraser' ? 'bg-pink-100 text-pink-600 shadow-inner' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900'}`} title="Borracha"><Eraser className="w-5 h-5" /></button>
-
-            <div className="w-8 h-px bg-gray-200 dark:bg-gray-700 my-1"></div>
-            <button onClick={handleUndo} disabled={strokes.length === 0} className="p-2 text-gray-500 hover:text-indigo-600 disabled:opacity-30"><Undo2 className="w-4 h-4" /></button>
-            <button onClick={handleRedo} disabled={redoStack.length === 0} className="p-2 text-gray-500 hover:text-indigo-600 disabled:opacity-30"><Redo2 className="w-4 h-4" /></button>
-          </div>
-
           <div style={{ transform: `scale(${zoom})`, transformOrigin: 'top center', transition: 'transform 0.15s ease' }}>
             <div ref={contentRef} className={`${theme.cardFront} p-6 rounded-xl shadow-lg relative text-gray-900 dark:text-gray-100 w-full`}>
               

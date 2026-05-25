@@ -363,7 +363,7 @@ function SidebarNoteItem({
           
           <div onPointerDown={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()}>
             {note.isArchived ? (
-              <button onClick={() => onUpdate({ isArchived: false })} onTouchEnd={() => onUpdate({ isArchived: false })} className="md:hidden text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2 py-1 rounded">
+              <button onClick={() => onUpdate({ isArchived: false })} onTouchEnd={() => onUpdate({ isArchived: false })} className="text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-2 py-1 rounded">
                 Mostrar na Tela
               </button>
             ) : (

@@ -57,9 +57,9 @@ export default function PdfAnnotatorOverlay() {
   const [tool, setTool] = useState<'pen' | 'highlighter' | 'eraser' | 'pointer'>('pen');
   const [penColor, setPenColor] = useState('#ef4444');
   const [highlighterColor, setHighlighterColor] = useState('#ffff00');
-  const penWidth = 3;
-  const highlighterWidth = 20;
-  const eraserWidth = 20;
+  const [penWidth, setPenWidth] = useState(3);
+  const [highlighterWidth, setHighlighterWidth] = useState(20);
+  const [eraserWidth, setEraserWidth] = useState(20);
 
   // Zoom state
   const [zoom, setZoom] = useState(1);
@@ -480,13 +480,26 @@ export default function PdfAnnotatorOverlay() {
               <div className="w-px h-6 bg-gray-300 mx-1" />
 
               {tool === 'pen' && (
-                <div className="hidden sm:flex gap-1">
-                  {COLORS.slice(0, 5).map(c => <button key={c} onClick={() => setPenColor(c)} className={`w-6 h-6 rounded-full border-2 ${penColor === c ? 'border-gray-400 scale-110' : 'border-transparent'}`} style={{ backgroundColor: c }} />)}
+                <div className="hidden sm:flex items-center gap-2 bg-gray-100 dark:bg-gray-700 p-1.5 rounded-lg">
+                  <div className="flex gap-1">
+                    {COLORS.slice(0, 5).map(c => <button key={c} onClick={() => setPenColor(c)} className={`w-6 h-6 rounded-full border-2 ${penColor === c ? 'border-gray-400 scale-110' : 'border-transparent'}`} style={{ backgroundColor: c }} />)}
+                  </div>
+                  <div className="w-px h-4 bg-gray-300 mx-1" />
+                  <input type="range" min="1" max="10" value={penWidth} onChange={(e) => setPenWidth(Number(e.target.value))} className="w-16 accent-indigo-600" title="Tamanho da caneta" />
                 </div>
               )}
               {tool === 'highlighter' && (
-                <div className="hidden sm:flex gap-1">
-                  {HIGHLIGHTER_COLORS.map(c => <button key={c} onClick={() => setHighlighterColor(c)} className={`w-6 h-6 rounded-full border-2 ${highlighterColor === c ? 'border-gray-400 scale-110' : 'border-transparent'}`} style={{ backgroundColor: c }} />)}
+                <div className="hidden sm:flex items-center gap-2 bg-gray-100 dark:bg-gray-700 p-1.5 rounded-lg">
+                  <div className="flex gap-1">
+                    {HIGHLIGHTER_COLORS.map(c => <button key={c} onClick={() => setHighlighterColor(c)} className={`w-6 h-6 rounded-full border-2 ${highlighterColor === c ? 'border-gray-400 scale-110' : 'border-transparent'}`} style={{ backgroundColor: c }} />)}
+                  </div>
+                  <div className="w-px h-4 bg-gray-300 mx-1" />
+                  <input type="range" min="10" max="40" value={highlighterWidth} onChange={(e) => setHighlighterWidth(Number(e.target.value))} className="w-16 accent-yellow-500" title="Tamanho do marca-texto" />
+                </div>
+              )}
+              {tool === 'eraser' && (
+                <div className="hidden sm:flex items-center gap-2 bg-gray-100 dark:bg-gray-700 p-1.5 rounded-lg">
+                  <input type="range" min="10" max="50" value={eraserWidth} onChange={(e) => setEraserWidth(Number(e.target.value))} className="w-16 accent-pink-500" title="Tamanho da borracha" />
                 </div>
               )}
 
