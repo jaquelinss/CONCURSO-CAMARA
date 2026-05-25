@@ -34,6 +34,7 @@ export default function StickyNotesManager() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [highestZ, setHighestZ] = useState(100);
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
+  const [isCascadeMode, setIsCascadeMode] = useState(false);
   const [isDraggingFromSidebar, setIsDraggingFromSidebar] = useState(false);
   const { apiKey } = useAuth();
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
@@ -166,6 +167,12 @@ export default function StickyNotesManager() {
     handleUpdateNote(id, { zIndex: newZ });
   };
 
+  const sendToBack = (id: string) => {
+    const activeZIndexes = notes.filter(n => !n.isArchived).map(n => n.zIndex || 0);
+    const lowestZ = activeZIndexes.length > 0 ? Math.min(...activeZIndexes) : 100;
+    handleUpdateNote(id, { zIndex: lowestZ - 1 });
+  };
+
   if (!user) return null;
 
   const activeNotes = notes.filter(n => !n.isArchived);
@@ -177,8 +184,10 @@ export default function StickyNotesManager() {
           <StickyNoteItem 
             key={note.id} 
             note={note} 
+            isCascadeMode={isCascadeMode}
             onUpdate={(updates) => handleUpdateNote(note.id, updates)}
             onFocus={() => bringToFront(note.id)}
+            onSendToBack={() => sendToBack(note.id)}
           />
         ))}
       </div>
@@ -196,6 +205,14 @@ export default function StickyNotesManager() {
               </button>
             </div>
             <div className={`p-6 flex-1 bg-gray-50 dark:bg-gray-900 ${isDraggingFromSidebar ? 'overflow-visible' : 'overflow-y-auto'}`}>
+              <div className="flex justify-between items-center mb-4">
+                <button
+                  onClick={() => setIsCascadeMode(!isCascadeMode)}
+                  className={`px-4 py-2 rounded-lg font-bold text-sm transition-all shadow-sm ${isCascadeMode ? 'bg-indigo-600 text-white' : 'bg-white text-indigo-600 border border-indigo-200 hover:bg-indigo-50 dark:bg-gray-800 dark:border-indigo-900 dark:hover:bg-gray-700'}`}
+                >
+                  {isCascadeMode ? '✓ Modo Cascata Ativo' : 'Modo Cascata'}
+                </button>
+              </div>
               {notes.length === 0 ? (
                 <div className="text-center py-10 text-gray-500 dark:text-gray-400">
                   <p>Nenhum post-it criado ainda.</p>
@@ -349,12 +366,16 @@ function SidebarNoteItem({
 
 function StickyNoteItem({ 
   note, 
+  isCascadeMode,
   onUpdate, 
-  onFocus 
+  onFocus,
+  onSendToBack
 }: { 
   note: Note; 
+  isCascadeMode: boolean;
   onUpdate: (u: Partial<Note>) => void; 
   onFocus: () => void;
+  onSendToBack: () => void;
 }) {
   const [showPalette, setShowPalette] = useState(false);
   const nodeRef = useRef<HTMLDivElement>(null);
@@ -422,7 +443,7 @@ function StickyNoteItem({
     >
       <div 
         ref={nodeRef}
-        className="sticky-note absolute rounded-lg shadow-xl overflow-hidden pointer-events-auto border-t-8 flex flex-col group transition-shadow hover:shadow-2xl"
+        className={`sticky-note absolute rounded-lg shadow-xl overflow-hidden pointer-events-auto border-t-8 flex flex-col group transition-shadow hover:shadow-2xl ${isCascadeMode ? 'cascade-mode' : ''}`}
         style={{ 
           width: `${size.w}px`,
           height: `${size.h}px`,
@@ -432,10 +453,20 @@ function StickyNoteItem({
           borderColor: darkenColor(note.color || '#fef08a', 20),
           zIndex: note.zIndex || 100 
         }}
-        onClick={onFocus}
+        onClick={isCascadeMode ? undefined : onFocus}
       >
         {/* Header (Drag Handle) */}
-        <div className="drag-handle h-8 bg-black/5 flex items-center justify-between px-2 cursor-grab active:cursor-grabbing">
+        <div 
+          className="drag-handle h-8 bg-black/5 flex items-center justify-between px-2 cursor-grab active:cursor-grabbing"
+          onClick={(e) => {
+            if (isCascadeMode) {
+              const target = e.target as HTMLElement;
+              if (!target.closest('.color-picker-btn') && !target.closest('.close-btn')) {
+                onSendToBack();
+              }
+            }
+          }}
+        >
           <GripHorizontal className="w-4 h-4 text-black/30" />
           
           <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
@@ -443,16 +474,16 @@ function StickyNoteItem({
               onClick={(e) => { e.stopPropagation(); setShowPalette(!showPalette); }}
               onTouchStart={(e) => { e.stopPropagation(); setShowPalette(!showPalette); }}
               onPointerDown={(e) => e.stopPropagation()}
-              className="p-1 hover:bg-black/10 rounded"
+              className="color-picker-btn p-1 hover:bg-black/10 rounded"
               title="Mudar Cor"
             >
-              <Palette className="w-3.5 h-3.5 text-gray-700" />
+              <Palette className="w-3.5 h-3.5 text-gray-700 pointer-events-none" />
             </button>
             <button 
               onClick={(e) => { e.stopPropagation(); onUpdate({ isArchived: true }); }}
               onTouchStart={(e) => { e.stopPropagation(); onUpdate({ isArchived: true }); }}
               onPointerDown={(e) => e.stopPropagation()}
-              className="p-1 hover:bg-black/10 rounded"
+              className="close-btn p-1 hover:bg-black/10 rounded"
               title="Fechar (Guardar)"
             >
               <X className="w-4 h-4 text-gray-700" />

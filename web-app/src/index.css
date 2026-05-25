@@ -184,4 +184,12 @@ code {
   border-bottom: 20px solid rgba(0,0,0,0.4);
   border-right: 20px solid rgba(0,0,0,0.4);
 }
+
+.cascade-mode {
+  transform: translate(-50%, -50%) !important;
+  left: 50% !important;
+  top: 50% !important;
+  margin: 0 !important;
+  transition: z-index 0.2s ease-in-out;
+}
  
