@@ -54,11 +54,11 @@ export default function DocumentationModal({ isOpen, onClose }: DocumentationMod
           </p>
           <div className="bg-white dark:bg-gray-900 p-3 rounded-lg border border-gray-100 dark:border-gray-800 text-xs">
             <p className="font-bold mb-2 text-gray-700 dark:text-gray-300">Atalhos de Teclado:</p>
-            <ul className="grid grid-cols-2 gap-2">
+            <ul className="flex flex-col gap-2">
               <li className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border">P</kbd> ou <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border">B</kbd> Caneta</li>
               <li className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border">E</kbd> Borracha</li>
-              <li className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border">V</kbd> ou <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border">Esc</kbd> Cursor/Sair</li>
-              <li className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border">Shift + L</kbd> Limpar</li>
+              <li className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border">V</kbd> ou <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border">Esc</kbd> Cursor / Sair da Ferramenta</li>
+              <li className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border">Shift + L</kbd> Limpar tudo</li>
               <li className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border">Ctrl + Z</kbd> Desfazer</li>
               <li className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border">Ctrl + Y</kbd> Refazer</li>
             </ul>

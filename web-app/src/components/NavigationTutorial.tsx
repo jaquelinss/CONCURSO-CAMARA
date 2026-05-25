@@ -131,7 +131,7 @@ export default function NavigationTutorial() {
       icon: <Sparkles className="w-16 h-16 text-white" />,
       content: "Desenhe, anote e rabisque por cima de qualquer tela do app! A lousa transparente é uma camada de desenho flutuante, perfeita para resolver questões, grifar trechos e fazer cálculos rápidos.",
       bullets: [
-        "⌨️ Ctrl+Shift+O — Abrir/fechar a lousa transparente de qualquer tela.",
+        "⌨️ Ctrl+Shift+L — Abrir/fechar a lousa transparente de qualquer tela.",
         "⌨️ E — Selecionar borracha | P ou B — Selecionar caneta.",
         "⌨️ Ctrl+Z / Ctrl+Y — Desfazer / Refazer traços.",
         "⌨️ Shift+L — Limpar toda a lousa (cuidado!).",
@@ -146,7 +146,7 @@ export default function NavigationTutorial() {
       icon: <GraduationCap className="w-16 h-16 text-white" />,
       content: "Crie cadernos ilimitados com múltiplas páginas para organizar suas anotações manuscritas! O caderno sempre abre no último caderno e página acessados.",
       bullets: [
-        "⌨️ Alt+C — Abrir/fechar cadernos de qualquer tela.",
+        "⌨️ Ctrl+Shift+C — Abrir/fechar cadernos de qualquer tela.",
         "⌨️ ← / → — Navegar entre páginas (→ cria nova página no final).",
         "⌨️ ↑ / ↓ — Scroll vertical dentro da página do caderno.",
         "⌨️ E — Borracha | P ou B — Caneta | Shift+L — Limpar página.",
