@@ -10,6 +10,7 @@ import { getStroke } from 'perfect-freehand';
 import PracticeQuiz from './PracticeQuiz';
 import { generateContentFromGemini } from '../lib/gemini';
 import ReadingLaser from './ReadingLaser';
+import DrawingSidebar from './DrawingSidebar';
 
 interface StrokePoint { x: number; y: number; pressure: number; }
 interface Stroke { points: StrokePoint[]; color: string; width: number; type: 'pen' | 'highlighter' | 'eraser'; }
@@ -270,12 +271,29 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
   const zoomReset = () => setZoom(1);
 
   // Drawing State
-  const [tool] = useState<'pointer' | 'pen' | 'highlighter' | 'eraser'>('pointer');
-  const [penColor] = useState('#ef4444');
+  const [tool, setTool] = useState<'pointer' | 'pen' | 'highlighter' | 'eraser'>('pointer');
+  const [penColor, setPenColor] = useState('#ef4444');
+  const highlighterColor = '#ffff00';
   const [strokes, setStrokes] = useState<Stroke[]>([]);
-  const penWidth = 3;
+  const [redoStack, setRedoStack] = useState<Stroke[]>([]);
+  const [penWidth, setPenWidth] = useState(3);
   const highlighterWidth = 20;
-  const eraserWidth = 20;
+  const [eraserWidth, setEraserWidth] = useState(20);
+
+  const [penPresets, setPenPresets] = useState([{ id: 'p1', color: '#ef4444', width: 3 }]);
+  const [eraserPresets, setEraserPresets] = useState([{ id: 'e1', type: 'normal', width: 20 }]);
+  const [activePenId, setActivePenId] = useState('p1');
+  const [activeEraserId, setActiveEraserId] = useState('e1');
+
+  useEffect(() => {
+    const activePen = penPresets.find(p => p.id === activePenId);
+    if (activePen) { setPenColor(activePen.color); setPenWidth(activePen.width); }
+  }, [activePenId, penPresets]);
+
+  useEffect(() => {
+    const activeEraser = eraserPresets.find(p => p.id === activeEraserId);
+    if (activeEraser) { setEraserWidth(activeEraser.width); }
+  }, [activeEraserId, eraserPresets]);
 
   const drawStroke = useCallback((ctx: CanvasRenderingContext2D, stroke: Stroke) => {
     if (stroke.points.length === 0) return;
@@ -309,6 +327,33 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
     ctx.restore();
   }, []);
 
+  const handleUndo = () => {
+    if (strokes.length === 0) return;
+    const newStrokes = [...strokes];
+    const undone = newStrokes.pop();
+    setStrokes(newStrokes);
+    if (undone) setRedoStack([...redoStack, undone]);
+  };
+
+  const handleRedo = () => {
+    if (redoStack.length === 0) return;
+    const newRedos = [...redoStack];
+    const redone = newRedos.pop();
+    setRedoStack(newRedos);
+    if (redone) setStrokes([...strokes, redone]);
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        handleUndo();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [strokes, redoStack]);
+
   const { 
     highlighterCanvasRef, 
     penCanvasRef, 
@@ -316,7 +361,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
     handlePointerMove, 
     handlePointerUp, 
     redrawStrokes 
-  } = useCanvasDrawing(tool, penColor, '#ffff00', penWidth, highlighterWidth, eraserWidth, strokes, setStrokes, () => {}, drawStroke);
+  } = useCanvasDrawing(tool, penColor, highlighterColor, penWidth, highlighterWidth, eraserWidth, strokes, setStrokes, setRedoStack, drawStroke);
 
   // Auto-resize canvases to match content height
   useEffect(() => {
@@ -1077,7 +1122,17 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
             )}
           </div>
         </div>
-      </div>
+    </div>
+      <DrawingSidebar
+        tool={tool} setTool={setTool}
+        penPresets={penPresets} setPenPresets={setPenPresets}
+        activePenId={activePenId} setActivePenId={setActivePenId}
+        eraserPresets={eraserPresets} setEraserPresets={setEraserPresets}
+        activeEraserId={activeEraserId} setActiveEraserId={setActiveEraserId}
+        strokes={strokes}
+        handleUndo={handleUndo} handleRedo={handleRedo}
+        redoStack={redoStack}
+      />
     </div>
     ) : null}
   </div>

@@ -15,7 +15,6 @@ import { collection, doc, setDoc, getDocs, deleteDoc, query, orderBy } from 'fir
 import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { getAuth } from 'firebase/auth';
 import ReadingLaser from './ReadingLaser';
-import DrawingSidebar from './DrawingSidebar';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
@@ -62,26 +61,6 @@ export default function PdfAnnotatorOverlay() {
   const [highlighterWidth, setHighlighterWidth] = useState(20);
   const [eraserWidth, setEraserWidth] = useState(20);
 
-  const [penPresets, setPenPresets] = useState([{ id: 'p1', color: '#ef4444', width: 3 }]);
-  const [eraserPresets, setEraserPresets] = useState([{ id: 'e1', type: 'normal', width: 20 }]);
-  const [activePenId, setActivePenId] = useState('p1');
-  const [activeEraserId, setActiveEraserId] = useState('e1');
-
-  useEffect(() => {
-    const activePen = penPresets.find(p => p.id === activePenId);
-    if (activePen) {
-      setPenColor(activePen.color);
-      setPenWidth(activePen.width);
-    }
-  }, [activePenId, penPresets]);
-
-  useEffect(() => {
-    const activeEraser = eraserPresets.find(p => p.id === activeEraserId);
-    if (activeEraser) {
-      setEraserWidth(activeEraser.width);
-    }
-  }, [activeEraserId, eraserPresets]);
-
   // Zoom state
   const [zoom, setZoom] = useState(1);
   const zoomIn = () => setZoom(z => Math.min(3, +(z + 0.25).toFixed(2)));
@@ -104,19 +83,6 @@ export default function PdfAnnotatorOverlay() {
     window.addEventListener('open-pdf-annotator', handleOpen);
     return () => window.removeEventListener('open-pdf-annotator', handleOpen);
   }, []);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key.toLowerCase() === 'z') {
-        e.preventDefault();
-        handleUndo();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [strokesByPage, currentPage]);
-
-
 
   // Get current user
   const getUid = () => {
@@ -740,18 +706,6 @@ export default function PdfAnnotatorOverlay() {
             {/* Spacer - Right (to balance the layout) */}
             <div className="w-[140px]" />
           </div>
-
-          {/* Floating Drawing Sidebar */}
-          <DrawingSidebar
-            tool={tool} setTool={setTool}
-            penPresets={penPresets} setPenPresets={setPenPresets}
-            activePenId={activePenId} setActivePenId={setActivePenId}
-            eraserPresets={eraserPresets} setEraserPresets={setEraserPresets}
-            activeEraserId={activeEraserId} setActiveEraserId={setActiveEraserId}
-            strokes={strokesByPage[currentPage] || []}
-            handleUndo={handleUndo} handleRedo={handleRedo}
-            redoStack={redoStackByPage[currentPage] || []}
-          />
         </div>,
         document.body
       )}
@@ -903,10 +857,9 @@ function PdfPage({ pageNum, pdfDoc, tool, penColor, highlighterColor, penWidth, 
 
   return (
     <div ref={containerRef} className="relative shadow-2xl bg-white flex-shrink-0" style={{ width: dimensions.width, height: dimensions.height }}>
-      <canvas ref={bgCanvasRef} className="absolute inset-0 pointer-events-none z-0" style={{ width: '100%', height: '100%' }} />
-      <ReadingLaser containerRef={containerRef} />
-      <canvas ref={highlighterCanvasRef} className="absolute inset-0 pointer-events-none z-10" style={{ mixBlendMode: 'multiply', width: '100%', height: '100%' }} />
-      <canvas ref={penCanvasRef} className={`absolute inset-0 z-20 ${tool === 'pointer' ? 'pointer-events-none' : 'cursor-crosshair'}`} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onPointerLeave={handlePointerUp} style={{ touchAction: 'none', width: '100%', height: '100%' }} />
+      <canvas ref={bgCanvasRef} className="absolute inset-0 pointer-events-none" style={{ width: '100%', height: '100%' }} />
+      <canvas ref={highlighterCanvasRef} className="absolute inset-0 pointer-events-none" style={{ mixBlendMode: 'multiply', width: '100%', height: '100%' }} />
+      <canvas ref={penCanvasRef} className={`absolute inset-0 ${tool === 'pointer' ? 'pointer-events-none' : 'cursor-crosshair'}`} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onPointerLeave={handlePointerUp} style={{ touchAction: 'none', width: '100%', height: '100%' }} />
     </div>
   );
 }
@@ -940,9 +893,8 @@ function DocxPage({ html, tool, penColor, highlighterColor, penWidth, highlighte
   return (
     <div className="relative shadow-2xl bg-white flex-shrink-0 mx-auto" style={{ width: '800px', minHeight: '1131px' }}>
       <div ref={containerRef} className="p-12 prose max-w-none text-black w-full min-h-[1131px]" dangerouslySetInnerHTML={{ __html: html }} />
-      <ReadingLaser containerRef={containerRef} />
-      <canvas ref={highlighterCanvasRef} className="absolute inset-0 pointer-events-none z-10" style={{ mixBlendMode: 'multiply' }} />
-      <canvas ref={penCanvasRef} className={`absolute inset-0 z-20 ${tool === 'pointer' ? 'pointer-events-none' : 'cursor-crosshair'}`} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onPointerLeave={handlePointerUp} style={{ touchAction: 'none' }} />
+      <canvas ref={highlighterCanvasRef} className="absolute inset-0 pointer-events-none" style={{ mixBlendMode: 'multiply' }} />
+      <canvas ref={penCanvasRef} className={`absolute inset-0 ${tool === 'pointer' ? 'pointer-events-none' : 'cursor-crosshair'}`} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onPointerLeave={handlePointerUp} style={{ touchAction: 'none' }} />
     </div>
   );
 }
@@ -1025,9 +977,8 @@ function EpubPage({ book, pageNum, tool, penColor, highlighterColor, penWidth, h
   return (
     <div className="relative shadow-2xl bg-white flex-shrink-0" style={{ width: dimensions.width, height: dimensions.height }}>
       <div ref={viewerRef} className="absolute inset-0 overflow-hidden" />
-      <ReadingLaser containerRef={viewerRef} />
-      <canvas ref={highlighterCanvasRef} className="absolute inset-0 pointer-events-none z-10" style={{ mixBlendMode: 'multiply', width: '100%', height: '100%' }} />
-      <canvas ref={penCanvasRef} className={`absolute inset-0 z-20 ${tool === 'pointer' ? 'pointer-events-none' : 'cursor-crosshair'}`} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onPointerLeave={handlePointerUp} style={{ touchAction: 'none', width: '100%', height: '100%' }} />
+      <canvas ref={highlighterCanvasRef} className="absolute inset-0 pointer-events-none" style={{ mixBlendMode: 'multiply', width: '100%', height: '100%' }} />
+      <canvas ref={penCanvasRef} className={`absolute inset-0 ${tool === 'pointer' ? 'pointer-events-none' : 'cursor-crosshair'}`} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onPointerLeave={handlePointerUp} style={{ touchAction: 'none', width: '100%', height: '100%' }} />
     </div>
   );
 }
