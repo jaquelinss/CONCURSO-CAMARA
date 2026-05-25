@@ -1,5 +1,4 @@
-
-import { X, BookOpen, Brain, Sparkles, Crosshair, Target, CheckSquare, PencilLine, History } from 'lucide-react';
+import { X, BookOpen, Brain, Sparkles, Crosshair, Target, CheckSquare, PencilLine, History, PenTool } from 'lucide-react';
 
 interface DocumentationModalProps {
   isOpen: boolean;
@@ -44,6 +43,28 @@ export default function DocumentationModal({ isOpen, onClose }: DocumentationMod
       title: "Simulados e Questões",
       icon: <Target className="w-5 h-5 text-blue-500" />,
       content: "Você pode gerar quizzes e simulados na aba Gerar Conteúdo para testar seus conhecimentos e fixar a matéria."
+    },
+    {
+      title: "Lousa Transparente e Cadernos",
+      icon: <PenTool className="w-5 h-5 text-teal-500" />,
+      content: (
+        <div className="space-y-3">
+          <p>
+            Anote em <strong>Cadernos Digitais</strong> ou use a <strong>Lousa Transparente</strong> para rabiscar por cima do aplicativo enquanto estuda. Tudo é salvo automaticamente!
+          </p>
+          <div className="bg-white dark:bg-gray-900 p-3 rounded-lg border border-gray-100 dark:border-gray-800 text-xs">
+            <p className="font-bold mb-2 text-gray-700 dark:text-gray-300">Atalhos de Teclado:</p>
+            <ul className="grid grid-cols-2 gap-2">
+              <li className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border">P</kbd> ou <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border">B</kbd> Caneta</li>
+              <li className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border">E</kbd> Borracha</li>
+              <li className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border">V</kbd> ou <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border">Esc</kbd> Cursor/Sair</li>
+              <li className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border">Shift + L</kbd> Limpar</li>
+              <li className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border">Ctrl + Z</kbd> Desfazer</li>
+              <li className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 rounded border">Ctrl + Y</kbd> Refazer</li>
+            </ul>
+          </div>
+        </div>
+      )
     }
   ];
 

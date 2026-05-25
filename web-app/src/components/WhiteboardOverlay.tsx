@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Eraser, Trash2, X, Undo2, Redo2, Minus, Plus, PenTool, Maximize2, Minimize2, GripHorizontal, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, FilePlus, PanelTopClose, PanelTop, Settings2, Focus, MousePointer2, Book } from 'lucide-react';
+import { Eraser, Trash2, X, Undo2, Redo2, Minus, Plus, Maximize2, Minimize2, GripHorizontal, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, FilePlus, PanelTop, Settings2, Focus, MousePointer2, Book } from 'lucide-react';
 import { getStroke } from 'perfect-freehand';
 import Draggable from 'react-draggable';
 import { useAuth } from '../contexts/AuthContext';
@@ -48,7 +48,8 @@ export default function WhiteboardOverlay() {
   const [allNotebooks, setAllNotebooks] = useState<Notebook[]>([]);
 
   // Modos de Lousa
-  const [windowMode, setWindowMode] = useState<'fullscreen' | 'floating'>('floating');
+  const [windowMode, setWindowMode] = useState<'fullscreen' | 'floating'>('fullscreen');
+  const [scrollY, setScrollY] = useState(0);
   const [mode, setMode] = useState<'transparent' | 'lined' | 'grid' | 'dotted'>('lined');
   
   // Menu Principal Original
@@ -74,8 +75,7 @@ export default function WhiteboardOverlay() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
-  const [showToolbar, _setShowToolbar] = useState(true);
-  const toggleToolbar = () => _setShowToolbar(p => !p);
+
 
   // Sidebar e Presets
   const [penPresets, setPenPresets] = useState<PenPreset[]>([{ id: 'p1', color: '#000000', width: 4 }]);
@@ -92,20 +92,6 @@ export default function WhiteboardOverlay() {
   const color = tool === 'pen' ? activePen.color : '#000000';
   const strokeWidth = tool === 'pen' ? activePen.width : activeEraser.width;
 
-  // Atualizar Preset Ativo quando mudar pelo Menu Principal
-  const handleColorChange = (c: string) => {
-    updatePenPreset(activePenId, { color: c });
-  };
-
-  const handleWidthChange = (delta: number) => {
-    if (tool === 'pen') {
-      const newW = Math.max(1, Math.min(30, activePen.width + delta));
-      updatePenPreset(activePenId, { width: newW });
-    } else {
-      const newW = Math.max(4, Math.min(50, activeEraser.width + delta));
-      updateEraserPreset(activeEraserId, { width: newW });
-    }
-  };
 
   // Páginas do Caderninho
   const [currentPage, setCurrentPage] = useState(1);
@@ -366,7 +352,7 @@ export default function WhiteboardOverlay() {
       const bgCtx = bgCanvas.getContext('2d');
       if (bgCtx) {
         bgCtx.scale(dpr, dpr);
-        drawPaperPattern(bgCtx, rect.width, rect.height);
+        drawPaperPattern(bgCtx, rect.width, rect.height, scrollY);
       }
       
       redrawAll();
@@ -375,23 +361,25 @@ export default function WhiteboardOverlay() {
     setTimeout(resize, 10);
     window.addEventListener('resize', resize);
     return () => window.removeEventListener('resize', resize);
-  }, [active, strokes, windowMode, size.w, size.h, currentPage, mode]);
+  }, [active, strokes, windowMode, size.w, size.h, currentPage, mode, scrollY]);
 
-  const drawPaperPattern = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+  const drawPaperPattern = (ctx: CanvasRenderingContext2D, width: number, height: number, sy: number) => {
     ctx.clearRect(0, 0, width, height);
     if (windowMode === 'fullscreen' && mode === 'transparent') return;
     
     ctx.save();
+    ctx.translate(0, -sy);
     ctx.fillStyle = '#fefce8';
-    ctx.fillRect(0, 0, width, height);
+    ctx.fillRect(0, sy, width, height);
 
     ctx.globalAlpha = 0.4;
     ctx.strokeStyle = 'rgba(0, 0, 0, 0.15)';
     ctx.lineWidth = 1;
 
     switch (mode) {
-      case 'lined':
-        for (let y = 40; y < height; y += 32) {
+      case 'lined': {
+        const startY = Math.max(40, Math.floor(sy / 32) * 32);
+        for (let y = startY; y < sy + height + 32; y += 32) {
           ctx.beginPath();
           ctx.moveTo(0, y);
           ctx.lineTo(width, y);
@@ -400,34 +388,39 @@ export default function WhiteboardOverlay() {
         ctx.strokeStyle = 'rgba(239, 68, 68, 0.3)';
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(60, 0);
-        ctx.lineTo(60, height);
+        ctx.moveTo(60, sy);
+        ctx.lineTo(60, sy + height);
         ctx.stroke();
         break;
-      case 'grid':
+      }
+      case 'grid': {
         for (let x = 0; x < width; x += 24) {
           ctx.beginPath();
-          ctx.moveTo(x, 0);
-          ctx.lineTo(x, height);
+          ctx.moveTo(x, sy);
+          ctx.lineTo(x, sy + height);
           ctx.stroke();
         }
-        for (let y = 0; y < height; y += 24) {
+        const startY = Math.floor(sy / 24) * 24;
+        for (let y = startY; y < sy + height + 24; y += 24) {
           ctx.beginPath();
           ctx.moveTo(0, y);
           ctx.lineTo(width, y);
           ctx.stroke();
         }
         break;
-      case 'dotted':
+      }
+      case 'dotted': {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+        const startY = Math.floor(sy / 24) * 24 + 12;
         for (let x = 12; x < width; x += 24) {
-          for (let y = 12; y < height; y += 24) {
+          for (let y = startY; y < sy + height + 24; y += 24) {
             ctx.beginPath();
             ctx.arc(x, y, 1.5, 0, Math.PI * 2);
             ctx.fill();
           }
         }
         break;
+      }
     }
     ctx.restore();
   };
@@ -444,15 +437,22 @@ export default function WhiteboardOverlay() {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.scale(dpr, dpr);
+    ctx.translate(0, -scrollY);
     ctx.restore();
 
+    ctx.save();
+    ctx.translate(0, -scrollY);
     for (const stroke of strokes) {
       drawStroke(ctx, stroke);
     }
+    ctx.restore();
     if (currentStrokeRef.current) {
+      ctx.save();
+      ctx.translate(0, -scrollY);
       drawStroke(ctx, currentStrokeRef.current);
+      ctx.restore();
     }
-  }, [strokes, mode, windowMode]);
+  }, [strokes, scrollY]);
 
   const drawStroke = (ctx: CanvasRenderingContext2D, stroke: Stroke) => {
     if (stroke.points.length === 0) return;
@@ -526,7 +526,7 @@ export default function WhiteboardOverlay() {
     if (!rect) return;
 
     const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const y = (e.clientY - rect.top) + scrollY;
     const pressure = e.pressure !== undefined && e.pressure > 0 ? e.pressure : 0.5;
 
     if (tool === 'eraser' && activeEraser.type === 'stroke') {
@@ -610,7 +610,19 @@ export default function WhiteboardOverlay() {
   };
 
   const handleClose = () => setActive(false);
-  const addNewPage = () => { setTotalPages(p => p + 1); setCurrentPage(totalPages + 1); };
+  const addNewPage = () => { 
+    setTotalPages(p => p + 1); 
+    setCurrentPage(totalPages + 1); 
+    setScrollY(0);
+  };
+  
+  const setPageWithScrollReset = (pageUpdater: (p: number) => number) => {
+    setCurrentPage(p => {
+      const newPage = pageUpdater(p);
+      if (newPage !== p) setScrollY(0);
+      return newPage;
+    });
+  };
 
   useEffect(() => {
     if (!active) return;
@@ -624,10 +636,34 @@ export default function WhiteboardOverlay() {
         e.preventDefault();
         handleClear();
       }
+      
+      // Focus element check to avoid triggering when typing in inputs
+      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
+
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setScrollY(y => Math.max(0, y - 100));
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setScrollY(y => y + 100);
+      }
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        setPageWithScrollReset(p => Math.max(1, p - 1));
+      }
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        if (currentPage === totalPages) {
+          addNewPage();
+        } else {
+          setPageWithScrollReset(p => Math.min(totalPages, p + 1));
+        }
+      }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [active, strokes]);
+  }, [active, strokes, currentPage, totalPages]);
 
   const onResizeStart = (e: React.PointerEvent) => {
     e.preventDefault(); e.stopPropagation();
@@ -671,188 +707,67 @@ export default function WhiteboardOverlay() {
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
         onPointerLeave={handlePointerUp}
+        onWheel={(e) => {
+          if (mode === 'transparent') return;
+          setScrollY(y => Math.max(0, y + e.deltaY));
+        }}
       />
 
-      {/* Main Toolbar */}
-      {showToolbar && (
-        <div className="whiteboard-toolbar pointer-events-auto absolute top-4 left-1/2 -translate-x-1/2 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center gap-1.5 sm:gap-2 z-[9999] max-w-[95vw] flex-wrap justify-center">
-          
-          <button
-            onClick={() => setShowNotebooksManager(true)}
-            className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors flex items-center gap-1"
-            title="Alterar Caderno"
-          >
-            <Book className="w-5 h-5" />
-            <span className="text-xs font-bold hidden sm:inline">Alterar</span>
-          </button>
-
-          <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
-
-          <button
-            onClick={() => {
-              const nextMode = windowMode === 'fullscreen' ? 'floating' : 'fullscreen';
-              setWindowMode(nextMode);
-              if (nextMode === 'floating' && mode === 'transparent') {
-                setMode('lined'); // fallback to lined if switching to floating while transparent
-              }
-            }}
-            className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors"
-            title={windowMode === 'fullscreen' ? 'Modo Caderninho (Janela)' : 'Modo Tela Cheia'}
-          >
-            {windowMode === 'fullscreen' ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
-          </button>
-          
-          <button
-            onClick={() => {
-              if (mode === 'transparent') {
-                setMode('lined');
-              } else {
-                setMode('transparent');
-                setWindowMode('fullscreen');
-              }
-            }}
-            className={`p-2 rounded-lg transition-colors flex items-center gap-1 ${mode === 'transparent' ? 'bg-indigo-100 text-indigo-600 ring-2 ring-indigo-400' : 'text-gray-500 hover:text-indigo-600 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
-            title="Lousa Transparente (Desenhar por cima do site)"
-          >
-            <Focus className="w-5 h-5" />
-            <span className="text-xs font-bold hidden sm:inline">Transparente</span>
-          </button>
-          
-          <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
-          
-          {mode !== 'transparent' && (
-            <>
-              <select 
-                value={mode} 
-                onChange={(e) => setMode(e.target.value as any)}
-                className="px-2 py-1.5 rounded-lg text-xs font-bold bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-none outline-none cursor-pointer"
-              >
-                <option value="lined">📝 Papel Pautado</option>
-                <option value="grid">📐 Quadriculado</option>
-                <option value="dotted">📌 Pontilhado</option>
-              </select>
-              <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
-            </>
-          )}
-          
-          <button
-            onClick={() => setTool('pointer')}
-            className={`p-1.5 rounded-md transition-colors ${tool === 'pointer' ? 'bg-indigo-100 text-indigo-600' : 'text-gray-500 hover:bg-gray-100'}`}
-            title="Mouse / Alternar Lousa (Atalho: V ou Esc)"
-          >
-            <MousePointer2 className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => setTool('pen')}
-            className={`p-2 rounded-lg transition-all ${tool === 'pen' ? 'bg-indigo-100 text-indigo-600 ring-2 ring-indigo-400' : 'text-gray-500 hover:bg-gray-100'}`}
-          >
-            <PenTool className="w-5 h-5" />
-          </button>
-          <button
-            onClick={() => setTool('eraser')}
-            className={`p-2 rounded-lg transition-all ${tool === 'eraser' ? 'bg-pink-100 text-pink-600 ring-2 ring-pink-400' : 'text-gray-500 hover:bg-gray-100'}`}
-          >
-            <Eraser className="w-5 h-5" />
-          </button>
-          
-          <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
-          
-          {/* Colors Original */}
-          {tool === 'pen' && (
-            <div className="flex gap-1 items-center">
-              {COLORS.map(c => (
-                <button
-                  key={c}
-                  onClick={() => handleColorChange(c)}
-                  className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${
-                    color === c ? 'border-indigo-500 scale-110 ring-2 ring-indigo-300' : 'border-gray-300'
-                  }`}
-                  style={{ backgroundColor: c }}
-                  title={c}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Stroke Width Original */}
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => handleWidthChange(-2)}
-              className="p-1 text-gray-500 hover:bg-gray-100 rounded"
-            >
-              <Minus className="w-4 h-4" />
-            </button>
-            <div className="w-8 h-8 flex items-center justify-center" title={`Espessura: ${strokeWidth}px`}>
-              <div
-                className="rounded-full"
-                style={{
-                  width: `${Math.min(strokeWidth * 2, 24)}px`,
-                  height: `${Math.min(strokeWidth * 2, 24)}px`,
-                  backgroundColor: tool === 'eraser' ? '#9ca3af' : color,
-                }}
-              />
-            </div>
-            <button
-              onClick={() => handleWidthChange(2)}
-              className="p-1 text-gray-500 hover:bg-gray-100 rounded"
-            >
-              <Plus className="w-4 h-4" />
-            </button>
-          </div>
-
-          <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
-          
-          <button onClick={handleUndo} disabled={strokes.length === 0} className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg disabled:opacity-30"><Undo2 className="w-5 h-5" /></button>
-          <button onClick={handleRedo} disabled={redoStack.length === 0} className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg disabled:opacity-30"><Redo2 className="w-5 h-5" /></button>
-          
-          <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
-          
-          <div className="flex items-center gap-1 px-1 bg-gray-50 dark:bg-gray-900 rounded-lg">
-            <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-1.5 text-gray-600 disabled:opacity-30 hover:bg-gray-200 rounded"><ChevronLeft className="w-4 h-4" /></button>
-            <span className="text-xs font-bold w-12 text-center text-gray-700 dark:text-gray-300">Pág {currentPage}</span>
-            <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="p-1.5 text-gray-600 disabled:opacity-30 hover:bg-gray-200 rounded"><ChevronRight className="w-4 h-4" /></button>
-            <button onClick={addNewPage} className="p-1.5 text-indigo-600 hover:bg-indigo-100 rounded ml-1"><FilePlus className="w-4 h-4" /></button>
-          </div>
-          
-          <div className="w-px h-6 bg-gray-300 dark:bg-gray-600" />
-          
-          <button onClick={handleClear} className="p-2 text-red-500 hover:bg-red-50 rounded-lg"><Trash2 className="w-5 h-5" /></button>
-          <button onClick={toggleToolbar} className="p-2 text-gray-400 hover:bg-gray-100 rounded-lg" title="Minimizar Barra"><PanelTopClose className="w-5 h-5" /></button>
-          <button onClick={handleClose} className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg"><X className="w-5 h-5" /></button>
-        </div>
-      )}
-
-      {/* Fullscreen Notebook Name Indicator */}
-      {windowMode === 'fullscreen' && (
-        <div className="pointer-events-none absolute top-16 left-1/2 -translate-x-1/2 z-[9998]">
-          <span 
-            className="px-4 py-1.5 rounded-full text-xs font-bold shadow-lg backdrop-blur-md border"
-            style={activeNotebook ? {
-              backgroundColor: activeNotebook.coverColor + 'dd',
-              color: '#ffffff',
-              borderColor: activeNotebook.coverColor
-            } : {
-              backgroundColor: 'rgba(255,255,255,0.7)',
-              color: '#4b5563',
-              borderColor: 'rgba(209,213,219,0.5)'
-            }}
-          >
-            {activeNotebook ? `Caderno Digital de ${activeNotebook.name}` : 'Rascunho Rápido'}
-          </span>
-        </div>
-      )}
-
-      {/* Transparent Custom Sidebar (No Background) */}
-      {!showToolbar && sidebarMode !== 'hidden' && (
+      {/* Transparent Custom Sidebar */}
+      {sidebarMode !== 'hidden' && (
         <div className={`whiteboard-sidebar pointer-events-auto absolute z-[9999] ${sidebarMode === 'fixed' ? 'left-2 top-1/2 -translate-y-1/2' : 'left-4 top-20'}`}>
           <Draggable disabled={sidebarMode === 'fixed'} handle=".sidebar-drag" nodeRef={sidebarRef}>
-            <div ref={sidebarRef} className="flex flex-col items-center gap-1.5">
+            <div ref={sidebarRef} className="flex flex-col items-center gap-1.5 p-1.5 bg-white/40 dark:bg-gray-800/40 backdrop-blur-md rounded-2xl shadow-xl border border-white/50 dark:border-gray-700/50">
               {sidebarMode === 'floating' && (
                 <div className="sidebar-drag w-full flex justify-center py-1 cursor-grab active:cursor-grabbing text-gray-400 drop-shadow-md">
                   <GripHorizontal className="w-4 h-4" />
                 </div>
               )}
               
+              {/* Close Button */}
+              <button
+                onClick={handleClose}
+                className="w-8 h-8 rounded-full flex items-center justify-center transition-all bg-red-100 text-red-600 hover:bg-red-200 shadow-sm"
+                title="Fechar Lousa"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              
+              <div className="w-4 h-px bg-gray-300 dark:bg-gray-600 my-1 drop-shadow-md" />
+
+              {/* View / Window Controls */}
+              <div className="relative group">
+                <button
+                  onClick={() => {
+                    const nextMode = windowMode === 'fullscreen' ? 'floating' : 'fullscreen';
+                    setWindowMode(nextMode);
+                    if (nextMode === 'floating' && mode === 'transparent') setMode('lined');
+                  }}
+                  className="w-8 h-8 rounded-full flex items-center justify-center transition-all bg-white/90 shadow-sm text-gray-500 hover:text-indigo-600"
+                  title={windowMode === 'fullscreen' ? 'Modo Janela' : 'Tela Cheia'}
+                >
+                  {windowMode === 'fullscreen' ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                </button>
+              </div>
+
+              {/* Background Mode */}
+              <div className="relative group">
+                <button
+                  className={`w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-sm ${mode === 'transparent' ? 'bg-indigo-100 text-indigo-600 ring-2 ring-indigo-400' : 'bg-white/90 text-gray-500 hover:text-indigo-600'}`}
+                  title="Fundo / Modo"
+                >
+                  {mode === 'transparent' ? <Focus className="w-4 h-4" /> : <PanelTop className="w-4 h-4" />}
+                </button>
+                <div className="absolute left-full ml-3 top-0 hidden group-hover:flex bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 p-2 flex-col gap-1 z-[10000] w-40">
+                  <button onClick={() => { setMode('transparent'); setWindowMode('fullscreen'); }} className={`text-xs p-1.5 rounded text-left ${mode === 'transparent' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}> Lousa Transparente</button>
+                  <button onClick={() => setMode('lined')} className={`text-xs p-1.5 rounded text-left ${mode === 'lined' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}> 📝 Pautado</button>
+                  <button onClick={() => setMode('grid')} className={`text-xs p-1.5 rounded text-left ${mode === 'grid' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}> 📐 Quadriculado</button>
+                  <button onClick={() => setMode('dotted')} className={`text-xs p-1.5 rounded text-left ${mode === 'dotted' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}> 📌 Pontilhado</button>
+                </div>
+              </div>
+
+              <div className="w-4 h-px bg-gray-300 dark:bg-gray-600 my-1 drop-shadow-md" />
+
               {/* Mouse / Pointer Tool */}
               <button
                 onClick={() => setTool('pointer')}
@@ -990,7 +905,33 @@ export default function WhiteboardOverlay() {
                 </button>
               )}
 
-              {/* Separator */}
+              <div className="w-4 h-px bg-gray-300 dark:bg-gray-600 my-1 drop-shadow-md" />
+
+              {/* Undo / Redo */}
+              <div className="flex flex-col gap-1">
+                <button onClick={handleUndo} disabled={strokes.length === 0} className="w-8 h-8 rounded-full bg-white/90 shadow-sm flex items-center justify-center text-gray-500 hover:text-indigo-600 disabled:opacity-30"><Undo2 className="w-4 h-4" /></button>
+                <button onClick={handleRedo} disabled={redoStack.length === 0} className="w-8 h-8 rounded-full bg-white/90 shadow-sm flex items-center justify-center text-gray-500 hover:text-indigo-600 disabled:opacity-30"><Redo2 className="w-4 h-4" /></button>
+              </div>
+
+              {/* Pagination */}
+              <div className="relative group mt-1">
+                <button className="w-8 h-8 rounded-full bg-indigo-50 shadow-sm flex items-center justify-center text-indigo-600 text-xs font-bold ring-1 ring-indigo-200">
+                  {currentPage}
+                </button>
+                <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 hidden group-hover:flex bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 p-1 items-center gap-1 z-[10000]">
+                  <button onClick={() => setPageWithScrollReset(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="p-1.5 text-gray-600 disabled:opacity-30 hover:bg-gray-200 rounded"><ChevronLeft className="w-4 h-4" /></button>
+                  <span className="text-xs font-bold w-12 text-center text-gray-700 dark:text-gray-300">Pág {currentPage}</span>
+                  <button onClick={() => setPageWithScrollReset(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className="p-1.5 text-gray-600 disabled:opacity-30 hover:bg-gray-200 rounded"><ChevronRight className="w-4 h-4" /></button>
+                  <div className="w-px h-4 bg-gray-300 mx-1" />
+                  <button onClick={addNewPage} className="p-1.5 text-indigo-600 hover:bg-indigo-100 rounded" title="Nova Página"><FilePlus className="w-4 h-4" /></button>
+                </div>
+              </div>
+
+              {/* Clear */}
+              <button onClick={handleClear} className="w-8 h-8 rounded-full bg-white/90 shadow-sm flex items-center justify-center text-red-500 hover:bg-red-50 hover:text-red-600 mt-1" title="Limpar Lousa">
+                <Trash2 className="w-4 h-4" />
+              </button>
+
               <div className="w-4 h-px bg-gray-300 dark:bg-gray-600 my-1 drop-shadow-md" />
               
               {/* Settings Toggle & Restore Toolbar */}
@@ -1009,24 +950,17 @@ export default function WhiteboardOverlay() {
                   </div>
                 )}
               </div>
-
-              <button
-                onClick={toggleToolbar}
-                className="w-8 h-8 rounded-full bg-white/90 shadow-md backdrop-blur-sm flex items-center justify-center text-indigo-600 hover:bg-indigo-50"
-                title="Expandir Menu Principal"
-              >
-                <PanelTop className="w-4 h-4" />
-              </button>
             </div>
           </Draggable>
         </div>
       )}
 
       {/* Recover hidden sidebar button */}
-      {!showToolbar && sidebarMode === 'hidden' && (
+      {sidebarMode === 'hidden' && (
         <button
-          onClick={toggleToolbar}
+          onClick={() => { setSidebarMode('floating'); saveSettings(penPresets, eraserPresets, 'floating'); }}
           className="whiteboard-toolbar pointer-events-auto absolute top-4 right-4 z-[9999] w-10 h-10 rounded-full bg-white/90 shadow-lg flex items-center justify-center text-gray-600 hover:bg-white"
+          title="Mostrar Menu da Lousa"
         >
           <PanelTop className="w-5 h-5" />
         </button>
