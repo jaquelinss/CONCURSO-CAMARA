@@ -131,7 +131,7 @@ export default function NavigationTutorial() {
       icon: <Sparkles className="w-16 h-16 text-white" />,
       content: "Desenhe, anote e rabisque por cima de qualquer tela do app! A lousa transparente é uma camada de desenho flutuante, perfeita para resolver questões, grifar trechos e fazer cálculos rápidos.",
       bullets: [
-        "⌨️ Alt+L — Abrir/fechar a lousa transparente de qualquer tela.",
+        "⌨️ Ctrl+Shift+O — Abrir/fechar a lousa transparente de qualquer tela.",
         "⌨️ E — Selecionar borracha | P ou B — Selecionar caneta.",
         "⌨️ Ctrl+Z / Ctrl+Y — Desfazer / Refazer traços.",
         "⌨️ Shift+L — Limpar toda a lousa (cuidado!).",

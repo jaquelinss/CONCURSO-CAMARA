@@ -15,7 +15,7 @@ export default function Navigation() {
       // Evita acionar os atalhos enquanto estiver digitando em campos de texto
       if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
 
-      if (e.altKey && e.key.toLowerCase() === 'l') {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'o') {
         e.preventDefault();
         window.dispatchEvent(new Event('toggle-whiteboard-transparent'));
       }
@@ -116,7 +116,7 @@ export default function Navigation() {
             <button
               onClick={() => window.dispatchEvent(new Event('toggle-whiteboard-transparent'))}
               className="inline-flex items-center px-2 sm:px-3 py-2 border border-emerald-300 dark:border-emerald-600 text-xs sm:text-sm leading-4 font-bold rounded-md text-emerald-900 dark:emerald-100 bg-emerald-100 dark:bg-emerald-900/50 hover:bg-emerald-200 dark:hover:bg-emerald-800/50 focus:outline-none transition shadow-sm"
-              title="Lousa Transparente (Alt+L)"
+              title="Lousa Transparente (Ctrl+Shift+O)"
             >
               <Focus className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
               <span className="hidden sm:inline">Lousa</span>
