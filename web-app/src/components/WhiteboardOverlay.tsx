@@ -98,11 +98,19 @@ export default function WhiteboardOverlay() {
   const [strokesByPage, setStrokesByPage] = useState<Record<number, Stroke[]>>({ 1: [] });
   const [redoStackByPage, setRedoStackByPage] = useState<Record<number, Stroke[]>>({ 1: [] });
   const [isLoaded, setIsLoaded] = useState(false);
+  // Tracks which context ('draft' or notebook ID) the current strokesByPage was loaded for.
+  // Auto-save only proceeds when this matches the current context, preventing cross-contamination.
+  const loadedForRef = useRef<string | null>(null);
 
   // Carregar dados iniciais (Rascunho ou Caderno)
   useEffect(() => {
+    // Immediately invalidate to prevent auto-save from firing with stale data
+    loadedForRef.current = null;
+    setIsLoaded(false);
+
     const loadData = async () => {
-      setIsLoaded(false);
+      const contextId = activeNotebook?.id || 'draft';
+
       if (activeNotebook && user) {
         // Load from Firebase
         try {
@@ -136,9 +144,14 @@ export default function WhiteboardOverlay() {
             const maxPage = Math.max(...Object.keys(savedStrokes).map(Number));
             if (maxPage > 1) {
               setTotalPages(maxPage);
+            } else {
+              setTotalPages(1);
             }
+            setCurrentPage(1);
           } else {
             setStrokesByPage({ 1: [] });
+            setTotalPages(1);
+            setCurrentPage(1);
           }
         } catch (e) {
           console.error(e);
@@ -146,6 +159,7 @@ export default function WhiteboardOverlay() {
         }
       }
       setRedoStackByPage({ 1: [] });
+      loadedForRef.current = contextId;
       setIsLoaded(true);
     };
 
@@ -156,8 +170,13 @@ export default function WhiteboardOverlay() {
   useEffect(() => {
     if (!isLoaded) return;
 
+    // Guard: only save if the current context matches what was loaded.
+    // This prevents saving notebook strokes as quick-draft (or vice-versa) during mode switches.
+    const currentContextId = activeNotebook?.id || 'draft';
+    if (loadedForRef.current !== currentContextId) return;
+
     if (activeNotebook && user) {
-      // Save current page to Firebase (debounce or save immediately)
+      // Save current page to Firebase
       const currentStrokes = strokesByPage[currentPage] || [];
       const pageRef = doc(db, 'users', user.uid, 'notebooks', activeNotebook.id, 'pages', `page_${currentPage}`);
       setDoc(pageRef, {
