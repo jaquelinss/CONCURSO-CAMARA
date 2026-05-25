@@ -486,9 +486,11 @@ export default function AITeacherChat({ isHidden = false }: { isHidden?: boolean
     const userMessage: ChatMessage = {
       sender: 'user',
       text: userText,
-      timestamp: new Date().toISOString(),
-      imageBase64: imageToSend || undefined
+      timestamp: new Date().toISOString()
     };
+    if (imageToSend) {
+      userMessage.imageBase64 = imageToSend;
+    }
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
     setIsTyping(true);
@@ -564,12 +566,15 @@ Diretrizes:
     if (!user) return;
     setSaveStatus('saving');
     try {
+      // Strip out any accidental undefined values recursively, just to be safe
+      const cleanMessages = JSON.parse(JSON.stringify(messages));
+      
       const chatsRef = collection(db, 'users', user.uid, 'savedTeacherChats');
       const docData = {
         subject: activeSubject,
         teacherName: activeTeacher.name,
         updatedAt: new Date().toISOString(),
-        messages: messages
+        messages: cleanMessages
       };
 
       if (loadedChatId) {
