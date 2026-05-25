@@ -3,12 +3,125 @@ import { themes, defaultTheme } from '../lib/constants';
 import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
-import { DownloadIcon, ClipboardListIcon } from 'lucide-react';
+import { DownloadIcon, ClipboardListIcon, Eraser, PenTool, Highlighter, MousePointer2, Undo2, Redo2, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
+import { getStroke } from 'perfect-freehand';
 import PracticeQuiz from './PracticeQuiz';
 import { generateContentFromGemini } from '../lib/gemini';
 import ReadingLaser from './ReadingLaser';
+
+interface StrokePoint { x: number; y: number; pressure: number; }
+interface Stroke { points: StrokePoint[]; color: string; width: number; type: 'pen' | 'highlighter' | 'eraser'; }
+const PEN_COLORS = ['#ef4444', '#3b82f6', '#000000', '#22c55e', '#eab308', '#a855f7'];
+const HIGHLIGHTER_COLORS = ['#ffff00', '#fce7f3', '#dbeafe', '#dcfce3', '#f3e8ff', '#ffedd5'];
+
+function useCanvasDrawing(
+  tool: string, penColor: string, highlighterColor: string, 
+  penWidth: number, highlighterWidth: number, eraserWidth: number, 
+  strokes: Stroke[], onUpdateStrokes: (s: Stroke[]) => void, 
+  onUpdateRedo: (s: Stroke[]) => void, drawStroke: any
+) {
+  const highlighterCanvasRef = useRef<HTMLCanvasElement>(null);
+  const penCanvasRef = useRef<HTMLCanvasElement>(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const currentStrokeRef = useRef<Stroke | null>(null);
+  const animFrameRef = useRef<number>(0);
+
+  const redrawStrokes = useCallback(() => {
+    const hCtx = highlighterCanvasRef.current?.getContext('2d');
+    const pCtx = penCanvasRef.current?.getContext('2d');
+    if (!hCtx || !pCtx || !highlighterCanvasRef.current || !penCanvasRef.current) return;
+
+    hCtx.clearRect(0, 0, highlighterCanvasRef.current.width, highlighterCanvasRef.current.height);
+    pCtx.clearRect(0, 0, penCanvasRef.current.width, penCanvasRef.current.height);
+
+    for (const stroke of strokes) {
+      if (stroke.type === 'highlighter') drawStroke(hCtx, stroke);
+      else if (stroke.type === 'pen') drawStroke(pCtx, stroke);
+      else if (stroke.type === 'eraser') { drawStroke(hCtx, stroke); drawStroke(pCtx, stroke); }
+    }
+
+    if (currentStrokeRef.current) {
+      const stroke = currentStrokeRef.current;
+      if (stroke.type === 'highlighter') drawStroke(hCtx, stroke);
+      else if (stroke.type === 'pen') drawStroke(pCtx, stroke);
+      else if (stroke.type === 'eraser') { drawStroke(hCtx, stroke); drawStroke(pCtx, stroke); }
+    }
+  }, [strokes, drawStroke]);
+
+  useEffect(() => { redrawStrokes(); }, [strokes, redrawStrokes]);
+
+  const eraseIntersecting = (x: number, y: number) => {
+    const threshold = eraserWidth / 2;
+    const strokesToKeep: Stroke[] = [];
+    const strokesToRemove: Stroke[] = [];
+    for (const stroke of strokes) {
+      if (stroke.type === 'eraser') continue;
+      const isHit = stroke.points.some((p: StrokePoint) => Math.hypot(p.x - x, p.y - y) < threshold);
+      if (isHit) strokesToRemove.push(stroke);
+      else strokesToKeep.push(stroke);
+    }
+    if (strokesToRemove.length > 0) {
+      onUpdateStrokes(strokesToKeep);
+      setTimeout(redrawStrokes, 0);
+    }
+  };
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (tool === 'pointer') return;
+    e.preventDefault();
+    setIsDrawing(true);
+    const rect = penCanvasRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    const x = (e.clientX - rect.left) * (penCanvasRef.current!.width / rect.width);
+    const y = (e.clientY - rect.top) * (penCanvasRef.current!.height / rect.height);
+    const pressure = e.pressure !== undefined && e.pressure > 0 ? e.pressure : 0.5;
+
+    if (tool === 'eraser') {
+      eraseIntersecting(x, y);
+      currentStrokeRef.current = { points: [{ x, y, pressure }], color: '#000000', width: eraserWidth, type: 'eraser' };
+    } else {
+      currentStrokeRef.current = {
+        points: [{ x, y, pressure }],
+        color: tool === 'highlighter' ? highlighterColor : penColor,
+        width: tool === 'highlighter' ? highlighterWidth : penWidth,
+        type: tool as any,
+      };
+    }
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDrawing || !currentStrokeRef.current) return;
+    e.preventDefault();
+    const rect = penCanvasRef.current?.getBoundingClientRect();
+    if (!rect) return;
+
+    const x = (e.clientX - rect.left) * (penCanvasRef.current!.width / rect.width);
+    const y = (e.clientY - rect.top) * (penCanvasRef.current!.height / rect.height);
+    const pressure = e.pressure !== undefined && e.pressure > 0 ? e.pressure : 0.5;
+
+    currentStrokeRef.current.points.push({ x, y, pressure });
+    if (tool === 'eraser') eraseIntersecting(x, y);
+
+    if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+    animFrameRef.current = requestAnimationFrame(() => redrawStrokes());
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    e.preventDefault();
+    setIsDrawing(false);
+    if (currentStrokeRef.current && currentStrokeRef.current.points.length > 0 && tool !== 'eraser') {
+      onUpdateStrokes([...strokes, currentStrokeRef.current]);
+      onUpdateRedo([]);
+    }
+    currentStrokeRef.current = null;
+    redrawStrokes();
+  };
+
+  return { highlighterCanvasRef, penCanvasRef, handlePointerDown, handlePointerMove, handlePointerUp, redrawStrokes };
+}
 
 const renderMarkdownText = (text: string) => {
   if (!text) return null;
@@ -150,6 +263,97 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
   const [tooltip, setTooltip] = useState({ visible: false, content: '', top: 0, left: 0 });
   const [highlighter, setHighlighter] = useState({ visible: false, top: 0, left: 0 });
   const highlighterPaletteRef = useRef<HTMLDivElement>(null);
+
+  // Zoom State
+  const [zoom, setZoom] = useState(1);
+  const zoomIn = () => setZoom(z => Math.min(3, +(z + 0.1).toFixed(2)));
+  const zoomOut = () => setZoom(z => Math.max(0.5, +(z - 0.1).toFixed(2)));
+  const zoomReset = () => setZoom(1);
+
+  // Drawing State
+  const [tool, setTool] = useState<'pointer' | 'pen' | 'highlighter' | 'eraser'>('pointer');
+  const [penColor, setPenColor] = useState('#ef4444');
+  const [highlighterColor, setHighlighterColor] = useState('#ffff00');
+  const [strokes, setStrokes] = useState<Stroke[]>([]);
+  const [redoStack, setRedoStack] = useState<Stroke[]>([]);
+  const penWidth = 3;
+  const highlighterWidth = 20;
+  const eraserWidth = 20;
+
+  const drawStroke = useCallback((ctx: CanvasRenderingContext2D, stroke: Stroke) => {
+    if (stroke.points.length === 0) return;
+    ctx.save();
+    if (stroke.type === 'eraser') {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fillStyle = 'rgba(0,0,0,1)';
+    } else {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = stroke.color;
+    }
+    try {
+      const pointsArray = stroke.points.map(p => [p.x, p.y, p.pressure] as [number, number, number]);
+      const outlinePoints = getStroke(pointsArray, {
+        size: stroke.width,
+        thinning: stroke.type === 'highlighter' ? 0 : 0.5,
+        smoothing: 0.5,
+        streamline: 0.5,
+        simulatePressure: false,
+      });
+      if (outlinePoints && outlinePoints.length > 0) {
+        ctx.beginPath();
+        ctx.moveTo(outlinePoints[0][0], outlinePoints[0][1]);
+        for (let i = 1; i < outlinePoints.length; i++) ctx.lineTo(outlinePoints[i][0], outlinePoints[i][1]);
+        ctx.closePath();
+        ctx.fill();
+      }
+    } catch (e) {
+      console.warn("Erro ao desenhar traço", e);
+    }
+    ctx.restore();
+  }, []);
+
+  const { 
+    highlighterCanvasRef, 
+    penCanvasRef, 
+    handlePointerDown, 
+    handlePointerMove, 
+    handlePointerUp, 
+    redrawStrokes 
+  } = useCanvasDrawing(tool, penColor, highlighterColor, penWidth, highlighterWidth, eraserWidth, strokes, setStrokes, setRedoStack, drawStroke);
+
+  // Auto-resize canvases to match content height
+  useEffect(() => {
+    const observer = new ResizeObserver(() => {
+      if (contentRef.current && highlighterCanvasRef.current && penCanvasRef.current) {
+        const { scrollWidth, scrollHeight } = contentRef.current;
+        if (highlighterCanvasRef.current.height !== scrollHeight) {
+          highlighterCanvasRef.current.width = scrollWidth;
+          highlighterCanvasRef.current.height = scrollHeight;
+          penCanvasRef.current.width = scrollWidth;
+          penCanvasRef.current.height = scrollHeight;
+          redrawStrokes();
+        }
+      }
+    });
+    if (contentRef.current) observer.observe(contentRef.current);
+    return () => observer.disconnect();
+  }, [redrawStrokes, highlighterCanvasRef, penCanvasRef]);
+
+  const handleUndo = () => {
+    if (strokes.length === 0) return;
+    const newStrokes = [...strokes];
+    const undone = newStrokes.pop();
+    setStrokes(newStrokes);
+    if (undone) setRedoStack(prev => [...prev, undone]);
+  };
+
+  const handleRedo = () => {
+    if (redoStack.length === 0) return;
+    const newRedos = [...redoStack];
+    const redone = newRedos.pop();
+    setRedoStack(newRedos);
+    if (redone) setStrokes(prev => [...prev, redone]);
+  };
 
   const showTooltip = (e: React.MouseEvent, explanation: string) => {
     const rect = (e.target as HTMLElement).getBoundingClientRect();
@@ -678,6 +882,14 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
           Voltar
         </button>
         <div className="flex items-center gap-2">
+          {currentLesson && (
+            <div className="flex items-center gap-1 bg-white dark:bg-gray-800 rounded-lg p-1 shadow-sm mr-4 border border-gray-200 dark:border-gray-700">
+              <button onClick={zoomOut} disabled={zoom <= 0.5} className="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 rounded-lg disabled:opacity-30 transition-colors" title="Diminuir zoom"><ZoomOut className="w-4 h-4" /></button>
+              <button onClick={zoomReset} className="px-2 py-1 text-xs font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg min-w-[48px] text-center transition-colors" title="Resetar zoom">{Math.round(zoom * 100)}%</button>
+              <button onClick={zoomIn} disabled={zoom >= 3} className="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 rounded-lg disabled:opacity-30 transition-colors" title="Aumentar zoom"><ZoomIn className="w-4 h-4" /></button>
+              {zoom !== 1 && <button onClick={zoomReset} className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-gray-100 rounded-lg transition-colors" title="Resetar zoom"><RotateCcw className="w-3 h-3" /></button>}
+            </div>
+          )}
           <button
             onClick={() => window.dispatchEvent(new Event('toggle-archive'))}
             className="text-sm bg-yellow-100 dark:bg-yellow-900/30 text-yellow-900 dark:text-yellow-200 border border-yellow-300 dark:border-yellow-600 p-2 rounded-lg hover:bg-yellow-200 dark:hover:bg-yellow-800/50 transition-colors flex items-center gap-2 font-bold"
@@ -706,13 +918,48 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
           <p className={`text-lg ${theme.text}`}>Gerando aula de {settings.specificTopic || settings.topic || settings.subject}...</p>
         </div>
       ) : currentLesson ? (
-        <div ref={contentRef} className={`${theme.cardFront} p-6 rounded-xl shadow-lg relative overflow-hidden text-gray-900 dark:text-gray-100`}>
-          <ReadingLaser containerRef={contentRef} />
-          {highlighter.visible && (
-            <div ref={highlighterPaletteRef}>
-              <HighlighterPalette top={highlighter.top} left={highlighter.left} onHighlight={applyHighlight} />
-            </div>
-          )}
+        <div className="relative">
+          {/* Vertical Floating Toolbar for Drawing */}
+          <div className="fixed left-4 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-2 flex flex-col items-center gap-2 z-50">
+            <button onClick={() => setTool('pointer')} className={`p-2.5 rounded-xl transition-all ${tool === 'pointer' ? 'bg-indigo-100 text-indigo-600 shadow-inner' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900'}`} title="Cursor"><MousePointer2 className="w-5 h-5" /></button>
+            <div className="w-8 h-px bg-gray-200 dark:bg-gray-700 my-1"></div>
+            
+            <button onClick={() => setTool('pen')} className={`p-2.5 rounded-xl transition-all ${tool === 'pen' ? 'bg-indigo-100 text-indigo-600 shadow-inner' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900'}`} title="Caneta"><PenTool className="w-5 h-5" /></button>
+            {tool === 'pen' && PEN_COLORS.map(c => (
+              <button key={c} onClick={() => setPenColor(c)} className={`w-6 h-6 rounded-full border-2 transition-transform ${penColor === c ? 'border-indigo-400 scale-125 shadow-md' : 'border-transparent scale-100'}`} style={{ backgroundColor: c }} />
+            ))}
+            
+            <div className="w-8 h-px bg-gray-200 dark:bg-gray-700 my-1"></div>
+            <button onClick={() => setTool('highlighter')} className={`p-2.5 rounded-xl transition-all ${tool === 'highlighter' ? 'bg-yellow-100 text-yellow-600 shadow-inner' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900'}`} title="Marca-texto Livre"><Highlighter className="w-5 h-5" /></button>
+            {tool === 'highlighter' && HIGHLIGHTER_COLORS.map(c => (
+              <button key={c} onClick={() => setHighlighterColor(c)} className={`w-6 h-6 rounded-full border-2 transition-transform ${highlighterColor === c ? 'border-yellow-400 scale-125 shadow-md' : 'border-transparent scale-100'}`} style={{ backgroundColor: c }} />
+            ))}
+
+            <div className="w-8 h-px bg-gray-200 dark:bg-gray-700 my-1"></div>
+            <button onClick={() => setTool('eraser')} className={`p-2.5 rounded-xl transition-all ${tool === 'eraser' ? 'bg-pink-100 text-pink-600 shadow-inner' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900'}`} title="Borracha"><Eraser className="w-5 h-5" /></button>
+
+            <div className="w-8 h-px bg-gray-200 dark:bg-gray-700 my-1"></div>
+            <button onClick={handleUndo} disabled={strokes.length === 0} className="p-2 text-gray-500 hover:text-indigo-600 disabled:opacity-30"><Undo2 className="w-4 h-4" /></button>
+            <button onClick={handleRedo} disabled={redoStack.length === 0} className="p-2 text-gray-500 hover:text-indigo-600 disabled:opacity-30"><Redo2 className="w-4 h-4" /></button>
+          </div>
+
+          <div style={{ transform: `scale(${zoom})`, transformOrigin: 'top center', transition: 'transform 0.15s ease' }}>
+            <div ref={contentRef} className={`${theme.cardFront} p-6 rounded-xl shadow-lg relative text-gray-900 dark:text-gray-100 w-full`}>
+              
+              <canvas ref={highlighterCanvasRef} className="absolute inset-0 pointer-events-none z-10" style={{ mixBlendMode: 'multiply' }} />
+              <canvas 
+                ref={penCanvasRef} 
+                className={`absolute inset-0 z-20 ${tool === 'pointer' ? 'pointer-events-none' : 'cursor-crosshair'}`} 
+                onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onPointerLeave={handlePointerUp} 
+                style={{ touchAction: 'none' }} 
+              />
+
+              <ReadingLaser containerRef={contentRef} />
+              {highlighter.visible && (
+                <div ref={highlighterPaletteRef} className="z-30 relative">
+                  <HighlighterPalette top={highlighter.top} left={highlighter.left} onHighlight={applyHighlight} />
+                </div>
+              )}
           
           {tooltip.visible && (
             <div 
@@ -871,7 +1118,9 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
             )}
           </div>
         </div>
-      ) : null}
+      </div>
     </div>
-  );
+    ) : null}
+  </div>
+);
 }
