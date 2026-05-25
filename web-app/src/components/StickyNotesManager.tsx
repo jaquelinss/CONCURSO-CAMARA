@@ -196,12 +196,11 @@ export default function StickyNotesManager() {
       <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 9999 }}>
         {activeNotes.map(note => (
           <StickyNoteItem 
-            key={note.id} 
+            key={`${note.id}-${isCascadeMode ? 'cascade' : 'free'}`} 
             note={note} 
             isCascadeMode={isCascadeMode}
             cascadePos={cascadePos}
             cascadeSize={cascadeSize}
-            onCascadeDrag={(pos) => setCascadePos(pos)}
             onCascadeResize={(size) => setCascadeSize(size)}
             onCascadeStop={(pos) => {
               setCascadePos(pos);
@@ -393,7 +392,6 @@ function StickyNoteItem({
   isCascadeMode,
   cascadePos,
   cascadeSize,
-  onCascadeDrag,
   onCascadeResize,
   onCascadeStop,
   onUpdate, 
@@ -405,7 +403,6 @@ function StickyNoteItem({
   isCascadeMode: boolean;
   cascadePos?: {x: number, y: number};
   cascadeSize?: {w: number, h: number};
-  onCascadeDrag?: (pos: {x: number, y: number}) => void;
   onCascadeResize?: (size: {w: number, h: number}) => void;
   onCascadeStop?: (pos: {x: number, y: number}) => void;
   onUpdate: (u: Partial<Note>) => void; 
@@ -477,9 +474,17 @@ function StickyNoteItem({
     <Draggable
       nodeRef={nodeRef}
       handle=".drag-handle"
-      position={isCascadeMode ? cascadePos : undefined}
-      defaultPosition={{ x: note.x || 0, y: note.y || 0 }}
-      onDrag={isCascadeMode ? (_e, data) => onCascadeDrag?.({x: data.x, y: data.y}) : undefined}
+      defaultPosition={isCascadeMode && cascadePos ? cascadePos : { x: note.x || 0, y: note.y || 0 }}
+      onDrag={(_e, data) => {
+        if (isCascadeMode) {
+          const elements = document.querySelectorAll('.cascade-mode-item');
+          elements.forEach(el => {
+            if (el !== nodeRef.current) {
+              (el as HTMLElement).style.transform = `translate(${data.x}px, ${data.y}px)`;
+            }
+          });
+        }
+      }}
       onStop={(_e, data) => {
         if (isCascadeMode) {
           onCascadeStop?.({x: data.x, y: data.y});
@@ -493,7 +498,7 @@ function StickyNoteItem({
     >
       <div 
         ref={nodeRef}
-        className="sticky-note absolute rounded-lg shadow-xl overflow-hidden pointer-events-auto border-t-8 flex flex-col group transition-shadow hover:shadow-2xl"
+        className={`sticky-note absolute rounded-lg shadow-xl overflow-hidden pointer-events-auto border-t-8 flex flex-col group transition-shadow hover:shadow-2xl ${isCascadeMode ? 'cascade-mode-item' : ''}`}
         style={{ 
           width: isCascadeMode && cascadeSize ? `${cascadeSize.w}px` : `${size.w}px`,
           height: isCascadeMode && cascadeSize ? `${cascadeSize.h}px` : `${size.h}px`,
