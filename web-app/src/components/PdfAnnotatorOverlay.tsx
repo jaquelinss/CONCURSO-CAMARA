@@ -635,22 +635,14 @@ export default function PdfAnnotatorOverlay() {
 
               <div className="w-px h-6 bg-gray-300 mx-1" />
 
-              {/* Uploading File Indicator */}
-              {isUploadingFile && (
-                <div className="flex items-center gap-1 px-2 text-xs font-medium text-indigo-500 dark:text-indigo-400 animate-pulse bg-indigo-50 dark:bg-indigo-900/30 rounded-lg border border-indigo-100 dark:border-indigo-800" title="Fazendo upload em segundo plano...">
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                  <span>Enviando...</span>
-                </div>
-              )}
-
               {/* Save button */}
               <button 
                 onClick={saveDocument} 
-                disabled={saving || !currentDocId} 
+                disabled={saving || isUploadingFile || !currentDocId} 
                 className="p-2 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg disabled:opacity-30 transition-colors" 
-                title="Salvar na conta"
+                title={isUploadingFile ? "Sincronizando arquivo com a nuvem em segundo plano..." : "Salvar na conta"}
               >
-                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                {saving || isUploadingFile ? <Loader2 className={`w-4 h-4 animate-spin ${isUploadingFile ? 'text-indigo-500' : ''}`} /> : <Save className="w-4 h-4" />}
               </button>
 
               {/* Library button */}
