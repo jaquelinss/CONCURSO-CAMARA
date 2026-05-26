@@ -397,6 +397,13 @@ export default function PdfAnnotatorOverlay() {
             await loadLibrary();
           } catch (e) {
             console.error("Auto-upload failed", e);
+            alert("Ocorreu um erro ao salvar o arquivo na nuvem. Verifique sua conexão e tente novamente.");
+            try {
+              await deleteDoc(doc(db, 'users', uid, 'documents', docId));
+              await loadLibrary();
+            } catch (delErr) {
+              console.error("Failed to delete broken doc", delErr);
+            }
           } finally {
             setIsUploadingFile(false);
           }
