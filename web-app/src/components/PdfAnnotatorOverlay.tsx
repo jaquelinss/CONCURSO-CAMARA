@@ -571,7 +571,8 @@ export default function PdfAnnotatorOverlay() {
     pagesToRender = [currentPage];
   }
 
-  const fileTypeLabel = (ft: string) => {
+  const fileTypeLabel = (ft?: string) => {
+    if (!ft) return 'DOC';
     switch (ft) {
       case 'pdf': return 'PDF';
       case 'epub': return 'EPUB';
@@ -733,9 +734,9 @@ export default function PdfAnnotatorOverlay() {
                             {fileTypeLabel(savedDoc.fileType)}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-gray-800 dark:text-gray-200 text-sm truncate">{savedDoc.name}</p>
+                            <p className="font-medium text-gray-800 dark:text-gray-200 text-sm truncate">{savedDoc.name || 'Documento sem nome'}</p>
                             <p className="text-xs text-gray-400">
-                              Pag. {savedDoc.currentPage}/{savedDoc.totalPages} &middot; {new Date(savedDoc.updatedAt).toLocaleDateString('pt-BR')}
+                              Pag. {savedDoc.currentPage || 1}/{savedDoc.totalPages || 1} &middot; {savedDoc.updatedAt ? new Date(savedDoc.updatedAt).toLocaleDateString('pt-BR') : ''}
                             </p>
                           </div>
                           <button
