@@ -37,6 +37,7 @@ interface SavedDocument {
 
 const COLORS = ['#000000', '#ffffff', '#ef4444', '#3b82f6', '#22c55e', '#eab308', '#a855f7', '#f97316'];
 const HIGHLIGHTER_COLORS = ['#ffff00', '#fce7f3', '#dbeafe', '#dcfce3', '#f3e8ff', '#ffedd5'];
+const EMPTY_STROKES: Stroke[] = [];
 
 export default function PdfAnnotatorOverlay() {
   const [active, setActive] = useState(false);
@@ -796,7 +797,7 @@ export default function PdfAnnotatorOverlay() {
                         penWidth={penWidth}
                         highlighterWidth={highlighterWidth}
                         eraserWidth={eraserWidth}
-                        strokes={strokesByPage[pageNum] || []}
+                        strokes={strokesByPage[pageNum] || EMPTY_STROKES}
                         onUpdateStrokes={(newStrokes: Stroke[]) => setStrokesByPage(prev => ({ ...prev, [pageNum]: newStrokes }))}
                         onUpdateRedo={(newRedos: Stroke[]) => setRedoStackByPage(prev => ({ ...prev, [pageNum]: newRedos }))}
                         drawStroke={drawStroke}
@@ -833,7 +834,7 @@ export default function PdfAnnotatorOverlay() {
                     penWidth={penWidth}
                     highlighterWidth={highlighterWidth}
                     eraserWidth={eraserWidth}
-                    strokes={strokesByPage[currentPage] || []}
+                    strokes={strokesByPage[currentPage] || EMPTY_STROKES}
                     onUpdateStrokes={(newStrokes: Stroke[]) => setStrokesByPage(prev => ({ ...prev, [currentPage]: newStrokes }))}
                     onUpdateRedo={(newRedos: Stroke[]) => setRedoStackByPage(prev => ({ ...prev, [currentPage]: newRedos }))}
                     drawStroke={drawStroke}
@@ -1009,7 +1010,7 @@ function PdfPage({ pageNum, pdfDoc, tool, penColor, highlighterColor, penWidth, 
   const [dimensions, setDimensions] = useState({ width: 800, height: 1131 });
   const [hasRendered, setHasRendered] = useState(false);
 
-  const { highlighterCanvasRef, penCanvasRef, handlePointerDown, handlePointerMove, handlePointerUp, redrawStrokes } = useCanvasDrawing(tool, penColor, highlighterColor, penWidth, highlighterWidth, eraserWidth, strokes, onUpdateStrokes, onUpdateRedo, drawStroke);
+  const { highlighterCanvasRef, penCanvasRef, handlePointerDown, handlePointerMove, handlePointerUp } = useCanvasDrawing(tool, penColor, highlighterColor, penWidth, highlighterWidth, eraserWidth, strokes, onUpdateStrokes, onUpdateRedo, drawStroke);
 
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
@@ -1036,7 +1037,10 @@ function PdfPage({ pageNum, pdfDoc, tool, penColor, highlighterColor, penWidth, 
       const cssWidth = unscaledViewport.width * baseScale;
       const cssHeight = unscaledViewport.height * baseScale;
 
-      setDimensions({ width: cssWidth, height: cssHeight });
+      setDimensions(prev => {
+        if (prev.width === cssWidth && prev.height === cssHeight) return prev;
+        return { width: cssWidth, height: cssHeight };
+      });
 
       bgCanvasRef.current.width = viewport.width;
       bgCanvasRef.current.height = viewport.height;
@@ -1046,9 +1050,8 @@ function PdfPage({ pageNum, pdfDoc, tool, penColor, highlighterColor, penWidth, 
       penCanvasRef.current.height = viewport.height;
 
       await page.render({ canvasContext: bgCanvasRef.current.getContext('2d')!, viewport }).promise;
-      redrawStrokes();
     } catch (err) {}
-  }, [pdfDoc, pageNum, redrawStrokes, highlighterCanvasRef, penCanvasRef]);
+  }, [pdfDoc, pageNum, highlighterCanvasRef, penCanvasRef]);
 
   useEffect(() => { 
     if (hasRendered) renderPage(); 
