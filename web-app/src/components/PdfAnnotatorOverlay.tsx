@@ -1008,14 +1008,16 @@ function PdfPage({ pageNum, pdfDoc, tool, penColor, highlighterColor, penWidth, 
   const containerRef = useRef<HTMLDivElement>(null);
   const bgCanvasRef = useRef<HTMLCanvasElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 1131 });
-  const [hasRendered, setHasRendered] = useState(false);
+  const hasCalledVisible = useRef(false);
+  const renderAttempted = useRef(false);
 
   const { highlighterCanvasRef, penCanvasRef, handlePointerDown, handlePointerMove, handlePointerUp } = useCanvasDrawing(tool, penColor, highlighterColor, penWidth, highlighterWidth, eraserWidth, strokes, onUpdateStrokes, onUpdateRedo, drawStroke);
 
+  // Track visibility for scroll mode page tracking
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setHasRendered(true);
+      if (entry.isIntersecting && !hasCalledVisible.current) {
+        hasCalledVisible.current = true;
         if (onVisible) onVisible();
       }
     }, { rootMargin: '500px' });
@@ -1023,51 +1025,64 @@ function PdfPage({ pageNum, pdfDoc, tool, penColor, highlighterColor, penWidth, 
     return () => observer.disconnect();
   }, [onVisible]);
 
-  const renderPage = useCallback(async () => {
-    if (!pdfDoc || !bgCanvasRef.current || !highlighterCanvasRef.current || !penCanvasRef.current || !containerRef.current) return;
-    try {
-      const page = await pdfDoc.getPage(pageNum);
-      const unscaledViewport = page.getViewport({ scale: 1 });
-      const availableHeight = window.innerHeight - 160; 
-      const baseScale = availableHeight / unscaledViewport.height;
-      const dpr = window.devicePixelRatio || 1;
-      const renderScale = baseScale * dpr;
+  // Render the PDF page directly once pdfDoc is available
+  useEffect(() => {
+    if (!pdfDoc || renderAttempted.current) return;
+
+    const doRender = async () => {
+      // Wait a tick for canvas refs to be attached
+      await new Promise(r => setTimeout(r, 50));
       
-      const viewport = page.getViewport({ scale: renderScale });
-      const cssWidth = unscaledViewport.width * baseScale;
-      const cssHeight = unscaledViewport.height * baseScale;
+      if (!bgCanvasRef.current || !highlighterCanvasRef.current || !penCanvasRef.current) {
+        console.warn(`[PdfPage ${pageNum}] Canvas refs not ready, retrying...`);
+        await new Promise(r => setTimeout(r, 200));
+      }
+      
+      if (!bgCanvasRef.current || !highlighterCanvasRef.current || !penCanvasRef.current) {
+        console.error(`[PdfPage ${pageNum}] Canvas refs still null after retry`);
+        return;
+      }
 
-      setDimensions(prev => {
-        if (prev.width === cssWidth && prev.height === cssHeight) return prev;
-        return { width: cssWidth, height: cssHeight };
-      });
+      renderAttempted.current = true;
 
-      bgCanvasRef.current.width = viewport.width;
-      bgCanvasRef.current.height = viewport.height;
-      highlighterCanvasRef.current.width = viewport.width;
-      highlighterCanvasRef.current.height = viewport.height;
-      penCanvasRef.current.width = viewport.width;
-      penCanvasRef.current.height = viewport.height;
+      try {
+        const page = await pdfDoc.getPage(pageNum);
+        const unscaledViewport = page.getViewport({ scale: 1 });
+        const availableHeight = window.innerHeight - 160;
+        const baseScale = availableHeight / unscaledViewport.height;
+        const dpr = window.devicePixelRatio || 1;
+        const renderScale = baseScale * dpr;
 
-      await page.render({ canvasContext: bgCanvasRef.current.getContext('2d')!, viewport }).promise;
-    } catch (err) {}
+        const viewport = page.getViewport({ scale: renderScale });
+        const cssWidth = unscaledViewport.width * baseScale;
+        const cssHeight = unscaledViewport.height * baseScale;
+
+        setDimensions(prev => {
+          if (prev.width === cssWidth && prev.height === cssHeight) return prev;
+          return { width: cssWidth, height: cssHeight };
+        });
+
+        bgCanvasRef.current.width = viewport.width;
+        bgCanvasRef.current.height = viewport.height;
+        highlighterCanvasRef.current.width = viewport.width;
+        highlighterCanvasRef.current.height = viewport.height;
+        penCanvasRef.current.width = viewport.width;
+        penCanvasRef.current.height = viewport.height;
+
+        await page.render({ canvasContext: bgCanvasRef.current.getContext('2d')!, viewport }).promise;
+      } catch (err) {
+        console.error(`[PdfPage ${pageNum}] Render error:`, err);
+      }
+    };
+
+    doRender();
   }, [pdfDoc, pageNum, highlighterCanvasRef, penCanvasRef]);
-
-  useEffect(() => { 
-    if (hasRendered) renderPage(); 
-  }, [hasRendered, renderPage]);
 
   return (
     <div id={`pdf-page-${pageNum}`} ref={containerRef} className="relative shadow-2xl bg-white flex-shrink-0" style={{ width: dimensions.width, height: dimensions.height }}>
-      {hasRendered ? (
-        <>
-          <canvas ref={bgCanvasRef} className="absolute inset-0 pointer-events-none z-0" style={{ width: '100%', height: '100%' }} />
-          <canvas ref={highlighterCanvasRef} className="absolute inset-0 pointer-events-none z-10" style={{ mixBlendMode: 'multiply', width: '100%', height: '100%' }} />
-          <canvas ref={penCanvasRef} className={`absolute inset-0 z-20 ${tool === 'pointer' ? 'pointer-events-none' : 'cursor-crosshair'}`} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onPointerLeave={handlePointerUp} style={{ touchAction: 'none', width: '100%', height: '100%' }} />
-        </>
-      ) : (
-        <div className="flex items-center justify-center w-full h-full text-gray-400">Carregando página...</div>
-      )}
+      <canvas ref={bgCanvasRef} className="absolute inset-0 pointer-events-none z-0" style={{ width: '100%', height: '100%' }} />
+      <canvas ref={highlighterCanvasRef} className="absolute inset-0 pointer-events-none z-10" style={{ mixBlendMode: 'multiply', width: '100%', height: '100%' }} />
+      <canvas ref={penCanvasRef} className={`absolute inset-0 z-20 ${tool === 'pointer' ? 'pointer-events-none' : 'cursor-crosshair'}`} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onPointerLeave={handlePointerUp} style={{ touchAction: 'none', width: '100%', height: '100%' }} />
     </div>
   );
 }
