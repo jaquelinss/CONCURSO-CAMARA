@@ -3,7 +3,7 @@ import { db } from '../lib/firebase';
 import { collection, query, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import Draggable from 'react-draggable';
-import { Palette, X, GripHorizontal, Tag, PlusCircle, Layers } from 'lucide-react';
+import { Palette, X, GripHorizontal, Tag, PlusCircle, Layers, Eye, EyeOff } from 'lucide-react';
 import { generateNoteTag } from '../lib/gemini';
 
 interface Note {
@@ -40,7 +40,39 @@ export default function StickyNotesManager() {
   const [isDraggingFromSidebar, setIsDraggingFromSidebar] = useState(false);
   const { apiKey } = useAuth();
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const NO_TAG = '__no_tag__';
   const processingTagsRef = useRef<Set<string>>(new Set());
+
+  // Get notes filtered by the current tag selection
+  const getFilteredNotes = () => {
+    if (selectedTag === NO_TAG) return notes.filter(n => !n.subjectTag);
+    if (selectedTag) return notes.filter(n => n.subjectTag === selectedTag);
+    return notes;
+  };
+
+  // Batch show all (un-archive) filtered notes
+  const handleShowAll = async () => {
+    if (!user) return;
+    const filtered = getFilteredNotes().filter(n => n.isArchived);
+    for (const note of filtered) {
+      try {
+        const noteRef = doc(db, 'users', user.uid, 'notes', note.id);
+        await updateDoc(noteRef, { isArchived: false });
+      } catch (e) { console.error('Erro ao mostrar nota:', e); }
+    }
+  };
+
+  // Batch hide all (archive) filtered notes
+  const handleHideAll = async () => {
+    if (!user) return;
+    const filtered = getFilteredNotes().filter(n => !n.isArchived);
+    for (const note of filtered) {
+      try {
+        const noteRef = doc(db, 'users', user.uid, 'notes', note.id);
+        await updateDoc(noteRef, { isArchived: true });
+      } catch (e) { console.error('Erro ao ocultar nota:', e); }
+    }
+  };
 
   // Ouve eventos para toggle global
   useEffect(() => {
@@ -243,36 +275,62 @@ export default function StickyNotesManager() {
               ) : (
                 <div className="flex flex-col gap-4">
                   {/* Tag Filter */}
-                  {Array.from(new Set(notes.map(n => n.subjectTag).filter(Boolean))).length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-2">
+                  <div className="flex flex-wrap gap-2 mb-1">
+                    <button
+                      onClick={() => setSelectedTag(null)}
+                      className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
+                        selectedTag === null
+                          ? 'bg-indigo-600 text-white shadow-md'
+                          : 'bg-gray-200 text-gray-600 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      Todos
+                    </button>
+                    <button
+                      onClick={() => setSelectedTag(NO_TAG)}
+                      className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
+                        selectedTag === NO_TAG
+                          ? 'bg-gray-600 text-white shadow-md'
+                          : 'bg-gray-200 text-gray-600 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      Sem Tags
+                    </button>
+                    {(Array.from(new Set(notes.map(n => n.subjectTag).filter(Boolean))) as string[]).map(tag => (
                       <button
-                        onClick={() => setSelectedTag(null)}
-                        className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
-                          selectedTag === null
+                        key={tag}
+                        onClick={() => setSelectedTag(tag)}
+                        className={`px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1 ${
+                          selectedTag === tag
                             ? 'bg-indigo-600 text-white shadow-md'
-                            : 'bg-gray-200 text-gray-600 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
+                            : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50'
                         }`}
                       >
-                        Todos
+                        <Tag className="w-3 h-3" />
+                        {tag}
                       </button>
-                      {(Array.from(new Set(notes.map(n => n.subjectTag).filter(Boolean))) as string[]).map(tag => (
-                        <button
-                          key={tag}
-                          onClick={() => setSelectedTag(tag)}
-                          className={`px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1 ${
-                            selectedTag === tag
-                              ? 'bg-indigo-600 text-white shadow-md'
-                              : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50'
-                          }`}
-                        >
-                          <Tag className="w-3 h-3" />
-                          {tag}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                    ))}
+                  </div>
 
-                  {notes.filter(n => selectedTag ? n.subjectTag === selectedTag : true).map(note => (
+                  {/* Batch Show/Hide Buttons */}
+                  <div className="flex gap-2 mb-2">
+                    <button
+                      onClick={handleShowAll}
+                      className="flex-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-800 dark:hover:bg-emerald-900/40"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      Mostrar {selectedTag && selectedTag !== NO_TAG ? 'Filtrados' : 'Todos'}
+                    </button>
+                    <button
+                      onClick={handleHideAll}
+                      className="flex-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-200 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-800 dark:hover:bg-orange-900/40"
+                    >
+                      <EyeOff className="w-3.5 h-3.5" />
+                      Ocultar {selectedTag && selectedTag !== NO_TAG ? 'Filtrados' : 'Todos'}
+                    </button>
+                  </div>
+
+                  {getFilteredNotes().map(note => (
                     <SidebarNoteItem
                       key={note.id}
                       note={note}
