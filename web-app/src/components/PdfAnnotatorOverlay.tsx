@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Eraser, X, Undo2, Redo2, ChevronLeft, ChevronRight, Download, PenTool, Highlighter, MousePointer2, BookOpen, File as FileIcon, Save, BookMarked, Trash2, FolderOpen, Loader2, ZoomIn, ZoomOut, RotateCcw, ChevronDown } from 'lucide-react';
+import { Eraser, X, Undo2, Redo2, ChevronLeft, ChevronRight, Download, PenTool, Highlighter, MousePointer2, BookOpen, File as FileIcon, Save, BookMarked, Trash2, FolderOpen, Loader2, ZoomIn, ZoomOut, RotateCcw, ChevronDown, PanelRightOpen, Maximize2 } from 'lucide-react';
 import { getStroke } from 'perfect-freehand';
 import * as pdfjsLib from 'pdfjs-dist';
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
@@ -89,6 +89,11 @@ export default function PdfAnnotatorOverlay() {
   const zoomIn = () => setZoom(z => Math.min(3, +(z + 0.25).toFixed(2)));
   const zoomOut = () => setZoom(z => Math.max(0.25, +(z - 0.25).toFixed(2)));
   const zoomReset = () => setZoom(1);
+
+  // Split-screen state
+  const [splitMode, setSplitMode] = useState(false);
+  const [splitWidth, setSplitWidth] = useState(50); // percentage of screen for the reader
+  const splitDragging = useRef(false);
 
   // Library state
   const [showLibrary, setShowLibrary] = useState(false);
@@ -634,7 +639,33 @@ export default function PdfAnnotatorOverlay() {
       <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".pdf,.epub,.doc,.docx" className="hidden" />
 
       {active && createPortal(
-        <div className="fixed inset-0 z-[9999] bg-gray-900 flex flex-col">
+        <div 
+          className={`fixed z-[9999] bg-gray-900 flex flex-col ${splitMode ? 'top-0 right-0 h-full' : 'inset-0'}`}
+          style={splitMode ? { width: `${splitWidth}%` } : undefined}
+        >
+          {/* Draggable split divider */}
+          {splitMode && (
+            <div
+              className="absolute top-0 left-0 w-2 h-full cursor-col-resize z-[10000] group hover:bg-indigo-500/30 transition-colors"
+              style={{ marginLeft: '-4px' }}
+              onPointerDown={(e) => {
+                e.preventDefault();
+                splitDragging.current = true;
+                (e.target as HTMLElement).setPointerCapture(e.pointerId);
+              }}
+              onPointerMove={(e) => {
+                if (!splitDragging.current) return;
+                const pct = ((window.innerWidth - e.clientX) / window.innerWidth) * 100;
+                setSplitWidth(Math.max(25, Math.min(75, pct)));
+              }}
+              onPointerUp={(e) => {
+                splitDragging.current = false;
+                (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+              }}
+            >
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-12 bg-gray-500 rounded-full opacity-40 group-hover:opacity-100 group-hover:bg-indigo-500 transition-all" />
+            </div>
+          )}
           {/* Top Toolbar */}
           <div className="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4 flex-shrink-0 toolbar">
             <div className="flex items-center gap-4">
@@ -713,6 +744,15 @@ export default function PdfAnnotatorOverlay() {
                 title="Minha Biblioteca"
               >
                 <BookMarked className="w-4 h-4" />
+              </button>
+
+              {/* Split-screen toggle */}
+              <button 
+                onClick={() => setSplitMode(prev => !prev)} 
+                className={`p-2 rounded-lg transition-colors ${splitMode ? 'bg-indigo-100 text-indigo-600' : 'text-gray-500 hover:text-indigo-600 hover:bg-gray-100'}`}
+                title={splitMode ? 'Tela Cheia' : 'Tela Dividida'}
+              >
+                {splitMode ? <Maximize2 className="w-4 h-4" /> : <PanelRightOpen className="w-4 h-4" />}
               </button>
 
               <div className="w-px h-6 bg-gray-300 mx-1" />
