@@ -773,7 +773,7 @@ export default function PdfAnnotatorOverlay() {
               <div id="document-render-container" className="flex justify-center gap-8 relative" style={{ transform: `scale(${zoom})`, transformOrigin: 'top center', transition: 'transform 0.15s ease' }}>
                 {fileType === 'pdf' && pdfDoc && (
                   <div 
-                    ref={useCallback((node: HTMLDivElement) => {
+                    ref={(node) => {
                       if (node && viewMode === 'scroll' && currentPage > 1 && !node.dataset.scrolled) {
                         setTimeout(() => {
                           const pageEl = document.getElementById(`pdf-page-${currentPage}`);
@@ -783,7 +783,7 @@ export default function PdfAnnotatorOverlay() {
                           }
                         }, 100);
                       }
-                    }, [viewMode, currentPage])}
+                    }}
                     className={`flex ${viewMode === 'scroll' ? 'flex-col overflow-y-auto w-full items-center gap-8 py-8' : 'justify-center items-center gap-4'} relative`}
                   >
                     {pagesToRender.map(pageNum => (
