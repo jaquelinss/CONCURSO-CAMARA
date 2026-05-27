@@ -10,10 +10,10 @@ import ePub from 'epubjs';
 import mammoth from 'mammoth';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import { db, storage } from '../lib/firebase';
+import { db } from '../lib/firebase';
 import { collection, doc, setDoc, getDocs, deleteDoc, query, orderBy } from 'firebase/firestore';
-import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { getAuth } from 'firebase/auth';
+import { supabase } from '../lib/supabase';
 import ReadingLaser from './ReadingLaser';
 import DrawingSidebar from './DrawingSidebar';
 
@@ -260,8 +260,7 @@ export default function PdfAnnotatorOverlay() {
     try {
       // Delete from storage
       try {
-        const fileRef = storageRef(storage, savedDoc.storagePath);
-        await deleteObject(fileRef);
+        await supabase.storage.from('materials').remove([savedDoc.storagePath]);
       } catch (_e) { /* file might not exist */ }
       // Delete from Firestore
       await deleteDoc(doc(db, 'users', uid, 'documents', savedDoc.id));
@@ -390,9 +389,15 @@ export default function PdfAnnotatorOverlay() {
         (async () => {
           setIsUploadingFile(true);
           try {
-            const fileRef = storageRef(storage, storagePath);
-            await uploadBytes(fileRef, file);
-            const fileUrl = await getDownloadURL(fileRef);
+            const { error: uploadError } = await supabase.storage.from('materials').upload(storagePath, file, {
+              upsert: true
+            });
+            
+            if (uploadError) throw uploadError;
+            
+            const { data } = supabase.storage.from('materials').getPublicUrl(storagePath);
+            const fileUrl = data.publicUrl;
+            
             await setDoc(doc(db, 'users', uid, 'documents', docId), { fileUrl }, { merge: true });
             await loadLibrary();
           } catch (e) {
