@@ -225,10 +225,16 @@ export default function PdfAnnotatorOverlay() {
         setDocxHtml('');
         const book = ePub(arrayBuffer);
         setEpubBook(book);
-        book.ready.then(() => {
-          const spineLength = (book.spine as any)?.length || (book.spine as any)?.items?.length || 1;
-          setTotalPages(spineLength);
-          setCurrentPage(savedDoc.currentPage || 1);
+        book.ready.then(async () => {
+          try {
+            await book.locations.generate(1600);
+            const total = book.locations.length() > 0 ? book.locations.length() : 1;
+            setTotalPages(total);
+            setCurrentPage(savedDoc.currentPage || 1);
+          } catch (e) {
+            setTotalPages(1);
+            setCurrentPage(1);
+          }
         }).catch(err => {
           console.warn("EPUB ready error", err);
           setTotalPages(1);
@@ -342,7 +348,8 @@ export default function PdfAnnotatorOverlay() {
         
         try {
           await book.ready;
-          parsedTotalPages = (book.spine as any)?.length || (book.spine as any)?.items?.length || 1;
+          await book.locations.generate(1600);
+          parsedTotalPages = book.locations.length() > 0 ? book.locations.length() : 1;
         } catch (err) {
           console.warn("EPUB ready error", err);
           parsedTotalPages = 1;
@@ -1141,9 +1148,10 @@ function EpubPage({ book, pageNum, viewMode, tool, penColor, highlighterColor, p
     renditionRef.current = rendition;
     
     // Initialize exactly on the targeted page
-    const targetSpine = book.spine && book.spine.get ? book.spine.get(pageNum - 1) : null;
-    if (targetSpine && targetSpine.href) {
-      rendition.display(targetSpine.href);
+    if (book.locations && book.locations.length() > 0) {
+      const percentage = (pageNum - 1) / Math.max(book.locations.length() - 1, 1);
+      const cfi = book.locations.cfiFromPercentage(percentage);
+      rendition.display(cfi || undefined);
     } else {
       rendition.display();
     }
