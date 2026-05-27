@@ -11,7 +11,7 @@ import mammoth from 'mammoth';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { db } from '../lib/firebase';
-import { collection, doc, setDoc, getDocs, deleteDoc, query, orderBy } from 'firebase/firestore';
+import { collection, doc, setDoc, getDocs, getDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { supabase } from '../lib/supabase';
 import ReadingLaser from './ReadingLaser';
@@ -96,6 +96,7 @@ export default function PdfAnnotatorOverlay() {
   const [loadingLibrary, setLoadingLibrary] = useState(false);
   const [currentDocId, setCurrentDocId] = useState<string | null>(null);
   const [isUploadingFile, setIsUploadingFile] = useState(false);
+  const hasAutoLoaded = useRef(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const contentAreaRef = useRef<HTMLDivElement>(null);
@@ -107,6 +108,43 @@ export default function PdfAnnotatorOverlay() {
     window.addEventListener('open-pdf-annotator', handleOpen);
     return () => window.removeEventListener('open-pdf-annotator', handleOpen);
   }, []);
+
+  // Auto-load last session when annotator becomes active
+  useEffect(() => {
+    if (!active || hasAutoLoaded.current) return;
+    // Only auto-load if no document is currently open
+    if (pdfDoc || epubBook || docxHtml) return;
+    hasAutoLoaded.current = true;
+
+    const loadLastSession = async () => {
+      const uid = getUid();
+      if (!uid) return;
+      try {
+        const prefDoc = await getDoc(doc(db, 'users', uid, 'preferences', 'lastSession'));
+        if (!prefDoc.exists()) return;
+        const lastDocId = prefDoc.data()?.lastDocId;
+        if (!lastDocId) return;
+
+        // Load the library to find the document
+        const q = query(collection(db, 'users', uid, 'documents'), orderBy('updatedAt', 'desc'));
+        const snapshot = await getDocs(q);
+        const docs: SavedDocument[] = [];
+        snapshot.forEach(docSnap => {
+          docs.push({ id: docSnap.id, ...docSnap.data() } as SavedDocument);
+        });
+        setSavedDocs(docs);
+
+        const lastDoc = docs.find(d => d.id === lastDocId);
+        if (lastDoc && lastDoc.fileUrl) {
+          openSavedDocument(lastDoc);
+        }
+      } catch (err) {
+        console.warn('Erro ao carregar última sessão:', err);
+      }
+    };
+
+    loadLastSession();
+  }, [active]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -178,6 +216,8 @@ export default function PdfAnnotatorOverlay() {
         setSaving(true);
         const docRef = doc(db, 'users', uid, 'documents', currentDocId);
         await setDoc(docRef, { strokesByPage, currentPage, updatedAt: Date.now() }, { merge: true });
+        // Save last session for cross-device resume
+        await setDoc(doc(db, 'users', uid, 'preferences', 'lastSession'), { lastDocId: currentDocId, updatedAt: Date.now() }, { merge: true });
         setSaving(false);
       } catch (e) {
         console.error("Auto-save failed", e);
