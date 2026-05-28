@@ -111,7 +111,8 @@ export default function FocusPlayer() {
     initAudioContext();
     if (!audioContextRef.current || !gainNodeRef.current) return;
     
-    const baseFreq = 432;
+    // Frequência base mais baixa (200Hz) gera um zumbido (hum) grave em vez de um "apito" agudo.
+    const baseFreq = 200; 
     let beatFreq = 10;
     if (type === 'binaural-beta') beatFreq = 20; // Beta (20Hz - Foco Intenso)
     else if (type === 'binaural-theta') beatFreq = 6; // Theta (6Hz - Relaxamento Criativo)
@@ -122,6 +123,10 @@ export default function FocusPlayer() {
     
     const merger = audioContextRef.current.createChannelMerger(2);
     
+    // Reduzir o volume específico dos osciladores para não ser estridente
+    const localGain = audioContextRef.current.createGain();
+    localGain.gain.value = 0.4;
+    
     osc1.type = 'sine';
     osc2.type = 'sine';
     
@@ -131,7 +136,8 @@ export default function FocusPlayer() {
     osc1.connect(merger, 0, 0); // Esquerdo
     osc2.connect(merger, 0, 1); // Direito
     
-    merger.connect(gainNodeRef.current);
+    merger.connect(localGain);
+    localGain.connect(gainNodeRef.current);
     
     osc1.start();
     osc2.start();
