@@ -714,24 +714,25 @@ function StickyNoteItem({
             
             <div className="flex gap-1 justify-center items-center pt-2 border-t border-gray-200 dark:border-gray-700">
               <button
-                onClick={(e) => { e.stopPropagation(); onUpdate({ color: getRandomHexColor('pastel') }); setShowPalette(false); }}
+                onClick={(e) => { e.stopPropagation(); onUpdate({ color: getRandomHexColor('pastel') }); }}
                 className="text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-gray-200 bg-[#fdfbf7] hover:bg-white text-gray-600 transition-all"
                 title="Cor Pastel Aleatória"
               >
                 Pastel
               </button>
               <button
-                onClick={(e) => { e.stopPropagation(); onUpdate({ color: getRandomHexColor('vibrant') }); setShowPalette(false); }}
-                className="text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-transparent bg-gradient-to-r from-pink-400 via-red-400 to-yellow-400 text-white hover:opacity-90 transition-opacity"
-                title="Cor Vibrante Aleatória"
+                type="button"
+                className="px-3 py-1.5 text-xs font-bold rounded-md text-white shadow-sm hover:opacity-90 flex items-center justify-center transition-all"
+                style={{ background: 'linear-gradient(135deg, #ff4081 0%, #ff9100 100%)' }}
+                onClick={(e) => { e.stopPropagation(); onUpdate({ color: getRandomHexColor('vibrant') }); }}
               >
                 Vibrante
               </button>
               <button
-                onClick={(e) => { e.stopPropagation(); onUpdate({ color: getRandomHexColor('neon') }); setShowPalette(false); }}
-                className="text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-transparent bg-gray-900 text-[#a6ff00] hover:text-[#0ff] transition-colors"
-                title="Cor Neon Aleatória"
-                style={{ textShadow: '0 0 4px currentColor' }}
+                type="button"
+                className="px-3 py-1.5 text-xs font-black rounded-md text-[#ccff00] bg-slate-900 shadow-sm hover:bg-black flex items-center justify-center transition-colors border border-slate-700"
+                style={{ textShadow: '0 0 5px #ccff00, 0 0 10px #ccff00' }}
+                onClick={(e) => { e.stopPropagation(); onUpdate({ color: getRandomHexColor('neon') }); }}
               >
                 Neon
               </button>
