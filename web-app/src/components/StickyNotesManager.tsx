@@ -873,38 +873,40 @@ function darkenColor(color: string, amount: number) {
 
 // Helper to generate random hex colors by category
 function getRandomHexColor(type: 'pastel' | 'vibrant' | 'neon'): string {
-  // Helper to convert HSL to Hex
-  const hslToHex = (h: number, s: number, l: number) => {
-    l /= 100;
-    const a = s * Math.min(l, 1 - l) / 100;
-    const f = (n: number) => {
-      const k = (n + h / 30) % 12;
-      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-      return Math.round(255 * color).toString(16).padStart(2, '0');
-    };
-    return `#${f(0)}${f(8)}${f(4)}`;
-  };
-  
+  const toHex = (n: number) => n.toString(16).padStart(2, '0');
+
   if (type === 'pastel') {
-    // Soft pastel colors (Lightness ~85%)
-    return hslToHex(Math.floor(Math.random() * 360), 100, 85);
+    // Very soft pastel colors
+    const r = Math.floor(Math.random() * 26) + 230; // 230-255
+    const g = Math.floor(Math.random() * 26) + 230;
+    const b = Math.floor(Math.random() * 26) + 230;
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
   }
   
   if (type === 'vibrant') {
-    // Vibrant colors but slightly lighter to ensure text is legible (Lightness 75%)
-    return hslToHex(Math.floor(Math.random() * 360), 100, 75);
+    // Vibrant but strictly bright to avoid dark colors.
+    // One channel is 255 (max), one is random mid-high (150-255), one is mid-low (100-150)
+    // This creates saturated but bright colors.
+    const channels = [255, Math.floor(Math.random() * 106) + 150, Math.floor(Math.random() * 51) + 100];
+    // Shuffle the channels randomly
+    for (let i = channels.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [channels[i], channels[j]] = [channels[j], channels[i]];
+    }
+    return `#${toHex(channels[0])}${toHex(channels[1])}${toHex(channels[2])}`;
   }
   
   if (type === 'neon') {
-    // Very specific, lighter neon hex codes so black text remains legible
+    // Bright, highlighter/electric style neons
     const neons = [
-      '#a6ff00', // Lighter Neon Green/Lime
-      '#00ffff', // Cyan
-      '#ff66ff', // Lighter Pink/Magenta
-      '#ffcc00', // Neon Gold/Yellow
-      '#ff4d4d', // Bright Lighter Red
-      '#00ffcc', // Teal/Mint Neon
-      '#d455ff'  // Lighter Purple
+      '#e9ff42', // Electric yellow-green (like the user example)
+      '#75ffb0', // Electric mint
+      '#4dffff', // Electric cyan
+      '#ff66cc', // Electric hot pink
+      '#ffdd33', // Electric yellow
+      '#ffaa44', // Electric orange
+      '#d980ff', // Electric purple
+      '#33ffcc', // Highlighter teal
     ];
     return neons[Math.floor(Math.random() * neons.length)];
   }
