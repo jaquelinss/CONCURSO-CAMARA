@@ -278,9 +278,9 @@ export default function QuestionsDatabase() {
     loadQuestions();
   }, [selectedSubject]);
 
-  // Generate dynamic premium mock questions for selected subtopic
-  const displayQuestions = useMemo(() => {
-    if (!selectedSubtopic) return [];
+  // Generate dynamic premium mock questions for selected subtopic and calculate real stats
+  const { baseQuestions, stats } = useMemo(() => {
+    if (!selectedSubtopic) return { baseQuestions: [], stats: { all: 0, unanswered: 0, correct: 0, incorrect: 0 } };
 
     let list: any[];
 
@@ -307,13 +307,19 @@ export default function QuestionsDatabase() {
           correctIdx = q.opcoes.findIndex((opt: string) => opt.trim() === q.correta.trim());
        }
 
+       const qId = q.id || `q-${idx}`;
+       let status: 'unanswered' | 'correct' | 'incorrect' = 'unanswered';
+       if (checkedAnswers[qId]) {
+         status = userAnswers[qId] === correctIdx ? 'correct' : 'incorrect';
+       }
+
        return {
-         id: q.id || `q-${idx}`,
+         id: qId,
          subtopic: selectedSubtopic,
          difficulty: (q.difficulty === 'Fácil' || q.difficulty === 'Fǭcil' || q.difficulty === 'Facil') ? 'Fácil' : 
                      (q.difficulty === 'Médio' || q.difficulty === 'M\u00E9dio') ? 'Médio' : 
                      (q.difficulty === 'Difícil' || q.difficulty === 'Difcil') ? 'Difícil' : 'Avançado',
-         status: 'unanswered',
+         status,
          code: `QUESTÃO #${idx+1}`,
          statement: (q.contexto ? q.contexto + '\n\n' : '') + (q.pergunta || ''),
          options: q.opcoes || [],
@@ -322,13 +328,26 @@ export default function QuestionsDatabase() {
        };
     });
 
-    return mappedList.filter(q => {
+    const diffFilteredList = mappedList.filter(q => selectedDifficulties.has(q.difficulty));
+
+    const calculatedStats = {
+      all: diffFilteredList.length,
+      unanswered: diffFilteredList.filter(q => q.status === 'unanswered').length,
+      correct: diffFilteredList.filter(q => q.status === 'correct').length,
+      incorrect: diffFilteredList.filter(q => q.status === 'incorrect').length,
+    };
+
+    return { baseQuestions: diffFilteredList, stats: calculatedStats };
+  }, [selectedSubtopic, subjectQuestions, selectedDifficulties, checkedAnswers, userAnswers]);
+
+  const displayQuestions = useMemo(() => {
+    return baseQuestions.filter(q => {
       if (statusFilter === 'unanswered' && q.status !== 'unanswered') return false;
       if (statusFilter === 'correct' && q.status !== 'correct') return false;
       if (statusFilter === 'incorrect' && q.status !== 'incorrect') return false;
-      return selectedDifficulties.has(q.difficulty);
+      return true;
     });
-  }, [selectedSubtopic, subjectQuestions, statusFilter, selectedDifficulties]);
+  }, [baseQuestions, statusFilter]);
 
   // Handler for option click
   const handleSelectOption = (questionId: string, optionIndex: number) => {
@@ -661,10 +680,10 @@ export default function QuestionsDatabase() {
                   <label className="text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Status das Questões</label>
                   <div className="flex flex-wrap gap-2">
                     {[
-                      { key: 'all', label: 'Todas as Questões', count: 4 },
-                      { key: 'unanswered', label: 'Não Respondidas', count: 2 },
-                      { key: 'correct', label: 'Corretas (Acertos)', count: 1 },
-                      { key: 'incorrect', label: 'Incorretas (Erros)', count: 1 }
+                      { key: 'all', label: 'Todas as Questões', count: stats.all },
+                      { key: 'unanswered', label: 'Não Respondidas', count: stats.unanswered },
+                      { key: 'correct', label: 'Corretas (Acertos)', count: stats.correct },
+                      { key: 'incorrect', label: 'Incorretas (Erros)', count: stats.incorrect }
                     ].map(statusTab => (
                       <button
                         key={statusTab.key}
