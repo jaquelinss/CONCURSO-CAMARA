@@ -873,40 +873,30 @@ function darkenColor(color: string, amount: number) {
 
 // Helper to generate random hex colors by category
 function getRandomHexColor(type: 'pastel' | 'vibrant' | 'neon'): string {
-  const toHex = (n: number) => n.toString(16).padStart(2, '0');
-
   if (type === 'pastel') {
-    // Very soft pastel colors
-    const r = Math.floor(Math.random() * 26) + 230; // 230-255
-    const g = Math.floor(Math.random() * 26) + 230;
-    const b = Math.floor(Math.random() * 26) + 230;
-    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    const pastels = [
+      '#5b5efd', '#37d0fd', '#ffe699', '#90ffca', '#ff7878', // neon pastel
+      '#ecff9b', '#f5ffcd', // soft yellows
+      '#d1b9ff', '#a7dff4', '#8fdffd', // soft pink to blue
+      '#fecaca', '#fef08a', '#bbf7d0', '#bfdbfe', '#e9d5ff' // extra standard pastels
+    ];
+    return pastels[Math.floor(Math.random() * pastels.length)];
   }
   
   if (type === 'vibrant') {
-    // Vibrant but strictly bright to avoid dark colors.
-    // One channel is 255 (max), one is random mid-high (150-255), one is mid-low (100-150)
-    // This creates saturated but bright colors.
-    const channels = [255, Math.floor(Math.random() * 106) + 150, Math.floor(Math.random() * 51) + 100];
-    // Shuffle the channels randomly
-    for (let i = channels.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [channels[i], channels[j]] = [channels[j], channels[i]];
-    }
-    return `#${toHex(channels[0])}${toHex(channels[1])}${toHex(channels[2])}`;
+    const vibrants = [
+      '#ef65a3', '#ffad64', '#fee63b', '#d2de40', '#37d2d8', // palette 1
+      '#fb923c', '#f472b6', '#38bdf8', '#4ade80', '#fbbf24' // extra standard vibrants
+    ];
+    return vibrants[Math.floor(Math.random() * vibrants.length)];
   }
   
   if (type === 'neon') {
-    // Bright, highlighter/electric style neons
     const neons = [
-      '#e9ff42', // Electric yellow-green (like the user example)
-      '#75ffb0', // Electric mint
-      '#4dffff', // Electric cyan
-      '#ff66cc', // Electric hot pink
-      '#ffdd33', // Electric yellow
-      '#ffaa44', // Electric orange
-      '#d980ff', // Electric purple
-      '#33ffcc', // Highlighter teal
+      '#cfff04', '#d9ff36', '#e2ff68', // neon yellow
+      '#ff54d5', '#ff8de3', // neon pink
+      '#009fff', '#00c5ff', '#00dfff', '#00ffdf', '#7dfffc', // neon blues
+      '#e9ff42', '#75ffb0', '#4dffff', '#ff66cc', '#33ffcc' // other neons
     ];
     return neons[Math.floor(Math.random() * neons.length)];
   }
