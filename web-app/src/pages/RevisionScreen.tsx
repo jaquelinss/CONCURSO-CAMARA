@@ -428,7 +428,7 @@ export default function RevisionScreen() {
 }
 
 function RevisionCard({ revision, onAction, onLink, onReschedule, onUpdate }: { revision: any, onAction: any, onLink: any, onReschedule: any, onUpdate: () => void }) {
-  const { user } = useAuth();
+  const { user, apiKey } = useAuth();
   const date = revision.scheduledDate.toDate();
   const isOverdue = isBefore(date, startOfDay(new Date()));
   const isTodayDate = isToday(date);
@@ -504,7 +504,7 @@ function RevisionCard({ revision, onAction, onLink, onReschedule, onUpdate }: { 
     if (!user) return;
     setLoadingAi(true);
     try {
-      const res = await suggestVideoSearches(revision.subject, revision.topic, (user as any).apiKey || '');
+      const res = await suggestVideoSearches(revision.subject, revision.topic, apiKey || '');
       setAiSuggestions(res.searches || []);
     } catch (err) {
       console.error('Erro ao buscar sugestões:', err);
