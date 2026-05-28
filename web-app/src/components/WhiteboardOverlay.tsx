@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Eraser, Trash2, X, Undo2, Redo2, Minus, Plus, Maximize2, Minimize2, GripHorizontal, ChevronLeft, ChevronRight, FilePlus, PanelTop, Settings2, Focus, MousePointer2, Book } from 'lucide-react';
+import { Eraser, Trash2, X, Undo2, Redo2, Minus, Plus, Maximize2, Minimize2, GripHorizontal, ChevronLeft, ChevronRight, FilePlus, PanelTop, Settings2, Focus, MousePointer2, Book, Highlighter } from 'lucide-react';
 import { getStroke } from 'perfect-freehand';
 import Draggable from 'react-draggable';
 import { useAuth } from '../contexts/AuthContext';
@@ -19,9 +19,16 @@ interface Stroke {
   color: string;
   width: number;
   isEraser: boolean;
+  isHighlighter?: boolean;
 }
 
 interface PenPreset {
+  id: string;
+  color: string;
+  width: number;
+}
+
+interface HighlighterPreset {
   id: string;
   color: string;
   width: number;
@@ -52,12 +59,12 @@ export default function WhiteboardOverlay() {
   const [mode, setMode] = useState<'transparent' | 'lined' | 'grid' | 'dotted'>('lined');
   
   // Menu Principal Original
-  const [tool, setTool] = useState<'pen' | 'eraser' | 'pointer'>('pen');
-  const previousTool = useRef<'pen' | 'eraser'>('pen');
+  const [tool, setTool] = useState<'pen' | 'eraser' | 'pointer' | 'highlighter'>('pen');
+  const previousTool = useRef<'pen' | 'eraser' | 'highlighter'>('pen');
 
   useEffect(() => {
     if (tool !== 'pointer') {
-      previousTool.current = tool as 'pen' | 'eraser';
+      previousTool.current = tool as 'pen' | 'eraser' | 'highlighter';
     }
   }, [tool]);
 
@@ -78,8 +85,10 @@ export default function WhiteboardOverlay() {
 
   // Sidebar e Presets
   const [penPresets, setPenPresets] = useState<PenPreset[]>([{ id: 'p1', color: '#000000', width: 4 }]);
+  const [highlighterPresets, setHighlighterPresets] = useState<HighlighterPreset[]>([{ id: 'h1', color: '#fef08a', width: 20 }]);
   const [eraserPresets, setEraserPresets] = useState<EraserPreset[]>([{ id: 'e1', type: 'normal', width: 16 }]);
   const [activePenId, setActivePenId] = useState<string>('p1');
+  const [activeHighlighterId, setActiveHighlighterId] = useState<string>('h1');
   const [activeEraserId, setActiveEraserId] = useState<string>('e1');
   const [sidebarMode, setSidebarMode] = useState<'fixed' | 'floating' | 'hidden'>('fixed');
   const [editingPreset, setEditingPreset] = useState<string | null>(null);
@@ -87,9 +96,10 @@ export default function WhiteboardOverlay() {
 
   // Derived values from active presets (single source of truth)
   const activePen = penPresets.find(p => p.id === activePenId) || penPresets[0];
+  const activeHighlighter = highlighterPresets.find(p => p.id === activeHighlighterId) || highlighterPresets[0];
   const activeEraser = eraserPresets.find(p => p.id === activeEraserId) || eraserPresets[0];
-  const color = tool === 'pen' ? activePen.color : '#000000';
-  const strokeWidth = tool === 'pen' ? activePen.width : activeEraser.width;
+  const color = tool === 'pen' ? activePen.color : tool === 'highlighter' ? activeHighlighter.color : '#000000';
+  const strokeWidth = tool === 'pen' ? activePen.width : tool === 'highlighter' ? activeHighlighter.width : activeEraser.width;
 
 
   // Páginas do Caderninho
@@ -226,16 +236,18 @@ export default function WhiteboardOverlay() {
       if (d.exists()) {
         const data = d.data();
         if (data.penPresets && data.penPresets.length > 0) setPenPresets(data.penPresets);
+        if (data.highlighterPresets && data.highlighterPresets.length > 0) setHighlighterPresets(data.highlighterPresets);
         if (data.eraserPresets && data.eraserPresets.length > 0) setEraserPresets(data.eraserPresets);
         if (data.sidebarMode) setSidebarMode(data.sidebarMode);
       }
     });
   }, [user]);
 
-  const saveSettings = useCallback((newPens: PenPreset[], newErasers: EraserPreset[], newSidebarMode: string) => {
+  const saveSettings = useCallback((newPens: PenPreset[], newHighlighters: HighlighterPreset[], newErasers: EraserPreset[], newSidebarMode: string) => {
     if (!user) return;
     setDoc(doc(db, 'users', user.uid, 'settings', 'whiteboard'), {
       penPresets: newPens,
+      highlighterPresets: newHighlighters,
       eraserPresets: newErasers,
       sidebarMode: newSidebarMode
     }, { merge: true }).catch(console.error);
@@ -244,7 +256,7 @@ export default function WhiteboardOverlay() {
   const updatePenPreset = (id: string, updates: Partial<PenPreset>) => {
     setPenPresets(prev => {
       const newPens = prev.map(p => p.id === id ? { ...p, ...updates } : p);
-      saveSettings(newPens, eraserPresets, sidebarMode);
+      saveSettings(newPens, highlighterPresets, eraserPresets, sidebarMode);
       return newPens;
     });
   };
@@ -252,7 +264,7 @@ export default function WhiteboardOverlay() {
   const updateEraserPreset = (id: string, updates: Partial<EraserPreset>) => {
     setEraserPresets(prev => {
       const newErasers = prev.map(p => p.id === id ? { ...p, ...updates } : p);
-      saveSettings(penPresets, newErasers, sidebarMode);
+      saveSettings(penPresets, highlighterPresets, newErasers, sidebarMode);
       return newErasers;
     });
   };
@@ -262,9 +274,37 @@ export default function WhiteboardOverlay() {
     const newId = `p${Date.now()}`;
     const newPens = [...penPresets, { id: newId, color: '#000000', width: 4 }];
     setPenPresets(newPens);
-    saveSettings(newPens, eraserPresets, sidebarMode);
+    saveSettings(newPens, highlighterPresets, eraserPresets, sidebarMode);
     setActivePenId(newId);
     setTool('pen');
+  };
+
+  
+  const updateHighlighterPreset = (id: string, updates: Partial<HighlighterPreset>) => {
+    setHighlighterPresets(prev => {
+      const newHL = prev.map(p => p.id === id ? { ...p, ...updates } : p);
+      saveSettings(penPresets, newHL, eraserPresets, sidebarMode);
+      return newHL;
+    });
+  };
+
+  const addHighlighterPreset = () => {
+    if (highlighterPresets.length >= 5) return;
+    const newId = `h${Date.now()}`;
+    const newHL = [...highlighterPresets, { id: newId, color: '#fef08a', width: 20 }];
+    setHighlighterPresets(newHL);
+    saveSettings(penPresets, newHL, eraserPresets, sidebarMode);
+    setActiveHighlighterId(newId);
+    setTool('highlighter');
+  };
+
+  const deleteHighlighterPreset = (id: string) => {
+    if (highlighterPresets.length <= 1) return;
+    const newHL = highlighterPresets.filter(p => p.id !== id);
+    setHighlighterPresets(newHL);
+    if (activeHighlighterId === id) setActiveHighlighterId(newHL[0].id);
+    setEditingPreset(null);
+    saveSettings(penPresets, newHL, eraserPresets, sidebarMode);
   };
 
   const addEraserPreset = () => {
@@ -272,7 +312,7 @@ export default function WhiteboardOverlay() {
     const newId = `e${Date.now()}`;
     const newErasers: EraserPreset[] = [...eraserPresets, { id: newId, type: 'stroke', width: 16 }];
     setEraserPresets(newErasers);
-    saveSettings(penPresets, newErasers, sidebarMode);
+    saveSettings(penPresets, highlighterPresets, newErasers, sidebarMode);
     setActiveEraserId(newId);
     setTool('eraser');
   };
@@ -283,7 +323,7 @@ export default function WhiteboardOverlay() {
     setPenPresets(newPens);
     if (activePenId === id) setActivePenId(newPens[0].id);
     setEditingPreset(null);
-    saveSettings(newPens, eraserPresets, sidebarMode);
+    saveSettings(newPens, highlighterPresets, eraserPresets, sidebarMode);
   };
 
 
@@ -496,6 +536,11 @@ export default function WhiteboardOverlay() {
       ctx.globalCompositeOperation = 'source-over';
       ctx.fillStyle = stroke.color;
     }
+    
+    if (stroke.isHighlighter) {
+      ctx.globalCompositeOperation = 'multiply';
+      ctx.fillStyle = stroke.color;
+    }
 
     try {
       const pointsArray = stroke.points.map(p => [p.x, p.y, p.pressure] as [number, number, number]);
@@ -568,6 +613,7 @@ export default function WhiteboardOverlay() {
         color: tool === 'eraser' ? '#000000' : color,
         width: tool === 'eraser' ? strokeWidth * 4 : strokeWidth,
         isEraser: tool === 'eraser',
+        isHighlighter: tool === 'highlighter',
       };
     }
   };
@@ -668,6 +714,7 @@ export default function WhiteboardOverlay() {
 
       if (e.key === 'e') { setTool('eraser'); }
       if (e.key === 'p' || e.key === 'b') { setTool('pen'); }
+      if (e.key === 'h' || e.key === 'm') { setTool('highlighter'); }
       if (e.shiftKey && e.key.toLowerCase() === 'l') {
         e.preventDefault();
         handleClear();
@@ -848,6 +895,48 @@ export default function WhiteboardOverlay() {
 
               <div className="w-full h-px bg-gray-300 dark:bg-gray-600 my-1 drop-shadow-md" />
               
+
+              <div className="w-full h-px bg-gray-300 dark:bg-gray-600 my-1 drop-shadow-md" />
+
+              {/* HIGHLIGHTERS GRID */}
+              <div className="grid grid-cols-2 gap-1 w-full place-items-center">
+                {highlighterPresets.map((preset) => (
+                  <div key={preset.id} className="relative group">
+                    <button
+                      onClick={() => {
+                        if (activeHighlighterId === preset.id && tool === 'highlighter') setEditingPreset(editingPreset === preset.id ? null : preset.id);
+                        else { setTool('highlighter'); setActiveHighlighterId(preset.id); setEditingPreset(null); }
+                      }}
+                      className={`w-7 h-7 rounded-full flex items-center justify-center transition-all drop-shadow-md ${tool === 'highlighter' && activeHighlighterId === preset.id ? 'ring-2 ring-yellow-400 scale-110' : 'opacity-80 hover:opacity-100'}`}
+                      style={{ backgroundColor: preset.color }}
+                      title="Marcador"
+                    >
+                      <Highlighter className="w-4 h-4 text-gray-800 opacity-60" />
+                    </button>
+                    {editingPreset === preset.id && tool === 'highlighter' && (
+                      <div className="absolute left-full ml-3 top-0 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 p-2 flex flex-col gap-2 z-[10000]">
+                        <div className="flex gap-1 flex-wrap w-24">
+                          {['#fef08a', '#fbcfe8', '#bfdbfe', '#bbf7d0', '#e9d5ff', '#ffedd5'].map(c => (
+                            <button key={c} onClick={() => updateHighlighterPreset(preset.id, { color: c })} className={`w-5 h-5 rounded-full border-2 ${preset.color === c ? 'border-indigo-500 scale-110' : 'border-gray-300'}`} style={{ backgroundColor: c }} />
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => updateHighlighterPreset(preset.id, { width: Math.max(10, preset.width - 4) })}><Minus className="w-4 h-4" /></button>
+                          <span className="text-xs font-bold w-6 text-center">{preset.width}</span>
+                          <button onClick={() => updateHighlighterPreset(preset.id, { width: Math.min(60, preset.width + 4) })}><Plus className="w-4 h-4" /></button>
+                        </div>
+                        {highlighterPresets.length > 1 && (
+                          <button onClick={() => deleteHighlighterPreset(preset.id)} className="flex items-center gap-1 text-xs text-red-500 hover:bg-red-50 rounded p-1 mt-1"><Trash2 className="w-3 h-3" /> Excluir</button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+                {highlighterPresets.length < 5 && (
+                  <button onClick={addHighlighterPreset} className="w-7 h-7 rounded-full bg-white/80 border border-gray-200 text-gray-500 hover:text-yellow-600 flex items-center justify-center shadow-sm backdrop-blur-sm" title="Adicionar Marcador"><Plus className="w-4 h-4" /></button>
+                )}
+              </div>
+
               {/* ERASERS GRID */}
               <div className="grid grid-cols-2 gap-1 w-full place-items-center">
                 {eraserPresets.map((preset) => (
@@ -908,9 +997,9 @@ export default function WhiteboardOverlay() {
                 </button>
                 {showSidebarSettings && (
                   <div className="absolute left-full ml-3 bottom-0 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 p-2 flex flex-col gap-1 z-[10000] w-36">
-                    <button onClick={() => { setSidebarMode('fixed'); saveSettings(penPresets, eraserPresets, 'fixed'); setShowSidebarSettings(false); }} className={`text-xs p-1.5 rounded text-left ${sidebarMode === 'fixed' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}> Sidebar Fixa</button>
-                    <button onClick={() => { setSidebarMode('floating'); saveSettings(penPresets, eraserPresets, 'floating'); setShowSidebarSettings(false); }} className={`text-xs p-1.5 rounded text-left ${sidebarMode === 'floating' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}> Sidebar Flutuante</button>
-                    <button onClick={() => { setSidebarMode('hidden'); saveSettings(penPresets, eraserPresets, 'hidden'); setShowSidebarSettings(false); }} className={`text-xs p-1.5 rounded text-left text-red-500 hover:bg-red-50`}> Ocultar Sidebar</button>
+                    <button onClick={() => { setSidebarMode('fixed'); saveSettings(penPresets, highlighterPresets, eraserPresets, 'fixed'); setShowSidebarSettings(false); }} className={`text-xs p-1.5 rounded text-left ${sidebarMode === 'fixed' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}> Sidebar Fixa</button>
+                    <button onClick={() => { setSidebarMode('floating'); saveSettings(penPresets, highlighterPresets, eraserPresets, 'floating'); setShowSidebarSettings(false); }} className={`text-xs p-1.5 rounded text-left ${sidebarMode === 'floating' ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'}`}> Sidebar Flutuante</button>
+                    <button onClick={() => { setSidebarMode('hidden'); saveSettings(penPresets, highlighterPresets, eraserPresets, 'hidden'); setShowSidebarSettings(false); }} className={`text-xs p-1.5 rounded text-left text-red-500 hover:bg-red-50`}> Ocultar Sidebar</button>
                   </div>
                 )}
               </div>
@@ -922,7 +1011,7 @@ export default function WhiteboardOverlay() {
       {/* Recover hidden sidebar button */}
       {sidebarMode === 'hidden' && (
         <button
-          onClick={() => { setSidebarMode('floating'); saveSettings(penPresets, eraserPresets, 'floating'); }}
+          onClick={() => { setSidebarMode('floating'); saveSettings(penPresets, highlighterPresets, eraserPresets, 'floating'); }}
           className="whiteboard-toolbar pointer-events-auto absolute top-4 right-4 z-[9999] w-10 h-10 rounded-full bg-white/90 shadow-lg flex items-center justify-center text-gray-600 hover:bg-white"
           title="Mostrar Menu da Lousa"
         >

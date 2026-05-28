@@ -13,7 +13,7 @@ interface StudyPlanViewProps {
 }
 
 export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
-  const { user } = useAuth();
+  const { user, apiKey } = useAuth();
   const [expandedDay, setExpandedDay] = useState<string | null>(null);
   const [updating, setUpdating] = useState<string | null>(null);
   const [editingYoutube, setEditingYoutube] = useState<string | null>(null);
@@ -83,7 +83,7 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
     if (!user) return;
     setLoadingAi(prev => ({ ...prev, [block.id]: true }));
     try {
-      const res = await suggestVideoSearches(block.subject, block.topic, (user as any).apiKey || '');
+      const res = await suggestVideoSearches(block.subject, block.topic, apiKey || '');
       setAiSuggestions(prev => ({ ...prev, [block.id]: res.searches || [] }));
     } catch (err) {
       console.error('Erro ao buscar sugestões:', err);
@@ -146,7 +146,6 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
       }
 
       // IA escolhe o dia
-      const apiKey = (user as any).apiKey || '';
       let nextDate = futureSchedule[0].date; // Fallback
       if (apiKey) {
         try {
