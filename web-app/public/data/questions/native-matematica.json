@@ -11528,5 +11528,1017 @@
     ],
     "correta": "",
     "explicacao": "Sem gabarito extraído"
+  },
+  {
+    "id": "ai-gen-parsed-696d0293",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Operações Fundamentais (+, -, *, /)"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Renato resolveu mudar o plano mensal de sua operadora de celular para um que oferecesse mais vantagens.  Nesse novo plano, ele paga por mês R40,00parater:−liga  c \\c ​    o ~  esilimitadasparaamesmaoperadora;−torpedosilimitadosparaqualqueroperadora;−150minutosparaoutrasoperadorasoutelefonesfixos;−3GBdeinterneteWhatsAppforadafranquia(semdescontar)deinternet. Al  e ˊ  mdisso,nodia1ºdecadam  e ^  selepodeescolherentrepagar,paraom  e ^  squeseinicia:−umataxaadicional  u ˊ  nicadeR 15,00 para ligações ilimitadas para as demais operadoras e telefones fixos ou - o valor de R0,75porminuto,paracadaminutoexcedenteparaessesn  u ˊ  meros. Comonosmesesdejunho,julhoeagostoRenaton  a ~  ocontratouataxaadicionalegastoumenosde150minutosparaasdemaisoperadoras,eleresolveu,ent  a ~  o,tamb  e ˊ  mn  a ~  ocontratarataxaadicionalemsetembro. Por  e ˊ  m,precisoufazerliga  c \\c ​    o ~  esextraseterminouessem  e ^  stendoutilizado185minutosparaasdemaisoperadorasetelefonesfixos. Setivessecontratadoataxaadicional  u ˊ  nicadeR 15,00, Renato teria economizado, em setembro,",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "R11,25.",
+      "R 26,25.",
+      "R51,25.",
+      "R 66,25.",
+      "N/A"
+    ],
+    "correta": "R11,25.",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-4dfa341b",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "Tertulino irá viajar e deseja guardar seus CDs de arrocha em sacolas plásticas. Para guardar os CDs em sacolas que contenham 60 unidades, serão necessárias 15 sacolas plásticas. Na mesma proporção, se os CDs forem guardados em sacolas com 75 unidades, quantas sacolas serão necessárias?",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "11",
+      "13",
+      "12",
+      "14",
+      "10"
+    ],
+    "correta": "12",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-e39e5e59",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Operações Fundamentais (+, -, *, /)"
+    ],
+    "difficulty": "Médio",
+    "contexto": "No atual sistema monetário brasileiro há moedas de seis valores diferentes, representadas na figura a seguir.  No Colégio Militar do Rio de Janeiro, um aluno do 7º ano juntou 72 moedas para comprar pacotes de figurinhas. Um oitavo do total dessas moedas é de R1,00(umreal);umsextodaquantidadetotal  e ˊ  deR 0,50 (cinquenta centavos); um quarto da quantidade total de moedas é de R0,25(vinteecincocentavos);easrestantess  a ~  odeR 0,10 (dez centavos).  Em reais, essas moedas totalizam a quantia de",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "R19,50.",
+      "R 22,80.",
+      "R23,50.",
+      "R 23,80.",
+      "R$ 31,50."
+    ],
+    "correta": "R 22,80.",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-32ad1be9",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Frações e Números Decimais"
+    ],
+    "difficulty": "Médio",
+    "contexto": "A soma de todas as frações da forma  n/(n+1)  onde n é um elemento do conjunto {1, 2, 3, 4, 5}, é",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "4,55.",
+      "6,55.",
+      "5,55.",
+      "3,55.",
+      "N/A"
+    ],
+    "correta": "3,55.",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-3478878a",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "Um produtor de cinema faz um documentário sobre os mistérios da natureza, composto por 60 curtas metragens de 8 minutos cada. Se ele resolvesse utilizar curtas metragens com duração de 3 minutos, o número de curtas metragens que comporiam o documentário seria de:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "23",
+      "60",
+      "90",
+      "160",
+      "260"
+    ],
+    "correta": "160",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-dc3aa2c6",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Frações e Números Decimais"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "Jéssica comprou 4 camisetas de R15,50cadaumaepagoualojacom4notasdeR 20,00.  Assinale a alternativa que apresenta quanto ela recebeu de troco.",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "R5,00.",
+      "R 6,00.",
+      "R8,00.",
+      "R 15,00.",
+      "R$ 18,00."
+    ],
+    "correta": "R$ 18,00.",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-56c7a55c",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Operações Fundamentais (+, -, *, /)"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "Após fazer o curso de técnico em operador de computador no IFPE, Carlos Roberto resolveu abrir uma microempresa especializada em consertos de notebooks. Na primeira semana, Carlos conseguiu atender 3 clientes. Como seu trabalho foi muito bom, ele foi indicado por esses clientes e, na segunda semana, atendeu 15 clientes; na terceira semana, atendeu 7/5 da quantidade de clientes que atendeu na segunda semana.  Carlos Roberto, nessas três primeiras semanas da sua empresa, atendeu",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "25 clientes.",
+      "42 clientes.",
+      "35 clientes.",
+      "39 clientes.",
+      "28 clientes."
+    ],
+    "correta": "39 clientes.",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-8330ca0a",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Potenciação e Radiciação"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "A cidade fictícia de Martim Afonso é uma das mais antigas do seu país. A expressão abaixo indica o ano em que ela foi fundada.  10  2  ×  25  ​  ×3+4  2  +16  Assinale a alternativa que apresenta o ano em que a cidade de Martim Afonso foi fundada.",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "1.524.",
+      "1.532.",
+      "1.542.",
+      "1.632.",
+      "1.624."
+    ],
+    "correta": "1.532.",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-1c0eeacf",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Operações Fundamentais (+, -, *, /)"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "Considere as expressões numéricas abaixo.  A=−10+6⋅4  B=2  5  −  64  ​    É correto afirmar que o valor de A + B é",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "8",
+      "16",
+      "26",
+      "38",
+      "N/A"
+    ],
+    "correta": "38",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-d037d889",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Operações Fundamentais (+, -, *, /)"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "Determine o valor de (3  3  +5  2  )÷2  2  .",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "13.",
+      "14.",
+      "15.",
+      "16.",
+      "17."
+    ],
+    "correta": "13.",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-68bb1ee6",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Operações Fundamentais (+, -, *, /)"
+    ],
+    "difficulty": "Difícil",
+    "contexto": "Uma campanha de supermercado permite a troca de oito garrafas vazias, de qualquer volume, por uma garrafa de 1 litro cheia de guaraná. Considere uma pessoa que, tendo 96 garrafas vazias, fez todas as trocas possíveis. Após esvaziar todas as garrafas que ganhou, ela também as troca no mesmo supermercado.  Se não são acrescentadas novas garrafas vazias, o total máximo de litros de guaraná recebidos por essa pessoa em todo o processo de troca equivale a:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "12",
+      "13",
+      "14",
+      "15",
+      "N/A"
+    ],
+    "correta": "13",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-053837e4",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Operações Fundamentais (+, -, *, /)"
+    ],
+    "difficulty": "Médio",
+    "contexto": "A expressão  1+  1+  1+  1+1 1 ​   1 ​   1 ​    é equivalente a:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "13/12.",
+      "-13/12.",
+      "-39/16.",
+      "39/16.",
+      "1/2."
+    ],
+    "correta": "-39/16.",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-4774a26c",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Razão e Proporção"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Leia a tirinha a seguir.  Supondo-se que o menino alugue sua pá a 6 reais por hora e que a menina a utilize por 4 horas e 20 minutos, quanto ela lhe pagará, em reais?",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "25",
+      "26",
+      "27",
+      "28",
+      "N/A"
+    ],
+    "correta": "26",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-84b0209a",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Operações Fundamentais (+, -, *, /)"
+    ],
+    "difficulty": "Difícil",
+    "contexto": "Na multiplicação abaixo, cada letra representa um algarismo do sistema decimal de numeração. O valor de A + B + C + D é:  ABC×9=7DC6",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "22",
+      "20",
+      "24",
+      "21",
+      "23"
+    ],
+    "correta": "21",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-58f586d1",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Razão e Proporção"
+    ],
+    "difficulty": "Médio",
+    "contexto": "O governo de um estado irá priorizar investimentos financeiros, na área de saúde, em uma das cinco cidades apresentadas na tabela.  (M: 136.000 / 340; X: 418.000 / 2.650; Y: 210.000 / 930; Z: 530.000 / 1.983; W: 108.000 / 300)  A cidade a ser contemplada será aquela que apresentar a maior razão entre número de habitantes e quantidade de médicos. Qual dessas cidades deverá ser contemplada?",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "M",
+      "X",
+      "Y",
+      "Z",
+      "W"
+    ],
+    "correta": "M",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-3afb66f6",
+    "subject": "Matemática",
+    "topics": [
+      "Estatística",
+      "Gráficos e Tabelas"
+    ],
+    "difficulty": "Médio",
+    "contexto": "A economia no consumo de combustível é um fator importante para a escolha de um carro. É considerado mais econômico o carro que percorre a maior distância por litro de combustível. O gráfico apresenta a distância (km) e o respectivo consumo de gasolina (L) de cinco modelos de carros.  O carro mais econômico em relação ao consumo de combustível é o modelo",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "A.",
+      "B.",
+      "C.",
+      "D.",
+      "E."
+    ],
+    "correta": "C.",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-88b3acc7",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Operações Fundamentais (+, -, *, /)"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "Os alunos de uma turma do ensino médio indagaram sua professora sobre a idade de sua filha mais velha. Para responder, a professora disse: “É o resultado do produto entre os dois menores números primos somado a 10.  Qual a idade da filha de maior idade dessa professora?",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "12",
+      "16",
+      "24",
+      "26",
+      "N/A"
+    ],
+    "correta": "16",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-513aee37",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "Aline comprou 4 cadernos e pagou R$ 15,00. Assinale quanto ela pagaria se tivesse comprado 16 cadernos.",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "30.",
+      "40.",
+      "45.",
+      "50.",
+      "60."
+    ],
+    "correta": "60.",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-215d238d",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Operações Fundamentais (+, -, *, /)"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Em alguns supermercados, é comum a venda de produtos em atacado com preços inferiores aos habituais. Um desses supermercados anunciou a venda de sabonetes em cinco opções de pacotes diferentes. Segue a descrição desses pacotes com as respectivas quantidades e preços.  Pacote I: 3 unidades por R2,10;PacoteII:4unidadesporR 2,60; Pacote III: 5 unidades por R3,00;PacoteIV:6unidadesporR 3,90; Pacote V: 12 unidades por R$ 9,60;  Todos os sabonetes que compõem esses pacotes são idênticos.  Qual desses pacotes oferece o menor preço por sabonete?",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V"
+    ],
+    "correta": "III",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-4c66ae0b",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Operações Fundamentais (+, -, *, /)"
+    ],
+    "difficulty": "Difícil",
+    "contexto": "Se M=  (3  2  ⋅5  2  )  2   (3  2  +5  2  )  2  −(3  2  −5  2  )  2   ​  , então o valor de M é",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "15.",
+      "14.",
+      "2/15.",
+      "4/225.",
+      "N/A"
+    ],
+    "correta": "4/225.",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-5859b022",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Frações e Números Decimais"
+    ],
+    "difficulty": "Médio",
+    "contexto": "(G1 - utfpr 2016) O valor da expressão   30,301−5 11,21−2 ​   é igual a: a) −  299 1.710 ​",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "301\n1.710\n​",
+      "299\n171\n​",
+      "901\n1.710\n​",
+      "− \n901\n1.710\n​",
+      "N/A"
+    ],
+    "correta": "301\n1.710\n​",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-e2e2522d",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Operações Fundamentais (+, -, *, /)"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "(G1 - ifsul 2016) O valor da expressão (  5 1 ​  )  2  +(  5 1 ​  )  2  +  25 31 ​  −  25 27 ​   é: a) 3 b) -3 c)   25 551 ​",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "25\n701\n​",
+      "N/A",
+      "N/A",
+      "N/A",
+      "N/A"
+    ],
+    "correta": "N/A",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-78bb307e",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Potenciação e Radiciação"
+    ],
+    "difficulty": "Médio",
+    "contexto": "(G1 - cftsc 2010) Analise a expressão abaixo. [  13 2  −2  −144  0   ​  +  2 5 ​  ]  3  −  3 2 ​   O valor correto da expressão acima é: a)   65 18 ​",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "− \n65\n49\n​",
+      "364\n49\n​",
+      "65\n49\n​",
+      "182\n9\n​",
+      "N/A"
+    ],
+    "correta": "182\n9\n​",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-3c22a855",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Operações Fundamentais (+, -, *, /)"
+    ],
+    "difficulty": "Difícil",
+    "contexto": "(G1 - cmrj 2018) O valor da expressão abaixo é: 8 11 ​  ×(1,353535...−0,383838...) 3 37 ​  ×(0,243243...÷1,8)+0,656565...×6,6 ​",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "4,666666... b) 4,252525... c) 4,333333... d) 4,25 e) 4,5",
+      "N/A",
+      "N/A",
+      "N/A",
+      "N/A"
+    ],
+    "correta": "N/A",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-164c69cb",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Operações Fundamentais (+, -, *, /)"
+    ],
+    "difficulty": "Médio",
+    "contexto": "(G1 - ifsul 2017) O valor numérico da expressão x  4  −2x  2  +3, quando x=  2  ​   1 ​  , é a) 3/16 b)   2 2  ​   ​",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "9/4 d)  \n3\n2 \n2\n\n​\n \n​",
+      "N/A",
+      "N/A",
+      "N/A",
+      "N/A"
+    ],
+    "correta": "N/A",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-5b9167af",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Operações Fundamentais (+, -, *, /)"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "(Ufpe 1996) Qual o valor de x na expressão a seguir? x=1+  1+  1+1 1 ​   1 ​",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "3/2 b) 5/2 c) 2/3 d) 5/3 e) 2",
+      "N/A",
+      "N/A",
+      "N/A",
+      "N/A"
+    ],
+    "correta": "N/A",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-159e683d",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Razão e Proporção"
+    ],
+    "difficulty": "Médio",
+    "contexto": "(Fgv 2017) Estima-se que, em determinado país, o consumo médio por minuto de farinha de trigo seja 4,8 toneladas. Nessas condições, o consumo médio por semana de farinha de trigo, em quilogramas, será aproximadamente: (Nota: No documento original, as potências de base 10 das alternativas estão formatadas de maneira incompleta) a) 54,2⋅10  x",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "64,4⋅10 \nx",
+      "64,6⋅10 \nx",
+      "74,8⋅10 \nx",
+      "75,0⋅10 \nx",
+      "N/A"
+    ],
+    "correta": "75,0⋅10 \nx",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-b8c75bc4",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Razão e Proporção"
+    ],
+    "difficulty": "Médio",
+    "contexto": "(G1 - ifsc 2016) Uma empresa exportadora recebeu um pedido de 50 toneladas de grãos de soja . O cliente exigiu que a soja fosse embalada em sacas de 60 kg e que cada saca apresentasse sua massa em libras . É CORRETO afirmar que a indicação, expressa em libras, em cada saca foi de",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "132.000 lb.",
+      "110 lb.",
+      "200 lb.",
+      "660 lb.",
+      "132 lb."
+    ],
+    "correta": "132 lb.",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-8185f224",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Razão e Proporção"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "(G1 - utfpr 2016) Um salão pode ser revestido totalmente com 540 ladrilhos de 3.600 cm², cada um . Assinale qual a área do salão . a) 19,40 dm².",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "1,94 km².",
+      "0,194 hm².",
+      "194.000 mm².",
+      "194,40 m².",
+      "N/A"
+    ],
+    "correta": "N/A",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-df1bdfeb",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Razão e Proporção"
+    ],
+    "difficulty": "Médio",
+    "contexto": "(Enem 2016) A London Eye é urna enorme roda-gigante na capital inglesa . Por ser um dos monumentos construídos para celebrar a entrada do terceiro milênio, ela também é conhecida como Roda do Milênio . Um turista brasileiro, em visita à Inglaterra, perguntou a um londrino o diâmetro (destacado na imagem) da Roda do Milênio e ele respondeu que ele tem 443 pés . Não habituado com a unidade pé, e querendo satisfazer sua curiosidade, esse turista consultou um manual de unidades de medidas e constatou que 1 pé equivale a 12 polegadas, e que 1 polegada equivale a 2,54 cm . Após alguns cálculos de conversão, o turista ficou surpreendido com o resultado obtido em metros . Qual a medida que mais se aproxima do diâmetro da Roda do Milênio, em metro?",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "53",
+      "94",
+      "113",
+      "135",
+      "145"
+    ],
+    "correta": "135",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-a7c2ae08",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Razão e Proporção"
+    ],
+    "difficulty": "Médio",
+    "contexto": "(G1 - cftmg 2016) Uma casa está com a válvula da descarga do banheiro estragada e, por isso, há um desperdício de 150 mL de água a cada vez que ela é acionada . São dadas, em média, 10 descargas por dia nesta casa . Sabendo que 1 m³ equivale a 1.000 litros de água, o volume de água desperdiçado ao final de 30 dias, é, em média, igual a",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "4,5 dm³.",
+      "0,45 dm³.",
+      "4,05 m³.",
+      "0,045 m³.",
+      "N/A"
+    ],
+    "correta": "0,045 m³.",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-6238274b",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Razão e Proporção"
+    ],
+    "difficulty": "Médio",
+    "contexto": "(G1 - cp2 2016) Camila está grávida . A duração esperada de sua gravidez é de 280 dias . A gravidez, portanto, deverá durar quantos segundos?",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "24.380.000.",
+      "24.192.000.",
+      "1.008.000.",
+      "403.200.",
+      "N/A"
+    ],
+    "correta": "24.192.000.",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-fcc8889b",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Razão e Proporção"
+    ],
+    "difficulty": "Médio",
+    "contexto": "(Uece 2016) Deseja-se construir um reservatório para armazenar água, que tenha capacidade suficiente para satisfazer as necessidades básicas de cada um dos 3.500 habitantes de uma cidade durante 16 dias . Se cada um dos habitantes utiliza diariamente, para as suas necessidades básicas, exatamente 0,028 m³ de água, então, a capacidade mínima, em litros, do reservatório a ser construído é",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "15.680.",
+      "156.800.",
+      "1.568.000.",
+      "15.680.000.",
+      "N/A"
+    ],
+    "correta": "1.568.000.",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-47024e46",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Razão e Proporção"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "(Enem 2015) As exportações de soja do Brasil totalizaram 4,129 milhões de toneladas no mês de julho de 2012, e registraram um aumento em relação ao mês de julho de 2011, embora tenha havido uma baixa em relação ao mês de maio de 2012 . A quantidade, em quilogramas, de soja exportada pelo Brasil no mês de julho de 2012 foi de",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "4,129×10 \n3",
+      "4,129×10 \n6",
+      "4,129×10 \n9",
+      "4,129×10 \n12",
+      "4,129×10 \n15"
+    ],
+    "correta": "4,129×10 \n9",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-9bc109c1",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Razão e Proporção"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "(Enem PPL 2015) Atendendo à encomenda de um mecânico, um soldador terá de juntar duas barras de metais diferentes . A solda utilizada tem espessura de 18 milímetros, conforme ilustrado na figura . Qual o comprimento, em metros, da peça resultante após a soldagem?",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "2,0230",
+      "2,2300",
+      "2,5018",
+      "2,5180",
+      "2,6800"
+    ],
+    "correta": "2,5180",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-d2f3ee59",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Razão e Proporção"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "(Enem 2015) Para economizar em suas contas mensais de água, uma família de 10 pessoas deseja construir um reservatório para armazenar a água captada das chuvas, que tenha capacidade suficiente para abastecer a família por 20 dias . Cada pessoa da família consome, diariamente, 0,08 m³ de água . Para que os objetivos da família sejam atingidos, a capacidade mínima, em litros, do reservatório a ser construído deve ser",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "16.",
+      "800.",
+      "1.600.",
+      "8.000.",
+      "16.000."
+    ],
+    "correta": "16.000.",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-cef67fcf",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Razão e Proporção"
+    ],
+    "difficulty": "Médio",
+    "contexto": "(Imed 2015) Após a limpeza de um aquário, que tem o formato de um paralelepípedo, com dimensões internas de 1,20 m de comprimento, 1 m de largura e 50 cm de profundidade, constatou-se que o nível da água atingiu 80% de sua altura máxima . Nessa situação, a quantidade de água que falta para encher completamente o aquário, em litros, corresponde a:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "80.",
+      "100.",
+      "120.",
+      "240.",
+      "480."
+    ],
+    "correta": "120.",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-4c7ada1e",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Razão e Proporção"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "(Enem 2015) Alguns exames médicos requerem uma ingestão de água maior do que a habitual . Por recomendação médica, antes do horário do exame, uma paciente deveria ingerir 1 copo de água de 150 mililitros a cada meia hora, durante as 10 horas que antecederiam um exame . A paciente foi a um supermercado comprar água e verificou que havia garrafas dos seguintes tipos: Garrafa I: 0,15 litro Garrafa II: 0,30 litro Garrafa III: 0,75 litro Garrafa IV: 1,50 litro Garrafa V: 3,00 litros  A paciente decidiu comprar duas garrafas do mesmo tipo, procurando atender à recomendação médica e, ainda, de modo a consumir todo o líquido das duas garrafas antes do exame . Qual o tipo de garrafa escolhida pela paciente?",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V"
+    ],
+    "correta": "IV",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-15e6ecb8",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Razão e Proporção"
+    ],
+    "difficulty": "Médio",
+    "contexto": "(Espm 2014) Durante uma manifestação, os participantes ocuparam uma avenida de 18 m de largura numa extensão de 1,5 km . Considerando-se uma taxa de ocupação de 1,5 pessoas por m² (texto ocr indica 2m, inferido como m² com base no gabarito oficial), podemos estimar que o número de participantes dessa manifestação foi de aproximadamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "70 mil",
+      "60 mil",
+      "40 mil",
+      "30 mil",
+      "50 mil"
+    ],
+    "correta": "40 mil",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-755451d1",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Operações Fundamentais (+, -, *, /)"
+    ],
+    "difficulty": "Médio",
+    "contexto": "(G1 - cftmg 2014) Uma construtora dividiu um terreno de um quilômetro quadrado em 400 lotes de mesma área, e colocou-os à venda ao preço de R$ 90,00 o metro quadrado . O valor da venda, em reais, para cada lote foi de",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "175.000.",
+      "225.000.",
+      "275.000.",
+      "325.000.",
+      "N/A"
+    ],
+    "correta": "225.000.",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-8d4a41bf",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Potenciação e Radiciação"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "(Pucrj 2014) O número de dígitos decimais de 100  10   é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "99",
+      "100",
+      "101",
+      "102",
+      "103"
+    ],
+    "correta": "101",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-1e2e7a4e",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Operações Fundamentais (+, -, *, /)"
+    ],
+    "difficulty": "Médio",
+    "contexto": "(Unifor 2014) A figura abaixo representa um terreno que deverá ser cercado contra animais com três fios de arame em cada dimensão . A quantidade de arame que será utilizada para cercar o terreno em metros é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "100 m",
+      "111 m",
+      "120 m",
+      "122 m",
+      "130 m"
+    ],
+    "correta": "111 m",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-9883d42a",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Razão e Proporção"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "(G1 - cftmg 2014) O hectare (ha) é a unidade de medida mais empregada em áreas rurais e 1 ha equivale a 10.000 m² . Um engenheiro agrônomo recomendou a um fazendeiro aplicar 500 kg/ha de adubo em uma área de 2.500 m² de plantação de milho . Dessa forma, a quantidade de adubo necessária, em kg, é igual a",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "125.",
+      "250.",
+      "375.",
+      "500.",
+      "N/A"
+    ],
+    "correta": "125.",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-36c0b1e4",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Razão e Proporção"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "(Enem 2014) A maior piscina do mundo, registrada no livro Guiness, está localizada no Chile, em San Alfonso del Mar, cobrindo um terreno de 8 hectares de área . Sabe-se que 1 hectare corresponde a 1 hectômetro quadrado . Qual é o valor, em metros quadrados, da área coberta pelo terreno da piscina?",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "8",
+      "80",
+      "800",
+      "8.000",
+      "80.000"
+    ],
+    "correta": "80.000",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-7cb739fb",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Operações Fundamentais (+, -, *, /)"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "(Pucrj 2014) O resultado de 10001×102030405 é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "1020406080405",
+      "1000000000405",
+      "4052040508020",
+      "1000000000001",
+      "1000500000400"
+    ],
+    "correta": "1020406080405",
+    "explicacao": "Explicação não disponível."
+  },
+  {
+    "id": "ai-gen-parsed-c3e574d2",
+    "subject": "Matemática",
+    "topics": [
+      "Matemática Básica",
+      "Razão e Proporção"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "(G1 - utfpr 2014) 0,01 km + 1 m + 1000 cm + 1000 mm é igual a:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "22000 m.",
+      "2200 m.",
+      "220 m.",
+      "22 m.",
+      "2,2 m."
+    ],
+    "correta": "22 m.",
+    "explicacao": "Explicação não disponível."
   }
 ]
