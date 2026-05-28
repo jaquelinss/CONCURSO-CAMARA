@@ -14,8 +14,7 @@
     "correta": "B",
     "explicacao": "A corrente elétrica é uma grandeza escalar, pois é definida como a razão entre carga elétrica (escalar) e tempo (escalar): i = ΔQ/Δt.",
     "topics": [
-      "Conceitos Fundamentais",
-      "Assuntos Mais Cobrados no ENEM"
+      "Conceitos Fundamentais"
     ],
     "id": "ai-gen-1773423257911-36-8bx27e5",
     "contexto": "",
@@ -37,8 +36,7 @@
     "correta": "D",
     "explicacao": "1 km/min × 60 min/h = 60 km/h.",
     "topics": [
-      "Conceitos Fundamentais",
-      "Assuntos Mais Cobrados no ENEM"
+      "Conceitos Fundamentais"
     ],
     "id": "ai-gen-1773423257911-37-sfo47dc",
     "contexto": "",
@@ -60,8 +58,7 @@
     "correta": "C",
     "explicacao": "Ano-luz é uma medida de distância. Corresponde à distância percorrida pela luz em um ano.",
     "topics": [
-      "Conceitos Fundamentais",
-      "Assuntos Mais Cobrados no ENEM"
+      "Conceitos Fundamentais"
     ],
     "id": "ai-gen-1773423257911-38-agdtbf0",
     "contexto": "",
@@ -82,8 +79,7 @@
     "correta": "D",
     "explicacao": "Da equação E = mc², temos [E] = [m]·[c]², ou seja, [c²] = [E]/[m] = J/kg = m²/s². Logo c tem dimensão de velocidade (m/s).",
     "topics": [
-      "Conceitos Fundamentais",
-      "Assuntos Mais Cobrados no ENEM"
+      "Conceitos Fundamentais"
     ],
     "id": "ai-gen-1773423257911-39-no1v3l4",
     "contexto": "",
@@ -105,8 +101,7 @@
     "correta": "A",
     "explicacao": "De Fat = k·v², temos k = Fat/v². Unidade: N/(m/s)² = N·s²/m².",
     "topics": [
-      "Conceitos Fundamentais",
-      "Assuntos Mais Cobrados no ENEM"
+      "Conceitos Fundamentais"
     ],
     "id": "ai-gen-1773423257911-40-y4h1woq",
     "contexto": "",
@@ -128,8 +123,7 @@
     "correta": "C",
     "explicacao": "O Maracanã lotado comporta cerca de 80.000 pessoas, cuja ordem de grandeza é 10⁵.",
     "topics": [
-      "Conceitos Fundamentais",
-      "Assuntos Mais Cobrados no ENEM"
+      "Conceitos Fundamentais"
     ],
     "id": "ai-gen-1773423257911-41-kwqw9tv",
     "contexto": "",
@@ -151,8 +145,7 @@
     "correta": "A",
     "explicacao": "Distância total = 100×2 + 80×1,5 = 200 + 120 = 320 km. Tempo total = 2 + 0,5 + 1,5 = 4h. Vm = 320/4 = 80 km/h.",
     "topics": [
-      "Cinemática",
-      "Assuntos Mais Cobrados no ENEM"
+      "Cinemática"
     ],
     "id": "ai-gen-1773423257911-42-kpwzbgp",
     "contexto": "",
@@ -174,8 +167,7 @@
     "correta": "C",
     "explicacao": "Usando v² = v₀² + 2aΔs: v² = 10² + 2(-0,36)(50) = 100 - 36 = 64. v = 8,0 m/s.",
     "topics": [
-      "Cinemática",
-      "Assuntos Mais Cobrados no ENEM"
+      "Cinemática"
     ],
     "id": "ai-gen-1773423257911-43-i4tok2p",
     "contexto": "",
@@ -197,8 +189,7 @@
     "correta": "B",
     "explicacao": "Ambos completam uma volta em 12h, então ω₁ = ω₂. Como v = ωR e R₁ > R₂ (torre > pulso), v₁ > v₂.",
     "topics": [
-      "Cinemática",
-      "Assuntos Mais Cobrados no ENEM"
+      "Cinemática"
     ],
     "id": "ai-gen-1773423257911-44-uh61x4z",
     "contexto": "",
@@ -220,8 +211,7 @@
     "correta": "C",
     "explicacao": "No MRUV com v₀ = 0: Δs = ½at². A distância é diretamente proporcional ao quadrado do tempo.",
     "topics": [
-      "Cinemática",
-      "Assuntos Mais Cobrados no ENEM"
+      "Cinemática"
     ],
     "id": "ai-gen-1773423257911-45-qt2bucd",
     "contexto": "",
@@ -242,8 +232,7 @@
     "correta": "C",
     "explicacao": "Subida: h = v²/(2g) → v = √(2×10×0,45) = 3 m/s. Tempo de subida: t = v/g = 0,3s. Tempo de voo = 2×0,3 = 0,6s.",
     "topics": [
-      "Cinemática",
-      "Assuntos Mais Cobrados no ENEM"
+      "Cinemática"
     ],
     "id": "ai-gen-1773423257911-46-jubwqon",
     "contexto": "",
@@ -264,8 +253,7 @@
     "correta": "B",
     "explicacao": "v² = 2gh → v = √(2×10×0,45) = √9 = 3 m/s.",
     "topics": [
-      "Cinemática",
-      "Assuntos Mais Cobrados no ENEM"
+      "Cinemática"
     ],
     "id": "ai-gen-1773423257911-47-stfx23d",
     "contexto": "",
@@ -287,8 +275,7 @@
     "correta": "A",
     "explicacao": "A bolinha tem a mesma velocidade horizontal do caminhão. Como a pessoa se moveu para frente, a bolinha cai na traseira (posição de lançamento), atrás da pessoa.",
     "topics": [
-      "Cinemática",
-      "Assuntos Mais Cobrados no ENEM"
+      "Cinemática"
     ],
     "id": "ai-gen-1773423257911-48-78t4pz8",
     "contexto": "",
@@ -310,8 +297,7 @@
     "correta": "C",
     "explicacao": "No MRUV, a distância percorrida no n-ésimo segundo é proporcional a (2n-1). 1º segundo: 1H. 3º segundo: (2×3-1)H = 5H.",
     "topics": [
-      "Cinemática",
-      "Assuntos Mais Cobrados no ENEM"
+      "Cinemática"
     ],
     "id": "ai-gen-1773423257911-49-r201koj",
     "contexto": "",
@@ -333,8 +319,7 @@
     "correta": "B",
     "explicacao": "v² = 2gh → v = √(2gh). Para 4h: v' = √(2g·4h) = 2√(2gh) = 2v.",
     "topics": [
-      "Cinemática",
-      "Assuntos Mais Cobrados no ENEM"
+      "Cinemática"
     ],
     "id": "ai-gen-1773423257911-50-bu8wset",
     "contexto": "",
@@ -356,8 +341,7 @@
     "correta": "B",
     "explicacao": "Em queda livre, a aceleração (g) é constante e a velocidade aumenta. A distância é proporcional a t², então dobrar h não dobra o tempo.",
     "topics": [
-      "Cinemática",
-      "Assuntos Mais Cobrados no ENEM"
+      "Cinemática"
     ],
     "id": "ai-gen-1773423257911-51-ipvifpc",
     "contexto": "",
@@ -378,8 +362,7 @@
     "correta": "D",
     "explicacao": "No ponto mais alto de um lançamento oblíquo, a componente vertical da velocidade é zero (vy = 0), mas a horizontal permanece.",
     "topics": [
-      "Cinemática",
-      "Assuntos Mais Cobrados no ENEM"
+      "Cinemática"
     ],
     "id": "ai-gen-1773423257911-52-nzcqvvy",
     "contexto": "",
@@ -400,8 +383,7 @@
     "correta": "A",
     "explicacao": "Velocidade constante → aceleração = 0 → FR = 0. Na vertical: N = P. Na horizontal: F = R.",
     "topics": [
-      "Dinâmica",
-      "Assuntos Mais Cobrados no ENEM"
+      "Dinâmica"
     ],
     "id": "ai-gen-1773423257911-53-796ezrl",
     "contexto": "",
@@ -423,8 +405,7 @@
     "correta": "A",
     "explicacao": "Primeira Lei de Newton: se FR = 0, o corpo permanece em repouso ou em MRU.",
     "topics": [
-      "Dinâmica",
-      "Assuntos Mais Cobrados no ENEM"
+      "Dinâmica"
     ],
     "id": "ai-gen-1773423257911-54-t2rjjz4",
     "contexto": "",
@@ -445,8 +426,7 @@
     "correta": "B",
     "explicacao": "72 km/h = 20 m/s. a = Δv/Δt = 20/10 = 2 m/s². F = ma = 1200 × 2 = 2400 N.",
     "topics": [
-      "Dinâmica",
-      "Assuntos Mais Cobrados no ENEM"
+      "Dinâmica"
     ],
     "id": "ai-gen-1773423257911-55-ukiw3h5",
     "contexto": "",
@@ -467,8 +447,7 @@
     "correta": "B",
     "explicacao": "A força normal é a reação de contato: a mesa exerce sobre o livro uma força perpendicular à superfície.",
     "topics": [
-      "Dinâmica",
-      "Assuntos Mais Cobrados no ENEM"
+      "Dinâmica"
     ],
     "id": "ai-gen-1773423257911-56-5q04dbv",
     "contexto": "",
@@ -489,8 +468,7 @@
     "correta": "B",
     "explicacao": "No MCU há aceleração centrípeta, dirigida para o centro da circunferência. A força resultante aponta para o centro.",
     "topics": [
-      "Dinâmica",
-      "Assuntos Mais Cobrados no ENEM"
+      "Dinâmica"
     ],
     "id": "ai-gen-1773423257911-57-60xlgva",
     "contexto": "",
@@ -512,8 +490,7 @@
     "correta": "D",
     "explicacao": "I é verdadeira (2ª Lei de Newton). II é verdadeira (em retardamento, v e F têm sentidos opostos). III é falsa (em curvilíneo, v é tangente mas F pode não ser).",
     "topics": [
-      "Dinâmica",
-      "Assuntos Mais Cobrados no ENEM"
+      "Dinâmica"
     ],
     "id": "ai-gen-1773423257911-58-2pkvncw",
     "contexto": "",
@@ -535,8 +512,7 @@
     "correta": "D",
     "explicacao": "I = Δp = m(v₂ - v₁) = 0,020(3,0 - (-4,0)) = 0,020 × 7,0 = 0,14 N·s.",
     "topics": [
-      "Momento e Impulso",
-      "Assuntos Mais Cobrados no ENEM"
+      "Momento e Impulso"
     ],
     "id": "ai-gen-1773423257911-59-0vqvus7",
     "contexto": "",
@@ -558,8 +534,7 @@
     "correta": "D",
     "explicacao": "F = mΔv/Δt = 0,120 × 6 / 0,01 = 0,720 / 0,01 = 72 N.",
     "topics": [
-      "Momento e Impulso",
-      "Assuntos Mais Cobrados no ENEM"
+      "Momento e Impulso"
     ],
     "id": "ai-gen-1773423257911-60-usnpiq7",
     "contexto": "",
@@ -581,8 +556,7 @@
     "correta": "D",
     "explicacao": "F = mΔv/Δt = 0,400 × 25 / 0,01 = 10 / 0,01 = 1000 N.",
     "topics": [
-      "Momento e Impulso",
-      "Assuntos Mais Cobrados no ENEM"
+      "Momento e Impulso"
     ],
     "id": "ai-gen-1773423257911-61-ttu1glk",
     "contexto": "",
@@ -604,8 +578,7 @@
     "correta": "D",
     "explicacao": "Na colisão, a energia mecânica pode não se conservar (transforma-se em calor, som, deformação), mas a energia total e o momento linear se conservam.",
     "topics": [
-      "Momento e Impulso",
-      "Assuntos Mais Cobrados no ENEM"
+      "Momento e Impulso"
     ],
     "id": "ai-gen-1773423257911-62-mm4ss04",
     "contexto": "",
@@ -627,8 +600,7 @@
     "correta": "C",
     "explicacao": "Em colisão elástica, tanto a energia cinética quanto o momento linear se conservam.",
     "topics": [
-      "Momento e Impulso",
-      "Assuntos Mais Cobrados no ENEM"
+      "Momento e Impulso"
     ],
     "id": "ai-gen-1773423257911-63-oi9ytik",
     "contexto": "",
@@ -650,8 +622,7 @@
     "correta": "A",
     "explicacao": "Conservação do momento: 0,020×500 - 0,480×10 = (0,020 + 0,480)×v → 10 - 4,8 = 0,5v → v = 10,4 m/s.",
     "topics": [
-      "Momento e Impulso",
-      "Assuntos Mais Cobrados no ENEM"
+      "Momento e Impulso"
     ],
     "id": "ai-gen-1773423257911-64-9fmgaqd",
     "contexto": "",
@@ -672,8 +643,7 @@
     "correta": "A",
     "explicacao": "Em colisão elástica entre massas iguais, a bola que estava em movimento para e a que estava parada adquire a velocidade V.",
     "topics": [
-      "Momento e Impulso",
-      "Assuntos Mais Cobrados no ENEM"
+      "Momento e Impulso"
     ],
     "id": "ai-gen-1773423257911-65-t0xq1hg",
     "contexto": "",
@@ -695,8 +665,7 @@
     "correta": "D",
     "explicacao": "P = P₀ + ρgh = 1,0×10⁵ + 1,0×10³ × 10 × 200 = 1,0×10⁵ + 2,0×10⁶ = 2,1×10⁶ Pa = 21 atm.",
     "topics": [
-      "Hidrostática",
-      "Assuntos Mais Cobrados no ENEM"
+      "Hidrostática"
     ],
     "id": "ai-gen-1773423257911-66-v3zjdo6",
     "contexto": "",
@@ -718,8 +687,7 @@
     "correta": "E",
     "explicacao": "Áreas: A_A = π(20)², A_B = π(5)². Razão: A_A/A_B = 400/25 = 16. F_B = F_A/16 = 800/16 = 50 N.",
     "topics": [
-      "Hidrostática",
-      "Assuntos Mais Cobrados no ENEM"
+      "Hidrostática"
     ],
     "id": "ai-gen-1773423257911-67-bisoz0p",
     "contexto": "",
@@ -741,8 +709,7 @@
     "correta": "E",
     "explicacao": "Como as densidades do chumbo (11) e do aço (8) são menores que a do mercúrio (13,6), ambos flutuam parcialmente submersos.",
     "topics": [
-      "Hidrostática",
-      "Assuntos Mais Cobrados no ENEM"
+      "Hidrostática"
     ],
     "id": "ai-gen-1773423257911-68-za1or7j",
     "contexto": "",
@@ -763,8 +730,7 @@
     "correta": "C",
     "explicacao": "O trabalho depende de F×d. Como a massa e o deslocamento (térreo ao 3º andar) são iguais, o trabalho é o mesmo. A potência é menor no 2º caso (maior tempo).",
     "topics": [
-      "Energia e Trabalho",
-      "Assuntos Mais Cobrados no ENEM"
+      "Energia e Trabalho"
     ],
     "id": "ai-gen-1773423257911-69-plej2bq",
     "contexto": "",
@@ -786,8 +752,7 @@
     "correta": "A",
     "explicacao": "Do 8º ao 12º degrau = 4 degraus. De 2 em 2: Δh = 4 × 0,18 = 0,72 m (2 \"saltos\"). Trabalho = mgh = 70 × 10 × 0,72 = 504 J. P = 504/2,8 = 180 W.",
     "topics": [
-      "Energia e Trabalho",
-      "Assuntos Mais Cobrados no ENEM"
+      "Energia e Trabalho"
     ],
     "id": "ai-gen-1773423257911-70-35t2mk2",
     "contexto": "",
@@ -809,8 +774,7 @@
     "correta": "C",
     "explicacao": "O arco esticado armazena energia potencial elástica. Ao soltar, essa energia se converte em energia cinética da flecha.",
     "topics": [
-      "Energia e Trabalho",
-      "Assuntos Mais Cobrados no ENEM"
+      "Energia e Trabalho"
     ],
     "id": "ai-gen-1773423257911-71-szucwge",
     "contexto": "",
@@ -832,8 +796,7 @@
     "correta": "A",
     "explicacao": "A Lei da Conservação da Energia é universal: a energia total se conserva em todos os processos.",
     "topics": [
-      "Energia e Trabalho",
-      "Assuntos Mais Cobrados no ENEM"
+      "Energia e Trabalho"
     ],
     "id": "ai-gen-1773423257911-72-d2sd9n6",
     "contexto": "",
@@ -855,8 +818,7 @@
     "correta": "E",
     "explicacao": "Pela 3ª Lei de Kepler, T² ∝ R³. O raio orbital não depende da massa do satélite, apenas do período e da massa do corpo central.",
     "topics": [
-      "Gravitação",
-      "Assuntos Mais Cobrados no ENEM"
+      "Gravitação"
     ],
     "id": "ai-gen-1773423257911-73-r84ryax",
     "contexto": "",
@@ -877,8 +839,7 @@
     "correta": "C",
     "explicacao": "I: Verdadeira (1ª Lei de Kepler). II: Verdadeira (gravidade diminui com o aumento da distância). III: Falsa (2ª Lei de Kepler: velocidade aumenta ao se aproximar do Sol).",
     "topics": [
-      "Gravitação",
-      "Assuntos Mais Cobrados no ENEM"
+      "Gravitação"
     ],
     "id": "ai-gen-1773423257911-74-2qd33at",
     "contexto": "",
@@ -900,8 +861,7 @@
     "correta": "B",
     "explicacao": "A gravidade não é zero na altitude da EEI. Os objetos flutuam porque estão em queda livre junto com a estação — todos têm a mesma aceleração.",
     "topics": [
-      "Gravitação",
-      "Assuntos Mais Cobrados no ENEM"
+      "Gravitação"
     ],
     "id": "ai-gen-1773423257911-75-nf5myg7",
     "contexto": "",
@@ -923,8 +883,7 @@
     "correta": "C",
     "explicacao": "O raio da órbita depende apenas da velocidade orbital e da massa do corpo central (Terra), não da massa do satélite. Se v é igual, R é igual.",
     "topics": [
-      "Gravitação",
-      "Assuntos Mais Cobrados no ENEM"
+      "Gravitação"
     ],
     "id": "ai-gen-1773423257911-76-55d29hw",
     "contexto": "",
@@ -946,8 +905,7 @@
     "correta": "A",
     "explicacao": "g' = GM'/R'² = G(3M)/(2R)² = 3GM/(4R²) = 3g/4.",
     "topics": [
-      "Gravitação",
-      "Assuntos Mais Cobrados no ENEM"
+      "Gravitação"
     ],
     "id": "ai-gen-1773423257911-77-3mkfdj4",
     "contexto": "",
@@ -968,8 +926,7 @@
     "correta": "D",
     "explicacao": "Pela 2ª Lei de Newton e Lei da Gravitação: Ma = GMM_s/r² → a = GM_s/r². A aceleração é proporcional à massa do Sol.",
     "topics": [
-      "Gravitação",
-      "Assuntos Mais Cobrados no ENEM"
+      "Gravitação"
     ],
     "id": "ai-gen-1773423257911-78-tpzyu0x",
     "contexto": "",
@@ -991,8 +948,7 @@
     "correta": "C",
     "explicacao": "O calor de vaporização (calor latente) é a energia necessária para transformar 1 kg de líquido em vapor, na temperatura de ebulição.",
     "topics": [
-      "Termologia",
-      "Assuntos Mais Cobrados no ENEM"
+      "Termologia"
     ],
     "id": "ai-gen-1773423257911-79-1628u3g",
     "contexto": "",
@@ -1014,8 +970,7 @@
     "correta": "B",
     "explicacao": "A geladeira é uma máquina frigorífica: transfere calor do interior (frio) para o exterior (quente), o que não é espontâneo — requer trabalho externo do compressor.",
     "topics": [
-      "Termologia",
-      "Assuntos Mais Cobrados no ENEM"
+      "Termologia"
     ],
     "id": "ai-gen-1773423257911-80-ntypee5",
     "contexto": "",
@@ -1037,8 +992,7 @@
     "correta": "D",
     "explicacao": "Ambos estão à mesma temperatura do refrigerador. O alumínio conduz calor melhor, tirando calor da mão mais rapidamente, dando a sensação de \"mais frio\".",
     "topics": [
-      "Termologia",
-      "Assuntos Mais Cobrados no ENEM"
+      "Termologia"
     ],
     "id": "ai-gen-1773423257911-81-tiudh65",
     "contexto": "",
@@ -1060,8 +1014,7 @@
     "correta": "E",
     "explicacao": "II: A gasolina fria é mais densa, então mais massa por litro. III: Vendendo por kg, o volume não importa. I é incorreta (seria desvantagem).",
     "topics": [
-      "Termologia",
-      "Assuntos Mais Cobrados no ENEM"
+      "Termologia"
     ],
     "id": "ai-gen-1773423257911-82-ija5s53",
     "contexto": "",
@@ -1083,8 +1036,7 @@
     "correta": "B",
     "explicacao": "Na panela de pressão, a pressão interna é maior que a atmosférica, elevando a temperatura de ebulição da água acima de 100°C, o que acelera o cozimento.",
     "topics": [
-      "Termologia",
-      "Assuntos Mais Cobrados no ENEM"
+      "Termologia"
     ],
     "id": "ai-gen-1773423257911-83-xsql2g7",
     "contexto": "",
@@ -1106,8 +1058,7 @@
     "correta": "A",
     "explicacao": "As ondas de rádio se refletem na ionosfera, permitindo que alcancem regiões além da curvatura da Terra.",
     "topics": [
-      "Ondas",
-      "Assuntos Mais Cobrados no ENEM"
+      "Ondas"
     ],
     "id": "ai-gen-1773423257911-84-gl7sruj",
     "contexto": "",
@@ -1129,8 +1080,7 @@
     "correta": "E",
     "explicacao": "O efeito Tyndall ocorre pelo espalhamento (scattering) da luz pelas partículas em suspensão.",
     "topics": [
-      "Ondas",
-      "Assuntos Mais Cobrados no ENEM"
+      "Ondas"
     ],
     "id": "ai-gen-1773423257911-85-47qyxnw",
     "contexto": "",
@@ -1152,8 +1102,7 @@
     "correta": "B",
     "explicacao": "Ondas de rádio (comprimento de onda longo) sofrem difração mais eficiente, contornando obstáculos e elevações.",
     "topics": [
-      "Ondas",
-      "Assuntos Mais Cobrados no ENEM"
+      "Ondas"
     ],
     "id": "ai-gen-1773423257911-86-qi2b5co",
     "contexto": "",
@@ -1175,8 +1124,7 @@
     "correta": "D",
     "explicacao": "Para calcular distância, é necessário saber a velocidade do som no meio e o tempo que o eco leva para retornar: d = v×t/2.",
     "topics": [
-      "Ondas",
-      "Assuntos Mais Cobrados no ENEM"
+      "Ondas"
     ],
     "id": "ai-gen-1773423257911-87-ysh4g3h",
     "contexto": "",
@@ -1197,8 +1145,7 @@
     "correta": "D",
     "explicacao": "λ = v/f = 340/1000 = 0,34 m = 34 cm.",
     "topics": [
-      "Ondas",
-      "Assuntos Mais Cobrados no ENEM"
+      "Ondas"
     ],
     "id": "ai-gen-1773423257911-88-069gt9a",
     "contexto": "",
@@ -1219,8 +1166,7 @@
     "correta": "B",
     "explicacao": "Como a frequência não muda: λ = v/f. λ(vidro)/λ(ar) = v(vidro)/v(ar) = (2/3)v(ar)/v(ar) = 2/3.",
     "topics": [
-      "Ondas",
-      "Assuntos Mais Cobrados no ENEM"
+      "Ondas"
     ],
     "id": "ai-gen-1773423257911-89-st99muc",
     "contexto": "",
@@ -1241,8 +1187,7 @@
     "correta": "D",
     "explicacao": "Ao mudar de meio, a frequência e o período se mantêm, mas a velocidade muda (v = c/n). A direção pode ou não mudar (só muda se incidir obliquamente).",
     "topics": [
-      "Ondas",
-      "Assuntos Mais Cobrados no ENEM"
+      "Ondas"
     ],
     "id": "ai-gen-1773423257911-90-5j0ow8a",
     "contexto": "",
@@ -1264,8 +1209,7 @@
     "correta": "B",
     "explicacao": "A caixa metálica funciona como uma Gaiola de Faraday, blindando o celular das ondas eletromagnéticas.",
     "topics": [
-      "Eletrostática",
-      "Assuntos Mais Cobrados no ENEM"
+      "Eletrostática"
     ],
     "id": "ai-gen-1773423257911-91-uvr2im3",
     "contexto": "",
@@ -1287,8 +1231,7 @@
     "correta": "E",
     "explicacao": "Dispositivos que armazenam carga elétrica são capacitores (ou condensadores). O flash de câmera é uma aplicação clássica.",
     "topics": [
-      "Eletrostática",
-      "Assuntos Mais Cobrados no ENEM"
+      "Eletrostática"
     ],
     "id": "ai-gen-1773423257911-92-ptjw7n4",
     "contexto": "",
@@ -1309,8 +1252,7 @@
     "correta": "D",
     "explicacao": "Prótons têm carga +e e elétrons -e. Para a carga total se conservar (ser a mesma antes e depois), o número total de partículas carregadas deve ser par.",
     "topics": [
-      "Eletrostática",
-      "Assuntos Mais Cobrados no ENEM"
+      "Eletrostática"
     ],
     "id": "ai-gen-1773423257911-93-syzowa7",
     "contexto": "",
@@ -1332,8 +1274,7 @@
     "correta": "D",
     "explicacao": "I é correta (princípio de superposição). II é correta (definição de dipolo). III é incorreta: os campos se superpõem, mas um não modifica o campo criado pelo outro.",
     "topics": [
-      "Eletrostática",
-      "Assuntos Mais Cobrados no ENEM"
+      "Eletrostática"
     ],
     "id": "ai-gen-1773423257911-94-1ym2b2x",
     "contexto": "",
@@ -1355,8 +1296,7 @@
     "correta": "B",
     "explicacao": "I toca II: (4q + (-2q))/2 = q cada. I toca III: (q + 3q)/2 = 2q cada. Carga final de I = 2q.",
     "topics": [
-      "Eletrostática",
-      "Assuntos Mais Cobrados no ENEM"
+      "Eletrostática"
     ],
     "id": "ai-gen-1773423257911-95-oekwqdr",
     "contexto": "",
@@ -1378,8 +1318,7 @@
     "correta": "B",
     "explicacao": "Dentro de um condutor em equilíbrio eletrostático, o campo é nulo e o potencial é constante e igual ao da superfície. Sem diferença de potencial, não há choque.",
     "topics": [
-      "Eletrostática",
-      "Assuntos Mais Cobrados no ENEM"
+      "Eletrostática"
     ],
     "id": "ai-gen-1773423257911-96-mt4mva8",
     "contexto": "",
@@ -1401,8 +1340,7 @@
     "correta": "A",
     "explicacao": "R = V²/P = 220²/5500 = 8,8 Ω. Com 127V: P' = V'²/R = 127²/8,8 ≈ 16129/8,8 ≈ 1833 W.",
     "topics": [
-      "Eletrodinâmica",
-      "Assuntos Mais Cobrados no ENEM"
+      "Eletrodinâmica"
     ],
     "id": "ai-gen-1773423257911-97-dqwpb36",
     "contexto": "",
@@ -1424,8 +1362,7 @@
     "correta": "E",
     "explicacao": "Resistência = L/(σ×A). Maior condutividade → menor resistência. Prata tem a maior condutividade (62,5).",
     "topics": [
-      "Eletrodinâmica",
-      "Assuntos Mais Cobrados no ENEM"
+      "Eletrodinâmica"
     ],
     "id": "ai-gen-1773423257911-98-34u1asy",
     "contexto": "",
@@ -1447,8 +1384,7 @@
     "correta": "B",
     "explicacao": "Corrente máxima (inverno): I = P/V = 3200/110 ≈ 29,1 A. O disjuntor mínimo adequado é 30 A.",
     "topics": [
-      "Eletrodinâmica",
-      "Assuntos Mais Cobrados no ENEM"
+      "Eletrodinâmica"
     ],
     "id": "ai-gen-1773423257911-99-v4v5j8f",
     "contexto": "",
@@ -1470,8 +1406,7 @@
     "correta": "A",
     "explicacao": "Consumo: 1000W × (4×15min) × 20 dias = 1kW × 1h × 20 = 20 kWh. Custo: 20 × R$0,50 = R$10,00.",
     "topics": [
-      "Eletrodinâmica",
-      "Assuntos Mais Cobrados no ENEM"
+      "Eletrodinâmica"
     ],
     "id": "ai-gen-1773423257911-100-d5o966u",
     "contexto": "",
@@ -1493,8 +1428,7 @@
     "correta": "C",
     "explicacao": "Lâmpadas incandescentes, chuveiros, ferros de passar — todas as recomendações visam reduzir a energia elétrica convertida em calor (dissipação térmica).",
     "topics": [
-      "Eletrodinâmica",
-      "Assuntos Mais Cobrados no ENEM"
+      "Eletrodinâmica"
     ],
     "id": "ai-gen-1773423257911-101-mapg5po",
     "contexto": "",
@@ -1516,8 +1450,7 @@
     "correta": "C",
     "explicacao": "Pela Lei de Faraday, a fem induzida existe sempre que há variação do fluxo magnético — tanto na aproximação quanto no afastamento do ímã.",
     "topics": [
-      "Eletromagnetismo",
-      "Assuntos Mais Cobrados no ENEM"
+      "Eletromagnetismo"
     ],
     "id": "ai-gen-1773423257911-102-fd05a01",
     "contexto": "",
@@ -1539,8 +1472,7 @@
     "correta": "C",
     "explicacao": "A intensidade da corrente induzida depende da variação do campo magnético, que por sua vez depende da intensidade da corrente nas bobinas.",
     "topics": [
-      "Eletromagnetismo",
-      "Assuntos Mais Cobrados no ENEM"
+      "Eletromagnetismo"
     ],
     "id": "ai-gen-1773423257911-103-riidht8",
     "contexto": "",
@@ -1562,8 +1494,7 @@
     "correta": "E",
     "explicacao": "Lei de Faraday: quando o ímã gira com a roda, o campo magnético que atravessa a bobina varia, gerando uma fem induzida e, portanto, corrente.",
     "topics": [
-      "Eletromagnetismo",
-      "Assuntos Mais Cobrados no ENEM"
+      "Eletromagnetismo"
     ],
     "id": "ai-gen-1773423257911-104-6k8heuo",
     "contexto": "",
@@ -1584,8 +1515,7 @@
     "correta": "D",
     "explicacao": "Uma bobina com corrente elétrica ao redor de um núcleo de ferro cria um eletroímã — a barra se comporta como um ímã.",
     "topics": [
-      "Eletromagnetismo",
-      "Assuntos Mais Cobrados no ENEM"
+      "Eletromagnetismo"
     ],
     "id": "ai-gen-1773423257911-105-nn5l0f0",
     "contexto": "",
@@ -4720,5 +4650,2304 @@
     "explicacao": "A resposta correta é a alternativa B. Patamares horizontais em gráficos de aquecimento indicam mudanças de fase, onde o calor é usado para a transformação, sem variação de temperatura. GABARITO RESUMIDO EM LISTA 1 - C (72 km/h) 2 - E (70 s) 3 - A (31,25 m) 4 - B (1,0 m/s²) 5 - E (1000 m) 6 - C (50 m) 7 - A (-2 m/s² e 100 m) 8 - C (10 m/s) 9 - B (6 s e 45 m) 10 - C (10 s e 150 m) 11 - B (4π rad/s e 8π m/s) 12 - B (S = 20 + 4t) 13 - D (1,8 m) 14 - B (10, 5, 30) 15 - C (1000 m e 100 m/s) 16 - B (4 m/s²) 17 - C (4 m/s² e 8 N) 18 - B (80 N e 96 N) 19 - B (2 m/s²) 20 - D (5 m/s²) 21 - C (4 m/s² e 24 N) 22 - D (4000 N) 23 - C (5500 N) 24 - C (Sim, 3,25 m/s²) 25 - D (25 m) 26 - C (4 m/s²) 27 - A (0,5 m/s²) 28 - B (3 m/s) 29 - C (7 N) 30 - B (2 m/s) 31 - E (250 N e 50 N) 32 - A (115 N e 115 N) 33 - D (250 N) 34 - B (200 kg e 2000 N) 35 - A (1,2×10⁵ Pa) 36 - C (0,6) 37 - D (1250 kg/m³) 38 - B (30 N) 39 - C (40 N e 20 N) 40 - B (2,15×10⁵ Pa) 41 - B (2,004 m) 42 - B (2,4 cm²) 43 - C (15,6 cm³) 44 - B (lado convexo) 45 - D (9,6 mm) 46 - C (2640 cal) 47 - C (400 s) 48 - B (24°C) 49 - A (0°C e 100 g) 50 - D (840 s) 51 - B (0,50 cal/g°C) 52 - C (36.250 cal) 53 - C (1,2×10⁵ J) 54 - C (600 J, recebe) 55 - B (+500 J) 56 - B (20% e 25%) 57 - C (diminui e realiza) 58 - C (4×10⁵ J) 59 - D (600 J) 60 - B (0,4 mol) 61 - C (200 m/s) 62 - C (6,8 m) 63 - C (100 m/s) 64 - D (40 Hz) 65 - A (0,05; 0,5; 10) 66 - A (6×10⁻⁷ m) 67 - B (340 m) 68 - C (destrutiva nula) 69 - C (17 m e 0,017 m) 70 - B (π) 71 - C (548 Hz) 72 - D (150 Hz) 73 - B (1000 Hz e 1,48 m) 74 - A (construtiva, par) 75 - C (3 m) 76 - B (170 Hz) 77 - C (635 Hz) 78 - A (2×10⁸ e 333 nm) 79 - B (1,0 m) 80 - E (680 m/s) 81 - D (60°) 82 - C (32°) 83 - D (15 cm, real e invertida) 84 - B (virtual, direita, 10 cm) 85 - C (reflexão total) 86 - C (1,5 m) 87 - C (22,5 cm e -0,5) 88 - C (1,4) 89 - C (130 mm) 90 - B (divergentes 50 cm) 91 - C (67 cm) 92 - B (virtual, direita, maior) 93 - B (índice depende da frequência) 94 - C (5) 95 - B (50 mm) 96 - C (3,6 N repulsão) 97 - C (0,90 N) 98 - D (1,0×10⁻² N) 99 - B (4×10⁴ N/C) 100 - D (20 m/s²) 101 - A (1,0×10⁻³ J) 102 - D (400 V) 103 - A (-0,09 J) 104 - A (1,77×10⁻¹⁰ F) 105 - A (1,2×10⁻⁴ C) 106 - C (40 V e 80 W) 107 - B (20 A e 11 Ω) 108 - A (9 Ω, 2 A e 12 V) 109 - A (2 Ω, 9 A e 3 A) 110 - A (2 Ω e 4 A) 111 - D (14 Ω) 112 - C (240 Ω e 0,25 A) 113 - A (8 Ω e 3 A) 114 - C (2 A e 10 V) 115 - D (2,5 A) 116 - A (11 Ω e 7,33 Ω) 117 - E (12000 J) 118 - D (2 A e 1,2 A) 119 - B (50 V e 0,5 A) 120 - A (2,5 Ω e 48 W) 121 - A (1×10⁻⁵ T) 122 - D (2π×10⁻⁵ T) 123 - D (5,0×10⁻³ T) 124 - B (0,4 N) 125 - B (4×10⁴ m/s) 126 - C (0,15 N) 127 - B (0,10 V) 128 - D (440 V e 4) 129 - C (8×10⁻⁵ N/m, atrativa) 130 - C (4,2 cm) 131 - C (4,2×10⁶ m/s) 132 - A (0,8 eV) 133 - D (2,07 eV) 134 - A (2,84×10⁻¹⁹ J) 135 - C (8,19×10⁻¹⁴ J e 0,51 MeV) 136 - C (3,64×10⁶ m/s) 137 - A (0,025 nm) 138 - A (Z=86, A=222) 139 - B (10 g) 140 - C (3) 141 - B (M·L²·T⁻²) 142 - A (M·L²·T⁻²·N⁻¹·θ⁻¹) 143 - A (M⁻¹·L⁻³·T⁴·I²) 144 - B (M·L²·T⁻¹) 145 - D (9×10¹⁶ J) 146 - B (MUV, a>0) 147 - D (-2 m/s² e 100 m) 148 - C (soma das áreas) 149 - C (2 Ω) 150 - B (mudanças de estado)",
     "tabelaHtml": "",
     "imagemSvg": ""
+  },
+  {
+    "id": "native-import-1779974254173-4-a67ffa9f",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm ciclista percorre uma pista circular de 100 m de raio com velocidade escalar constante de 10 m/s.\n\nEnunciado\nO módulo da aceleração centrípeta do ciclista é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "0,5 m/s²",
+      "1,0 m/s²",
+      "1,5 m/s²",
+      "2,0 m/s²",
+      "2,5 m/s²"
+    ],
+    "correta": "1,0 m/s²",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254174-9-e91f44de",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma pedra é lançada verticalmente para cima a partir do solo com velocidade de 30 m/s. Considere g = 10 m/s².\n\nEnunciado\nO tempo total de permanência no ar e a altura máxima atingida são, respectivamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "3 s e 45 m",
+      "6 s e 45 m",
+      "3 s e 90 m",
+      "6 s e 90 m",
+      "6 s e 135 m"
+    ],
+    "correta": "6 s e 45 m",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254175-11-534f3875",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm móvel descreve um movimento circular uniforme de raio 2 m com frequência de 120 rpm.\n\nEnunciado\nA velocidade angular e a velocidade escalar do móvel são, respectivamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "2π rad/s e 4π m/s",
+      "4π rad/s e 8π m/s",
+      "6π rad/s e 12π m/s",
+      "8π rad/s e 16π m/s",
+      "10π rad/s e 20π m/s"
+    ],
+    "correta": "4π rad/s e 8π m/s",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254175-14-2d2b0b36",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nA função horária da velocidade de um móvel em MUV é v = 10 + 5t (SI).\n\nEnunciado\nA velocidade inicial, a aceleração e a velocidade no instante t = 4 s são, respectivamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "0 m/s, 5 m/s² e 20 m/s",
+      "10 m/s, 5 m/s² e 30 m/s",
+      "10 m/s, 10 m/s² e 50 m/s",
+      "5 m/s, 10 m/s² e 45 m/s",
+      "5 m/s, 5 m/s² e 25 m/s"
+    ],
+    "correta": "10 m/s, 5 m/s² e 30 m/s",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254176-15-930103ce",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm avião voa horizontalmente a 500 m de altura com velocidade constante de 100 m/s e abandona um pacote. Considere g = 10 m/s².\n\nEnunciado\nA distância horizontal percorrida pelo pacote até atingir o solo e a velocidade vertical do pacote ao tocar o solo são, respectivamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "500 m e 50 m/s",
+      "500 m e 100 m/s",
+      "1000 m e 100 m/s",
+      "1000 m e 50 m/s",
+      "1000 m e 150 m/s\n\nDinâmica (Questões 16-30)"
+    ],
+    "correta": "1000 m e 100 m/s",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254176-18-17e2abd4",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm corpo de massa 8 kg está suspenso por um fio ideal preso ao teto. Considere g = 10 m/s².\n\nEnunciado\nA tração no fio quando o corpo está em repouso e quando o corpo sobe com aceleração de 2 m/s² são, respectivamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "80 N e 80 N",
+      "80 N e 96 N",
+      "80 N e 64 N",
+      "96 N e 80 N",
+      "96 N e 96 N"
+    ],
+    "correta": "80 N e 96 N",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254177-20-9b0d7594",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm bloco de massa 4 kg é colocado sobre um plano inclinado de 30° com a horizontal, sem atrito. Considere g = 10 m/s², sen 30° = 0,5.\n\nEnunciado\nA aceleração do bloco ao descer o plano é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "2 m/s²",
+      "3 m/s²",
+      "4 m/s²",
+      "5 m/s²",
+      "6 m/s²"
+    ],
+    "correta": "5 m/s²",
+    "explicacao": "Gabarito oficial: D"
+  },
+  {
+    "id": "native-import-1779974254178-22-c06bada5",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm carro de 1000 kg faz uma curva circular plana de raio 100 m com velocidade constante de 20 m/s.\n\nEnunciado\nA força de atrito lateral necessária para mantê-lo na trajetória circular é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "1000 N",
+      "2000 N",
+      "3000 N",
+      "4000 N",
+      "5000 N"
+    ],
+    "correta": "4000 N",
+    "explicacao": "Gabarito oficial: D"
+  },
+  {
+    "id": "native-import-1779974254178-23-a1445c39",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm elevador de massa 500 kg sobe com aceleração constante de 1 m/s². Considere g = 10 m/s².\n\nEnunciado\nA tração no cabo do elevador é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "4500 N",
+      "5000 N",
+      "5500 N",
+      "6000 N",
+      "6500 N"
+    ],
+    "correta": "5500 N",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254179-33-155f7ac5",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma prensa hidráulica possui êmbolos com áreas A₁ = 20 cm² e A₂ = 100 cm². Uma força de 50 N é aplicada no êmbolo menor.\n\nEnunciado\nA força transmitida ao êmbolo maior será:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "10 N",
+      "50 N",
+      "100 N",
+      "250 N",
+      "500 N"
+    ],
+    "correta": "250 N",
+    "explicacao": "Gabarito oficial: D"
+  },
+  {
+    "id": "native-import-1779974254180-34-6b9ad93a",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm corpo de volume 0,5 m³ flutua em água doce (ρ = 1000 kg/m³) com 40% de seu volume submerso. Considere g = 10 m/s².\n\nEnunciado\nA massa do corpo e o empuxo sobre ele são, respectivamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "100 kg e 1000 N",
+      "200 kg e 2000 N",
+      "300 kg e 3000 N",
+      "400 kg e 4000 N",
+      "500 kg e 5000 N"
+    ],
+    "correta": "200 kg e 2000 N",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254180-36-58850eb5",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm bloco de madeira de massa 600 g e densidade 0,6 g/cm³ é colocado em um recipiente com água (densidade 1 g/cm³).\n\nEnunciado\nA fração do volume do bloco que fica submersa é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "0,2",
+      "0,4",
+      "0,6",
+      "0,8",
+      "1,0"
+    ],
+    "correta": "0,6",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254181-38-6da396f8",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm corpo de peso 80 N e volume 5 × 10⁻³ m³ é totalmente imerso em água (ρ = 1000 kg/m³). Considere g = 10 m/s².\n\nEnunciado\nO peso aparente do corpo dentro da água é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "20 N",
+      "30 N",
+      "40 N",
+      "50 N",
+      "60 N"
+    ],
+    "correta": "30 N",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254181-41-38052cd0",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma barra metálica tem comprimento de 2 m a 20°C. O coeficiente de dilatação linear do material é 2 × 10⁻⁵ °C⁻¹.\n\nEnunciado\nO comprimento da barra quando aquecida a 120°C será:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "2,002 m",
+      "2,004 m",
+      "2,006 m",
+      "2,008 m",
+      "2,010 m"
+    ],
+    "correta": "2,004 m",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254181-42-00b63246",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma placa quadrada de alumínio (α = 2,4 × 10⁻⁵ °C⁻¹) tem lado 50 cm a 20°C. A placa é aquecida até 220°C.\n\nEnunciado\nA dilatação superficial da placa é aproximadamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "1,2 cm²",
+      "2,4 cm²",
+      "3,6 cm²",
+      "4,8 cm²",
+      "6,0 cm²"
+    ],
+    "correta": "2,4 cm²",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254181-45-a4b0790e",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm trilho de aço (α = 1,2 × 10⁻⁵ °C⁻¹) tem 20 m de comprimento a 10°C. A variação máxima de temperatura esperada na região é de 40°C.\n\nEnunciado\nA folga que deve ser deixada entre trilhos consecutivos para evitar tensões internas é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "2,4 mm",
+      "4,8 mm",
+      "7,2 mm",
+      "9,6 mm",
+      "12,0 mm\n\nCalorimetria (Questões 46-52)"
+    ],
+    "correta": "9,6 mm",
+    "explicacao": "Gabarito oficial: D"
+  },
+  {
+    "id": "native-import-1779974254182-46-250164ce",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm bloco de alumínio de massa 200 g (c = 0,22 cal/g°C) é aquecido de 20°C para 80°C.\n\nEnunciado\nA quantidade de calor sensível absorvida pelo bloco é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "1320 cal",
+      "1980 cal",
+      "é aquecido de 20°C para 80°C.\n\nEnunciado\nA quantidade de calor sensível absorvida pelo bloco é:\nA) 1320 cal\nB) 1980 cal\nC) 2640 cal",
+      "3300 cal",
+      "3960 cal"
+    ],
+    "correta": "é aquecido de 20°C para 80°C.\n\nEnunciado\nA quantidade de calor sensível absorvida pelo bloco é:\nA) 1320 cal\nB) 1980 cal\nC) 2640 cal",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254182-47-e65244ad",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nPara fundir completamente 500 g de gelo a 0°C, utiliza-se uma fonte térmica que fornece 100 cal/s. Considere L_fusão = 80 cal/g.\n\nEnunciado\nO tempo necessário para a fusão total é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "200 s",
+      "300 s",
+      "400 s",
+      "500 s",
+      "600 s"
+    ],
+    "correta": "400 s",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254184-53-3af9c6c1",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm gás ideal sofre uma transformação isobárica. A pressão é constante e igual a 4 × 10⁴ Pa. O volume varia de 2 m³ para 5 m³.\n\nEnunciado\nO trabalho realizado pelo gás é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "4 × 10⁴ J",
+      "8 × 10⁴ J",
+      "1,2 × 10⁵ J",
+      "1,6 × 10⁵ J",
+      "2,0 × 10⁵ J"
+    ],
+    "correta": "1,2 × 10⁵ J",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254184-54-bc274910",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nEm uma transformação isotérmica, um gás ideal expande-se, realizando um trabalho de 600 J.\n\nEnunciado\nA quantidade de calor trocada com o meio externo nessa transformação é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "0, recebe 600 J",
+      "600 J, libera 600 J",
+      "600 J, recebe 600 J",
+      "1200 J, libera 1200 J",
+      "1200 J, recebe 1200 J"
+    ],
+    "correta": "600 J, recebe 600 J",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254185-55-c75dc027",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm gás ideal recebe 800 J de calor e realiza um trabalho de 300 J sobre o meio externo.\n\nEnunciado\nA variação da energia interna do gás é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "+1100 J",
+      "+500 J",
+      "+300 J",
+      "-500 J",
+      "-1100 J"
+    ],
+    "correta": "+500 J",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254186-57-0c1bfeee",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm gás ideal sofre uma transformação adiabática. Nesse processo, o volume do gás aumenta.\n\nEnunciado\nÉ correto afirmar que:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "a temperatura aumenta e o gás realiza trabalho",
+      "a temperatura diminui e o gás recebe calor",
+      "a temperatura diminui e o gás realiza trabalho",
+      "a temperatura aumenta e o gás recebe calor",
+      "a temperatura permanece constante"
+    ],
+    "correta": "a temperatura diminui e o gás realiza trabalho",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254186-60-d89673a7",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma amostra de gás ideal ocupa 10 L a 27°C e pressão de 1 atm. A constante universal dos gases é R = 0,082 atm·L/mol·K.\n\nEnunciado\nO número de mols do gás é aproximadamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "0,2 mol",
+      "0,4 mol",
+      "0,6 mol",
+      "0,8 mol",
+      "1,0 mol\n\nONDULATÓRIA (Questões 61-80)\nConceitos Básicos (Questões 61-70)"
+    ],
+    "correta": "0,4 mol",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254187-61-8849a41b",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma onda periódica tem frequência de 50 Hz e comprimento de onda de 4 m.\n\nEnunciado\nA velocidade de propagação da onda é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "100 m/s",
+      "150 m/s",
+      "200 m/s",
+      "250 m/s",
+      "300 m/s"
+    ],
+    "correta": "200 m/s",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254187-62-e95ea6fd",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma onda sonora propaga-se no ar com velocidade de 340 m/s. O período da onda é 0,02 s.\n\nEnunciado\nO comprimento de onda dessa onda sonora é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "3,4 m",
+      "4,8 m",
+      "6,8 m",
+      "8,2 m",
+      "17,0 m"
+    ],
+    "correta": "6,8 m",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254188-63-2c93470f",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma corda tem densidade linear de 0,01 kg/m e está tracionada por uma força de 100 N.\n\nEnunciado\nA velocidade de propagação de ondas transversais nessa corda é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "50 m/s",
+      "75 m/s",
+      "100 m/s",
+      "125 m/s",
+      "150 m/s"
+    ],
+    "correta": "100 m/s",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254188-64-cab72dde",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma onda transversal propaga-se em uma corda com velocidade de 20 m/s. A distância entre duas cristas sucessivas é 0,5 m.\n\nEnunciado\nA frequência da onda é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "10 Hz",
+      "20 Hz",
+      "30 Hz",
+      "40 Hz",
+      "50 Hz"
+    ],
+    "correta": "40 Hz",
+    "explicacao": "Gabarito oficial: D"
+  },
+  {
+    "id": "native-import-1779974254188-65-79da1358",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nA equação de uma onda transversal em uma corda é y(x,t) = 0,05 sen(4πx - 20πt), com x e y em metros e t em segundos.\n\nEnunciado\nA amplitude, o comprimento de onda e a frequência da onda são, respectivamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "0,05 m, 0,5 m e 10 Hz",
+      "0,05 m, 1,0 m e 5 Hz",
+      "0,10 m, 0,5 m e 10 Hz",
+      "0,10 m, 1,0 m e 5 Hz",
+      "0,05 m, 2,0 m e 2,5 Hz"
+    ],
+    "correta": "0,05 m, 0,5 m e 10 Hz",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779974254188-66-bfb4efc1",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma onda eletromagnética tem frequência de 5 × 10¹⁴ Hz. A velocidade da luz no vácuo é 3 × 10⁸ m/s.\n\nEnunciado\nO comprimento de onda dessa radiação é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "6 × 10⁻⁷ m",
+      "5 × 10⁻⁷ m",
+      "4 × 10⁻⁷ m",
+      "3 × 10⁻⁷ m",
+      "2 × 10⁻⁷ m"
+    ],
+    "correta": "6 × 10⁻⁷ m",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779974254189-69-32660394",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nA faixa de frequências audíveis pelo ouvido humano vai de 20 Hz a 20000 Hz. Considere a velocidade do som no ar como 340 m/s.\n\nEnunciado\nOs comprimentos de onda correspondentes aos limites inferior e superior da faixa auditiva são, respectivamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "0,017 m e 17 m",
+      "0,017 m e 34 m",
+      "17 m e 0,017 m",
+      "34 m e 0,017 m",
+      "17 m e 34 m"
+    ],
+    "correta": "17 m e 0,017 m",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254189-70-3db00a56",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma fonte sonora emite ondas de frequência 680 Hz. A velocidade do som no ar é 340 m/s.\n\nEnunciado\nA diferença de fase, em radianos, entre dois pontos separados por 0,25 m na direção de propagação da onda é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "π/2",
+      "π",
+      "3π/2",
+      "2π",
+      "3π\n\nFenômenos Ondulatórios (Questões 71-80)"
+    ],
+    "correta": "π",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254190-73-916a7c4b",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma onda sonora passa do ar para a água. A velocidade do som no ar é 340 m/s e na água é 1480 m/s. A frequência da onda no ar é 1000 Hz.\n\nEnunciado\nAo passar para a água, a frequência e o comprimento de onda da onda serão, respectivamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "1000 Hz e 0,34 m",
+      "1000 Hz e 1,48 m",
+      "4350 Hz e 0,34 m",
+      "4350 Hz e 1,48 m",
+      "1000 Hz e 0,23 m"
+    ],
+    "correta": "1000 Hz e 1,48 m",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254190-75-da5eb63f",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma onda de rádio tem frequência de 100 MHz. A velocidade da luz é 3 × 10⁸ m/s.\n\nEnunciado\nO comprimento de onda dessa onda de rádio é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "0,3 m",
+      "1 m",
+      "3 m",
+      "10 m",
+      "30 m"
+    ],
+    "correta": "3 m",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254191-76-a5ffce9b",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm tubo sonoro fechado em uma das extremidades tem comprimento de 0,5 m. A velocidade do som no ar é 340 m/s.\n\nEnunciado\nA frequência fundamental desse tubo é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "85 Hz",
+      "170 Hz",
+      "255 Hz",
+      "340 Hz",
+      "425 Hz"
+    ],
+    "correta": "170 Hz",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254192-81-2689c98c",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm raio de luz incide sobre um espelho plano com ângulo de incidência de 30°.\n\nEnunciado\nO ângulo entre o raio incidente e o raio refletido é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "15°",
+      "30°",
+      "45°",
+      "60°",
+      "90°"
+    ],
+    "correta": "60°",
+    "explicacao": "Gabarito oficial: D"
+  },
+  {
+    "id": "native-import-1779974254192-82-99241882",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm raio de luz passa do ar (n_ar = 1) para a água (n_água = 4/3). O ângulo de incidência é 45°.\n\nEnunciado\nO ângulo de refração aproximado é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "22°",
+      "28°",
+      "32°",
+      "38°",
+      "42°"
+    ],
+    "correta": "32°",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254193-83-953a0cd8",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm objeto real está colocado a 30 cm de um espelho côncavo de distância focal 10 cm.\n\nEnunciado\nA posição e a natureza da imagem formada são:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "7,5 cm, virtual e direita",
+      "7,5 cm, real e invertida",
+      "15 cm, virtual e direita",
+      "15 cm, real e invertida",
+      "20 cm, real e invertida"
+    ],
+    "correta": "15 cm, real e invertida",
+    "explicacao": "Gabarito oficial: D"
+  },
+  {
+    "id": "native-import-1779974254193-84-ca2357b8",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm objeto real é colocado a 20 cm de um espelho convexo de distância focal 20 cm (módulo).\n\nEnunciado\nA imagem formada é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "real, invertida e a 10 cm do espelho",
+      "virtual, direita e a 10 cm do espelho",
+      "real, invertida e a 20 cm do espelho",
+      "virtual, direita e a 20 cm do espelho",
+      "real, direita e a 40 cm do espelho"
+    ],
+    "correta": "virtual, direita e a 10 cm do espelho",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254194-87-f8c18400",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma lente convergente tem distância focal de 15 cm. Um objeto real é colocado a 45 cm da lente.\n\nEnunciado\nA posição da imagem e seu aumento linear são, respectivamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "11,25 cm e +0,25",
+      "11,25 cm e -0,25",
+      "22,5 cm e -0,5",
+      "22,5 cm e +0,5",
+      "30 cm e -0,67"
+    ],
+    "correta": "22,5 cm e -0,5",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254195-90-1e63b403",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma pessoa míope tem o ponto remoto a 50 cm de seus olhos.\n\nEnunciado\nPara corrigir esse defeito de visão, ela deve usar lentes:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "convergentes de distância focal 50 cm",
+      "divergentes de distância focal 50 cm",
+      "convergentes de distância focal 25 cm",
+      "divergentes de distância focal 25 cm",
+      "convergentes de distância focal 100 cm"
+    ],
+    "correta": "divergentes de distância focal 50 cm",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254196-92-8a4844b6",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma lupa (lente convergente) tem distância focal de 5 cm. Ela é usada para observar um objeto colocado a 4 cm da lente.\n\nEnunciado\nA imagem formada é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "real, invertida e maior",
+      "virtual, direita e maior",
+      "real, direita e menor",
+      "virtual, invertida e maior",
+      "real, invertida e menor"
+    ],
+    "correta": "virtual, direita e maior",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254196-93-8ded2aac",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm feixe de luz branca atravessa um prisma. Observa-se que a luz se decompõe em várias cores.\n\nEnunciado\nEsse fenômeno ocorre porque:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "a velocidade da luz no vácuo depende da cor",
+      "o índice de refração do prisma depende da frequência da luz",
+      "o prisma funciona como uma lente convergente",
+      "a reflexão interna total separa as cores",
+      "a difração da luz branca produz o espectro"
+    ],
+    "correta": "o índice de refração do prisma depende da frequência da luz",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254197-94-ea9a4f74",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nDois espelhos planos são associados formando um ângulo de 60° entre suas superfícies refletoras.\n\nEnunciado\nO número de imagens formadas de um objeto colocado entre eles é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "3",
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "correta": "5",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254197-95-e0368666",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma máquina fotográfica possui uma lente convergente de distância focal 50 mm. Para fotografar um objeto distante (no infinito), a distância entre a lente e o filme deve ser:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "25 mm",
+      "50 mm",
+      "75 mm",
+      "100 mm",
+      "depende do tamanho do objeto\n\nELETRICIDADE E MAGNETISMO (Questões 96-130)\nEletrostática (Questões 96-105)"
+    ],
+    "correta": "50 mm",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254197-96-9fbcf112",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nDuas cargas puntiformes Q₁ = 2 μC e Q₂ = 8 μC estão no vácuo separadas por 20 cm. Considere k = 9 × 10⁹ N·m²/C².\n\nEnunciado\nA força eletrostática entre elas é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "1,8 N de repulsão",
+      "1,8 N de atração",
+      "3,6 N de repulsão",
+      "3,6 N de atração",
+      "7,2 N de repulsão"
+    ],
+    "correta": "3,6 N de repulsão",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254198-98-30a85167",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma carga de prova q = 2 μC é colocada em um ponto onde o campo elétrico tem intensidade 5000 N/C.\n\nEnunciado\nA força elétrica que atua sobre a carga de prova é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "1,0 × 10⁻³ N",
+      "2,5 × 10⁻³ N",
+      "5,0 × 10⁻³ N",
+      "1,0 × 10⁻² N",
+      "2,5 × 10⁻² N"
+    ],
+    "correta": "1,0 × 10⁻² N",
+    "explicacao": "Gabarito oficial: D"
+  },
+  {
+    "id": "native-import-1779974254198-99-f15c2ba9",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma carga elétrica puntiforme Q = 4 μC gera um campo elétrico no vácuo. Considere k = 9 × 10⁹ N·m²/C².\n\nEnunciado\nA intensidade do campo elétrico a 30 cm da carga é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "2 × 10⁴ N/C",
+      "4 × 10⁴ N/C",
+      "6 × 10⁴ N/C",
+      "8 × 10⁴ N/C",
+      "9 × 10⁴ N/C"
+    ],
+    "correta": "4 × 10⁴ N/C",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254198-101-faeb8f6b",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma carga elétrica Q = 5 μC é deslocada entre dois pontos A e B, cuja diferença de potencial é 200 V.\n\nEnunciado\nO trabalho realizado pela força elétrica sobre a carga é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "1,0 × 10⁻³ J",
+      "2,5 × 10⁻³ J",
+      "5,0 × 10⁻³ J",
+      "1,0 × 10⁻² J",
+      "2,5 × 10⁻² J"
+    ],
+    "correta": "1,0 × 10⁻³ J",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779974254198-103-47bd412c",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma carga Q = -2 μC está fixa em um ponto. Uma carga de prova q = 1 μC é colocada a 20 cm de Q. Considere k = 9 × 10⁹ N·m²/C².\n\nEnunciado\nA energia potencial elétrica do sistema é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "-0,09 J",
+      "-0,18 J",
+      "0,09 J",
+      "0,18 J",
+      "-0,36 J"
+    ],
+    "correta": "-0,09 J",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779974254198-104-9a78397c",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm capacitor plano a vácuo tem placas de área 0,02 m² separadas por 1 mm. A permissividade do vácuo é ε₀ = 8,85 × 10⁻¹² F/m.\n\nEnunciado\nA capacitância desse capacitor é aproximadamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "1,77 × 10⁻¹⁰ F",
+      "1,77 × 10⁻¹¹ F",
+      "1,77 × 10⁻¹² F",
+      "1,77 × 10⁻¹³ F",
+      "1,77 × 10⁻⁹ F"
+    ],
+    "correta": "1,77 × 10⁻¹⁰ F",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779974254198-105-9d37a48e",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm capacitor de 10 μF é ligado a uma bateria de 12 V. Após totalmente carregado, é desconectado da bateria.\n\nEnunciado\nA carga armazenada no capacitor é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "1,2 × 10⁻⁴ C",
+      "1,2 × 10⁻⁵ C",
+      "1,2 × 10⁻³ C",
+      "2,4 × 10⁻⁴ C",
+      "2,4 × 10⁻³ C\n\nEletrodinâmica (Questões 106-120)"
+    ],
+    "correta": "1,2 × 10⁻⁴ C",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779974254198-106-f48e63e8",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm resistor ôhmico de resistência 20 Ω é percorrido por uma corrente de 2 A.\n\nEnunciado\nA tensão aplicada ao resistor e a potência dissipada são, respectivamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "10 V e 20 W",
+      "20 V e 40 W",
+      "40 V e 80 W",
+      "40 V e 40 W",
+      "20 V e 80 W"
+    ],
+    "correta": "40 V e 80 W",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254199-107-c120bda6",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm chuveiro elétrico de potência 4400 W é ligado a uma tensão de 220 V.\n\nEnunciado\nA corrente que percorre o chuveiro e sua resistência são, respectivamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "10 A e 22 Ω",
+      "20 A e 11 Ω",
+      "20 A e 22 Ω",
+      "40 A e 5,5 Ω",
+      "40 A e 11 Ω"
+    ],
+    "correta": "20 A e 11 Ω",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254199-108-1e4c7992",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nDois resistores de 6 Ω e 3 Ω são associados em série e submetidos a uma tensão de 18 V.\n\nEnunciado\nA resistência equivalente, a corrente total e a tensão no resistor de 6 Ω são, respectivamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "9 Ω, 2 A e 12 V",
+      "9 Ω, 2 A e 6 V",
+      "9 Ω, 3 A e 12 V",
+      "2 Ω, 9 A e 54 V",
+      "2 Ω, 9 A e 27 V"
+    ],
+    "correta": "9 Ω, 2 A e 12 V",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779974254199-109-aab31155",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nOs mesmos resistores de 6 Ω e 3 Ω são agora associados em paralelo e submetidos a uma tensão de 18 V.\n\nEnunciado\nA resistência equivalente, a corrente total e a corrente no resistor de 6 Ω são, respectivamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "2 Ω, 9 A e 3 A",
+      "2 Ω, 9 A e 6 A",
+      "9 Ω, 2 A e 0,67 A",
+      "9 Ω, 2 A e 1,33 A",
+      "2 Ω, 3 A e 1 A"
+    ],
+    "correta": "2 Ω, 9 A e 3 A",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779974254199-111-e19c5181",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm fio de cobre tem resistência de 10 Ω a 20°C. O coeficiente de temperatura do cobre é 4 × 10⁻³ °C⁻¹.\n\nEnunciado\nA resistência do fio a 120°C é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "4 Ω",
+      "6 Ω",
+      "10 Ω",
+      "14 Ω",
+      "18 Ω"
+    ],
+    "correta": "14 Ω",
+    "explicacao": "Gabarito oficial: D"
+  },
+  {
+    "id": "native-import-1779974254200-112-4202ee54",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma lâmpada incandescente de 60 W e 120 V é ligada a uma rede de 120 V.\n\nEnunciado\nA resistência da lâmpada quando acesa e a corrente que a percorre são, respectivamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "120 Ω e 0,5 A",
+      "180 Ω e 0,33 A",
+      "240 Ω e 0,25 A",
+      "300 Ω e 0,2 A",
+      "360 Ω e 0,17 A"
+    ],
+    "correta": "240 Ω e 0,25 A",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254200-114-f483b456",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm gerador de força eletromotriz 12 V e resistência interna 1 Ω é ligado a um resistor externo de 5 Ω.\n\nEnunciado\nA corrente no circuito e a tensão nos terminais do gerador são, respectivamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "1 A e 11 V",
+      "1 A e 12 V",
+      "2 A e 10 V",
+      "2 A e 12 V",
+      "3 A e 9 V"
+    ],
+    "correta": "2 A e 10 V",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254200-117-0c5021c9",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm resistor de 10 Ω é percorrido por uma corrente de 2 A durante 5 minutos.\n\nEnunciado\nA energia dissipada nesse intervalo de tempo, em joules, é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "600 J",
+      "1200 J",
+      "2400 J",
+      "4800 J",
+      "12000 J"
+    ],
+    "correta": "12000 J",
+    "explicacao": "Gabarito oficial: E"
+  },
+  {
+    "id": "native-import-1779974254200-119-037730a6",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm resistor de 100 Ω, quando submetido a uma tensão V, dissipa uma potência de 25 W.\n\nEnunciado\nA tensão aplicada e a corrente que o percorre são, respectivamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "25 V e 0,25 A",
+      "50 V e 0,5 A",
+      "75 V e 0,75 A",
+      "100 V e 1 A",
+      "200 V e 2 A"
+    ],
+    "correta": "50 V e 0,5 A",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254200-120-f88b1d2c",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma bateria de 12 V com resistência interna 0,5 Ω é ligada a um resistor externo R. A corrente medida no circuito é 4 A.\n\nEnunciado\nO valor do resistor externo R e a potência útil fornecida pela bateria são, respectivamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "2,5 Ω e 48 W",
+      "2,5 Ω e 64 W",
+      "3,0 Ω e 48 W",
+      "3,0 Ω e 36 W",
+      "3,5 Ω e 56 W\n\nMagnetismo (Questões 121-130)"
+    ],
+    "correta": "2,5 Ω e 48 W",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779974254200-121-15427f77",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm fio retilíneo longo é percorrido por uma corrente de 10 A. A permeabilidade magnética do vácuo é μ₀ = 4π × 10⁻⁷ T·m/A.\n\nEnunciado\nO campo magnético a 20 cm do fio é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "1 × 10⁻⁵ T",
+      "2 × 10⁻⁵ T",
+      "3 × 10⁻⁵ T",
+      "4 × 10⁻⁵ T",
+      "5 × 10⁻⁵ T"
+    ],
+    "correta": "1 × 10⁻⁵ T",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779974254200-122-a10693ff",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUma espira circular de raio 10 cm é percorrida por uma corrente de 5 A.\n\nEnunciado\nO campo magnético no centro da espira é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "π × 10⁻⁶ T",
+      "2π × 10⁻⁶ T",
+      "π × 10⁻⁵ T",
+      "2π × 10⁻⁵ T",
+      "4π × 10⁻⁵ T"
+    ],
+    "correta": "2π × 10⁻⁵ T",
+    "explicacao": "Gabarito oficial: D"
+  },
+  {
+    "id": "native-import-1779974254201-123-1c4f38b2",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm solenoide de 20 cm de comprimento contém 400 espiras e é percorrido por uma corrente de 2 A.\n\nEnunciado\nO campo magnético no interior do solenoide é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "1,6 × 10⁻³ T",
+      "3,2 × 10⁻³ T",
+      "4,8 × 10⁻³ T",
+      "5,0 × 10⁻³ T",
+      "6,4 × 10⁻³ T"
+    ],
+    "correta": "5,0 × 10⁻³ T",
+    "explicacao": "Gabarito oficial: D"
+  },
+  {
+    "id": "native-import-1779974254201-128-8ffd48bc",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm transformador ideal tem 200 espiras no primário e 800 espiras no secundário. O primário é ligado a uma fonte de 110 V.\n\nEnunciado\nA tensão no secundário e a relação entre as correntes (ip/is) são, respectivamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "27,5 V e 0,25",
+      "27,5 V e 4",
+      "440 V e 0,25",
+      "440 V e 4",
+      "220 V e 0,5"
+    ],
+    "correta": "440 V e 4",
+    "explicacao": "Gabarito oficial: D"
+  },
+  {
+    "id": "native-import-1779974254202-129-a6fbb551",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nDois fios longos, retilíneos e paralelos, separados por 10 cm, são percorridos por correntes de mesmo sentido: 5 A e 8 A.\n\nEnunciado\nA força magnética por unidade de comprimento entre os fios é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "4 × 10⁻⁵ N/m, atrativa",
+      "4 × 10⁻⁵ N/m, repulsiva",
+      "8 × 10⁻⁵ N/m, atrativa",
+      "8 × 10⁻⁵ N/m, repulsiva",
+      "2 × 10⁻⁵ N/m, atrativa"
+    ],
+    "correta": "8 × 10⁻⁵ N/m, atrativa",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254202-134-898b3d91",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm fóton de luz vermelha tem comprimento de onda de 700 nm. Dados: h = 6,63 × 10⁻³⁴ J·s, c = 3 × 10⁸ m/s.\n\nEnunciado\nA energia desse fóton, em joules, é aproximadamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "2,84 × 10⁻¹⁹ J",
+      "3,14 × 10⁻¹⁹ J",
+      "4,74 × 10⁻¹⁹ J",
+      "5,64 × 10⁻¹⁹ J",
+      "6,54 × 10⁻¹⁹ J"
+    ],
+    "correta": "2,84 × 10⁻¹⁹ J",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779974254202-135-e26744a0",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nA massa de repouso de um elétron é 9,1 × 10⁻³¹ kg. Considere a velocidade da luz c = 3 × 10⁸ m/s.\n\nEnunciado\nA energia de repouso do elétron, em joules e em MeV (1 eV = 1,6 × 10⁻¹⁹ J), é aproximadamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "2,73 × 10⁻¹⁴ J e 0,17 MeV",
+      "5,46 × 10⁻¹⁴ J e 0,34 MeV",
+      "8,19 × 10⁻¹⁴ J e 0,51 MeV",
+      "1,09 × 10⁻¹³ J e 0,68 MeV",
+      "1,36 × 10⁻¹³ J e 0,85 MeV"
+    ],
+    "correta": "8,19 × 10⁻¹⁴ J e 0,51 MeV",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254202-136-1b203c55",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nUm elétron tem comprimento de onda de de Broglie igual a 0,2 nm. Dados: h = 6,63 × 10⁻³⁴ J·s, m_e = 9,1 × 10⁻³¹ kg.\n\nEnunciado\nA velocidade do elétron é aproximadamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "1,82 × 10⁶ m/s",
+      "2,64 × 10⁶ m/s",
+      "3,64 × 10⁶ m/s",
+      "4,82 × 10⁶ m/s",
+      "5,46 × 10⁶ m/s"
+    ],
+    "correta": "3,64 × 10⁶ m/s",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254203-137-86d5b392",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nEm um tubo de raios X, os elétrons são acelerados por uma tensão de 50 kV.\n\nEnunciado\nO comprimento de onda mínimo dos raios X produzidos é aproximadamente:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "0,025 nm",
+      "0,050 nm",
+      "0,075 nm",
+      "0,100 nm",
+      "0,125 nm"
+    ],
+    "correta": "0,025 nm",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779974254203-139-000e1ffd",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nA meia-vida de um isótopo radioativo é de 10 anos. Uma amostra inicial tem 80 g desse isótopo.\n\nEnunciado\nApós 30 anos, a massa restante desse isótopo será:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "5 g",
+      "10 g",
+      "15 g",
+      "20 g",
+      "25 g"
+    ],
+    "correta": "10 g",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254203-141-bf13566b",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nA grandeza trabalho (W) tem dimensão de força vezes deslocamento. A força tem dimensão M·L·T⁻².\n\nEnunciado\nA dimensão do trabalho em termos de massa (M), comprimento (L) e tempo (T) é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "M·L·T⁻²",
+      "M·L²·T⁻²",
+      "M·L⁻¹·T⁻²",
+      "M·L²·T⁻¹",
+      "M·L·T⁻¹"
+    ],
+    "correta": "M·L²·T⁻²",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254204-142-7f3f790f",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nA constante universal dos gases R tem valor 0,082 atm·L/(mol·K) ou 8,31 J/(mol·K).\n\nEnunciado\nA dimensão de R no SI (em termos de M, L, T e quantidade de substância N) é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "M·L²·T⁻²·N⁻¹·θ⁻¹",
+      "M·L·T⁻²·N⁻¹·θ⁻¹",
+      "M·L²·T⁻¹·N⁻¹·θ⁻¹",
+      "M·L⁻²·T⁻²·N⁻¹·θ⁻¹",
+      "M·L²·T⁻²·N·θ⁻¹"
+    ],
+    "correta": "M·L²·T⁻²·N⁻¹·θ⁻¹",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779974254204-143-cb6d6174",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nA permissividade do vácuo ε₀ aparece na Lei de Coulomb: F = (1/4πε₀)·(Q₁Q₂/r²). Sua unidade no SI é F/m (farad por metro).\n\nEnunciado\nA dimensão de ε₀ em termos de M, L, T e I (corrente elétric",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "M⁻¹·L⁻³·T⁴·I²",
+      "M⁻¹·L⁻³·T²·I²",
+      "M·L³·T⁻⁴·I⁻²",
+      "M·L³·T⁻²·I⁻²",
+      "M⁻¹·L³·T⁴·I²"
+    ],
+    "correta": "M⁻¹·L⁻³·T⁴·I²",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779974254204-144-4dfcbb52",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nA constante de Planck h tem dimensão de energia vezes tempo. Sua unidade no SI é J·s.\n\nEnunciado\nA dimensão de h é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "M·L·T⁻¹",
+      "M·L²·T⁻¹",
+      "M·L²·T⁻²",
+      "M·L·T⁻²",
+      "M·L²·T"
+    ],
+    "correta": "M·L²·T⁻¹",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254205-146-67de22df",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\nO gráfico da posição em função do tempo para um móvel em movimento retilíneo é uma parábola com concavidade para cima.\n\nEnunciado\nEsse gráfico representa um movimento:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "uniforme, com velocidade constante",
+      "uniformemente variado, com aceleração positiva",
+      "uniformemente variado, com aceleração negativa",
+      "uniformemente variado, com velocidade inicial nula",
+      "retrógrado e acelerado"
+    ],
+    "correta": "uniformemente variado, com aceleração positiva",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254209-5-9ce38cfa",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: E (1000 m)\nExplicação: 1ª fase (acelerado): Δs₁ = (1/2)at² = (1/2)·4·10² = 2·100 = 200 m. v final = a·t = 4·10 = 40 m/s. 2ª fase (uniforme): Δs₂ = v·t = 40·20 = 800 m. Total = 200 + 800 = 1000 m.\n\nAnálise das alternativas:\n\nA (200 m): Só considera a 1ª fase.\n\nB (400 m): Soma incorreta.\n\nC (600 m): Subestima a 2ª fase.\n\nD (800 m): Só considera a 2ª fase.\n\nE (1000 m): Correta",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      ": Δs₂ = v·t = 40·20 = 800 m. Total = 200 + 800 = 1000 m.\n\nAnálise das alternativas:\n\nA (200 m): Só considera a 1ª fase.\n\nB (400 m): Soma incorreta.\n\nC (600 m): Subestima a 2ª fase.\n\nD (800 m): Só considera a 2ª fase.\n\nE (1000 m): Correta"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: E"
+  },
+  {
+    "id": "native-import-1779974254209-7-4ea64e98",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: A (-2 m/s² e 100 m)\nExplicação: Pontos: (0, 20) e (10, 0). Aceleração: a = Δv/Δt = (0-20)/(10-0) = -20/10 = -2 m/s². Distância = área do triângulo = (base × altur",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "/2 = (10 × 20)/2 = 100 m.\n\nAnálise das alternativas:\n\nA (-2 m/s² e 100 m): Correta.\n\nB (-2 m/s² e 200 m): Distância errada (usaria base × altura sem dividir por 2).\n\nC (-1 m/s² e 100 m): Aceleração errada.\n\nD (-1 m/s² e 200 m): Ambos errados.\n\nE (-0,5 m/s² e 150 m): Ambos errados"
+    ],
+    "correta": "/2 = (10 × 20)/2 = 100 m.\n\nAnálise das alternativas:\n\nA (-2 m/s² e 100 m): Correta.\n\nB (-2 m/s² e 200 m): Distância errada (usaria base × altura sem dividir por 2).\n\nC (-1 m/s² e 100 m): Aceleração errada.\n\nD (-1 m/s² e 200 m): Ambos errados.\n\nE (-0,5 m/s² e 150 m): Ambos errados",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779974254213-17-f2cbbd98",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: C (4 m/s² e 8 N)\nExplicação: Massa total = 3 + 2 = 5 kg. a = F/m = 20/5 = 4 m/s². Força em B: F_B = m_B·a = 2·4 = 8 N (é a força que A exerce em B). Força de contato = 8 N.\n\nAnálise das alternativas:\n\nA (2 m/s² e 8 N): a errada.\n\nB (2 m/s² e 12 N): Ambos errados.\n\nC (4 m/s² e 8 N): Correta.\n\nD (4 m/s² e 12 N): Força de contato errada.\n\nE (5 m/s² e 10 N): Ambos errados",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Força de contato = 8 N.\n\nAnálise das alternativas:\n\nA (2 m/s² e 8 N): a errada.\n\nB (2 m/s² e 12 N): Ambos errados.\n\nC (4 m/s² e 8 N): Correta.\n\nD (4 m/s² e 12 N): Força de contato errada.\n\nE (5 m/s² e 10 N): Ambos errados"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254214-18-7fd4e53c",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: B (80 N e 96 N)\nExplicação: Em repouso: T = P = m·g = 8·10 = 80 N. Subindo com aceleração: T - P = m·a → T = m(g +",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "= 8(10 + 2) = 8·12 = 96 N.\n\nAnálise das alternativas:\n\nA (80 N e 80 N): Desconsidera aceleração.\n\nB (80 N e 96 N): Correta.\n\nC (80 N e 64 N): Subtraiu em vez de somar.\n\nD (96 N e 80 N): Inverteu as situações.\n\nE (96 N e 96 N): Desconsidera repouso"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254215-21-37f47768",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: C (4 m/s² e 24 N)\nExplicação: Peso de B = 4·10 = 40 N. Massa total = 6 + 4 = 10 kg. a = P_B/(m_A + m_B) = 40/10 = 4 m/s². Tração: T = m_A·a = 6·4 = 24 N.\n\nAnálise das alternativas:\n\nA (2 m/s² e 12 N): a errada.\n\nB (2 m/s² e 24 N): a errada.\n\nC (4 m/s² e 24 N): Correta.\n\nD (4 m/s² e 36 N): T errada (usaria m_B·",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "= 40/10 = 4 m/s². Tração: T = m_A·a = 6·4 = 24 N.\n\nAnálise das alternativas:\n\nA (2 m/s² e 12 N): a errada.\n\nB (2 m/s² e 24 N): a errada.\n\nC (4 m/s² e 24 N): Correta.\n\nD (4 m/s² e 36 N): T errada (usaria m_B·a).\n\nE (6 m/s² e 36 N): a errada"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254215-23-94f73a4d",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: C (5500 N)\nExplicação: T - P = m·a → T = m(g +",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "= 500(10 + 1) = 500·11 = 5500 N.\n\nAnálise das alternativas:\n\nA (4500 N): Subtraiu em vez de somar.\n\nB (5000 N): Desconsidera aceleração.\n\nC (5500 N): Correta.\n\nD (6000 N): Usaria a = 2 m/s².\n\nE (6500 N): Usaria a = 3 m/s²"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254216-24-1ba69bbf",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: C (Sim, aceleração 3,25 m/s²)\nExplicação: Força de atrito estático máxima: f_emax = μ_e·N = 0,4·8·10 = 0,4·80 = 32 N. F_aplicada = 50 N > 32 N → entra em movimento. Atrito cinético: f_c = μ_c·N = 0,3·80 = 24 N. F_res = 50 - 24 = 26 N. a = 26/8 = 3,25 m/s².\n\nAnálise das alternativas:\n\nA (Não entr",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      ": Ignora que F > f_emax.\n\nB (3,25? 2,5 m/s²): Usaria f_c errado.\n\nC (3,25 m/s²): Correta.\n\nD (4,0 m/s²): Sem atrito.\n\nE (6,25 m/s²): F_res = 50 N"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254232-31-b1bd9d7b",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: E (250 N e 50 N)\nExplicação: Barra de 4 m, peso 100 N atuando no centro (2 m de cada extremidade). Apoio A na extremidade esquerda, apoio B a 1 m da extremidade direita, ou seja, a 3 m da extremidade esquerda. Peso de 200 N na extremidade direita. Tomando momentos em relação a A: ΣM_A = 0 → -P_barra·2 - P_carga·4 + N_B·3 = 0 → -100·2 - 200·4 + 3N_B = 0 → -200 - 800 + 3N_B = 0 → 3N_B = 1000 → N_B = 333,33 N. Isso não bate com as alternativas. Recalculando: Barra de 4 m, apoio A em 0, apoio B em 3 m. Peso da barra em 2 m. Carga de 200 N em 4 m. ΣM_A: -100·2 - 200·4 + N_B·3 = 0 → -200 - 800 + 3N_B = 0 → 3N_B = 1000 → N_B = 333,33 N. N_A + N_B = 300 N → N_A = -33,33 N? Impossível. O problema está mal formulado. Provavelmente o apoio B está a 1 m da direita, ou seja, a 3 m da esquerda, e a carga está na direita. A soma das forças é 300 N. N_B = 333,33 daria N_A negativo. Invertendo: ΣM_B = 0: -N_A·3 + 100·1 + 200·(-1)? Não. Vamos refazer: distância de B à carga: B está a 1 m da direita, então carga está a 1 m de B. Momento em B: -N_A·3 + 100·1 + 200·1 = 0? O peso da barra em 2 m está a 1 m de B (2-3 = -1, módulo 1). Então: -N_A·3 + 100·1 + 200·1 = 0 → -3N_A + 300 = 0 → N_A = 100 N. Então N_B = 300 - 100 = 200 N. Alternativa B (100 e 200). O",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Apoio A na extremidade esquerda, apoio B a 1 m da extremidade direita, ou seja, a 3 m da extremidade esquerda. Peso de 200 N na extremidade direita. Tomando momentos em relação a A: ΣM_A = 0 → -P_barra·2 - P_carga·4 + N_B·3 = 0 → -100·2 - 200·4 + 3N_B = 0 → -200 - 800 + 3N_B = 0 → 3N_B = 1000 → N_B = 333,33 N. Isso não bate com as alternativas. Recalculando: Barra de 4 m, apoio A em 0, apoio B em 3 m. Peso da barra em 2 m. Carga de 200 N em 4 m. ΣM_A: -100·2 - 200·4 + N_B·3 = 0 → -200 - 800 + 3N_B = 0 → 3N_B = 1000 → N_B = 333,33 N. N_A + N_B = 300 N → N_A = -33,33 N? Impossível. O problema está mal formulado. Provavelmente o apoio B está a 1 m da direita, ou seja, a 3 m da esquerda, e a carga está na direita. A soma das forças é 300 N. N_B = 333,33 daria N_A negativo. Invertendo: ΣM_B = 0: -N_A·3 + 100·1 + 200·(-1)? Não. Vamos refazer: distância de B à carga: B está a 1 m da direita, então carga está a 1 m de B. Momento em B: -N_A·3 + 100·1 + 200·1 = 0? O peso da barra em 2 m está a 1 m de B (2-3 = -1, módulo 1). Então: -N_A·3 + 100·1 + 200·1 = 0 → -3N_A + 300 = 0 → N_A = 100 N. Então N_B = 300 - 100 = 200 N. Alternativa B (100 e 200). O"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: E"
+  },
+  {
+    "id": "native-import-1779974254234-35-2877ccb8",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: A (1,2 × 10⁵ P",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Explicação: Pressão hidrostática: ρgh = 1000·10·2 = 20000 Pa = 0,2 × 10⁵ Pa. Pressão total = atmosférica + hidrostática = 1 × 10⁵ + 0,2 × 10⁵ = 1,2 × 10⁵ Pa.\n\nAnálise das alternativas:\n\nA (1,2 × 10⁵): Correta.\n\nB (1,4 × 10⁵): h = 4 m.\n\nC (1,6 × 10⁵): h = 6 m.\n\nD (1,8 × 10⁵): h = 8 m.\n\nE (2,0 × 10⁵): h = 10 m"
+    ],
+    "correta": "Explicação: Pressão hidrostática: ρgh = 1000·10·2 = 20000 Pa = 0,2 × 10⁵ Pa. Pressão total = atmosférica + hidrostática = 1 × 10⁵ + 0,2 × 10⁵ = 1,2 × 10⁵ Pa.\n\nAnálise das alternativas:\n\nA (1,2 × 10⁵): Correta.\n\nB (1,4 × 10⁵): h = 4 m.\n\nC (1,6 × 10⁵): h = 6 m.\n\nD (1,8 × 10⁵): h = 8 m.\n\nE (2,0 × 10⁵): h = 10 m",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779974254234-40-be151227",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: B (2,15 × 10⁵ P",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Explicação: Pressão hidrostática: ρgh = 1025·10·200 = 2.050.000 Pa = 2,05 × 10⁶ Pa? 1025·10·200 = 2.050.000 = 2,05 × 10⁶ Pa = 20,5 × 10⁵ Pa. Somando atmosférica: 20,5 × 10⁵ + 1 × 10⁵ = 21,5 × 10⁵ = 2,15 × 10⁶ Pa. Alternativa B: 2,15 × 10⁵ Pa é 10 vezes menor. O correto seria 2,15 × 10⁶ Pa, mas não há opção. O"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254239-42-b3c243e7",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: B (2,4 cm²)\nExplicação: Coeficiente de dilatação superficial: β = 2α = 4,8×10⁻⁵ °C⁻¹. Área inicial: A₀ = 50² = 2500 cm². ΔA = A₀·β·Δθ = 2500·4,8×10⁻⁵·200 = 2500·9,6×10⁻³ = 24 cm². Alternativa B (2,4 cm²) está com erro de fator 10. O correto seria 24 cm². Provavelmente o lado era 50 cm e Δθ = 20°C? Recalculando: se Δθ = 20°C: ΔA = 2500·4,8×10⁻⁵·20 = 2500·9,6×10⁻⁴ = 2,4 cm². Isso confere. Então Δθ = 20°C, não 200°C. O enunciado diz 20°C para 220°C, Δθ = 200°C. Há inconsistência. Considerando Δθ = 20°C, B está correta.\n\nAnálise das alternativas:\n\nA (1,2 cm²): Usaria metade do β.\n\nB (2,4 cm²): Correta (para Δθ = 20°C).\n\nC (3,6 cm²): Usaria β = 7,2×10⁻⁵.\n\nD (4,8 cm²): Usaria β = 9,6×10⁻⁵.\n\nE (6,0 cm²): Usaria β = 12×10⁻⁵",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "C (3,6 cm²): Usaria β = 7,2×10⁻⁵.\n\nD (4,8 cm²): Usaria β = 9,6×10⁻⁵.\n\nE (6,0 cm²): Usaria β = 12×10⁻⁵"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254239-44-f96837ee",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: B (do lado convexo)\nExplicação: Quando aquecida, o material de maior coeficiente de dilatação (α₁) se expande mais, ficando no lado convexo (externo da curvatur",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "O material de menor α fica no lado côncavo (interno).\n\nAnálise das alternativas:\n\nA (do lado côncavo): Incorreto, pois o material que mais expande fica na parte externa.\n\nB (do lado convexo): Correta.\n\nC (não haverá curvatura): Incorreto, haverá curvatura.\n\nD (depende da espessura): A curvatura independe da espessura, apenas da diferença de α.\n\nE (depende do comprimento): O comprimento influencia a magnitude, mas não o sentido da curvatura"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254243-48-2eb3ab3c",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: B (24°C)\nExplicação: Calorímetro: C = 50 cal/°C. Água: m = 200 g, c = 1, θ = 20°C. Ferro: m = 100 g, c = 0,1, θ = 80°C. Q_cedido + Q_recebido = 0. Para o ferro: Q_f = 100·0,1·(θ_eq - 80) = 10·(θ_eq - 80). Para água e calorímetro: Q_a = 200·1·(θ_eq - 20) = 200·(θ_eq - 20); Q_cal = 50·(θ_eq - 20). Somando: 10(θ_eq - 80) + 200(θ_eq - 20) + 50(θ_eq - 20) = 0 → 10θ_eq - 800 + 250θ_eq - 5000 = 0 → 260θ_eq = 5800 → θ_eq = 22,3°C ≈ 22°C. Alternativa A (22°C) seria a correta. O",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Explicação: Calorímetro: C = 50 cal/°C. Água: m = 200 g, c = 1, θ = 20°C. Ferro: m = 100 g, c = 0,1, θ = 80°C. Q_cedido + Q_recebido = 0. Para o ferro: Q_f = 100·0,1·(θ_eq - 80) = 10·(θ_eq - 80). Para água e calorímetro: Q_a = 200·1·(θ_eq - 20) = 200·(θ_eq - 20); Q_cal = 50·(θ_eq - 20). Somando: 10(θ_eq - 80) + 200(θ_eq - 20) + 50(θ_eq - 20) = 0 → 10θ_eq - 800 + 250θ_eq - 5000 = 0 → 260θ_eq = 5800 → θ_eq = 22,3°C ≈ 22°C. Alternativa A (22°C) seria a correta. O"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254246-51-9b74e351",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: B (0,50 cal/g°C)\nExplicação: Q_cedido = Q_recebido. Água quente: m·c·(60-35) = 100·1·25 = 2500 cal. Líquido frio: m·c_x·(35-20) = 100·c_x·15 = 1500·c_x. Igualando: 1500·c_x = 2500 → c_x = 2500/1500 = 1,67 cal/g°C. Isso não corresponde a nenhuma alternativa. Provavelmente as massas são diferentes ou a temperatura de equilíbrio é outra. Se a água fosse 100 g a 60°C e o líquido 100 g a 20°C, o equilíbrio seria 40°C. Para 35°C, o líquido tem c > 1. Alternativa B (0,5) é muito baixo. O",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Explicação: Q_cedido = Q_recebido. Água quente: m·c·(60-35) = 100·1·25 = 2500 cal. Líquido frio: m·c_x·(35-20) = 100·c_x·15 = 1500·c_x. Igualando: 1500·c_x = 2500 → c_x = 2500/1500 = 1,67 cal/g°C. Isso não corresponde a nenhuma alternativa. Provavelmente as massas são diferentes ou a temperatura de equilíbrio é outra. Se a água fosse 100 g a 60°C e o líquido 100 g a 20°C, o equilíbrio seria 40°C. Para 35°C, o líquido tem c > 1. Alternativa B (0,5) é muito baixo. O"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254246-54-7b976a0e",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: C (600 J, recebe 600 J)\nExplicação: Transformação isotérmica: ΔU = 0. 1ª Lei: Q = W. Como o gás expande, realiza trabalho (W > 0), então recebe calor (Q > 0). Q = 600 J, recebe.\n\nAnálise das alternativas:\n\nA (0, recebe 600): Q = 0 é adiabática.\n\nB (600, liber",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      ": Se liberasse, contrairia.\n\nC (600, recebe): Correta.\n\nD (1200, libera): Valor errado.\n\nE (1200, recebe): Valor errado",
+      ": Correta.\n\nD (1200, libera): Valor errado.\n\nE (1200, recebe): Valor errado"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254246-55-78a368d3",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: B (+500 J)\nExplicação: 1ª Lei: ΔU = Q - W = 800 - 300 = 500 J (positivo, aumento de energia intern",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Análise das alternativas:\n\nA (+1100): Somou em vez de subtrair.\n\nB (+500): Correta.\n\nC (+300): Usou W como Q.\n\nD (-500): Inverteu os sinais.\n\nE (-1100): Inverteu e somou"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254247-57-bf8b207c",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: C (a temperatura diminui e o gás realiza trabalho)\nExplicação: Transformação adiabática (Q = 0): ΔU = -W. Se o gás expande, W > 0, então ΔU < 0, a temperatura diminui.\n\nAnálise das alternativas:\n\nA (aumenta e realiz",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      ": Se expande, T diminui.\n\nB (diminui e recebe calor): Adiabática não troca calor.\n\nC (diminui e realiza): Correta.\n\nD (aumenta e recebe): Inverte tudo.\n\nE (constante): Isotérmica",
+      ": Inverte tudo.\n\nE (constante): Isotérmica"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254248-68-1ccccc6a",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: C (destrutiva, com amplitude nul",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Explicação: Diferença de fase π rad (180°) significa que as ondas estão em oposição de fase. Interferência destrutiva total (amplitude nula) se as amplitudes forem iguais.\n\nAnálise das alternativas:\n\nA (construtiva máxima): Diferença 0 ou 2π.\n\nB (construtiva mínima): Não existe.\n\nC (destrutiva nula): Correta.\n\nD (destrutiva reduzida): Seria se amplitudes diferentes.\n\nE (nenhuma): Sempre ocorre"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254250-71-ffaf61dd",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: C (548 Hz)\nExplicação: Efeito Doppler com fonte em movimento em direção ao observador: f' = f·(v_som/(v_som - v_fonte)) = 500·(340/(340-30)) = 500·(340/310) = 500·1,0968 = 548,4 Hz.\n\nAnálise das alternativas:\n\nA (452): Fonte se afastando.\n\nB (500): Sem movimento.\n\nC (548): Correta.\n\nD (586): Usaria v_som = 330.\n\nE (612): Usaria v_fonte = 50",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      ") = 500·(340/(340-30)) = 500·(340/310) = 500·1,0968 = 548,4 Hz.\n\nAnálise das alternativas:\n\nA (452): Fonte se afastando.\n\nB (500): Sem movimento.\n\nC (548): Correta.\n\nD (586): Usaria v_som = 330.\n\nE (612): Usaria v_fonte = 50"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254250-74-99e2ce47",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: A (construtiva, pois a diferença de caminho é múltiplo par do comprimento de ond",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Explicação: Δx = 3 cm, λ = 2 cm. Δx/λ = 1,5. Isso não é múltiplo inteiro. Para interferência construtiva, Δx = k·λ (k inteiro). 1,5λ não é inteiro. Na verdade, 3 cm = 1,5·2 cm, então é 1,5λ. Isso é interferência destrutiva, pois a diferença é múltiplo ímpar de λ/2. O"
+    ],
+    "correta": "Explicação: Δx = 3 cm, λ = 2 cm. Δx/λ = 1,5. Isso não é múltiplo inteiro. Para interferência construtiva, Δx = k·λ (k inteiro). 1,5λ não é inteiro. Na verdade, 3 cm = 1,5·2 cm, então é 1,5λ. Isso é interferência destrutiva, pois a diferença é múltiplo ímpar de λ/2. O",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779974254252-83-d154a584",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: D (15 cm, real e invertid",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Explicação: Espelho côncavo: f = 10 cm, p = 30 cm. Equação de Gauss: 1/f = 1/p + 1/p' → 1/10 = 1/30 + 1/p' → 1/p' = 1/10 - 1/30 = (3-1)/30 = 2/30 = 1/15 → p' = 15 cm (positivo, imagem real). Aumento: A = -p'/p = -15/30 = -0,5 (invertida e menor).\n\nAnálise das alternativas:\n\nA (7,5 virtual e direita): p' negativo.\n\nB (7,5 real e invertida): p' = 7,5? Não.\n\nC (15 virtual e direita): sinal errado.\n\nD (15 real e invertida): Correta.\n\nE (20 real e invertida): p' = 20? Não"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: D"
+  },
+  {
+    "id": "native-import-1779974254256-90-5c8d6064",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: B (divergentes de distância focal 50 cm)\nExplicação: Miopia: ponto remoto a 50 cm. A lente deve formar imagem de um objeto no infinito no ponto remoto. f = -p' = -50 cm (negativo, lente divergente).\n\nAnálise das alternativas:\n\nA (convergentes 50): Para hipermetropia.\n\nB (divergentes 50): Correta.\n\nC (convergentes 25): f errada.\n\nD (divergentes 25): f errada.\n\nE (convergentes 100): f errada",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Análise das alternativas:\n\nA (convergentes 50): Para hipermetropia.\n\nB (divergentes 50): Correta.\n\nC (convergentes 25): f errada.\n\nD (divergentes 25): f errada.\n\nE (convergentes 100): f errada"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254258-93-2cf10d57",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: B (o índice de refração do prisma depende da frequência da luz)\nExplicação: A dispersão da luz branca ocorre porque o índice de refração do material varia com a frequência (ou comprimento de ond",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "da luz. Esse fenômeno é chamado de dispersão cromática.\n\nAnálise das alternativas:\n\nA (velocidade no vácuo depende da cor): Falso, no vácuo é constante.\n\nB (índice de refração depende da frequência): Correta.\n\nC (prisma funciona como lente): Não.\n\nD (reflexão interna total separa as cores): Não.\n\nE (difração): Fenômeno diferente",
+      ": Não.\n\nD (reflexão interna total separa as cores): Não.\n\nE (difração): Fenômeno diferente"
+    ],
+    "correta": ": Não.\n\nD (reflexão interna total separa as cores): Não.\n\nE (difração): Fenômeno diferente",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254259-95-18395876",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: B (50 mm)\nExplicação: Para objeto no infinito, a imagem se forma no plano focal da lente. A distância da lente ao filme deve ser igual à distância focal: 50 mm.\n\nAnálise das alternativas:\n\nA (25): Metade.\n\nB (50): Correta.\n\nC (75): Dobro? Não.\n\nD (100): Muito além.\n\nE (depende): Não depende do tamanho do objeto",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      ": Não depende do tamanho do objeto"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254260-99-5d88a7e1",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: B (4 × 10⁴ N/C)\nExplicação: E = k·|Q|/d² = 9×10⁹·4×10⁻⁶/(0,3)² = 9×10⁹·4×10⁻⁶/0,09 = 36×10³/0,09 = 400×10³ = 4×10⁵ N/C? 36×10³/0,09 = 400×10³ = 4×10⁵ N/C. Alternativa seria 4×10⁵. O",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Explicação: E = k·|Q|/d² = 9×10⁹·4×10⁻⁶/(0,3)² = 9×10⁹·4×10⁻⁶/0,09 = 36×10³/0,09 = 400×10³ = 4×10⁵ N/C? 36×10³/0,09 = 400×10³ = 4×10⁵ N/C. Alternativa seria 4×10⁵. O"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254261-105-c78c5f7d",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: A (1,2 × 10⁻⁴ C)\nExplicação: Q = C·V = 10×10⁻⁶·12 = 1,2×10⁻⁴ C.\n\nAnálise das alternativas:\n\nA (1,2×10⁻⁴): Correta.\n\nB (1,2×10⁻⁵): C = 1 μF.\n\nC (1,2×10⁻³): V = 120.\n\nD (2,4×10⁻⁴): C = 20 μF.\n\nE (2,4×10⁻³): C = 200 μF.\n\nEletrodinâmica (Questões 106-120)",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Explicação: Q = C·V = 10×10⁻⁶·12 = 1,2×10⁻⁴ C.\n\nAnálise das alternativas:\n\nA (1,2×10⁻⁴): Correta.\n\nB (1,2×10⁻⁵): C = 1 μF.\n\nC (1,2×10⁻³): V = 120.\n\nD (2,4×10⁻⁴): C = 20 μF.\n\nE (2,4×10⁻³): C = 200 μF.\n\nEletrodinâmica (Questões 106-120)"
+    ],
+    "correta": "Explicação: Q = C·V = 10×10⁻⁶·12 = 1,2×10⁻⁴ C.\n\nAnálise das alternativas:\n\nA (1,2×10⁻⁴): Correta.\n\nB (1,2×10⁻⁵): C = 1 μF.\n\nC (1,2×10⁻³): V = 120.\n\nD (2,4×10⁻⁴): C = 20 μF.\n\nE (2,4×10⁻³): C = 200 μF.\n\nEletrodinâmica (Questões 106-120)",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779974254261-109-3b9037c0",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: A (2 Ω, 9 A e 3",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Explicação: 1/R_eq = 1/6 + 1/3 = 1/6 + 2/6 = 3/6 = 1/2 → R_eq = 2 Ω. I_total = V/R_eq = 18/2 = 9 A. I_6Ω = V/R = 18/6 = 3 A. (I_3Ω = 18/3 = 6 A)\n\nAnálise das alternativas:\n\nA (2, 9, 3): Correta.\n\nB (2, 9, 6): I_6Ω seria 6? Não, 6 A é no de 3 Ω.\n\nC (9, 2, 0,67): R_eq errada.\n\nD (9, 2, 1,33): Tudo errado.\n\nE (2, 3, 1): I_total errada"
+    ],
+    "correta": "Explicação: 1/R_eq = 1/6 + 1/3 = 1/6 + 2/6 = 3/6 = 1/2 → R_eq = 2 Ω. I_total = V/R_eq = 18/2 = 9 A. I_6Ω = V/R = 18/6 = 3 A. (I_3Ω = 18/3 = 6 A)\n\nAnálise das alternativas:\n\nA (2, 9, 3): Correta.\n\nB (2, 9, 6): I_6Ω seria 6? Não, 6 A é no de 3 Ω.\n\nC (9, 2, 0,67): R_eq errada.\n\nD (9, 2, 1,33): Tudo errado.\n\nE (2, 3, 1): I_total errada",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779974254261-110-6ca0a53c",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: A (2 Ω e 4",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Explicação: 1/R_eq = 1/4 + 1/6 + 1/12 = (3+2+1)/12 = 6/12 = 1/2 → R_eq = 2 Ω. A tensão na associação é V = R_eq·I_total = 2·12 = 24 V. I_6Ω = V/R = 24/6 = 4 A.\n\nAnálise das alternativas:\n\nA (2 e 4): Correta.\n\nB (2 e 6): I_6Ω = 6? Seria se V = 36.\n\nC (4 e 4): R_eq errada.\n\nD (4 e 6): Ambos errados.\n\nE (22 e 2): R_eq absurda"
+    ],
+    "correta": "Explicação: 1/R_eq = 1/4 + 1/6 + 1/12 = (3+2+1)/12 = 6/12 = 1/2 → R_eq = 2 Ω. A tensão na associação é V = R_eq·I_total = 2·12 = 24 V. I_6Ω = V/R = 24/6 = 4 A.\n\nAnálise das alternativas:\n\nA (2 e 4): Correta.\n\nB (2 e 6): I_6Ω = 6? Seria se V = 36.\n\nC (4 e 4): R_eq errada.\n\nD (4 e 6): Ambos errados.\n\nE (22 e 2): R_eq absurda",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779974254262-112-cababeed",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: C (240 Ω e 0,25",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Explicação: P = V²/R → R = V²/P = 120²/60 = 14400/60 = 240 Ω. I = P/V = 60/120 = 0,5 A? 60/120 = 0,5 A. A alternativa C diz 0,25 A, que é metade. O cálculo correto: I = V/R = 120/240 = 0,5 A. Portanto, a corrente é 0,5 A. A alternativa que tem 240 Ω e 0,5 A não existe. A opção C tem 240 Ω e 0,25 A. Há erro. O"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254262-113-1dd7fec7",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: A (8 Ω e 3",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Explicação: Quatro resistores de 8 Ω em um quadrado, ligados entre vértices opostos. Cada caminho entre os vértices tem dois resistores em série (8+8=16 Ω) em paralelo com o outro caminho também de 16 Ω. R_eq = (16·16)/(16+16) = 256/32 = 8 Ω. I = V/R_eq = 24/8 = 3 A.\n\nAnálise das alternativas:\n\nA (8 e 3): Correta.\n\nB (16 e 1,5): R_eq = 16? Não.\n\nC (4 e 6): R_eq = 4? Não.\n\nD (2 e 12): R_eq = 2? Não.\n\nE (32 e 0,75): R_eq = 32? Não"
+    ],
+    "correta": "Explicação: Quatro resistores de 8 Ω em um quadrado, ligados entre vértices opostos. Cada caminho entre os vértices tem dois resistores em série (8+8=16 Ω) em paralelo com o outro caminho também de 16 Ω. R_eq = (16·16)/(16+16) = 256/32 = 8 Ω. I = V/R_eq = 24/8 = 3 A.\n\nAnálise das alternativas:\n\nA (8 e 3): Correta.\n\nB (16 e 1,5): R_eq = 16? Não.\n\nC (4 e 6): R_eq = 4? Não.\n\nD (2 e 12): R_eq = 2? Não.\n\nE (32 e 0,75): R_eq = 32? Não",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779974254262-115-16f68e85",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: D (2,5",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Explicação: Geradores em série: ε_eq = 6+6 = 12 V, r_eq = 0,5+0,5 = 1 Ω. I = ε_eq/(R + r_eq) = 12/(4+1) = 12/5 = 2,4 A ≈ 2,5 A.\n\nAnálise das alternativas:\n\nA (1): Usaria R = 11.\n\nB (1,5): Usaria ε_eq = 9.\n\nC (2): Usaria r_eq = 2.\n\nD (2,5): Correta (aproximada).\n\nE (3): Usaria R = 3"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: D"
+  },
+  {
+    "id": "native-import-1779974254263-118-fb0f15bd",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: D (2 A e 1,2",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Explicação: Paralelo 20//30: 1/R_p = 1/20 + 1/30 = (3+2)/60 = 5/60 = 1/12 → R_p = 12 Ω. R_total = 12 + 10 = 22 Ω. I_total = V/R_total = 60/22 ≈ 2,73 A. Isso não bate com as alternativas. Recalculando: R_p = (20·30)/(20+30) = 600/50 = 12 Ω. R_total = 12 + 10 = 22 Ω. I_total = 60/22 ≈ 2,73 A. Alternativa D (2 A e 1,2 A) está com valores aproximados. Tensão no paralelo: V_p = R_p·I_total = 12·2,73 ≈ 32,8 V. I_20Ω = V_p/20 = 32,8/20 ≈ 1,64 A. O"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: D"
+  },
+  {
+    "id": "native-import-1779974254263-119-49a1cf80",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: B (50 V e 0,5",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Explicação: P = V²/R → V = √(P·R) = √(25·100) = √2500 = 50 V. I = V/R = 50/100 = 0,5 A.\n\nAnálise das alternativas:\n\nA (25 e 0,25): P = 6,25 W.\n\nB (50 e 0,5): Correta.\n\nC (75 e 0,75): P = 56,25 W.\n\nD (100 e 1): P = 100 W.\n\nE (200 e 2): P = 400 W"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254263-123-621b95a0",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: D (5,0 × 10⁻³ T)\nExplicação: B = μ₀·N·I/L = 4π×10⁻⁷·400·2/0,2 = 4π×10⁻⁷·800/0,2 = 4π×10⁻⁷·4000 = 16000π×10⁻⁷ = 1,6π×10⁻³ ≈ 5,0×10⁻³ T (usando π≈3,14).\n\nAnálise das alternativas:\n\nA (1,6×10⁻³): Sem π.\n\nB (3,2×10⁻³): Metade.\n\nC (4,8×10⁻³): 1,5π.\n\nD (5,0×10⁻³): Correta (aproximad",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "E (6,4×10⁻³): 2π"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: D"
+  },
+  {
+    "id": "native-import-1779974254265-125-1cb1d646",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: B (4 × 10⁴ m/s)\nExplicação: R = m·v/(q·B) → v = q·B·R/m = 1,6×10⁻¹⁹·0,5·0,1/(2×10⁻¹⁵) = 1,6×10⁻¹⁹·0,05/(2×10⁻¹⁵) = (8×10⁻²¹)/(2×10⁻¹⁵) = 4×10⁻⁶ m/s? Isso é muito baixo. Recalculando: q·B·R = 1,6×10⁻¹⁹·0,5·0,1 = 8×10⁻²¹. Dividindo por m = 2×10⁻¹⁵: v = 4×10⁻⁶ m/s. Alternativa B é 4×10⁴, que é 10¹⁰ vezes maior. Há erro de potência. Provavelmente a massa é 2×10⁻²⁵ kg. Com m = 2×10⁻²⁵: v = 8×10⁻²¹/2×10⁻²⁵ = 4×10⁴ m/s. Então a massa deveria ser 2×10⁻²⁵ kg, não 2×10⁻¹⁵",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "→ v = q·B·R/m = 1,6×10⁻¹⁹·0,5·0,1/(2×10⁻¹⁵) = 1,6×10⁻¹⁹·0,05/(2×10⁻¹⁵) = (8×10⁻²¹)/(2×10⁻¹⁵) = 4×10⁻⁶ m/s? Isso é muito baixo. Recalculando: q·B·R = 1,6×10⁻¹⁹·0,5·0,1 = 8×10⁻²¹. Dividindo por m = 2×10⁻¹⁵: v = 4×10⁻⁶ m/s. Alternativa B é 4×10⁴, que é 10¹⁰ vezes maior. Há erro de potência. Provavelmente a massa é 2×10⁻²⁵ kg. Com m = 2×10⁻²⁵: v = 8×10⁻²¹/2×10⁻²⁵ = 4×10⁴ m/s. Então a massa deveria ser 2×10⁻²⁵ kg, não 2×10⁻¹⁵"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254266-129-d19ac00f",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: C (8 × 10⁻⁵ N/m, atrativ",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Explicação: Força por unidade de comprimento: F/L = μ₀·I₁·I₂/(2πd) = 4π×10⁻⁷·5·8/(2π·0,1) = (4π×10⁻⁷·40)/(0,2π) = (160π×10⁻⁷)/(0,2π) = 800×10⁻⁷ = 8×10⁻⁵ N/m. Correntes no mesmo sentido: atração.\n\nAnálise das alternativas:\n\nA (4×10⁻⁵, atrativa): Metade.\n\nB (4×10⁻⁵, repulsiva): Metade e sinal errado.\n\nC (8×10⁻⁵, atrativa): Correta.\n\nD (8×10⁻⁵, repulsiva): Sinal errado.\n\nE (2×10⁻⁵, atrativa): 1/4 da força",
+      "= 4π×10⁻⁷·5·8/(2π·0,1) = (4π×10⁻⁷·40)/(0,2π) = (160π×10⁻⁷)/(0,2π) = 800×10⁻⁷ = 8×10⁻⁵ N/m. Correntes no mesmo sentido: atração.\n\nAnálise das alternativas:\n\nA (4×10⁻⁵, atrativa): Metade.\n\nB (4×10⁻⁵, repulsiva): Metade e sinal errado.\n\nC (8×10⁻⁵, atrativa): Correta.\n\nD (8×10⁻⁵, repulsiva): Sinal errado.\n\nE (2×10⁻⁵, atrativa): 1/4 da força"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254267-130-a4a78d49",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: C (4,2 cm)\nExplicação: Energia cinética = q·ΔV → (1/2)mv² = q·ΔV → v = √(2qΔV/m) = √(2·1,6×10⁻¹⁹·1000/1,67×10⁻²⁷) = √(3,2×10⁻¹⁶/1,67×10⁻²⁷) = √(1,92×10¹¹) = 4,38×10⁵ m/s. Raio: R = m·v/(q·B) = 1,67×10⁻²⁷·4,38×10⁵/(1,6×10⁻¹⁹·0,2) = (7,31×10⁻²²)/(3,2×10⁻²⁰) = 0,0228 m = 2,28 cm. Alternativa B (2,8 cm) é a mais próxima. O",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "= 1,67×10⁻²⁷·4,38×10⁵/(1,6×10⁻¹⁹·0,2) = (7,31×10⁻²²)/(3,2×10⁻²⁰) = 0,0228 m = 2,28 cm. Alternativa B (2,8 cm) é a mais próxima. O"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254270-146-3b295f10",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: B (uniformemente variado, com aceleração positiv",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Explicação: Gráfico S × t com concavidade para cima indica aceleração positiva (movimento acelerado). É um MUV.\n\nAnálise das alternativas:\n\nA (uniforme): Gráfico seria reta.\n\nB (MUV, a > 0): Correta.\n\nC (MUV, a < 0): Concavidade para baixo.\n\nD (MUV, v₀ = 0): Pode ser, mas não necessariamente.\n\nE (retrógrado e acelerado): Retrógrado teria v < 0",
+      ": Gráfico seria reta.\n\nB (MUV, a > 0): Correta.\n\nC (MUV, a < 0): Concavidade para baixo.\n\nD (MUV, v₀ = 0): Pode ser, mas não necessariamente.\n\nE (retrógrado e acelerado): Retrógrado teria v < 0"
+    ],
+    "correta": ": Gráfico seria reta.\n\nB (MUV, a > 0): Correta.\n\nC (MUV, a < 0): Concavidade para baixo.\n\nD (MUV, v₀ = 0): Pode ser, mas não necessariamente.\n\nE (retrógrado e acelerado): Retrógrado teria v < 0",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254270-147-1539e507",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: D (-2 m/s² e 100 m)\nExplicação: v₀ = 20 m/s, t = 10 s até parar. a = Δv/Δt = -20/10 = -2 m/s². Distância = área do triângulo = (base × altur",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "/2 = (10 × 20)/2 = 100 m.\n\nAnálise das alternativas:\n\nA (-1 e 50): a e d errados.\n\nB (-1 e 100): a errado.\n\nC (-2 e 50): d errado.\n\nD (-2 e 100): Correta.\n\nE (-2 e 200): d = base × altura sem /2"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: D"
+  },
+  {
+    "id": "native-import-1779974254270-148-d94ac45c",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: C (soma das áreas do retângulo e do triângulo)\nExplicação: Trabalho é a área sob a curva F × d. A área total é a soma das áreas do retângulo (0 a 10 m) e do triângulo (10 a 20 m).\n\nAnálise das alternativas:\n\nA (área do retângulo): Ignora o triângulo.\n\nB (área do triângulo): Ignora o retângulo.\n\nC (soma das áreas): Correta.\n\nD (diferenç",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      ": Não é.\n\nE (produto): Não é"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254271-150-54f3d5b9",
+    "subject": "Física",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: B (mudanças de estado físico, onde a temperatura permanece constante)\nExplicação: Patamares horizontais em gráficos de aquecimento indicam mudanças de fase, onde o calor é usado para a transformação, sem variação de temperatura.\n\nAnálise das alternativas:\n\nA (aquecendo rapidamente): Inclinação seria maior.\n\nB (mudanças de estado): Correta.\n\nC (calor cedido): Seria resfriamento.\n\nD (capacidade térmic",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      ": Relaciona-se com inclinação.\n\nE (calor específico): Relaciona-se com inclinação",
+      "Explicação: Patamares horizontais em gráficos de aquecimento indicam mudanças de fase, onde o calor é usado para a transformação, sem variação de temperatura.\n\nAnálise das alternativas:\n\nA (aquecendo rapidamente): Inclinação seria maior.\n\nB (mudanças de estado): Correta.\n\nC (calor cedido): Seria resfriamento.\n\nD (capacidade térmica): Relaciona-se com inclinação.\n\nE (calor específico): Relaciona-se com inclinação"
+    ],
+    "correta": "Explicação: Patamares horizontais em gráficos de aquecimento indicam mudanças de fase, onde o calor é usado para a transformação, sem variação de temperatura.\n\nAnálise das alternativas:\n\nA (aquecendo rapidamente): Inclinação seria maior.\n\nB (mudanças de estado): Correta.\n\nC (calor cedido): Seria resfriamento.\n\nD (capacidade térmica): Relaciona-se com inclinação.\n\nE (calor específico): Relaciona-se com inclinação",
+    "explicacao": "Gabarito oficial: B"
   }
 ]

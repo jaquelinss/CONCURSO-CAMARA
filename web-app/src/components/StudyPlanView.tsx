@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { db } from '../lib/firebase';
 import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
-import { CheckCircle, RotateCcw, Calendar, Clock, BookOpen, Trash2, ChevronDown, ChevronUp, Trophy, CirclePlay, Link, X } from 'lucide-react';
+import { CheckCircle, RotateCcw, Calendar, Clock, BookOpen, Trash2, ChevronDown, ChevronUp, Trophy, CirclePlay, Link, X, Sparkles, Search, Loader2, Undo2 } from 'lucide-react';
+import { suggestVideoSearches, suggestRescheduleDate } from '../lib/gemini';
 import { format, isToday, isBefore, startOfDay, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -17,15 +18,48 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
   const [updating, setUpdating] = useState<string | null>(null);
   const [editingYoutube, setEditingYoutube] = useState<string | null>(null);
   const [youtubeInput, setYoutubeInput] = useState('');
+  const [loadingAi, setLoadingAi] = useState<Record<string, boolean>>({});
+  const [aiSuggestions, setAiSuggestions] = useState<Record<string, any[]>>({});
 
-  const updateBlockYoutube = async (dayDate: string, blockId: string, url: string) => {
+  const addYoutubeUrl = async (dayDate: string, blockId: string, url: string) => {
+    if (!user || !url.trim()) return;
+    try {
+      const newSchedule = schedule.map((day: any) => {
+        if (day.date !== dayDate) return day;
+        return {
+          ...day,
+          blocks: day.blocks.map((b: any) => {
+            if (b.id !== blockId) return b;
+            const currentUrls = b.youtubeUrls || (b.youtubeUrl ? [b.youtubeUrl] : []);
+            if (currentUrls.includes(url.trim())) return b; // avoid duplicates
+            return { ...b, youtubeUrls: [...currentUrls, url.trim()] };
+          }),
+        };
+      });
+      const planRef = doc(db, 'users', user.uid, 'studyPlans', plan.id);
+      await updateDoc(planRef, { schedule: newSchedule });
+      plan.schedule = newSchedule;
+      onUpdate();
+      window.dispatchEvent(new Event('study-plan-updated'));
+      setYoutubeInput(''); // clear input after adding
+    } catch (err) {
+      console.error('Erro ao salvar link do YouTube:', err);
+    }
+  };
+
+  const removeYoutubeUrl = async (dayDate: string, blockId: string, urlToRemove: string) => {
     if (!user) return;
     try {
       const newSchedule = schedule.map((day: any) => {
         if (day.date !== dayDate) return day;
         return {
           ...day,
-          blocks: day.blocks.map((b: any) => b.id === blockId ? { ...b, youtubeUrl: url || null } : b),
+          blocks: day.blocks.map((b: any) => {
+            if (b.id !== blockId) return b;
+            const currentUrls = b.youtubeUrls || (b.youtubeUrl ? [b.youtubeUrl] : []);
+            const newUrls = currentUrls.filter((u: string) => u !== urlToRemove);
+            return { ...b, youtubeUrls: newUrls };
+          }),
         };
       });
       const planRef = doc(db, 'users', user.uid, 'studyPlans', plan.id);
@@ -34,21 +68,35 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
       onUpdate();
       window.dispatchEvent(new Event('study-plan-updated'));
     } catch (err) {
-      console.error('Erro ao salvar link do YouTube:', err);
+      console.error('Erro ao remover link do YouTube:', err);
     }
   };
 
-  const playYoutubeVideo = (block: any) => {
-    if (!block.youtubeUrl) return;
+  const playYoutubeVideo = (url: string, block: any) => {
+    if (!url) return;
     window.dispatchEvent(new CustomEvent('play-youtube-video', {
-      detail: { url: block.youtubeUrl, topic: block.topic, subject: block.subject }
+      detail: { url: url, topic: block.topic, subject: block.subject }
     }));
+  };
+
+  const handleAiSearch = async (block: any) => {
+    if (!user) return;
+    setLoadingAi(prev => ({ ...prev, [block.id]: true }));
+    try {
+      const res = await suggestVideoSearches(block.subject, block.topic, (user as any).apiKey || '');
+      setAiSuggestions(prev => ({ ...prev, [block.id]: res.searches || [] }));
+    } catch (err) {
+      console.error('Erro ao buscar sugestões:', err);
+      alert('Erro ao gerar buscas. Verifique sua chave API.');
+    } finally {
+      setLoadingAi(prev => ({ ...prev, [block.id]: false }));
+    }
   };
 
   const schedule: any[] = plan.schedule || [];
 
   // Stats
-  const totalBlocks = schedule.reduce((acc: number, day: any) => acc + (day.blocks?.length || 0), 0);
+  const totalBlocks = schedule.reduce((acc: number, day: any) => acc + (day.blocks?.filter((b: any) => b.status !== 'rescheduled').length || 0), 0);
   const completedBlocks = schedule.reduce((acc: number, day: any) =>
     acc + (day.blocks?.filter((b: any) => b.status === 'completed').length || 0), 0);
   const progressPercent = totalBlocks > 0 ? Math.round((completedBlocks / totalBlocks) * 100) : 0;
@@ -90,27 +138,53 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
       const block = schedule[dayIdx]?.blocks.find((b: any) => b.id === blockId);
       if (!block || dayIdx < 0) return;
 
-      // Find the next available day
-      let nextDayIdx = -1;
-      for (let i = dayIdx + 1; i < schedule.length; i++) {
-        nextDayIdx = i;
-        break;
-      }
-
-      if (nextDayIdx < 0) {
+      const futureSchedule = schedule.slice(dayIdx + 1);
+      if (futureSchedule.length === 0) {
         alert('Não há dias futuros disponíveis no plano para reagendar.');
         setUpdating(null);
         return;
       }
 
+      // IA escolhe o dia
+      const apiKey = (user as any).apiKey || '';
+      let nextDate = futureSchedule[0].date; // Fallback
+      if (apiKey) {
+        try {
+          const res = await suggestRescheduleDate(futureSchedule, block, apiKey);
+          if (res.suggestedDate && futureSchedule.some((d: any) => d.date === res.suggestedDate)) {
+            nextDate = res.suggestedDate;
+          }
+        } catch (e) {
+          console.error('Erro na IA ao reagendar, usando o próximo dia', e);
+        }
+      }
+
+      const nextDayIdx = schedule.findIndex((d: any) => d.date === nextDate);
+      if (nextDayIdx < 0) {
+        setUpdating(null);
+        return;
+      }
+
       const newSchedule = [...schedule];
-      // Remove from current day
+      
+      // Mantém no dia original, mas marcado como reagendado
       newSchedule[dayIdx] = {
         ...newSchedule[dayIdx],
-        blocks: newSchedule[dayIdx].blocks.filter((b: any) => b.id !== blockId),
+        blocks: newSchedule[dayIdx].blocks.map((b: any) => 
+          b.id === blockId ? { ...b, status: 'rescheduled', rescheduledTo: nextDate } : b
+        ),
       };
-      // Add to next day
-      const rescheduledBlock = { ...block, id: `${newSchedule[nextDayIdx].date}-r${Date.now()}`, status: 'pending' };
+      
+      // Adiciona cópia no dia de destino
+      const newId = `${nextDate}-r${Date.now()}`;
+      const rescheduledBlock = { 
+        ...block, 
+        id: newId, 
+        status: 'pending',
+        rescheduledFrom: dayDate,
+        originalBlockId: blockId
+      };
+      
       newSchedule[nextDayIdx] = {
         ...newSchedule[nextDayIdx],
         blocks: [...newSchedule[nextDayIdx].blocks, rescheduledBlock],
@@ -122,6 +196,43 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
       onUpdate();
     } catch (err) {
       console.error('Erro ao reagendar:', err);
+    } finally {
+      setUpdating(null);
+    }
+  };
+
+  const cancelReschedule = async (dayDate: string, blockId: string, rescheduledTo: string) => {
+    if (!user) return;
+    setUpdating(blockId);
+    try {
+      const newSchedule = [...schedule];
+      
+      // Volta o bloco original para pending e remove rescheduledTo
+      const origDayIdx = newSchedule.findIndex((d: any) => d.date === dayDate);
+      if (origDayIdx >= 0) {
+        newSchedule[origDayIdx] = {
+          ...newSchedule[origDayIdx],
+          blocks: newSchedule[origDayIdx].blocks.map((b: any) => 
+            b.id === blockId ? { ...b, status: 'pending', rescheduledTo: null } : b
+          )
+        };
+      }
+
+      // Remove a cópia no dia de destino
+      const targetDayIdx = newSchedule.findIndex((d: any) => d.date === rescheduledTo);
+      if (targetDayIdx >= 0) {
+        newSchedule[targetDayIdx] = {
+          ...newSchedule[targetDayIdx],
+          blocks: newSchedule[targetDayIdx].blocks.filter((b: any) => b.originalBlockId !== blockId)
+        };
+      }
+
+      const planRef = doc(db, 'users', user.uid, 'studyPlans', plan.id);
+      await updateDoc(planRef, { schedule: newSchedule });
+      plan.schedule = newSchedule;
+      onUpdate();
+    } catch (err) {
+      console.error('Erro ao cancelar reagendamento:', err);
     } finally {
       setUpdating(null);
     }
@@ -140,9 +251,10 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
 
   const getDayStatus = (day: any) => {
     const blocks = day.blocks || [];
-    if (blocks.length === 0) return 'empty';
-    const allDone = blocks.every((b: any) => b.status === 'completed');
-    const someDone = blocks.some((b: any) => b.status === 'completed');
+    const activeBlocks = blocks.filter((b: any) => b.status !== 'rescheduled');
+    if (activeBlocks.length === 0) return 'empty';
+    const allDone = activeBlocks.every((b: any) => b.status === 'completed');
+    const someDone = activeBlocks.some((b: any) => b.status === 'completed');
     if (allDone) return 'completed';
     if (someDone) return 'partial';
     const dayDate = parseISO(day.date);
@@ -247,111 +359,193 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
                       className={`flex items-center justify-between p-3 rounded-xl transition-all ${
                         block.status === 'completed'
                           ? 'bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800'
+                          : block.status === 'rescheduled'
+                          ? 'bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 opacity-60'
                           : 'bg-white dark:bg-gray-700/50 border border-gray-100 dark:border-gray-600'
                       }`}
                     >
-                      <div className="flex items-center gap-3 min-w-0">
+                      <div className="flex items-center gap-3 min-w-0 w-full">
                         {block.status === 'completed' ? (
                           <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                        ) : block.status === 'rescheduled' ? (
+                          <RotateCcw className="w-5 h-5 text-gray-400 flex-shrink-0" />
                         ) : (
                           <div className="w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-500 flex-shrink-0" />
                         )}
-                        <div className="min-w-0">
-                          <p className={`font-semibold text-sm truncate ${block.status === 'completed' ? 'line-through text-gray-400' : 'text-gray-900 dark:text-white'}`}>
+                        <div className="min-w-0 flex-grow">
+                          <p className={`font-semibold text-sm truncate ${block.status === 'completed' || block.status === 'rescheduled' ? 'line-through text-gray-400' : 'text-gray-900 dark:text-white'}`}>
                             {block.subject}
                           </p>
                           <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{block.topic} • {block.hours}h</p>
-                          {block.youtubeUrl && (
-                            <button
-                              onClick={() => playYoutubeVideo(block)}
-                              className="flex items-center gap-1 mt-1 text-[11px] text-red-600 hover:text-red-700 font-bold transition-colors"
-                              title="Assistir vídeo aula"
-                            >
-                              <CirclePlay className="w-3.5 h-3.5" />
-                              Assistir Vídeo Aula
-                            </button>
+                          
+                          {block.status === 'rescheduled' && block.rescheduledTo && (
+                            <p className="text-xs font-bold text-orange-500 dark:text-orange-400 mt-1">
+                              Aula reagendada para o dia {format(parseISO(block.rescheduledTo), "dd/MM")}
+                            </p>
+                          )}
+
+                          {/* Múltiplos links de vídeo (Oculto se reagendado) */}
+                          {block.status !== 'rescheduled' && ((block.youtubeUrls && block.youtubeUrls.length > 0) || block.youtubeUrl) && (
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {(block.youtubeUrls || (block.youtubeUrl ? [block.youtubeUrl] : [])).map((url: string, idx: number) => (
+                                <button
+                                  key={idx}
+                                  onClick={() => playYoutubeVideo(url, block)}
+                                  className="flex items-center gap-1 text-[11px] bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 px-2 py-1 rounded-md hover:bg-red-100 dark:hover:bg-red-900/40 font-bold transition-colors"
+                                  title="Assistir vídeo aula"
+                                >
+                                  <CirclePlay className="w-3.5 h-3.5" />
+                                  Vídeo {idx + 1}
+                                </button>
+                              ))}
+                            </div>
                           )}
                         </div>
                       </div>
                       <div className="flex items-center gap-1 flex-shrink-0 ml-2">
-                        {block.status !== 'completed' && (
+                        {block.status === 'rescheduled' ? (
+                          <button
+                            onClick={() => cancelReschedule(day.date, block.id, block.rescheduledTo)}
+                            disabled={updating === block.id}
+                            className="p-1.5 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-sm"
+                            title="Cancelar reagendamento"
+                          >
+                            <Undo2 className="w-4 h-4" />
+                            <span className="text-[10px] font-bold">Cancelar</span>
+                          </button>
+                        ) : (
                           <>
+                            {block.status !== 'completed' && (
+                              <>
+                                <button
+                                  onClick={() => updateBlockStatus(day.date, block.id, 'completed')}
+                                  disabled={updating === block.id}
+                                  className="p-1.5 text-green-500 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg transition-colors"
+                                  title="Concluir"
+                                >
+                                  <CheckCircle className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => rescheduleBlock(day.date, block.id)}
+                                  disabled={updating === block.id}
+                                  className="p-1.5 text-orange-500 hover:bg-orange-100 dark:hover:bg-orange-900/30 rounded-lg transition-colors"
+                                  title="Reagendar"
+                                >
+                                  <RotateCcw className="w-4 h-4" />
+                                </button>
+                              </>
+                            )}
+                            {block.status === 'completed' && (
+                              <button
+                                onClick={() => updateBlockStatus(day.date, block.id, 'pending')}
+                                disabled={updating === block.id}
+                                className="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                                title="Desfazer"
+                              >
+                                <RotateCcw className="w-4 h-4" />
+                              </button>
+                            )}
                             <button
-                              onClick={() => updateBlockStatus(day.date, block.id, 'completed')}
-                              disabled={updating === block.id}
-                              className="p-1.5 text-green-500 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg transition-colors"
-                              title="Concluir"
+                              onClick={() => {
+                                if (editingYoutube === block.id) {
+                                  setEditingYoutube(null);
+                                } else {
+                                  setEditingYoutube(block.id);
+                                  setYoutubeInput(''); // Sempre abre vazio pra adicionar novo
+                                }
+                              }}
+                              className={`p-1.5 rounded-lg transition-colors ${(block.youtubeUrls?.length > 0 || block.youtubeUrl) ? 'text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20' : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                              title="Gerenciar vídeo aulas"
                             >
-                              <CheckCircle className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => rescheduleBlock(day.date, block.id)}
-                              disabled={updating === block.id}
-                              className="p-1.5 text-orange-500 hover:bg-orange-100 dark:hover:bg-orange-900/30 rounded-lg transition-colors"
-                              title="Reagendar para próximo dia"
-                            >
-                              <RotateCcw className="w-4 h-4" />
+                              <CirclePlay className="w-4 h-4" />
                             </button>
                           </>
                         )}
-                        {block.status === 'completed' && (
-                          <button
-                            onClick={() => updateBlockStatus(day.date, block.id, 'pending')}
-                            disabled={updating === block.id}
-                            className="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                            title="Desfazer"
-                          >
-                            <RotateCcw className="w-4 h-4" />
-                          </button>
-                        )}
-                        <button
-                          onClick={() => {
-                            if (editingYoutube === block.id) {
-                              setEditingYoutube(null);
-                            } else {
-                              setEditingYoutube(block.id);
-                              setYoutubeInput(block.youtubeUrl || '');
-                            }
-                          }}
-                          className={`p-1.5 rounded-lg transition-colors ${block.youtubeUrl ? 'text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20' : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
-                          title={block.youtubeUrl ? 'Editar link do YouTube' : 'Vincular aula do YouTube'}
-                        >
-                          <CirclePlay className="w-4 h-4" />
-                        </button>
                       </div>
                       {editingYoutube === block.id && (
-                        <div className="mt-2 flex items-center gap-2">
-                          <div className="relative flex-grow">
-                            <Link className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
-                            <input
-                              type="url"
-                              value={youtubeInput}
-                              onChange={(e) => setYoutubeInput(e.target.value)}
-                              placeholder="Cole o link do YouTube aqui..."
-                              className="w-full pl-8 pr-3 py-1.5 text-xs bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-400"
-                              autoFocus
-                            />
+                        <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700">
+                          
+                          {/* Lista de vídeos já adicionados */}
+                          {((block.youtubeUrls && block.youtubeUrls.length > 0) || block.youtubeUrl) && (
+                            <div className="mb-3 space-y-2">
+                              <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Vídeos Vinculados</p>
+                              {(block.youtubeUrls || (block.youtubeUrl ? [block.youtubeUrl] : [])).map((url: string, idx: number) => (
+                                <div key={idx} className="flex items-center gap-2 bg-white dark:bg-gray-800 p-2 rounded border border-gray-200 dark:border-gray-700">
+                                  <CirclePlay className="w-4 h-4 text-red-500 flex-shrink-0" />
+                                  <span className="text-xs text-gray-600 dark:text-gray-300 truncate flex-grow" title={url}>{url}</span>
+                                  <button
+                                    onClick={() => removeYoutubeUrl(day.date, block.id, url)}
+                                    className="p-1 text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
+                                    title="Remover link"
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Adicionar novo vídeo */}
+                          <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Vincular Novo Vídeo</p>
+                          <div className="flex flex-col sm:flex-row gap-2">
+                            <div className="relative flex-grow">
+                              <Link className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                              <input
+                                type="url"
+                                value={youtubeInput}
+                                onChange={(e) => setYoutubeInput(e.target.value)}
+                                placeholder="Cole o link do YouTube aqui..."
+                                className="w-full pl-8 pr-3 py-2 text-xs bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                              />
+                            </div>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => addYoutubeUrl(day.date, block.id, youtubeInput)}
+                                disabled={!youtubeInput.trim()}
+                                className="px-3 py-2 text-xs bg-indigo-600 text-white rounded-lg font-bold hover:bg-indigo-700 transition-colors disabled:opacity-50 whitespace-nowrap"
+                              >
+                                Adicionar
+                              </button>
+                              <button
+                                onClick={() => handleAiSearch(block)}
+                                disabled={loadingAi[block.id]}
+                                className="px-3 py-2 text-xs border border-indigo-200 text-indigo-700 bg-indigo-50 dark:bg-indigo-900/30 dark:border-indigo-800 dark:text-indigo-300 rounded-lg font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors whitespace-nowrap flex items-center gap-1.5"
+                              >
+                                {loadingAi[block.id] ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                                IA Busca
+                              </button>
+                            </div>
                           </div>
-                          <button
-                            onClick={() => {
-                              updateBlockYoutube(day.date, block.id, youtubeInput.trim());
-                              setEditingYoutube(null);
-                            }}
-                            className="px-2.5 py-1.5 text-xs bg-red-500 text-white rounded-lg font-bold hover:bg-red-600 transition-colors whitespace-nowrap"
-                          >
-                            Salvar
-                          </button>
-                          {block.youtubeUrl && (
-                            <button
-                              onClick={() => {
-                                updateBlockYoutube(day.date, block.id, '');
-                                setEditingYoutube(null);
-                              }}
-                              className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
-                              title="Remover link"
-                            >
-                              <X className="w-4 h-4" />
-                            </button>
+
+                          {/* Painel de sugestões da IA */}
+                          {aiSuggestions[block.id] && aiSuggestions[block.id].length > 0 && (
+                            <div className="mt-3 p-3 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800 rounded-lg">
+                              <p className="text-xs font-bold text-indigo-800 dark:text-indigo-300 mb-2 flex items-center gap-1">
+                                <Sparkles className="w-3.5 h-3.5" /> Buscas Sugeridas
+                              </p>
+                              <p className="text-xs text-indigo-600 dark:text-indigo-400 mb-3">
+                                Clique na busca para abrir o YouTube. Copie o link do vídeo desejado e cole no campo acima.
+                              </p>
+                              <div className="space-y-2">
+                                {aiSuggestions[block.id].map((sug: any, i: number) => (
+                                  <div key={i} className="bg-white dark:bg-gray-800 p-2 rounded shadow-sm border border-indigo-100 dark:border-indigo-800/50">
+                                    <a 
+                                      href={`https://www.youtube.com/results?search_query=${encodeURIComponent(sug.query)}`} 
+                                      target="_blank" 
+                                      rel="noopener noreferrer"
+                                      className="flex items-center justify-between group"
+                                    >
+                                      <span className="text-sm font-semibold text-gray-800 dark:text-gray-200 group-hover:text-red-500 transition-colors">
+                                        "{sug.query}"
+                                      </span>
+                                      <Search className="w-4 h-4 text-gray-400 group-hover:text-red-500" />
+                                    </a>
+                                    <p className="text-xs text-gray-500 mt-1">Foca em: {sug.topicsCovered}</p>
+                                    <p className="text-[10px] text-gray-400 italic mt-0.5">{sug.reason}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
                           )}
                         </div>
                       )}

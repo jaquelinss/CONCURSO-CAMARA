@@ -53,14 +53,20 @@ export const CustomSubjectsProvider: React.FC<{ children: React.ReactNode }> = (
     return () => unsubscribe();
   }, [user]);
 
+  // Map of subject synonyms to their canonical names
+  const SUBJECT_ALIASES: Record<string, string> = {
+    'Língua Portuguesa': 'Português',
+    'Lingua Portuguesa': 'Português',
+  };
+
   const getAllSubjectsByMode = (mode: 'Geral' | 'ENEM' | 'Concurso'): string[] => {
     const staticSubjects = getSubjectsByMode(mode);
     const userCustomSubjectsForMode = customSubjects
       .filter(s => s.mode === mode)
-      .map(s => s.id)
-      .filter(id => !staticSubjects.includes(id)); // avoid duplicates if any
+      .map(s => SUBJECT_ALIASES[s.id] || s.id) // normalize synonyms
+      .filter(id => !staticSubjects.includes(id)); // avoid duplicates
 
-    return [...staticSubjects, ...userCustomSubjectsForMode].sort();
+    return [...new Set([...staticSubjects, ...userCustomSubjectsForMode])].sort();
   };
 
   return (

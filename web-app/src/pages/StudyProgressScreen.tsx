@@ -3,7 +3,7 @@ import Navigation from '../components/Navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
 import { doc, getDoc, setDoc, serverTimestamp, collection, getDocs, query, where } from 'firebase/firestore';
-import { getSubjectsByMode, topicsBySubject, themes, defaultTheme, ENEM_TOPICS, BANCAS_TOPICS } from '../lib/constants';
+import { getSubjectsByMode, topicsBySubject, themes, defaultTheme } from '../lib/constants';
 import { ChevronDown, ChevronUp, Plus, Trash2, CheckCircle2, Circle } from 'lucide-react';
 
 interface ChecklistItem {
@@ -88,18 +88,6 @@ export default function StudyProgressScreen() {
       let defaultItems: ChecklistItem[] = [];
       
       const fixedTopics: ChecklistItem[] = [];
-      if (mode === 'ENEM' && ENEM_TOPICS[subject]) {
-        const title = 'Assuntos Mais Cobrados no ENEM';
-        ENEM_TOPICS[subject].forEach(st => {
-          fixedTopics.push({ id: `${title}___${st}`, topic: title, subTopic: st, checked: false });
-        });
-      } else if (mode === 'Concurso' && selectedBanca && BANCAS_TOPICS[selectedBanca] && BANCAS_TOPICS[selectedBanca][subject]) {
-        const title = `Assuntos Mais Cobrados ${selectedBanca}`;
-        BANCAS_TOPICS[selectedBanca][subject].forEach(st => {
-          fixedTopics.push({ id: `${title}___${st}`, topic: title, subTopic: st, checked: false });
-        });
-      }
-
       defaultItems = [...fixedTopics];
       
       Object.keys(topicsMap).forEach(topic => {
@@ -280,9 +268,8 @@ Certifique-se de que a ordem dos tópicos seja a melhor ordem lógica de aprendi
         }
       });
 
-      const currentFixedItems = items.filter(item => item.topic.startsWith('Assuntos Mais Cobrados'));
-      setItems([...currentFixedItems, ...newItems]);
-      saveProgress([...currentFixedItems, ...newItems], true);
+      setItems(newItems);
+      saveProgress(newItems, true);
       setIsAiGeneratedPlan(true);
       setExpandedTopics(newExpandedTopics);
       setIsAIModalOpen(false);

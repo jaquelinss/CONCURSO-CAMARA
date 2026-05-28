@@ -361,3 +361,64 @@ export const generateNoteTag = async (content: string, title: string, apiKey: st
     const response = await result.response;
     return response.text().trim();
 };
+
+export async function suggestVideoSearches(subject: string, topic: string, apiKey: string, modelName: string = 'gemini-2.5-flash') {
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const prompt = `Você é um curador de conteúdo educacional. Seu objetivo é ajudar um estudante a encontrar as melhores videoaulas no YouTube para um tópico específico de estudo.
+
+Matéria: ${subject}
+Tópico do Bloco: ${topic}
+
+Analise o tópico. Se for um tópico único e específico, gere 1 ou 2 buscas otimizadas para o YouTube.
+Se o tópico for muito amplo ou composto por vários subtópicos diferentes que dificilmente seriam bem ensinados em um único vídeo, divida em buscas separadas (máximo 3 buscas).
+
+Gere buscas que retornem videoaulas completas e de qualidade (use palavras-chave como "aula", "concurso", "curso completo", etc, se apropriado).
+
+A resposta DEVE ser estritamente um objeto JSON com o formato:
+{
+  "searches": [
+    {
+      "query": "texto da busca otimizada para colar no youtube",
+      "topicsCovered": "Quais subtópicos esta busca cobre",
+      "reason": "Por que esta busca é sugerida"
+    }
+  ]
+}`;
+    return await callGemini(genAI, prompt, false, modelName);
+}
+
+export async function suggestRescheduleDate(futureSchedule: any[], block: any, apiKey: string, modelName: string = 'gemini-2.5-flash') {
+  if (!apiKey) throw new Error("API key is required");
+  const genAI = new GoogleGenerativeAI(apiKey);
+
+  // Limitar para não exceder tokens (próximos 21 dias é razoável)
+  const contextSchedule = futureSchedule.slice(0, 21).map(day => ({
+    date: day.date,
+    totalBlocks: day.blocks?.length || 0,
+    totalHours: day.blocks?.reduce((acc: number, b: any) => acc + (b.hours || 0), 0) || 0,
+    subjects: day.blocks?.map((b: any) => b.subject).join(', ') || 'Nenhuma'
+  }));
+
+  const prompt = `Você é um planejador de estudos especialista.
+O estudante precisa reagendar a seguinte matéria:
+Matéria: ${block.subject}
+Tópico: ${block.topic}
+Carga horária estimada: ${block.hours}h
+
+Abaixo está o resumo dos próximos dias disponíveis no cronograma do estudante:
+${JSON.stringify(contextSchedule, null, 2)}
+
+Seu objetivo é escolher a melhor data (date) para reagendar este bloco.
+Regras:
+1. Tente não sobrecarregar um dia que já tenha muitas horas (ex: mais de 6h).
+2. Tente agrupar a matéria no mesmo dia que outras matérias correlatas, ou se preferir espalhar, escolha um dia mais leve.
+3. Se todos os dias estiverem cheios, escolha o primeiro dia possível com menos blocos.
+4. Você deve retornar EXATAMENTE um JSON válido com a estrutura abaixo, sem marcações markdown ao redor.
+
+{
+  "suggestedDate": "YYYY-MM-DD",
+  "reason": "Explicação curta do motivo da escolha desta data"
+}`;
+
+  return await callGemini(genAI, prompt, false, modelName);
+}

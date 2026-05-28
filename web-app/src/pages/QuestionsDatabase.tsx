@@ -26,7 +26,7 @@ import {
   Pencil,
   X
 } from 'lucide-react';
-import { topicsBySubject, ENEM_TOPICS, BANCAS_TOPICS } from '../lib/constants';
+import { topicsBySubject } from '../lib/constants';
 import { useAuth } from '../contexts/AuthContext';
 import { useCustomSubjects } from '../contexts/CustomSubjectsContext';
 import { db } from '../lib/firebase';
@@ -272,16 +272,23 @@ export default function QuestionsDatabase() {
   const displayQuestions = useMemo(() => {
     if (!selectedSubtopic) return [];
 
-    let list = subjectQuestions.filter(q => {
-      if (!q.topics || !Array.isArray(q.topics)) return false;
-      return q.topics.some((t: string) => t.toLowerCase().includes(selectedSubtopic.toLowerCase()) || selectedSubtopic.toLowerCase().includes(t.toLowerCase()));
-    });
+    let list: any[];
 
-    if (list.length === 0) {
-       list = subjectQuestions.filter(q => 
-          (q.pergunta && q.pergunta.toLowerCase().includes(selectedSubtopic.toLowerCase())) ||
-          (q.contexto && q.contexto.toLowerCase().includes(selectedSubtopic.toLowerCase()))
-       );
+    // "Ver todas" shows ALL questions for the subject
+    if (selectedSubtopic === 'Ver todas') {
+      list = [...subjectQuestions];
+    } else {
+      list = subjectQuestions.filter(q => {
+        if (!q.topics || !Array.isArray(q.topics)) return false;
+        return q.topics.some((t: string) => t.toLowerCase().includes(selectedSubtopic.toLowerCase()) || selectedSubtopic.toLowerCase().includes(t.toLowerCase()));
+      });
+
+      if (list.length === 0) {
+         list = subjectQuestions.filter(q => 
+            (q.pergunta && q.pergunta.toLowerCase().includes(selectedSubtopic.toLowerCase())) ||
+            (q.contexto && q.contexto.toLowerCase().includes(selectedSubtopic.toLowerCase()))
+         );
+      }
     }
 
     const mappedList: QuestionMock[] = list.map((q, idx) => {
@@ -422,24 +429,17 @@ export default function QuestionsDatabase() {
               subjectsToDisplay.map(subject => {
                 const isExpanded = !!expandedSubjects[subject];
                 
-                // Inject fixed topics
+                // Build topics from static constants AND from loaded question data
                 const topics: Record<string, string[]> = {};
                 
-                // Show ENEM topics if activeCategory is ENEM or Todos
-                if ((activeCategory === 'ENEM' || activeCategory === 'Todos' || activeCategory === 'Geral') && ENEM_TOPICS[subject]) {
-                  topics['Assuntos Mais Cobrados no ENEM'] = [...ENEM_TOPICS[subject]];
-                }
-                
-                // Show Banca topics if activeCategory is Concurso or Todos
-                if ((activeCategory === 'Concurso' || activeCategory === 'Todos' || activeCategory === 'Geral') && selectedBanca && BANCAS_TOPICS[selectedBanca] && BANCAS_TOPICS[selectedBanca][subject]) {
-                  topics[`Assuntos Mais Cobrados ${selectedBanca}`] = [...BANCAS_TOPICS[selectedBanca][subject]];
-                }
-                
-                // Merge regular topics
+                // Add static topics from constants
                 const regularTopics = topicsBySubject[subject] || {};
                 Object.keys(regularTopics).forEach(k => {
                   topics[k] = [...regularTopics[k]];
                 });
+
+                // Always add "Todas as Questões" as a virtual topic so all questions are reachable
+                topics['📋 Todas as Questões'] = ['Ver todas'];
 
                 const hasTopics = Object.keys(topics).length > 0;
 

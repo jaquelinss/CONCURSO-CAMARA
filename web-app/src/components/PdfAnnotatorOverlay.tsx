@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Eraser, X, Undo2, Redo2, ChevronLeft, ChevronRight, Download, PenTool, Highlighter, MousePointer2, BookOpen, File as FileIcon, Save, BookMarked, Trash2, FolderOpen, Loader2, ZoomIn, ZoomOut, RotateCcw, ChevronDown, PanelRightOpen, Maximize2 } from 'lucide-react';
+import { Eraser, X, Undo2, Redo2, ChevronLeft, ChevronRight, Download, PenTool, Highlighter, MousePointer2, BookOpen, File as FileIcon, Save, BookMarked, Trash2, FolderOpen, Loader2, ZoomIn, ZoomOut, RotateCcw, ChevronDown, PanelRightOpen } from 'lucide-react';
 import { getStroke } from 'perfect-freehand';
 import * as pdfjsLib from 'pdfjs-dist';
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
@@ -94,6 +94,22 @@ export default function PdfAnnotatorOverlay() {
   const [splitMode, setSplitMode] = useState(false);
   const [splitWidth, setSplitWidth] = useState(50); // percentage of screen for the reader
   const splitDragging = useRef(false);
+
+  useEffect(() => {
+    if (active && splitMode) {
+      document.body.style.transition = 'padding-right 0.3s ease';
+      document.body.style.paddingRight = `${splitWidth}%`;
+      document.body.style.overflowX = 'hidden';
+    } else {
+      document.body.style.paddingRight = '0px';
+      document.body.style.overflowX = '';
+    }
+    return () => {
+      document.body.style.paddingRight = '0px';
+      document.body.style.overflowX = '';
+      document.body.style.transition = '';
+    };
+  }, [active, splitMode, splitWidth]);
 
   // Library state
   const [showLibrary, setShowLibrary] = useState(false);
@@ -667,13 +683,13 @@ export default function PdfAnnotatorOverlay() {
             </div>
           )}
           {/* Top Toolbar */}
-          <div className="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4 flex-shrink-0 toolbar">
-            <div className="flex items-center gap-4">
+          <div className="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4 flex-shrink-0 overflow-x-auto no-scrollbar gap-4">
+            <div className="flex items-center gap-4 flex-shrink-0">
               <button onClick={() => setActive(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-500"><X className="w-5 h-5" /></button>
-              <h2 className="font-bold text-gray-800 dark:text-gray-200 truncate max-w-[200px] sm:max-w-md">{pdfName}</h2>
+              <h2 className="font-bold text-gray-800 dark:text-gray-200 truncate max-w-[150px] sm:max-w-md">{pdfName}</h2>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               {(fileType === 'pdf' || fileType === 'epub') && (
                 <>
                   <div className="flex bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
@@ -702,7 +718,7 @@ export default function PdfAnnotatorOverlay() {
               <div className="w-px h-6 bg-gray-300 mx-1" />
 
               {tool === 'pen' && (
-                <div className="hidden sm:flex items-center gap-2 bg-gray-100 dark:bg-gray-700 p-1.5 rounded-lg">
+                <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 p-1.5 rounded-lg flex-shrink-0">
                   <div className="flex gap-1">
                     {COLORS.slice(0, 5).map(c => <button key={c} onClick={() => setPenColor(c)} className={`w-6 h-6 rounded-full border-2 ${penColor === c ? 'border-gray-400 scale-110' : 'border-transparent'}`} style={{ backgroundColor: c }} />)}
                   </div>
@@ -711,7 +727,7 @@ export default function PdfAnnotatorOverlay() {
                 </div>
               )}
               {tool === 'highlighter' && (
-                <div className="hidden sm:flex items-center gap-2 bg-gray-100 dark:bg-gray-700 p-1.5 rounded-lg">
+                <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 p-1.5 rounded-lg flex-shrink-0">
                   <div className="flex gap-1">
                     {HIGHLIGHTER_COLORS.map(c => <button key={c} onClick={() => setHighlighterColor(c)} className={`w-6 h-6 rounded-full border-2 ${highlighterColor === c ? 'border-gray-400 scale-110' : 'border-transparent'}`} style={{ backgroundColor: c }} />)}
                   </div>
@@ -720,7 +736,7 @@ export default function PdfAnnotatorOverlay() {
                 </div>
               )}
               {tool === 'eraser' && (
-                <div className="hidden sm:flex items-center gap-2 bg-gray-100 dark:bg-gray-700 p-1.5 rounded-lg">
+                <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 p-1.5 rounded-lg flex-shrink-0">
                   <input type="range" min="10" max="50" value={eraserWidth} onChange={(e) => setEraserWidth(Number(e.target.value))} className="w-16 accent-pink-500" title="Tamanho da borracha" />
                 </div>
               )}
@@ -749,10 +765,17 @@ export default function PdfAnnotatorOverlay() {
               {/* Split-screen toggle */}
               <button 
                 onClick={() => setSplitMode(prev => !prev)} 
-                className={`p-2 rounded-lg transition-colors ${splitMode ? 'bg-indigo-100 text-indigo-600' : 'text-gray-500 hover:text-indigo-600 hover:bg-gray-100'}`}
-                title={splitMode ? 'Tela Cheia' : 'Tela Dividida'}
+                className={`p-2 rounded-lg transition-colors flex items-center gap-2 flex-shrink-0 ${splitMode ? 'bg-red-100 text-red-600 font-bold border border-red-200' : 'text-gray-500 hover:text-indigo-600 hover:bg-gray-100'}`}
+                title={splitMode ? 'Sair da Tela Dividida' : 'Tela Dividida'}
               >
-                {splitMode ? <Maximize2 className="w-4 h-4" /> : <PanelRightOpen className="w-4 h-4" />}
+                {splitMode ? (
+                  <>
+                    <X className="w-4 h-4" />
+                    <span className="text-xs">Sair da Divisão</span>
+                  </>
+                ) : (
+                  <PanelRightOpen className="w-4 h-4" />
+                )}
               </button>
 
               <div className="w-px h-6 bg-gray-300 mx-1" />

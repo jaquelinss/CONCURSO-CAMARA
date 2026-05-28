@@ -327,9 +327,6 @@ export const topicsBySubject: Record<string, any> = {
     'Artes Visuais e Linguagens': ['Elementos da Linguagem Visual', 'Arquitetura e Urbanismo', 'Fotografia e Cinema', 'Artes Digitais'],
     'Patrimônio e Cultura': ['Patrimônio Histórico e Cultural', 'Cultura Popular e Folclore', 'Museus e Centros Culturais']
   },
-  'Ciências da Natureza': { 'Assuntos Mais Cobrados no ENEM': [] },
-  'Ciências Humanas': { 'Assuntos Mais Cobrados no ENEM': [] },
-  'Linguagens e Códigos': { 'Assuntos Mais Cobrados no ENEM': [] },
 };
 
 export const defaultTheme = themes['Redação'];

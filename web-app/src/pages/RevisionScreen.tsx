@@ -3,13 +3,14 @@ import Navigation from '../components/Navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
 import { collection, query, getDocs, orderBy, doc, getDoc, setDoc, deleteDoc, Timestamp, limit } from 'firebase/firestore';
-import { Calendar, Clock, BookOpen, CheckCircle, AlertCircle, PlusCircle, Brain, ChevronLeft, RefreshCw, Sparkles, Play, Trash2, Pencil, Check, X } from 'lucide-react';
+import { Calendar, Clock, BookOpen, CheckCircle, AlertCircle, PlusCircle, Brain, ChevronLeft, RefreshCw, Sparkles, Play, Trash2, Pencil, X, Search, Loader2 } from 'lucide-react';
 import { format, isBefore, isToday, startOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import LessonScreen from '../components/LessonScreen';
 import QuizScreen from '../components/QuizScreen';
 import LinkContentModal from '../components/LinkContentModal';
 import { getRevisionSuggestions, calculateNextStep } from '../lib/revision.service';
+import { suggestVideoSearches } from '../lib/gemini';
 import StudyPlanWizard from '../components/StudyPlanWizard';
 import StudyPlanView from '../components/StudyPlanView';
 
@@ -451,17 +452,28 @@ function RevisionCard({ revision, onAction, onLink, onReschedule, onUpdate }: { 
 
   // YouTube video states and operations
   const [editingVideo, setEditingVideo] = useState(false);
-  const [videoUrl, setVideoUrl] = useState(revision.youtubeUrl || '');
+  const [videoUrl, setVideoUrl] = useState('');
   const [savingVideo, setSavingVideo] = useState(false);
+  const [loadingAi, setLoadingAi] = useState(false);
+  const [aiSuggestions, setAiSuggestions] = useState<any[]>([]);
 
-  const handleSaveVideo = async () => {
-    if (!user) return;
+  const urls = revision.youtubeUrls || (revision.youtubeUrl ? [revision.youtubeUrl] : []);
+
+  const handleAddVideo = async () => {
+    if (!user || !videoUrl.trim()) return;
     setSavingVideo(true);
     try {
+      const currentUrls = revision.youtubeUrls || (revision.youtubeUrl ? [revision.youtubeUrl] : []);
+      if (currentUrls.includes(videoUrl.trim())) {
+        setVideoUrl('');
+        setSavingVideo(false);
+        return;
+      }
+      const newUrls = [...currentUrls, videoUrl.trim()];
       const revisionRef = doc(db, 'users', user.uid, 'revisions', revision.id);
-      await setDoc(revisionRef, { youtubeUrl: videoUrl.trim() }, { merge: true });
-      revision.youtubeUrl = videoUrl.trim();
-      setEditingVideo(false);
+      await setDoc(revisionRef, { youtubeUrls: newUrls }, { merge: true });
+      revision.youtubeUrls = newUrls;
+      setVideoUrl('');
       onUpdate();
     } catch (err) {
       console.error('Erro ao salvar vídeo:', err);
@@ -471,19 +483,34 @@ function RevisionCard({ revision, onAction, onLink, onReschedule, onUpdate }: { 
     }
   };
 
-  const handleDeleteVideo = async (e: React.MouseEvent) => {
+  const handleRemoveVideo = async (e: React.MouseEvent, urlToRemove: string) => {
     e.stopPropagation();
     if (!user) return;
     if (!window.confirm('Deseja realmente remover o vídeo desta revisão?')) return;
     try {
+      const currentUrls = revision.youtubeUrls || (revision.youtubeUrl ? [revision.youtubeUrl] : []);
+      const newUrls = currentUrls.filter((u: string) => u !== urlToRemove);
       const revisionRef = doc(db, 'users', user.uid, 'revisions', revision.id);
-      await setDoc(revisionRef, { youtubeUrl: '' }, { merge: true });
-      revision.youtubeUrl = '';
-      setVideoUrl('');
+      await setDoc(revisionRef, { youtubeUrls: newUrls }, { merge: true });
+      revision.youtubeUrls = newUrls;
       onUpdate();
     } catch (err) {
       console.error('Erro ao excluir vídeo:', err);
       alert('Erro ao excluir vídeo.');
+    }
+  };
+
+  const handleAiSearch = async () => {
+    if (!user) return;
+    setLoadingAi(true);
+    try {
+      const res = await suggestVideoSearches(revision.subject, revision.topic, (user as any).apiKey || '');
+      setAiSuggestions(res.searches || []);
+    } catch (err) {
+      console.error('Erro ao buscar sugestões:', err);
+      alert('Erro ao gerar buscas. Verifique sua chave API.');
+    } finally {
+      setLoadingAi(false);
     }
   };
 
@@ -553,75 +580,115 @@ function RevisionCard({ revision, onAction, onLink, onReschedule, onUpdate }: { 
       {/* YouTube Class Video Module */}
       <div className="mt-5 pt-4 border-t border-gray-100 dark:border-gray-700/60 flex flex-col gap-2">
         {editingVideo ? (
-          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-            <div className="relative flex-grow">
-              <Youtube className="w-4 h-4 text-red-500 absolute left-3 top-2.5" />
-              <input
-                type="text"
-                value={videoUrl}
-                onChange={(e) => setVideoUrl(e.target.value)}
-                placeholder="Cole o link do YouTube aqui..."
-                className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-transparent"
-                autoFocus
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleSaveVideo();
-                  if (e.key === 'Escape') setEditingVideo(false);
-                }}
-              />
-            </div>
-            <button
-              onClick={handleSaveVideo}
-              disabled={savingVideo}
-              className="p-1.5 text-green-600 hover:bg-green-50 dark:hover:bg-green-950/30 rounded-md transition-colors shrink-0"
-              title="Salvar vídeo"
-            >
-              <Check className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => {
-                setVideoUrl(revision.youtubeUrl || '');
-                setEditingVideo(false);
-              }}
-              className="p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors shrink-0"
-              title="Cancelar"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        ) : revision.youtubeUrl ? (
-          <div className="flex items-center justify-between gap-2 bg-red-50/50 dark:bg-red-950/10 px-3 py-2 rounded-xl border border-red-100/50 dark:border-red-900/20">
-            <button
-              onClick={() => {
-                window.dispatchEvent(
-                  new CustomEvent('play-youtube-video', {
-                    detail: {
-                      url: revision.youtubeUrl,
-                      topic: revision.topic,
-                      subject: revision.subject,
-                    },
-                  })
-                );
-              }}
-              className="flex items-center gap-2 text-xs font-bold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
-            >
-              <Play className="w-4 h-4 fill-red-600 dark:fill-red-400 text-transparent" />
-              <span className="truncate max-w-[200px]" title="Assistir vídeo aula cadastrada">Assistir Vídeo Aula</span>
-            </button>
+          <div className="flex flex-col gap-3">
+            {/* Lista de vídeos existentes */}
+            {urls.length > 0 && (
+              <div className="space-y-2 mb-2">
+                <p className="text-xs font-bold text-gray-500 uppercase">Vídeos Vinculados</p>
+                {urls.map((url: string, idx: number) => (
+                  <div key={idx} className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700/50 p-2 rounded border border-gray-200 dark:border-gray-600">
+                    <Play className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />
+                    <span className="text-xs text-gray-600 dark:text-gray-300 truncate flex-grow" title={url}>{url}</span>
+                    <button onClick={(e) => handleRemoveVideo(e, url)} className="p-1 text-gray-400 hover:text-red-500 shrink-0">
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
 
-            <div className="flex items-center gap-1 shrink-0">
+            {/* Input para novo vídeo */}
+            <div className="flex items-center gap-2">
+              <div className="relative flex-grow">
+                <Youtube className="w-4 h-4 text-red-500 absolute left-3 top-2.5" />
+                <input
+                  type="text"
+                  value={videoUrl}
+                  onChange={(e) => setVideoUrl(e.target.value)}
+                  placeholder="Cole o link do YouTube aqui..."
+                  className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-red-400"
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleAddVideo();
+                    if (e.key === 'Escape') setEditingVideo(false);
+                  }}
+                />
+              </div>
               <button
-                onClick={() => setEditingVideo(true)}
-                className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded transition-colors"
-                title="Editar link do vídeo"
+                onClick={handleAddVideo}
+                disabled={savingVideo || !videoUrl.trim()}
+                className="p-1.5 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50 transition-colors shrink-0"
+                title="Adicionar vídeo"
               >
-                <Pencil className="w-3.5 h-3.5" />
+                <PlusCircle className="w-4 h-4" />
               </button>
               <button
-                onClick={handleDeleteVideo}
-                className="p-1 text-gray-400 hover:text-red-600 dark:hover:text-red-400 rounded transition-colors"
-                title="Remover vídeo"
+                onClick={handleAiSearch}
+                disabled={loadingAi}
+                className="p-1.5 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-md hover:bg-indigo-100 disabled:opacity-50 transition-colors shrink-0"
+                title="Buscar com IA"
               >
-                <Trash2 className="w-3.5 h-3.5" />
+                {loadingAi ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+              </button>
+              <button
+                onClick={() => { setVideoUrl(''); setEditingVideo(false); setAiSuggestions([]); }}
+                className="p-1.5 text-gray-400 hover:bg-gray-100 rounded-md transition-colors shrink-0"
+                title="Fechar"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Sugestões da IA */}
+            {aiSuggestions.length > 0 && (
+              <div className="mt-2 p-3 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 rounded-lg">
+                <p className="text-xs font-bold text-indigo-800 flex items-center gap-1 mb-2">
+                  <Sparkles className="w-3.5 h-3.5" /> Sugestões
+                </p>
+                <div className="space-y-2">
+                  {aiSuggestions.map((sug: any, i: number) => (
+                    <div key={i} className="bg-white p-2 rounded shadow-sm border border-indigo-100">
+                      <a 
+                        href={`https://www.youtube.com/results?search_query=${encodeURIComponent(sug.query)}`} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between group"
+                      >
+                        <span className="text-xs font-semibold group-hover:text-red-500">"{sug.query}"</span>
+                        <Search className="w-3.5 h-3.5 text-gray-400 group-hover:text-red-500" />
+                      </a>
+                      <p className="text-[10px] text-gray-500 mt-1">{sug.reason}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : urls.length > 0 ? (
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap gap-2">
+              {urls.map((url: string, idx: number) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    window.dispatchEvent(
+                      new CustomEvent('play-youtube-video', {
+                        detail: { url, topic: revision.topic, subject: revision.subject },
+                      })
+                    );
+                  }}
+                  className="flex items-center gap-1 text-[11px] bg-red-50 text-red-600 px-2 py-1.5 rounded-md border border-red-100 hover:bg-red-100 font-bold transition-colors"
+                >
+                  <Play className="w-3 h-3 fill-red-600" />
+                  Vídeo {idx + 1}
+                </button>
+              ))}
+              <button
+                onClick={() => setEditingVideo(true)}
+                className="flex items-center gap-1 text-[11px] bg-gray-50 text-gray-500 px-2 py-1.5 rounded-md border border-gray-200 hover:bg-gray-100 font-bold transition-colors"
+                title="Adicionar ou remover vídeos"
+              >
+                <Pencil className="w-3 h-3" /> Editar
               </button>
             </div>
           </div>

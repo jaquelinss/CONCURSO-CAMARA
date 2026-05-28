@@ -1579,5 +1579,2951 @@
     "correta": "apelo emocional e identificação com o público.",
     "explicacao": "",
     "isNative": true
+  },
+  {
+    "id": "native-import-1779973469553-5-1475b993",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Gêneros Digitais / Microcontos e concisão"
+    ],
+    "difficulty": "Médio",
+    "contexto": "14-16\"Concurso de microcontos no Twitter. A nona edição do Simpósio Internacional de Contadores de História promove concurso de microcontos baseado no Twitter...\"Isso demonstra que essa rede social pode ser uma forma de inovação tecnológica que:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "define uma dinâmica diferente de construção de texto, condensando as ideias principais sem perder a criatividade",
+      "conceitua uma nova vertente de texto, na qual a rapidez supera o enredo e as outras características do texto",
+      "considera que a utilização da escrita com caneta e papel seja primitiva para os dias atuais",
+      "caracteriza um texto de tema livre, no qual o número de caracteres imporia mais que a criatividade do autor",
+      "propõe um novo traço à escrita, pois garante a eficiência dos processos de comunicação"
+    ],
+    "correta": "define uma dinâmica diferente de construção de texto, condensando as ideias principais sem perder a criatividade",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779973469553-6-69c1baff",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Gêneros Digitais / Concisão e Limite de Caracteres"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "16-18\"Uma tuiteratura? As novidades sobre o Twitter já não cabem em 140 toques... Já há até um neologismo, tuiteratura, para indicar os 'enunciados telegráficos com criações originais'...\"Neste contexto de inovações linguísticas, a linguagem do Twitter apresenta como característica relevante:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "a concisão relativa ao texto ao adotar como regra o uso de uma quantidade predefinida de toques",
+      "a frequência de neologismos criados com a finalidade de tornar a mensagem mais popular",
+      "o uso de expressões exclusivas da nova forma literária para substituir palavras usuais do português",
+      "o emprego de palavras pouco usuais no dia a dia para reafirmar a originalidade",
+      "o uso de palavras e expressões próprias da mídia eletrônica para restringir a participação de usuários"
+    ],
+    "correta": "a concisão relativa ao texto ao adotar como regra o uso de uma quantidade predefinida de toques",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779973469553-7-82ee9142",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Leitura de Gráficos / Hábitos de leitura no Brasil"
+    ],
+    "difficulty": "Difícil",
+    "contexto": "18-22\"Texto I - O que os brasileiros gostam de fazer em seu tempo livre: 35% Ler... Texto II - O que a leitura significa para os brasileiros: 26% Conhecimento...\"Da interpretação dos gráficos anteriores, conclui-se que a relação dos brasileiros com a leitura é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "contraditória, pois, apesar de a considerar fonte de conhecimento, a maioria não gasta seu tempo livre com essa atividade",
+      "desqualificante, dada a alta taxa de rejeição de leituras mais complexas",
+      "insatisfatória, pois, embora haja fácil acesso aos livros, é baixa a carga de tempo dedicada a esse hábito",
+      "pragmática, tendo em vista que se consideram as funções profissionais e mercadológicas dos livros",
+      "prioritária, porque há um reconhecimento do valor desse hábito na formação de um cidadão crítico"
+    ],
+    "correta": "contraditória, pois, apesar de a considerar fonte de conhecimento, a maioria não gasta seu tempo livre com essa atividade",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779973469553-9-4edcde47",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Internetês / Linguagem inclusiva de gênero"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "27-29\"A palavra AMIG@S. Alguns usuários mais irreverentes da língua deram para escrever “amig@s”, sobretudo em mensagem de texto e e-mail. A utilização da arroba nesses casos tem a vantagem de aceitar de antemão quaisquer outros gêneros...\"Levando-se em conta a especificidade desse ambiente, infere-se que o uso do símbolo objetiva:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "criticar a deturpação da língua portuguesa nos textos da rede",
+      "demonstrar a evolução do uso da língua em suas diversas formas de expressão",
+      "esclarecer o leitor a respeito das possibilidades de expressão",
+      "evidenciar a irreverência típica dos usuários da rede",
+      "permitir, nos textos virtuais, a referência inclusiva a todos os gêneros"
+    ],
+    "correta": "permitir, nos textos virtuais, a referência inclusiva a todos os gêneros",
+    "explicacao": "Gabarito oficial: E"
+  },
+  {
+    "id": "native-import-1779973469553-10-337f9be2",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Evolução dos gêneros / Adaptação de mídias antigas para digitais"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "29-31\"Como os gêneros são históricos e muitas vezes estão ligados às tecnologias, eles permitem que surjam novidades nesse campo, mas são novidades com algum gosto do conhecido...\"O avanço das tecnologias fez com que surgissem novos gêneros textuais que remetem a gêneros preexistentes, como ocorre no seguinte caso:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "O gênero e-mail mantém características dos gêneros carta e bilhete",
+      "O gênero aula virtual mantém características do gênero reunião de grupo",
+      "O gênero bate-papo virtual mantém características do gênero conferência",
+      "O gênero videoconferência mantém características do gênero aula presencial",
+      "O gênero lista de discussão mantém características do gênero palestra.\nTÓPICO 2: Mídias sociais e redes sociais"
+    ],
+    "correta": "O gênero e-mail mantém características dos gêneros carta e bilhete",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779973469553-12-ac933cda",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Comunicação Empresarial / Marketing nas redes sociais"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "32, 33\"Em um mundo onde o “boca a boca” tornou-se virtual, é de extrema importância que a empresa se faça presente...\"Nesse contexto, “boca a boca” é uma expressão indicadora de que:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "as redes sociais se tomaram recurso de comunicação de fácil acesso",
+      "as redes sociais se tornaram fonte fundamental para indicações de amigos e divulgação de produtos, marcas e serviços das empresas",
+      "as redes sociais são sistemas de comunicação que agrupam empresas e indivíduos semelhantes com objetivos diferentes",
+      "as redes sociais permitem às empresas buscarem novos profissionais para seu quadro de pessoal",
+      "as redes sociais possibilitam aos usuários se fazerem presentes e atuantes na Internet"
+    ],
+    "correta": "as redes sociais se tornaram fonte fundamental para indicações de amigos e divulgação de produtos, marcas e serviços das empresas",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779973469553-13-ae30f74d",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Redes Sociais / Psicologia e relacionamentos virtuais"
+    ],
+    "difficulty": "Médio",
+    "contexto": "33-35\"Eu quero ter um milhão de amigos é o famoso verso da linda canção... Adaptado aos nossos tempos, o verso representa o anseio que está na base do atual sucesso das redes sociais.\"Para a autora, essas redes são eficazes, pois:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "resolvem os problemas de solidão vivida pelos internautas",
+      "promovem a idealização exacerbada de vontades individuais",
+      "ajudam na preservação de sentimentos básicos da pessoa humana",
+      "favorecem as relações interpessoais baseadas em vínculos afetivos fortes",
+      "confirmam os significados atribuídos a relacionamentos iniciados no mundo real"
+    ],
+    "correta": "promovem a idealização exacerbada de vontades individuais",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779973469553-15-d4c65d52",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Redes Sociais vs. Relacionamento Presencial / Crítica de costumes"
+    ],
+    "difficulty": "Médio",
+    "contexto": "37, 38 (Nota: Parte das alternativas desta questão está ausente/cortada no material original)\"Texto I - Charge onde um casal questiona o outro no bar: 'Você tem Twitter? Tem Facebook? ... como você se relaciona com as pessoas? - Assim (beijando)'. Texto II - São 68 milhões num universo de 190 milhões de brasileiros conectados nas redes virtuais...\"Da leitura dos dois textos, depreende-se que a Internet tem se expandido muito. Apesar disso, a atitude do rapaz no texto I revela a:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "constatação da importância do acesso à Internet para a comunicação com outras pessoas",
+      "opinião de quem necessita das ferramentas da Internet para realizar novas conquistas",
+      "demonstração de uma postura resistente à interferência das tecnologias na comunicação",
+      "adequação dos jovens às redes sociais como Twitter"
+    ],
+    "correta": "demonstração de uma postura resistente à interferência das tecnologias na comunicação",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779973469554-16-be7e1e12",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"O Facebook como espelho\"\n\"Ainda me lembro da época em que o público de um espetáculo musical estava lá para ouvir música, talvez para cantar e dançar, certamente não para fotografar e ser fotografado\"\n\"Silenciosamente algo mudou\"\n\"[...] Celulares e redes de compartilhamento transformaram os 15 minutos de fama em uma espécie de “Show de Truman” universal, em que registros banais e confissões diversas tornaram todos um pouco inseguros, verificando a composição de sua figura no espelho do Facebook e corrigindo seu discurso e conduta de acordo com as menções e aprovações recebidas\"\n\"A análise do texto anterior, retirado de um jornal de grande circulação, demonstra que seu objetivo comunicativo essencial é\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "denunciar um problema tecnológico referente à popularização do Facebook, a qual pode ser prejudicial aos indivíduos",
+      "criticar o excesso de exibicionismo característico do comportamento dos usuários das redes sociais na contemporaneidade",
+      "evidenciar a valorização da autoestima como um processo recorrente nas redes sociais na atualidade",
+      "demonstrar as dificuldades sentidas pelos usuários das redes sociais em estabelecer vínculos relacionais",
+      "fazer um apelo aos usuários das redes sociais para reconhecerem adequadamente os perfis de utilização das tecnologias virtuais\"\n.\nTópico: Mídias sociais e redes sociais.\nSubtópico: Exibicionismo e narcisismo na rede.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469554-17-a28d13db",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"O poder e o risco das redes sociais\"\n\"Uma em cada sete pessoas no planeta frequenta as redes sociais da Internet\"\n\"Essas imensas comunidades virtuais, organizadas por sites como Facebook, Orkut e Twitter, já abrigam quase 1 bilhão de habitantes, segundo a Insights Consulting\"\n\"Ganhamos um poder inédito para nos associar e trocar informações\"\n\"Também descobrimos que essa nova sociedade, repleta de informações pessoais numa rede global de computadores, nos deixa mais expostos, seja a empresas interessadas em faturar ou bisbilhoteiros que vigiam nossas vidas\"\n\"A troca de informações diária nas redes sociais faz delas um fenômeno inédito, pois\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "coloca em evidência os participantes dessas redes, os quais sentem prazer em expor suas vidas, já que não há riscos com os quais se preocuparem",
+      "transforma os cidadãos, antes engajados politicamente, em sujeitos alienados no que concerne às decisões mundiais",
+      "possibilita que os usuários das redes tenham participação ativa na divulgação e mobilização de informação, ainda que muitos não saibam lidar com os riscos de se expor",
+      "leva aos usuários das redes sociais somente benefícios, o que se verifica no número irrisório de processos por invasão de privacidade",
+      "conduz os usuários das redes sociais a bisbilhotar a vida de outros usuários sem que sofram qualquer retaliação\"\n.\nTópico: Mídias sociais e redes sociais.\nSubtópico: Compartilhamento e privacidade.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469554-19-9fef2116",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Aplicativos de táxi estão entre os mais populares das lojas de apps\"\n\"Nomes como Easy Taxi, 99Taxis, Taxibeat, Taxijá ou ResolveAí passaram a facilitar a vida do passageiro ao dispensá-lo de buscar táxis pela rua; e também a dos motoristas, que puderam ser alcançados por seu clientes de onde estivessem\"\n\"Mas como todo novo negócio, os aplicativos incomodaram\"\n\"No caso, as cooperativas de táxi, que perderam não só “corridas”, como cooperados\"\n\"Ao abordar o uso de aplicativos desenvolvidos para que se possa chamar um táxi em uma grande cidade, o texto anterior\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "alerta para os riscos que motoristas e passageiros correm ao utilizar essas ferramentas",
+      "compara os diferentes aplicativos disponíveis a fim de orientar a escolha dos leitores",
+      "critica o desenvolvimento de aplicativos que não cumprem o que prometem",
+      "expõe as vantagens e desvantagens dos aplicativos disponíveis no mercado",
+      "mostra que há vantagens para os usuários, mas riscos para as cooperativas de táxi\"\n.\nTópico: Mídias sociais e redes sociais.\nSubtópico: Aplicativos móveis e impactos no mercado.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469554-20-536c7df6",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"[Charge onde um casal está na cama com laptops, e a mulher diz: 'Benhê, cutuquei você!', enquanto o marido responde: 'Já curti, amor']\"\n\"A charge é um gênero textual em que, aliando-se linguagem verbal e visual, há críticas comportamentais produzidas, principalmente, por meio do humor\"\n\"Na charge anterior, a crítica é produzida com base na percepção de que as ferramentas tecnológicas\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "melhoraram o modo como os casais se comunicam",
+      "possibilitaram maior aproximação entre os casais",
+      "simplificaram a forma como os casais comemoram o Dia dos Namorados",
+      "tornaram o namoro um vínculo ultrapassado e desnecessário",
+      "tornaram as relações amorosas e afetivas mais impessoais e distanciadas\"\n.\nTópico: Mídias sociais e redes sociais.\nSubtópico: Relações amorosas e tecnologia.\n--------------------------------------------------------------------------------\nTÓPICO 3: Educação e tecnologia"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469554-22-0b2e443f",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Para as pessoas que estudam a inserção das tecnologias da informação e da comunicação (TICs) na sociedade, não é suficiente dar acesso ao hardware (com softwares instalados)\"\n\"Por acesso significativo, entende-se não só a possibilidade de manejo do computador, de suas ferramentas e do acesso à Internet, mas, sobretudo, a capacidade de utilizar esses conhecimentos para o acesso a conteúdos que tenham influência direta para a melhoria da qualidade de vida da pessoa, de seu grupo e de sua comunidade\"\n\"O uso significativo dos recursos ligados às tecnologias da informação e da comunicação faz-se presente na hipótese de\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "distribuição de laptops aos alunos para que possam registrar o conteúdo passado em sala de aula em meio digital",
+      "criação de uma rádio web escolar com programas gravados, editados e organizados pelos alunos e professores",
+      "inserção, na grade curricular do Ensino Médio, de disciplina que tenha o objetivo de ensinar o uso de aplicativos",
+      "liberação do uso dos laboratórios de informática em horários extraclasse para que os alunos possam utilizar as tecnologias da forma que precisarem",
+      "incentivo ao uso da Internet para realização de pesquisas escolares, pela grande quantidade de fontes e imagens...\"\n.\nTópico: Educação e tecnologia.\nSubtópico: TICs na escola e inclusão digital.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469554-23-c9cc68e9",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Difícil.",
+    "contexto": "\"O internetês na escola\"\n\"O internetês – expressão grafolinguística criada na Internet pelos adolescentes na última década – foi, durante algum tempo, um bicho de sete cabeças para gramáticos e estudiosos da língua\"\n\"Ainda que a maioria dos professores e educadores se preocupe com ele, a ocorrência do internetês nas provas escolares, vestibulares e em concursos públicos é insignificante\"\n\"Segundo o texto, a interação virtual favoreceu o surgimento da modalidade linguística conhecida como internetês. Quanto à influência do internetês no uso da forma culta da língua, infere-se que\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "a ocorrência de termos do internetês em situações formais de escrita aponta a necessidade de a língua ser vista como herança cultural",
+      "a dificuldade dos adolescentes para produzirem textos mais complexos é evidente, sendo consequência da expansão do uso indiscriminado da Internet",
+      "a carência de vocabulário culto na fala de jovens tem sido um alerta quanto ao uso massivo da Internet",
+      "a criação de neologismos no campo cibernético é inevitável e restringe a capacidade de compreensão dos internautas",
+      "a alternância de variante linguística é uma habilidade dos usuários da língua e é acionada pelos jovens de acordo com suas necessidades discursivas\"\n.\nTópico: Educação e tecnologia.\nSubtópico: Internetês e transição de variantes.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469554-25-6dc8d191",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"Piraí, Piraí, Piraí\"\n\"Piraí bandalargou-se um pouquinho / Piraí infoviabilizou\"\n\"No micro do menino internetinho\"\n\"No texto, encontram-se as expressões “bandalargou-se”, “infoviabilizou” e “internetinho”, que indicam a influência da tecnologia digital na língua. Em relação à dinamicidade da língua no processo de comunicação, essas expressões representam\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "a expansão vocabular influenciada pelo uso cotidiano de ferramentas da cultura digital",
+      "o desconhecimento das regras de formação de palavras na língua",
+      "a derivação de palavras sob a influência de falares arcaicos",
+      "a incorporação de palavras estrangeiras sem adaptações à língua portuguesa",
+      "a apropriação de conceitos ultrapassados disseminados pelas influências estrangeiras\"\n.\nTópico: Educação e tecnologia.\nSubtópico: Neologismos na era digital.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469554-26-c8a6e2e4",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Está faltando conteúdo\"\n\"Uma pesquisa comprovou o que todos desconfiavam: o maior uso de tablets, computadores e celulares pelas crianças não vem acompanhado por um maior acesso a conteúdos educativos\"\n\"Na faixa dos 2 aos 4 anos, 78% desse tempo é gasto com atividades educativas, mas na faixa dos 8 aos 10 anos, esse percentual cai para 26%\"\n\"A respeito da relação entre o uso de ferramentas tecnológicas e a interação com dispositivos educacionais, os dados levam à conclusão de que as crianças pesquisadas\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "dedicam pouco mais de duas horas para a interação com as ferramentas tecnológicas",
+      "mostram pouco interesse pelas tecnologias de informação quando são mais novas",
+      "objetivam a ampliação de sua educação por meio dos dispositivos educacionais",
+      "preferem as ferramentas tecnológicas que privilegiam o crescimento educacional",
+      "reduzem o tempo destinado à educação em dois terços, à medida que crescem\"\n.\nTópico: Educação e tecnologia.\nSubtópico: Infância e dispositivos tecnológicos.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469554-28-b3c4eb1c",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Difícil.",
+    "contexto": "\"Por volta do ano de 700 a.C., ocorreu um importante invento na Grécia: o alfabeto\"\n\"Esse momento histórico foi preparado ao longo de aproximadamente três mil anos de evolução [...] até a sociedade grega alcançar o que Havelock chama de um novo estado de espírito, “o espírito alfabético”, que originou uma transformação qualitativa da comunicação humana\"\n\"Hoje, os textos eletrônicos permitem flexibilidade e feedback, interação e reconfiguração de texto muito maiores e, dessa forma, também alteram o próprio processo de comunicação\"\n\"Com o advento do alfabeto, ocorreram, ao longo da história, várias implicações socioculturais. Com a Internet, as transformações na comunicação humana resultam\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "da descoberta da mídia impressa, por meio da produção de livros, revistas, jornais",
+      "do esvaziamento da cultura alfabetizada, que, na era da informação, está centrada no mundo dos sons e das imagens",
+      "da quebra das fronteiras do tempo e do espaço na integração das modalidades escrita, oral e audiovisual",
+      "da audiência da informação difundida por meio da TV e do rádio, cuja dinâmica favorece o crescimento da eletrônica",
+      "da penetrabilidade da informação visual, predominante na mídia impressa, meio de comunicação de massa\"\n.\nTópico: Educação e tecnologia.\nSubtópico: Evolução da Comunicação Humana.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469554-29-baba70f0",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Estamos em plena “Idade Mídia” desde os anos de 1990 [...] substituímos as cartas pelos e-mails, os diários íntimos pelos blogs, os telegramas pelo Twitter, a enciclopédia pela Wikipédia, o álbum de fotos pelo Flickr\"\n\"Cada sistema de comunicação tem suas especificidades. No ciberespaço, os textos virtuais são produzidos combinando-se características de gêneros tradicionais. Essa combinação representa,\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "na redação do e-mail, o abandono da formalidade e do rigor gramatical",
+      "no uso do Twitter, a presença da concisão, que aproxima os textos às manchetes jornalísticas",
+      "na produção de um blog, a perda da privacidade, pois o blog se identifica com o diário íntimo",
+      "no uso do Twitter, a falta de coerência nas mensagens ali veiculadas, provocada pela economia de palavras",
+      "na produção de textos em geral, a soberania da autoria colaborativa no ciberespaço\"\n.\nTópico: Educação e tecnologia.\nSubtópico: Novas tecnologias e hibridismo de gêneros.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469554-30-2a039d75",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"O novo boca a boca\"\n\"Dizem que a Internet será em breve, já está sendo, o boca a boca de milhões de pessoas, isto é, vai substituir aquele processo usado tradicionalmente para recomendar um filme, uma peça, um livro e até um candidato\"\n\"Não mais a orientação transmitida pela imprensa e nem mesmo as dicas dadas pessoalmente – tudo seria feito virtualmente pelos mecanismos de mobilização da rede\"\n\"Segundo o texto, a Internet apresenta a possibilidade de modificar as relações sociais, na medida em que estabelece novos meios de realizar atividades cotidianas. A preocupação do autor acerca do desaparecimento de determinadas profissões deve-se\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "às habilidades necessárias a um bom comunicador, que podem ser comprometidas por problemas pessoais",
+      "à confiabilidade das informações transmitidas pelos internautas, que superam as informações jornalísticas",
+      "ao número de pessoas conectadas à Internet, à rapidez e à facilidade com que a informação acontece",
+      "aos boatos que atingem milhões de pessoas, levando a população a desacreditar nos formadores de opinião",
+      "aos computadores serem mais eficazes do que os profissionais da escrita para informar a sociedade\"\n.\nTópico: Educação e tecnologia.\nSubtópico: Dinâmica da informação na era digital.\n--------------------------------------------------------------------------------\nGABARITO DESTE BLOCO (QUESTÕES 16 A 30)\nMídias sociais e redes sociais:\n16 (06 original): B\n17 (07 original): C\n18 (08 original): B\n19 (09 original): E\n20 (10 original): E\nEducação e tecnologia:\n21 (01 original): C\n22 (02 original): B\n23 (03 original): E\n24 (04 original): B\n25 (05 original): A\n26 (06 original): E\n27 (07 original): D\n28 (08 original): C\n29 (09 original): B\n30 (10 original): C\n\nAqui está o 3º Bloco (Questões 31 a 45), que engloba o eixo temático completo de \"Práticas corporais esportivas\" e a primeira metade do tema \"Dança e educação do movimento\".\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469556-49-17038b83",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Soneto. Oh! Páginas da vida que eu amava, Rompei-vos! nunca mais! tão desgraçado!... Ardei, lembranças doces do passado! Quero rir-me de tudo que eu amava!\"\n\"A mim a solidão da noite infinda! Possa dormir o trovador sem crença. Perdoa minha mãe – eu te amo ainda!\"\n\"A produção de Álvares de Azevedo situa-se na década de 1850, período conhecido na literatura brasileira como Ultrarromantismo. Nesse poema, a força expressiva da exacerbação romântica identifica-se com o(a)\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "amor materno, que surge como possibilidade de salvação para o eu lírico",
+      "saudosismo da infância, indicado pela menção às figuras da mãe e da irmã",
+      "construção de versos irônicos e sarcásticos, apenas com aparência melancólica",
+      "presença do tédio sentido pelo eu lírico, indicado pelo seu desejo de dormir",
+      "fixação do eu lírico pela ideia da morte, o que o leva a sentir um tormento constante\"\n.\nTópico: Texto literário: fator estético e social.\nSubtópico: Ultrarromantismo (Álvares de Azevedo).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469556-50-d7f68563",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Difícil.",
+    "contexto": "\"Fogo frio. O Poeta: A névoa que sobe dos campos, das grotas, do fundo dos vales, é o hálito quente da terra friorenta. O Lavrador: Engana-se, amigo. Aquilo é fumaça que sai da geada\"\n\"O Lavrador: E, acaso, a geada não é fogo branco caído do céu, tostando tudinho, crestando tudinho, queimando tudinho, sem pena, sem dó?\"\n\"Neste diálogo poético, encena-se um embate de ideias entre o Poeta e o Lavrador, em que\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "a vitória simbólica é dada ao discurso do lavrador e tem como efeito a renovação de uma linguagem poética cristalizada",
+      "as duas visões têm a mesma importância e são equivalentes como experiência de vida",
+      "o autor despreza a sabedoria popular e traça uma caricatura do discurso do lavrador",
+      "as imagens contraditórias de frio e fogo referidas à geada compõem um paradoxo que o poema não é capaz de organizar",
+      "o discurso do lavrador faz uma personificação da natureza para explicar o fenômeno climático...\"\n.\nTópico: Texto literário: fator estético e social.\nSubtópico: Renovação poética e linguagem coloquial vs. erudita.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469556-51-bf9edaf9",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Nunca na Igreja de Deus houve tantas pregações, nem tantos pregadores como hoje\"\n\"Pois se tanto se semeia a palavra de Deus, como é tão pouco o fruto?\"\n\"No Sermão da sexagésima, padre Antônio Vieira questiona a eficácia das pregações. Para tanto, apresenta como estratégia discursiva sucessivas interrogações, as quais têm por objetivo principal\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "provocar a necessidade e o interesse dos fiéis sobre o conteúdo que será abordado no sermão",
+      "conduzir o interlocutor à sua própria reflexão sobre os temas abordados nas pregações",
+      "apresentar questionamentos para os quais a Igreja não possui respostas",
+      "inserir argumentos à tese defendida pelo pregador sobre a eficácia das pregações",
+      "questionar a importância das pregações feitas pela Igreja durante os sermões\"\n.\nTópico: Texto literário: fator estético e social.\nSubtópico: Barroco (Padre Antônio Vieira e estratégias retóricas).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469556-52-f63578a0",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"Logo todos na cidade souberam Halim se embeiçara por Zana. As cristas maronitas de Manaus, velhas e magas, não aceitavam a ideia de ver Zara casar-se com um muçulmano. Ficavam de vigília na calçada do Biblos, encomendavam novenas para que ela não se casasse com Halim\"\n\"Dois irmãos narra a história da família que Halim e Zana formaram na segunda metade do século XX. Considerando o perfil sociocultural das personagens e os valores sociais da época, a oposição ao casamento dos dois evidencia\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "as fortes barreiras erguidas pelas diferenças de nível financeiro",
+      "o impacto dos preceitos religiosos no campo das escolhas afetivas",
+      "a divisão das famílias em castas formadas pela origem geográfica",
+      "a intolerância com atos litúrgicos, aqui representados pelas novenas e ladainhas",
+      "a importância atribuída à ocupação exercida por um futuro chefe de família\"\n.\nTópico: Texto literário: fator estético e social.\nSubtópico: Romance contemporâneo (Milton Hatoum e diversidade cultural).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469557-53-cec4e271",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"Texto I. Dois quadros. Na seca inclemente do nosso Nordeste, O sol é mais quente e o céu mais azul / E o povo se achando sem pão e sem veste, Viaja a procura das terras do Sul\"\n\"Texto II. ABC do Nordeste flagelado. O – Outro tem opinião de deixar mãe, deixar pai, porém para o Sul não vai...\"\n\"Os textos I e II são de autoria do escritor nordestino Patativa do Assaré... Esses textos têm em comum o fato de abordarem\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "a falta de esperança do povo nordestino, que se deixa vencer pela seca",
+      "a dúvida de que a ajuda do governo chegará ao povo nordestino",
+      "o êxodo do homem nordestino à procura de melhores condições de vida",
+      "o sentimento de tristeza do povo nordestino devido à falta de chuva",
+      "o sofrimento dos animais durante os longos períodos de estiagem\"\n.\nTópico: Texto literário: fator estético e social.\nSubtópico: Literatura de Cordel e Êxodo Rural (Patativa do Assaré).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469557-54-73cacb3b",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"O Globo: O senhor crê que a literatura tem alguma capacidade de provocar mudanças no mundo? José Saramago: A resposta está na pergunta. Pretendo tocar os leitores, criar polêmicas, estimular discussões. Mas isto não significa que a literatura tenha poder para mudar o mundo. Já não é pouco que seja capaz de exercer influência sobre algumas pessoas\"\n\"Segundo a resposta de Saramago, a literatura pode\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "modificar a realidade por meio da intervenção das multinacionais, que detêm o poder",
+      "mudar o comportamento da maioria das pessoas, que buscam a felicidade",
+      "aliviar o peso da vida cotidiana, massacrada pelas intenções das multinacionais",
+      "provocar a reflexão e responder a perguntas que inquietam os seres humanos",
+      "construir uma identidade unificadora, apaziguadora e homogênea para as pessoas\"\n.\nTópico: Texto literário: fator estético e social.\nSubtópico: A função social da literatura.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469557-55-1f86997c",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"[...] Desde que, adulto, comecei a escrever romances, tem-me animado até hoje a ideia de que o menos que o escritor pode fazer, numa época de atrocidades e injustiças como a nossa, é acender a sua lâmpada, fazer luz sobre a realidade de seu mundo, evitando que sobre ele caia a escuridão, propícia aos ladrões, aos assassinos e aos tiranos\"\n\"No texto anterior, há uma metáfora que se relaciona à presença do escritor e, por extensão, à da literatura. Essa metáfora, no texto, associa-se à possibilidade de a literatura\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "fazer suportar a dor em tempos de atrocidades e injustiças",
+      "apontar os ladrões, assassinos e tiranos da história",
+      "revelar a parte dos acontecimentos de seu tempo",
+      "denunciar as condições que ferem a dignidade do ser humano",
+      "encantar o leitor, produzindo prazer e alívio da realidade\"\n.\nTópico: Texto literário: fator estético e social.\nSubtópico: O papel de denúncia social do escritor (Érico Veríssimo).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469557-56-b2a3f27f",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "[Poema VELOCIDADE de Ronaldo Azeredo, explorando os 'V's decrescentes]\n\"A Poesia Concreta foi um movimento estético de meados do século XX que procurou explorar as possibilidades de interação entre as dimensões verbais e visuais das palavras. No texto anterior, Ronaldo Azeredo atingiu esse objetivo por meio da estratégia de\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "lançar mão do efeito da gradação, resultando na sugestão da própria velocidade",
+      "manter a palavra completa nos eixos vertical e horizontal",
+      "protelar a grafia completa da palavra, gerando a expectativa do fim do poema no leitor",
+      "utilizar a letras de modo desordenado, buscando agregá-las no final do poema",
+      "usar a repetição da letra 'V' com a intenção de sugerir seu deslocamento no texto\"\n.\nTópico: Texto literário: fator estético e social.\nSubtópico: Poesia Concreta e dimensão espacial da palavra.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469557-57-6ab169fd",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Difícil.",
+    "contexto": "\"Segunda impaciência do poeta. Cresce o desejo, falta o sofrimento, Sofrendo morro, morro desejando, Por uma, e outra parte estou penando Sem poder dar alívio a meu tormento. Se quero declarar meu pensamento, Está-me um gesto grave acobardando...\"\n\"Gregório de Matos é o nome mais importante do movimento barroco no Brasil. No poema anterior, percebe-se a existência de uma angústia, predominantemente expressa no(a)\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "conceptismo, pois são expressas dúvidas espirituais e filosóficas por meio de analogias",
+      "cultismo, já que se representam sensações opostas, marcadas no uso de palavras rebuscadas",
+      "dualidade entre fé e atitude, pois o eu lírico sofre entre o que deseja e o que julga ser o certo a fazer",
+      "fugacidade do tempo, uma vez que a indecisão do eu lírico torna o tempo curto e a vida mais sofrível",
+      "prazer mundano, porque há um desejo guiado por amor, que sobressai à razão do eu lírico\"\n.\nTópico: Texto literário: fator estético e social.\nSubtópico: Barroco (Gregório de Matos - dualidade e contradição).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469557-58-d3724de0",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Deus-verme. Factor universal do transformismo. Filho da teleológica matéria, Na superabundância ou na miséria, Verme – é o seu nome obscuro de batismo\"\n\"Almoça a podridão das drupas agras, Janta hidrópicos, rói vísceras magras E dos defuntos novos incha a mão...\"\n\"No poema anterior, ao refletir sobre a divindade, o eu lírico apresenta uma perspectiva\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "materialista",
+      "otimista",
+      "reacionária",
+      "religiosa",
+      "sentimental\"\n.\nTópico: Texto literário: fator estético e social.\nSubtópico: Pré-Modernismo (Augusto dos Anjos - cientificismo e materialismo).\n--------------------------------------------------------------------------------\nTÓPICO 7: Literatura e engajamento"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469557-59-10ec9384",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"Abrimos o Brasil a todo o mundo: mas queremos que o Brasil seja Brasil! Queremos conservar a nossa raça, a nossa história, e, principalmente, a nossa língua, que é toda a nossa vida, o nosso sangue, a nossa alma, a nossa religião\"\n\"Nesse trecho, Olavo Bilac manifesta seu engajamento na constituição da identidade nacional e linguística, ressaltando a\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "transformação da cultura brasileira",
+      "religiosidade do povo brasileiro",
+      "abertura do Brasil para a democracia",
+      "importância comercial do Brasil",
+      "autorreferência do povo como brasileiro\"\n.\nTópico: Literatura e engajamento.\nSubtópico: Discurso nacionalista e identidade (Parnasianismo).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469557-60-958d7760",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Mãos dadas. Não serei o poeta de um mundo caduco. Também não cantarei o mundo futuro. Estou preso à vida e olho meus companheiros. Estão taciturnos mas nutrem grandes esperanças\"\n\"O tempo é a minha matéria, o tempo presente, os homens presentes, a vida presente\"\n\"Escrito em 1940, o poema Mãos dadas revela um eu lírico marcado pelo contexto de opressão política no Brasil e da Segunda Guerra Mundial. Em face dessa realidade, o eu lírico\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "considera que em sua época o mais importante é a independência dos indivíduos",
+      "desvaloriza a importância dos planos pessoais na vida em sociedade",
+      "reconhece a tendência a autodestruição em uma sociedade oprimida",
+      "escolhe a realidade social e seu alcance individual como matéria poética",
+      "critica o individualismo comum aos românticos e aos excêntricos\"\n.\nTópico: Literatura e engajamento.\nSubtópico: Modernismo de 2ª Geração (Carlos Drummond de Andrade e o engajamento social).\n--------------------------------------------------------------------------------\nGABARITO DESTE BLOCO (QUESTÕES 46 A 60)\nDança e educação do movimento (continuação):\n46 (07 original): A\n47 (08 original): A\n48 (09 original): E\nTexto literário: fator estético e social:\n49 (01 original): E\n50 (02 original): A\n51 (03 original): A\n52 (04 original): B\n53 (05 original): C\n54 (06 original): D\n55 (07 original): D\n56 (08 original): A\n57 (09 original): C\n58 (10 original): A\nLiteratura e engajamento:\n59 (01 original): E\n60 (02 original): D\n\nAqui está o 5º Bloco (Questões 61 a 75), que conclui o eixo de \"Literatura e engajamento\" e avança por quase todo o tema \"Artes visuais como produto cultural e histórico\".\n(Nota: Na seção de Artes Visuais do material original, a questão 07 não foi disponibilizada no banco de textos, pulando diretamente da 06 para a 08. Portanto, adaptei a extração para manter exatas 15 questões contínuas).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469557-61-882cc9a7",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Grupo escolar\". \"Sonhei com um general de ombros largos / que fedia / e que no sonho me apontava a poesia / enquanto um pássaro pensava suas penas / e já sem resistência resistia\". \"O general acordou e eu que sonhava / face a face deslizei à dura via / vi seus olhos que tremiam, ombros largos, / vi seu queixo modelado a esquadria\"\n\"vi que o tempo galopando evaporava / (deu para ver qual a sua dinastia) / mas em tempo fixei no firmamento / esta imagem que rebenta em ponta fria: / poesia, esta química perversa, / este arco que desvela e me repõe / nestes tempos de alquimia\"\nO poema de Antônio Carlos Brito está historicamente inserido no período da ditadura militar no Brasil. A forma encontrada pelo eu lírico para expressar poeticamente esse momento demonstra que:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "a ênfase na força dos militares não é afetada por aspectos negativos, como o mau cheiro atribuído ao general",
+      "a descrição quase geométrica da aparência física do general expõe a rigidez e a racionalidade do governo",
+      "a constituição de dinastias ao longo da história parece não fazer diferença no presente em que o tempo evapora",
+      "a possibilidade de resistir está dada na renovação e transformação proposta pela poesia, química que desvela e repõe",
+      "a resistência não seria possível, uma vez que as vítimas, representadas pelos pássaros, pensavam apenas nas próprias penas\"\n.\nTópico: Literatura e engajamento.\nSubtópico: Ditadura militar e resistência poética.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469557-62-d470a9b7",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"Meu povo, meu poema\". \"Meu povo e meu poema crescem juntos / Como cresce no fruto / A árvore nova\"\n\"No povo meu poema vai nascendo / Como no canavial / Nasce verde o açúcar\". \"No povo meu poema está maduro / Como o sol / Na garganta do futuro\". \"Meu povo em meu poema / Se reflete / Como espiga se funde em terra fértil\". \"Ao povo seu poema aqui devolvo / Menos como quem canta / Do que planta\"\nO texto “Meu povo, meu poema”, de Ferreira Gullar, foi escrito na década de 1970. Nele, o diálogo com o contexto sociopolítico em que se insere expressa uma voz poética que:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "precisa do povo para produzir seu texto, mas se esquiva de enfrentar as desigualdades sociais",
+      "dilui a importância das contingências políticas e sociais na construção de seu universo poético",
+      "associa o engajamento político à grandeza do fazer poético, fator de superação da alienação do povo",
+      "afirma que a poesia depende do povo, mas esse nem sempre vê a importância daquela nas lutas de classe",
+      "reconhece, na identidade entre o povo e a poesia, uma etapa de seu fortalecimento humanos e social\"\n.\nTópico: Literatura e engajamento.\nSubtópico: Ferreira Gullar e o compromisso social.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469558-63-b2f2f39b",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"Morte e vida Severina\". \"Somos muitos Severinos / iguais em tudo na vida: / na mesma cabeça grande / que a custo é que se equilibra, / no mesmo ventre crescido / sobre as mesmas pernas finas, / e iguais também porque o sangue / que usamos tem pouca tinta\"\n\"E se somos Severinos / iguais em tudo na vida, / morremos de morte igual, / mesma morte Severina: / que é a morte de que se morre / de velhice antes dos trinta / de emboscada antes dos vinte, / de fome um pouco por dia\"\nNesse fragmento, parte de um auto de Natal, o poeta retrata uma situação marcada pela:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "presença da morte, que universaliza os sofrimentos dos nordestinos",
+      "figura do homem agreste, que encara eternamente sua condição de pobreza",
+      "descrição sentimentalista de Severino, que divaga sobre questões existenciais",
+      "miséria, a qual muitos nordestinos estão expostos, simbolizada na figura de Severino",
+      "opressão socioeconômica a que todo ser humano se encontra submetido\"\n.\nTópico: Literatura e engajamento.\nSubtópico: Regionalismo e miséria no Nordeste (João Cabral de Melo Neto).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469558-64-2d68d0dc",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Os ombros suportam o mundo\". \"Chega um tempo em que não se diz mais: meu deus. / Tempo de absoluta depuração. / Tempo em que não se diz mais: meu amor. / Porque o amor resultou inútil\"\n\"E os olhos não choram. / E as mãos tecem apenas o rude trabalho. / E o coração está seco. / Em vão as mulheres batem à porta, não abrirás. / Ficaste sozinho, a luz apagou-se, / mas na sombra teus olhos resplandecem enormes\"\n\"És todo certeza, já não sabes sofrer. / E nada esperas de teus amigos. / Pouco importa venha a velhice, que é a velhice? / Teus ombros suportam o mundo\"\nNesse sentido, no poema, projeta-se uma imagem de homem cuja principal característica é a:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "alienação, evidenciada na tentativa diária de desligamento do mundo por meio do afastamento",
+      "ambiguidade, pois, apesar de alienado pelo trabalho, luta obstinadamente por ele",
+      "conscientização, revelada na representação da luta contra a exploração do trabalho",
+      "culpa, que advém da perda da sensibilidade causada pelo sistema capitalista, apesar do conforto material",
+      "impotência, mostrada pela alternância entre sentimentos de resignação e possibilidade\"\n.\nTópico: Literatura e engajamento.\nSubtópico: Desencanto e impotência moderna (Carlos Drummond de Andrade).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469558-65-ed63bf1a",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"Rondó da Liberdade\". \"É preciso não ter medo, é preciso ter a coragem de dizer\"\n\"Há os que têm vocação para escravo, mas há os escravos que se revoltam contra a escravidão\"\n\"Não ficar de joelhos, que não é racional renunciar a ser livre. Mesmo os escravos por vocação devem ser obrigados a ser livres, quando as algemas forem quebradas. / É preciso não ter medo, é preciso ter a coragem de dizer. / O homem deve ser livre... O amor é que não se detém ante nenhum obstáculo, e pode mesmo existir até quando não se é livre\"\n(A ideia defendida para a liberdade humana é uma):",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "condição para a liberdade de expressão",
+      "estado transitório na experiência humana",
+      "estágio para alcançar o amor",
+      "impossibilidade na sociedade moderna",
+      "obrigação para todos os seres humanos\"\n.\nTópico: Literatura e engajamento.\nSubtópico: Luta pela liberdade e resistência.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469558-66-bdc97587",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Capítulo XI\". \"Prudêncio, um moleque de casa, era o meu cavalo de todos os dias; punha as mãos no chão, recebia um cordel nos queixos, à guisa de freio, eu trepava-lhe ao dorso, com uma varinha na mão, fustigava-o, dava mil voltas a um e outro lado, e ele obedecia – algumas vezes gemendo –, mas obedecia sem dizer palavra, ou, quando muito, um “ai, nhonhô!” – ao que eu retorquia: – “Cala a boca, besta!”\"\n\"Capítulo LXVIII\". \"Era um preto que vergalhava outro na praça. O outro não se atrevia a fugir; gemia somente estas únicas palavras: “– Não, perdão meu senhor; meu senhor, perdão!”\"\n\"[...] Quem havia de ser o do vergalho? Nada menos que o meu moleque Prudêncio, – o que meu pai libertara alguns anos antes. [...] comprou um escravo, e ia-lhe pagando, com alto juro, as quantias que de mim recebera\"\nOs fragmentos anteriores, retirados de Memórias póstumas de Brás Cubas, de Machado de Assis, estão atrelados ao contexto do fim do século XIX. Em relação ao escravismo, nesses trechos, o autor destaca a:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "mudança na mentalidade da sociedade da época, que vislumbrava um modelo social e político pautado na liberdade de todos",
+      "não aceitação da escravidão pelo negro no Brasil, que também demonstrava seu poder quando se tornava livre",
+      "ironia do sistema escravista no Brasil, marcado pela retroalimentação, na qual o escravo alforriado tornava-se dono de seu próprio escravo",
+      "conscientização, por parte do senhor branco, da condição de humilhação e degradação do negro no Brasil",
+      "indignação da população da época em relação aos castigos físicos sofridos pelos negros em lugares públicos\"\n.\nTópico: Literatura e engajamento.\nSubtópico: Realismo de Machado de Assis e Escravismo.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469558-67-e53aa21c",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "Texto I: \"Mas o Rio continua lindo\". \"Pensa o desempregado / ao pular do Corcovado\"\nTexto II: \"Poema tirado de uma notícia de jornal\". \"João Gostoso era carregador de feira livre e morava no morro da Babilônia num barracão sem número / Uma noite ele chegou no bar Vinte de Novembro / Bebeu / Cantou / Dançou / Depois se atirou na lagoa Rodrigo de Freitas e morreu afogado\"\nOs textos literários, apesar de não terem estreito compromisso com a representação da realidade, podem procurar reconstruir retratos da sociedade e do perfil da população de sua época de produção. Nesse sentido, os textos anteriores aproximam-se por:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "representar uma paisagem natural ignorada pelos brasileiros no dia a dia",
+      "revelar fatos do cotidiano brasileiro que são ignorados pelos jornais",
+      "apresentar tragédias corriqueiras com um tratamento pouco comum",
+      "representar a morte do brasileiro comum dando-lhe um tratamento elevado",
+      "revelar os pensamentos dos personagens diante de suas próprias tragédias\"\n.\nTópico: Literatura e engajamento.\nSubtópico: Cotidiano e Tragédia Urbana.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469558-68-a491b7cd",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Privilégio do mar\". \"Neste terraço mediocremente confortável, bebemos cerveja e olhamos o mar. Sabemos que nada nos acontecerá\"\n\"O edifício é sólido e o mundo também. Sabemos que cada edifício abriga mil corpos labutando em mil compartimentos iguais\"\n\"Às vezes, alguns se inserem fatigados no elevador e vem cá em cima respirar a brisa do oceano, o que é privilégio dos edifícios\"\nNesse sentido, no poema anterior, há uma imagem representativa de uma situação de comodismo, a qual é centrada no termo:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "“terraço”, metonímia dos bairros nos quais a população mais pobre consegue descanso após uma rotina de trabalho",
+      "“mil corpos”, hipérbole que exemplifica o caráter surreal e urgente da situação retratada pelo eu poético",
+      "“cimento armado”, personificação para a estabilidade econômica conquistada pelo Brasil no governo Vargas",
+      "“marinheiros fiéis”, alegoria que sugere um futuro permeado por um acirramento de tensões decorrentes da guerra",
+      "“cerveja”, metáfora crítica da futilidade e da alienação presentes nas elites brasileiras\n.\nTópico: Literatura e engajamento.\nSubtópico: Crítica à alienação e comodismo.\n--------------------------------------------------------------------------------\nTÓPICO 8: Artes visuais como produto cultural e histórico"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469558-69-26cf7a3c",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"A revolução estética brasiliense empurrou os designers de móveis dos anos 1950 e início dos 60 para o novo\"\n\"Induzidos a abandonar o gosto rebuscado pelo colonial, a trocar Ouro Preto por Brasília, eles criaram um mobiliário contemporâneo que ainda hoje vemos nas lojas e nas salas de espera de consultórios e escritórios. Colada no uso de madeiras nobres, coma o jacarandá e a peroba, e em materiais de revestimento como o couro e a palhinha, desenvolveu-se uma tendência feita de linhas retas e curvas suaves, nos moldes da capital no Cerrado\"\nA reportagem e a fotografia apresentam os móveis elaborados pelo artista Sérgio Rodrigues, com um estilo que norteou o pensamento de uma geração, desafiando a arte a:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "evidenciar um novo conceito estético por meio de formas e texturas inovadoras",
+      "adaptar os móveis de Brasília aos modelos das escolas europeias do início do século IX",
+      "elaborar a decoração dos palácios da nova capital do Brasil com conceitos de linha e perspectiva",
+      "projetar para os palácios e edifícios da nova capital do Brasil a beleza do mobiliário típico de Minas Gerais",
+      "criar o mobiliário para a capital do país com base no luxo e na riqueza dos edifícios públicos brasileiros\"\n.\nTópico: Artes visuais como produto cultural e histórico.\nSubtópico: Design e Movimento Modernista no Brasil (Sérgio Rodrigues).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469558-70-fb41ccba",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"Sem formação acadêmica específica em artes visuais, Heitor dos Prazeres, que também é compositor e instrumentista, é reconhecido artista popular do Rio de Janeiro. Suas pinturas de perspectivas imprecisas e com tacos bem demarcados são figurativas e sugerem movimento\"\nEssa obra retrata:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "a confraternização de uma população socialmente marginalizada",
+      "o inconformismo da população de baixa renda da capital",
+      "o cotidiano da burguesia contemporânea da capital",
+      "a instabilidade de uma realidade rural do Brasil",
+      "a solidariedade da população nordestina\"\n.\nTópico: Artes visuais como produto cultural e histórico.\nSubtópico: Arte naif e cultura marginalizada (Heitor dos Prazeres).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469558-71-bf5c0a26",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Rompendo com as paredes retas e com a geometrização clássica acadêmica, os arquitetos modernistas desenvolveram seus projetos graças também a um momento de industrialização e modernização do Brasil\"\nObservando a imagem apresentada (Palácio da Alvorada, de Oscar Niemeyer), analisa-se que:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Niemeyer projetou os edifícios de Brasília com a intenção de impor a arquitetura sobre a natureza, seguindo os princípios da arquitetura moderna",
+      "o Palácio da Alvorada, em Brasília, na posição horizontal permite fazer uma integração do edifício com a paisagem do cerrado e o horizonte, um conceito de vanguarda para a arquitetura da época",
+      "Niemeyer projetou o Palácio da Alvorada com colunas de linhas quebradas e rígidas, com o propósito de unir as tendências recentes da arquitetura moderna",
+      "os prédios de Brasília são elevados e sustentados por colunas, deixando um espaço livre sob o edifício, com o objetivo de separar o ambiente externo do interno",
+      "Niemeyer projetou os edifícios de Brasília com espaços amplos, colunas curvas, janelas largas e grades de proteção...\"\n.\nTópico: Artes visuais como produto cultural e histórico.\nSubtópico: Arquitetura Modernista Brasileira (Oscar Niemeyer).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469558-72-a4fea217",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"LÉGER, F. Soldados jogando cartas. 1917\"\n\"As vanguardas europeias não devem ser vistas isoladamente, uma vez que elas apresentam alguns conceitos estéticos e visuais que se aproximam. Com base nos conceitos vanguardistas, entre eles o de exploração de formas geometrizadas do Cubismo, no início do século XX, o quadro Soldados jogando cartas explora uma:\"\n",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "abordagem sentimentalista do homem",
+      "imagem plana para expressar a industrialização",
+      "aproximação impossível entre máquina e homem",
+      "uniformidade de tons como crítica à industrialização",
+      "mecanização do homem expressa por formas tubulares\"\n.\nTópico: Artes visuais como produto cultural e histórico.\nSubtópico: Vanguardas Europeias (Cubismo).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469558-73-838eceb2",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Uma tendência que teve crescente importância no meio artístico e que constituiu um dos mais notáveis fenômenos da arte do século XIX [...] foi o realismo\"\n\"Para estes pintores, apenas a realidade visível constituía a matéria-prima e fundamental da pintura. A obra de arte tinha como função representá-la: com fidelidade para com a “natureza” termo que, aliás, podia substituir indistintamente o de realidade\"\nA imagem que melhor representa a tendência artística mencionada é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "William Turner - Iate a aproximar-se da costa",
+      "Pierre-Auguste Renoir - O passeio",
+      "Alfred Sisley - Vista do Canal Saint-Martin em Paris",
+      "Vincent van Gogh - Autorretrato com chapéu de feltro",
+      "Jean-François Millet - As respigadeiras\n.\nTópico: Artes visuais como produto cultural e histórico.\nSubtópico: Realismo no Século XIX.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469559-74-544d38fe",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"O retrato é um dos gêneros mais poderosos das artes visuais, com presença e influência constantes na história da arte, dos tempos mais remotos à contemporaneidade mais ousada\"\n\"[...] Em 1969, no prefácio escrito por Félibien para uma coletânea das conferências feitas na Academia Francesa dois anos antes, aparece uma categorização dos gêneros da arte que colocava a pintura histórica em primeiro lugar de importância\"\n\"[...] E mostrava a vida dos santos, dos heróis da mitologia, reais ou imaginários, bem como a realeza e os feitos históricos que se deveria venerar, como as conquistas militares e as ações em prol da pátria e da nação\"\nA alternativa que apresenta um exemplo de “pintura histórica” conforme mencionada pelo curador Teixeira Coelho é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Pablo Picasso - Busto de Homem (O Atleta) – 1909",
+      "Henry Raeburn - General Sir William Maxwell (1810-1815)",
+      "Candido Portinari - A Senhora Aimeé (1945)\n. (Nota: As opções D e E encontram-se omitidas visualmente no documento de origem, mas o gabarito oficial baseia-se nestas figuras).\nTópico: Artes visuais como produto cultural e histórico.\nSubtópico: Gêneros de pintura (Pintura Histórica).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469559-75-e6580a29",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Difícil.",
+    "contexto": "(No material, enumerada como questão 08 de Artes Visuais) \"Texto I: Caravaggio. Texto II: Vincent van Gogh. Natureza morta é o nome dado a uma pintura que retrata principalmente seres inanimados, geralmente objetos comuns. Eles podem ser naturais, como flores, plantas, pedras, ou artificiais, como livros, vasos e joias\"\nApesar de se tratarem de representações de natureza morta pertencentes a períodos artísticos distintos, pode-se dizer que as imagens apresentam em comum a(o):",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "apuro da técnica tradicionalista para retratar objetos inanimados",
+      "ausência de envolvimento emocional com os objetos inanimados",
+      "busca pelo belo clássico existente nos objetos inanimados",
+      "falta de contornos definidos no desenho dos objetos inanimados",
+      "olhar particular e expressivo dos artistas sobre os objetos inanimados\"\n.\nTópico: Artes visuais como produto cultural e histórico.\nSubtópico: Natureza Morta em diferentes períodos.\n--------------------------------------------------------------------------------\nGABARITO DESTE BLOCO (QUESTÕES 61 A 75)\nLiteratura e engajamento (continuação):\n61 (03 original): D\n62 (04 original): E\n63 (05 original): D\n64 (06 original): E\n65 (07 original): E\n66 (08 original): C\n67 (09 original): C\n68 (10 original): E\nArtes visuais como produto cultural e histórico:\n69 (01 original): A\n70 (02 original): A\n71 (03 original): B\n72 (04 original): E\n73 (05 original): E\n74 (06 original): B\n75 (08 original): B"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469559-76-8a1828ad",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"Na tirinha, o autor utiliza estratégias para atingir sua finalidade comunicativa. Considerando os elementos verbais e não verbais que constituem o texto, seu objetivo é\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "incentivar o uso da tecnologia na comunicação contemporânea",
+      "mostrar o empenho do homem na resolução de problemas sociais",
+      "atrair a atenção do leitor para a generosidade das pessoas",
+      "chamar a atenção para o constante abandono de animais",
+      "fazer uma crítica à situação social contemporânea.\"\nTópico: Construção de sentido em texto verbo-visual.\nSubtópico: Crítica social em tirinhas.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469559-77-fdf77ae5",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"No processo de modernização apresentado na tirinha, Mafalda depara-se com um contraponto entre\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "o domínio dos modos de produção e a geração de novas ferramentas com a tecnologia de informação e comunicação",
+      "o acompanhamento das mudanças na sociedade e o surgimento de novas opiniões de vida e trabalho com a cibernética",
+      "a constatação do avanço da tecnologia e a proposição de reprodução de velhas práticas com novas máquinas",
+      "a apresentação de novas perspectivas de vida e trabalho para a mulher com os avanços das tecnologias de informação",
+      "a aplicação da cibernética e o descontentamento com a passividade do cotidiano das mulheres no trabalho de corte e costura.\"\nTópico: Construção de sentido em texto verbo-visual.\nSubtópico: Humor e reflexão sobre a modernidade.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469559-78-9e0a96b5",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"O texto apresentado emprega uma estratégia de argumentação baseada em recursos verbais e não verbais, com a intenção de\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "desaconselhar a ingestão de biscoitos, taxados de inimigos de uma alimentação saudável",
+      "associar a imagem da guloseima a um traço negativo, que se concretiza na utilização do termo 'desafio'",
+      "alertar para um problema mundial como se prevê em 'globesidade', relacionando o açúcar, representado pelo doce, a um vilão",
+      "ironizar a importância do problema, por meio do tom dramático da linguagem empregada, como se vê no uso de 'culpado' e 'vilão'",
+      "atestar a redução do consumo de alimentos calóricos, como o biscoito, desencadeada pelas recentes divulgações de pesquisas...\"\nTópico: Construção de sentido em texto verbo-visual.\nSubtópico: Saúde pública e linguagem apelativa.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469559-79-9a869043",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"Na tira, o recurso utilizado para produzir humor é a\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "transformação da inércia em movimento por meio do balanço",
+      "universalização do enunciador por meio do uso da primeira pessoa do plural",
+      "polissemia da palavra balanço, ou seja, seus múltiplos sentidos",
+      "pressuposição de que o ócio é melhor que o trabalho",
+      "metaforização da vida como caminho a ser seguido continuamente.\"\nTópico: Construção de sentido em texto verbo-visual.\nSubtópico: Polissemia e duplo sentido.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469559-80-1630060f",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"A língua é um patrimônio cultural indispensável para a preservação da memória e da identidade de um povo. Nesse contexto, percebe-se, na tirinha, uma crítica\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "à falta de assistência familiar no que se refere à educação escolar dos filhos",
+      "à língua em si, cheia de regras e normas gramaticais desnecessárias",
+      "escrita dos livros em linguagem muito rebuscada, o que dificulta o entendimento dos leitores",
+      "à influência dos estrangeirismos na língua, em especial, daqueles provenientes do inglês",
+      "ao ensino da língua que, devido à metodologia utilizada, desestimula os alunos.\"\nTópico: Construção de sentido em texto verbo-visual.\nSubtópico: Estrangeirismos e patrimônio cultural.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469559-81-b3bd0cbc",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Tirinhas são publicações em que se aliam o verbal e o não verbal com o intuito de provocar o riso, ou de satirizar certos contextos sociais. O humor, muitas vezes sutil, é alcançado ao se atingir uma perspectiva inusitada. Na tirinha anterior, o humor pode ser percebido pelo(a)\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "contraste entre a pianista e o frequentador do bar ao longo da tirinha",
+      "erudição demonstrada pelo frequentador do bar no último quadrinho",
+      "desdém com que a pianista responde ao frequentador do bar",
+      "ausência de interlocução no primeiro e quarto quadrinhos",
+      "falsa erudição do frequentador de bar, confirmada no último quadrinho.\"\nTópico: Construção de sentido em texto verbo-visual.\nSubtópico: Quebra de expectativa e ironia.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469559-82-8c3b451c",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Difícil.",
+    "contexto": "\"Na tirinha anterior, o interlocutor de Garfield lhe oferece um alimento diferenciado. As características desse alimento e a reação de Garfield provocam o humor a partir da ideia de\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "conclusão",
+      "consequência",
+      "progressão",
+      "ratificação",
+      "retificação.\"\nTópico: Construção de sentido em texto verbo-visual.\nSubtópico: Progressão lógica e humor.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469559-83-fc4a8470",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Na charge anterior, estabelece-se um paralelo entre ricos e pobres com o objetivo de explicitar o\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "descaso com o problema dos ricos, personificado no psicanalista",
+      "sentimento de culpa generalizado na sociedade contemporânea",
+      "servilismo dos pobres, caracterizado pelo homem ajoelhado",
+      "tipo de ajuda a que diferentes camadas socioeconômicas têm acesso",
+      "tratamento diferenciado que as religiões oferecem aos fiéis em função da renda.\"\nTópico: Construção de sentido em texto verbo-visual.\nSubtópico: Crítica social e desigualdade.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469559-84-a21d02a5",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"A tirinha denota a postura assumida por seu produtor frente ao uso social da tecnologia para fins de interação e de informação. Tal posicionamento é expresso, de forma argumentativa, por meio de uma atitude\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "crítica, expressa pelas ironias",
+      "resignada, expressa pelas enumerações",
+      "indignada, expressa pelos discursos diretos",
+      "agressiva, expressa pela contra-argumentação",
+      "alienada, expressa pela negação da realidade.\"\nTópico: Construção de sentido em texto verbo-visual.\nSubtópico: Comportamento digital e ironia.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469559-85-6bab794f",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"O ditado popular que pode ser associado ao efeito de humor presente na tirinha é:\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Em casa de ferreiro, espeto é de pau",
+      "Fala o sujo do mal lavado",
+      "Não te metas no que não te diz respeito",
+      "Para bom entendedor, meia palavra basta",
+      "Quem jura é quem mais mente.\"\nTópico: Construção de sentido em texto verbo-visual.\nSubtópico: Intertextualidade com provérbios populares.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469559-86-51c03c0a",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Dois ciclistas profissionais chocaram-se em um parque público e culparam a ineficiência da sinalização local, uma vez que ambos leram e respeitaram a placa dirigida a esse tipo de esportista. Os fatos relatados e a leitura da referida placa revelam que\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "a obediência às regras de segurança é fundamental na prática de esportes",
+      "a prática de esporte dificulta a concentração do ciclista em outras informações",
+      "a interpretação dos textos pode ser prejudicada por equívocos em sua elaboração",
+      "a capacidade de leitura do ciclista é fundamental para o alcance de um bom rendimento físico",
+      "a responsabilidade pelas informações produzidas pelas placas de trânsito é de quem vai usar a via pública.\"\nTópico: Construção de sentido em texto verbo-visual.\nSubtópico: Ambiguidade e comunicação visual.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469559-87-3953d1c4",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"A crítica social que se depreende da charge está centrada na venda nos olhos de um dos bebês, a qual denuncia a\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "abundância do número de filhos que caracteriza as classes pobres",
+      "discriminação social latente, que se inicia desde o nascimento da criança",
+      "possibilidade de convivência social entre ricos e pobres",
+      "precariedade das condições em que se encontram as maternidades brasileiras",
+      "preocupação por parte dos funcionários no que se refere ao estado físico do bebê.\"\nTópico: Construção de sentido em texto verbo-visual.\nSubtópico: Charge e desigualdade social desde o nascimento.\n--------------------------------------------------------------------------------\nTÓPICO 10: Textos publicitários"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469559-88-5705e08f",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Essa propaganda visa convencer as mães de que o canal de televisão é adequado aos seus filhos. Para tanto, o locutor dirige-se ao interlocutor por meio de estratégias argumentativas de\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "manipulação, ao detalhar os programas infantis que compõem a grade da emissora",
+      "persuasão, ao evidenciar as características da programação dirigida ao público infantil",
+      "intimidação, ao dirigir-se diretamente às mães para chamá-las a reflexão",
+      "comoção, ao tranquilizar as mães sobre a qualidade dos programas da emissora",
+      "comparação, ao elencar os serviços oferecidos por outras emissoras ao público infantil.\"\nTópico: Textos publicitários.\nSubtópico: Estratégias argumentativas (persuasão).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469560-89-84cef2b9",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"O cartão-postal é um gênero textual geralmente usado por turistas quando estão viajando, para enviar, aos que ficaram, imagens dos lugares visitados. Entretanto, o cartão-postal apresentado é uma peça publicitária, e reconhece-se nela a intenção de\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "apresentar uma paisagem de um local específico, conteúdo recorrente em um cartão-postal",
+      "incentivar as pessoas de uma cidade a enviar cartões-postais umas para as outras",
+      "instituir um novo tipo de cartão-postal, o virtual, a ser comercializado em um site da Internet",
+      "fazer propaganda de um ponto turístico romântico específico, atraindo a visitação por casais",
+      "comemorar a data da instituição do cartão-postal no Brasil, ainda na época do Império.\"\nTópico: Textos publicitários.\nSubtópico: Hibridismo de gêneros.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469560-90-41af1558",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"As propagandas fazem uso de diferentes recursos para garantir o efeito apelativo, isto é, o convencimento do público em relação ao que apresentam. O cartaz da campanha promovida pelo Ministério da Saúde utiliza vários recursos, verbais e não verbais, como estratégia persuasiva, dentre os quais se destaca\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "a ligação estabelecida entre as palavras 'hábito' e 'hemocentro', explorando a ideia de frequência",
+      "a relação entre a palavra 'corrente', a imagem das pessoas de mãos dadas e a mão estendida ao leitor",
+      "o emprego da expressão 'Um grande ato', despertando a consciência das pessoas para o sentimento de solidariedade",
+      "a apresentação da imagem de pessoas saudáveis, estratégia adequada ao público-alvo da campanha",
+      "a associação entre o grande número de pessoas no cartaz e o número de pessoas que precisam receber sangue em nosso país.\"\nTópico: Textos publicitários.\nSubtópico: Linguagem apelativa e solidariedade.\n--------------------------------------------------------------------------------\nGABARITO DESTE BLOCO (QUESTÕES 76 A 90)\nConstrução de sentido em texto verbo-visual:\n76 (01 original): E\n77 (02 original): C\n78 (03 original): C\n79 (04 original): C\n80 (05 original): D\n81 (06 original): E\n82 (07 original): C\n83 (08 original): D\n84 (09 original): A\n85 (10 original): B\n86 (11 original): C\n87 (12 original): B\nTextos publicitários:\n88 (01 original): B\n89 (02 original): E\n90 (03 original): B\n\nAqui está o 7º Bloco (Questões 91 a 105), que finaliza o eixo de \"Textos publicitários\" e avança até um pouco mais da metade do tópico \"Função social dos gêneros textuais\"\n.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469560-91-c0cf4011",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Os anúncios publicitários, em geral, utilizam as linguagens verbal e não verbal com a intenção de influenciar comportamentos\"\n\"Os recursos linguísticos e imagéticos presentes na propaganda da ABP convergem para\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "reforçar o caráter informativo do anúncio sobre a realização do evento de publicidade",
+      "mostrar que ideias ruins ou mal-elaboradas também podem causar algum tipo de poluição",
+      "definir os critérios para a participação no Festival Brasileiro de Publicidade de 2011",
+      "comparar a poluição ocasionada por ideias ruins e a originada pela ação humana",
+      "estimular os publicitários a se inscreverem no Festival Brasileiro de Publicidade de 2011\"\n.\nTópico: Textos publicitários.\nSubtópico: Campanhas institucionais e persuasão.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469560-92-110813be",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"A unidade de sentido de um texto se constrói a partir daquilo que é dito, daquilo que não é dito, a partir do modo de se dizer, dos motivos, das aparências, do contexto\"\n\"Nesse sentido, a partir da leitura do anúncio, depreende-se que\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "a referência à proibição de beber no trânsito é feita a partir da intertextualidade entre a placa de trânsito, que normalmente remete à ideia de proibição, tendo ao fundo a imagem de uma garrafa",
+      "a relação estabelecida entre a frase “novo sinal de trânsito” e a parte não verbal permite estabelecer um público-alvo específico, ou seja, pessoas envolvidas com o álcool",
+      "o adjetivo “novo”, seguido do substantivo “sinal” empregado no anúncio, remete à ideia de que agora existe uma nova placa de trânsito que deve ser respeitada pelos motoristas",
+      "o anúncio tem uma finalidade específica inter-relacionada, nesse caso, à ideia de persuadir as pessoas a não consumirem bebidas alcoólicas, pois elas fazem mal à saúde",
+      "a conexão estabelecida entre a placa de trânsito e a imagem da garrafa é construída com o objetivo de evidenciar quais são os motivos que levam as pessoas a não ingerirem bebida alcoólica enquanto estão dirigindo\"\n.\nTópico: Textos publicitários.\nSubtópico: Linguagem visual e intertextualidade.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469560-93-5f5d1603",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Círculo vicioso é a sucessão de períodos em que a troca entre causa e consequência resulta em continuação ininterrupta do enunciado\"\n\"Um slogan publicitário explora bem essa estrutura: “Tostines vende mais porque é fresquinho; ou é fresquinho porque vende mais?”\"\n\"O círculo vicioso presente no slogan tem como objetivo\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "explicitar a qualidade dos produtos da empresa divulgadora do anúncio",
+      "explorar a relação entre as características do produto, comprovando sua qualidade",
+      "expor a ideia de que o biscoito é de ótima qualidade, porque é fresquinho",
+      "exteriorizar o pensamento de que o produto é de baixo preço, por isso vende mais",
+      "transmitir a ideia de que o biscoito possui boa aceitação por parte do público infantil\"\n.\nTópico: Textos publicitários.\nSubtópico: Relações lógicas e Slogans.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469560-94-f86a3ae5",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Nove anos mais lembrado que iogurte, nove anos mais lembrado que carro, nove anos mais lembrado que refrigerante, nove anos a marca mais lembrada entre todas as marcas do Brasil no Top of Mind da Folha\"\n\"Omo. A marca que sempre pensa na consumidora em 1º lugar...\"\n\"A publicidade anterior funciona a partir da fusão de palavra e imagem com o objetivo de\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "afirmar que o fato de o sabão Omo ser eleito, pela nona vez, o mais lembrado deve-se à sua popularidade e presença nas residências",
+      "apontar que a marca foi eleita pela nona vez a mais lembrada entre os consumidores e explicitar que o produto se refere ao sabão em pó Omo",
+      "destacar que a marca foi eleita pela nona vez a mais lembrada e ressaltar a fidelidade entre a marca e o consumidor ao longo dos anos",
+      "informar que a marca foi a mais lembrada pela nona vez entre os consumidores e relacionar o prendedor e o sabão, pois ambos se relacionam a roupa",
+      "validar o conceito de Omo como o melhor sabão em pó, pois foi eleito pela nona vez o mais lembrado entre os consumidores, que aprovam a sua qualidade\"\n.\nTópico: Textos publicitários.\nSubtópico: Associação imagem-texto e persuasão.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469560-95-a56c4647",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Difícil.",
+    "contexto": "\"O texto publicitário anterior apresenta a seguinte informação: “Você só pode resgatar suas passagens do TAM Fidelidade numa época predefinida: qualquer hora.”\"\n\"A expressão em negrito é a responsável pela produção do sentido desejado pela publicidade, porque\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "estabelece com o restante do texto uma relação de complementação, reafirmando as informações anteriores a ela",
+      "apresenta uma informação contraditória em relação ao restante do texto, porém enfatizando a eficiência da empresa",
+      "relativiza o entendimento do texto como um todo, uma vez que contradiz as expectativas criadas pelo leitor",
+      "sustenta o intuito de mostrar ao leitor que, apesar de a época ter de ser predefinida, o serviço é contínuo, 24 horas",
+      "apresenta uma opção mais vantajosa ao consumidor em relação a outras empresas, apesar de impor certa restrição\"\n.\nTópico: Textos publicitários.\nSubtópico: Quebra de expectativa e ironia argumentativa.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469560-96-545ff639",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"A publicidade anterior utiliza como estratégia principal para atingir seu público-alvo o(a)\"\n (Nota: trata-se do anúncio paródico \"Hortifruti: Edward Mãos de Cenoura\"):",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "clareza e objetividade quanto aos produtos anunciados",
+      "garantia de boa procedência, ao dar relevância ao nome da empresa",
+      "humor, ao usar elementos alheios ao contexto da empresa divulgadora do produto",
+      "potencial qualidade dos produtos, comprovada pelas verduras apresentadas",
+      "respeito à natureza, referindo-se a ela como “estrela”\"\n.\nTópico: Textos publicitários.\nSubtópico: Humor e Paródia cinematográfica.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469561-97-275b5add",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Na publicidade anterior, considerando que o público-alvo é feminino, percebe-se que a união de elementos verbais e não verbais tem como intenção\"\n (Nota: Refere-se ao anúncio \"Um dia tão importante como este não pode ser comemorado com um pretinho básico. 8 de março\"):",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "destacar a importância das mulheres, que são homenageadas pelo anúncio",
+      "incitar a elegância da mulher moderna devido às suas demandas atuais",
+      "persuadir a leitora à compra de um veículo de outra cor que não a ilustrada",
+      "sugerir, indiretamente, uma crítica racial por meio de um jogo de palavras e imagens",
+      "vincular o poder feminino a um carro à altura da data comemorativa contemplada\"\n.\nTópico: Textos publicitários.\nSubtópico: Datas comemorativas e empoderamento na publicidade.\n--------------------------------------------------------------------------------\nTÓPICO 11: Função social dos gêneros textuais"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469561-98-8f0307a1",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"Para cumprir sua função social, o gênero notícia precisa divulgar informações novas\"\n\"No texto “Giocondas gêmeas”, além de ser confirmada a existência da uma tela gêmea de Mona Lisa e de serem destacadas as diferenças entre elas, o valor informativo do texto está centrado na\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "afirmação de que a Gioconda genuína estava na fase da meia-idade",
+      "revelação da identidade da mulher pintada por Da Vinci, a florentina Lisa Gherardini",
+      "consideração de que as produções artísticas de Da Vinci datam do período renascentista",
+      "descrição do fato de que a tela original mostra um manto sobre o ombro esquerdo da personagem",
+      "confirmação da hipótese de que Da Vinci teve assistentes que o auxiliaram em algumas de suas obras\"\n.\nTópico: Função social dos gêneros textuais.\nSubtópico: O gênero Notícia e seu propósito informativo.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469561-99-6601ebcd",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"O Jornal do Commércio deu um brado esta semana contra as casas que vendem drogas para curar a gente, acusando-as de as vender para outros fins menos humanos\"\n\"Mas todo ofício tem uma aprendizagem, e não há benefício humano que não custe mais ou menos duras agonias\"\n\"No gênero crônica, Machado de Assis legou inestimável contribuição para o conhecimento do contexto social de seu tempo e seus hábitos culturais\"\n\"O fragmento destacado comprova que o escritor avalia o(a)\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "manipulação inconsequente dos remédios pela população",
+      "uso de animais em testes com remédios desconhecidos",
+      "fato de as drogas manipuladas não terem eficácia garantida",
+      "hábito coletivo de experimentar drogas com objetivos terapêuticos",
+      "ausência de normas jurídicas para regulamentar a venda nas boticas\"\n.\nTópico: Função social dos gêneros textuais.\nSubtópico: A Crônica e o relato do cotidiano.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469561-100-80fe7677",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"Os gêneros textuais desempenham uma função social específica, em determinadas situações de uso da língua, em que os envolvidos na interação verbal têm um objetivo comunicativo\"\n\"Considerando as características do gênero, a análise do texto “Mães” revela que sua função é\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "ensinar sobre os cuidados que se deve ter com as mães, especialmente na velhice",
+      "influenciar o ânimo das pessoas, levando-as a querer agir segundo um modelo sugerido",
+      "informar sobre os idosos e sobre seus sentimentos e necessidades",
+      "avaliar matéria publicada em edição anterior de jornal ou de revista",
+      "apresentar nova publicação, visando divulgá-la para leitores de jornal\"\n.\nTópico: Função social dos gêneros textuais.\nSubtópico: Carta do Leitor.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469561-101-4cad288e",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"De acordo com a texto e com as informações fornecidas pelo gráfico, para aumentar as vendas de produtos, é necessário que a\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "campanha seja centrada em produtos alimentícios, a fim de aumentar a percentual de troca atual que se apresenta como o mais baixo",
+      "a preferência de um produto ocorra por influência da propaganda devido à necessidade emocional das marcas",
+      "a propaganda influencie na troca de marca e que o consumidor valorize a qualidade do produto",
+      "os produtos mais vendidos pelo comércio não sejam divulgados para o público como tal",
+      "as marcas de qualidade inferior constituam o foco da publicidade por serem mais econômicas\"\n.\nTópico: Função social dos gêneros textuais.\nSubtópico: Gráficos e pesquisa de mercado.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469561-102-13deaac4",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"Os gêneros textuais nascem emparelhados a necessidades e atividades da vida sociocultural\"\n\"Esse classificado procura convencer o leitor a comprar um imóvel e, para isso, utiliza-se\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "da predominância das formas imperativas dos verbos e da abundância de substantivos",
+      "de uma riqueza de adjetivos que modificam os substantivos, revelando as qualidades do produto",
+      "de uma enumeração de vocábulos, que visam conferir ao texto um efeito de certeza",
+      "do emprego de numerais, quantificando as características e aspectos positivos do produto",
+      "da exposição de opiniões de corretores de imóveis no que se refere a qualidade do produto\"\n.\nTópico: Função social dos gêneros textuais.\nSubtópico: Anúncio classificado e o uso de Adjetivos.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469561-103-4a4b0560",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Difícil.",
+    "contexto": "\"O trecho do sermão de Padre Vieira tem como objetivo, como o gênero sermão faz pressupor, a pregação de um certo padrão de conduta moral\"\n\"Essas sugestões se apresentam por meio do(a)\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "descrição de um tipo de desvio de caráter que é comum a indivíduos de diferentes níveis sociais",
+      "narração de uma situação em que o julgamento dos indivíduos é baseado em privilégios sociais",
+      "aconselhamento às pessoas a agirem de modo correto independentemente de seu status social",
+      "exposição de forma geral características de um desvio de caráter inerente à vida em sociedade",
+      "defesa da ideia de que o status de um indivíduo deve ser definido por sua posição social\"\n.\nTópico: Função social dos gêneros textuais.\nSubtópico: O Sermão religioso como gênero persuasivo.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469561-104-d02b1db8",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Na obra Recordações do escrivão Isaías Caminha, de Lima Barreto, há reflexões sobre a profissão do jornalista e o impacto que a imprensa escrita pode exercer na sociedade\"\n\"No excerto anterior, essa reflexão está centrada na\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "crítica à ausência de jornalistas nas delegacias brasileiras",
+      "desqualificação da profissão de jornalista",
+      "imparcialidade necessária ao jornalismo",
+      "importância da palavra escrita como uma forma de poder",
+      "relação entre criminosos e jornalistas\"\n.\nTópico: Função social dos gêneros textuais.\nSubtópico: O Romance e a denúncia social (Imprensa).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469561-105-c053086e",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Difícil.",
+    "contexto": "\"A poesia, ao contrário da filosofia, não é um conhecimento teórico da natureza humana, mas imita, narrativa ou dramaticamente, ações e sentimentos, feitos e virtudes, situações e vícios dos seres humanos\"\n\"De acordo com o texto, a poesia aproxima-se da filosofia pelo seu caráter\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "dramático, já que expõe os anseios humanos por meio das emoções",
+      "individualista, uma vez que enfatiza os aspectos humanos",
+      "sentimental, por representar uma revelação do interior dos humanos",
+      "singular, pois destaca uma harmonia entre o homem e o mundo",
+      "universal, porque não representa anseios de um ser específico\"\n.\nTópico: Função social dos gêneros textuais.\nSubtópico: Textos teóricos e ensaísticos.\n--------------------------------------------------------------------------------\nGABARITO DESTE BLOCO (QUESTÕES 91 A 105)\nTextos publicitários (continuação):\n91 (04 original): E\n92 (05 original): A\n93 (06 original): B\n94 (07 original): C\n95 (08 original): B\n96 (09 original): C\n97 (10 original): E\nFunção social dos gêneros textuais:\n98 (01 original): E\n99 (02 original): A\n100 (03 original): D\n101 (04 original): C\n102 (05 original): B\n103 (06 original): B\n104 (07 original): D\n105 (08 original): E"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469561-106-16e57ad4",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Compra coletiva pela Internet\". \"Com a reportagem “Agora a liquidação é em casa” (16 de fevereiro), fica claro como funciona o sistema de compra coletiva pela Internet, inovador no país e em crescente expansão\". \"A continuidade de empresas nesse setor depende exclusivamente do planejamento estratégico de cada site... Como investidora de um site de compra coletiva do interior paulista, acredito que, em alguns meses, o sucesso virá da segmentação de mercado, da busca por novas estratégias para destaque e diferenciação dos demais portais existentes\"\n\"O comentário anterior, veiculado na seção Carta do Leitor, aponta certas estratégias a serem consideradas a fim de se aperfeiçoar o mercado de compras coletivas. Segundo o texto, para uma empresa que investe nesse mercado ter sucesso, será necessário\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "diversificar a oferta de produtos a fim de estimular o número de vendas",
+      "inovar constantemente o site, buscando singularidade frente a outros sites",
+      "investir pesado em publicidade com o intuito de alcançar vários mercados diferentes",
+      "segmentar os departamentos de produtos para facilitar a compra",
+      "acompanhar as alterações no mercado não virtual, visando à inovação constante\"\n.\nTópico: Função social dos gêneros textuais.\nSubtópico: Carta do Leitor e comércio eletrônico.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469561-107-81fbba09",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"A técnica de “microcoagulação de nervos cardíacos”, desenvolvida por nossa equipe no Hospital do Coração, pode evitar o implante de marca-passo, porém somente nos pacientes que apresentam episódios de parada cardíaca originada pelo sistema nervoso\". \"Nesse grupo o marca-passo era a última opção de tratamento. É exclusivamente nesses casos que nossa técnica pode evitar o marca-passo. Todas as outras condições com pulso lento ou risco de “bloqueio cardíaco” continuam a ser tratadas com marca-passo cardíaco...\"\n\"O texto anterior foi publicado na seção de cartas dos leitores de uma revista de circulação nacional. Levando-se em consideração a especificidade desse gênero textual e as informações apresentadas, infere-se que o objetivo do autor é\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "contestar a validade de informações divulgadas pela revista",
+      "descrever uma técnica cirúrgica mencionada pela revista",
+      "esclarecer pormenores a respeito do assunto discutido pela revista",
+      "refutar a eficácia da técnica cirúrgica mencionada na revista",
+      "sintetizar o conteúdo da reportagem publicada na revista\"\n.\nTópico: Função social dos gêneros textuais.\nSubtópico: Carta de esclarecimento científico.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469561-108-253a4cad",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Já reparei uma coisa: bola de futebol, seja nova, seja velha, é um ser muito compreensivo, que dança conforme a música: se está no Maracanã, numa decisão de título, ela rola e quiçá com um ar dramático, mantendo sempre a mesma pose adulta... Em compensação, num racha de menino, ninguém é mais sapeca: ela corre para cá, corre para lá... Parece um bichinho\"\n\"O texto expressa a visão do cronista sobre a bola de futebol. Entre as estratégias escolhidas para dar colorido a sua expressão, identifica-se, predominantemente, uma função da linguagem caracterizada pela intenção do autor em\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "manifestar o seu sentimento em relação ao objeto bola",
+      "buscar influenciar o comportamento dos adeptos do futebol",
+      "descrever objetivamente uma determinada realidade",
+      "explicar o significado da bola e as regras para seu uso",
+      "ativar e manter o contato dialógico com o leitor\"\n.\nTópico: Função social dos gêneros textuais.\nSubtópico: Crônica e Função Poética/Expressiva da linguagem.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469562-109-3bb0e861",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"A cada verão, o Aedes aegypti, mosquito transmissor da dengue, traz preocupação para os brasileiros\". \"[Charge em que o mosquito Aedes aegypti aparece fazendo musculação, levantando grandes pesos de halteres]\". \"A charge retrata essa situação a que o país está submetido. Considerando os objetivos da charge, sua posição crítica se dá na medida em que\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "compara o mosquito a um esportista",
+      "enfatiza a poder de resistência do inseto",
+      "elege o mosquito como o vilão da saúde",
+      "atribui características humanas ao mosquito",
+      "ignora a gravidade da questão por meio do humor\"\n.\nTópico: Função social dos gêneros textuais.\nSubtópico: Charge social e saúde pública.\n--------------------------------------------------------------------------------\nTÓPICO 12: Intertextualidade e o processo social"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469562-110-69be673f",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Texto: Só é meu / O país que trago dentro da alma. / Entro nele sem passaporte / Como em minha casa. [...] As ruas me pertencem. / Mas não há casas nas ruas. / As casas foram destruídas desde a minha infância. [...] / Só é meu / O mundo que trago dentro da alma\"\n\"[Imagem associada: CHAGALL, M. Eu e a aldeia, com rostos sobrepostos a memórias de uma aldeia rural]\". \"A arte, em suas diversas manifestações, desperta sentimentos que atravessam fronteiras culturais. Relacionando a temática do texto com a imagem, percebe-se a ligação entre a\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "alegria e a satisfação na produção das obras modernistas",
+      "memória e a lembrança passadas no íntimo do enunciador",
+      "saudade e o refúgio encontrados pelo homem na natureza",
+      "lembrança e o rancor relacionados ao seu ofício original",
+      "exaustão e o medo impostos ao corpo de todo artista\"\n.\nTópico: Intertextualidade e o processo social.\nSubtópico: Diálogo entre poema e pintura (Memória).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469562-111-b6f9c26a",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"Texto I: Poema de sete faces. Mundo mundo vasto mundo, / Se eu me chamasse Raimundo / seria uma rima, não seria uma solução. / Mundo mundo vasto mundo, / mais vasto é meu coração\"\n\"Texto II: CDA (imitado). Ó vida, triste vida! / Se eu me chamasse Aparecida / dava na mesma\"\n\"Orides Fontela intitula seu poema CDA, sigla de Carlos Drummond de Andrade, e entre parênteses indica “imitado” porque, como nos versos de Drummond\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "apresenta o receio de colocar os dramas pessoais no mundo vasto",
+      "expõe o egocentrismo de sentir o coração maior que o mundo",
+      "aponta a insuficiência da poesia para solucionar os problemas da vida",
+      "adota tom melancólico para evidenciar a desesperança com a vida",
+      "invoca a tristeza da vida para potencializar a ineficácia da rima\"\n.\nTópico: Intertextualidade e o processo social.\nSubtópico: Paródia e intertextualidade poética.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469562-112-04e7d803",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"[Imagem I: Michelangelo. Pietà, século XI]\". \"[Imagem II: Vicente do Rego Monteiro. Pietà, 1924]\"\n\"Vicente do Rego Monteiro foi um dos pintores, cujas telas foram expostas durante a Semana de Arte Moderna. Tal como Michelangelo, ele se inspirou em temas bíblicos, porém com um estilo peculiar. Considerando-se as obras apresentadas, o artista brasileiro\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "estava preocupado em retratar detalhes da cena",
+      "demonstrou irreverência ao retratar a cena bíblica",
+      "optou por fazer uma escultura minimalista, diferentemente de Michelangelo",
+      "deu aos personagens traços cubistas, em vez dos traços europeus, típicos de Michelangelo",
+      "reproduziu o estilo da famosa obra de Michelangelo, uma vez que retratou a mesma cena bíblica\"\n.\nTópico: Intertextualidade e o processo social.\nSubtópico: Releitura e Modernismo (Cubismo).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469562-113-1ca18e50",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"[Cartum de Luscar mostrando um âncora de telejornal apontando para o mapa do Brasil e dizendo: 'E vamos à previsão de mortos e feridos para esta semana...']\"\n\"Nesse cartum, a artista lança mão do recurso da intertextualidade para construir o texto. Esse recurso se constitui pela presença de informações que remetem a outros textos. O emprego desse recurso no cartum revela uma crítica\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "à qualidade da informação prestada pela mídia brasileira",
+      "aos altos níveis de violência no país veiculados pela mídia",
+      "à imparcialidade dos telejornais na veiculação de informações",
+      "à ausência de critérios para divulgação de notícias em telejornais",
+      "ao incentivo da mídia a atos violentos na sociedade\"\n.\nTópico: Intertextualidade e o processo social.\nSubtópico: Cartum, mídia e interdiscursividade.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469564-114-c9883b0b",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"– Adiante... Não pares... Eu vejo. Canaã! Canaã! Mas o horizonte da planície se estendia pelo seio da noite e se confundia com os céus. Milkau não sabia para onde o impulso os levava... Começava a sentir a angustiada sensação de uma corrida no Infinito...\"\n\"A intertextualidade no trecho com o relato bíblico de Canaã assume uma função...\" (Nota: Parte das opções desta questão original foi omitida no material, mantendo apenas a alternativa de gabarito abaixo) E) \"crítica, pois retrata o desespero de quem não alcançou sua terra\"\n.\nTópico: Intertextualidade e o processo social.\nSubtópico: Referência bíblica na literatura brasileira (Graça Aranha).\n--------------------------------------------------------------------------------",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "crítica, pois retrata o desespero de quem não alcançou sua terra\"\n.\nTópico: Intertextualidade e o processo social.\nSubtópico: Referência bíblica na literatura brasileira (Graça Aranha).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469564-115-0c08b243",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"[Imagem de propaganda: A HORTIFRUTI APRESENTA: A OUTRA ALFACE. DOIS RIVAIS E UMA CERTEZA: A HORTIFRUTI NÃO TEM IGUAL. Aqui a natureza é a estrela]\"\n\"Para compor esse anúncio publicitário, utilizou-se de recursos verbais e não verbais, bem como de intertextualidade. Nesse sentido, para que se consiga atingir uma leitura adequada, o leitor precisa\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "ser informado acerca da distribuidora de frutas e verduras em questão",
+      "conhecer as releituras produzidas ao longo da história da arte",
+      "entender o significado das esculturas localizadas atrás da cenoura",
+      "utilizar seu repertório cultural e relacioná-lo ao anúncio sobre frutas e verduras",
+      "dominar um vasto repertório sobre questões vinculadas à Botânica\"\n.\nTópico: Intertextualidade e o processo social.\nSubtópico: Propaganda e paródia cinematográfica.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469564-116-79e0aadd",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"Texto I: Canção do exílio. Minha terra tem palmeiras, / Onde canta o Sabiá; / As aves que aqui gorjeiam, / Não gorjeiam como lá. / Nosso céu tem mais estrelas...\"\n\"Entre os textos anteriores [referindo-se ao Texto I e a um Texto II parodiando-o], há um diálogo intertextual classificado como\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "bricolagem",
+      "epígrafe",
+      "paráfrase",
+      "paródia",
+      "referência\"\n.\nTópico: Intertextualidade e o processo social.\nSubtópico: Relações intertextuais (Paródia vs Paráfrase).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469564-117-5b66a156",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"O que nos une. Minha amiga espanhola sabe cantar “Fulano roubou pão na casa do João...”. Em espanhol, naturalmente... Qual será a linha imaginária que liga sua mãe, em seu remoto povoado do País Basco, à minha tia Sofia, num subúrbio carioca, para ambas terem ensinado tal cançãozinha às suas meninas? Somos uma rede. Uma rede invisível e poderosa...\"\n\"Nesse fragmento de texto, apresenta-se uma breve reflexão sobre uma possível conexão entre os seres humanos, a qual não dependeria de contextos culturais ou distâncias espaciais. Para a autora, essa herança evidencia-se pela\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "comparação entre os costumes brasileiros e os espanhóis no que diz respeito às estratégias de preservação de tradições culturais",
+      "correlação entre os significados da letra da canção para as crianças no Brasil e para as crianças na Espanha",
+      "existência de traços linguísticos brasileiros e espanhóis presentes na canção popular",
+      "oposição entre elementos dos costumes familiares nas relações dos contextos brasileiro e espanhol",
+      "valorização da canção popular como um traço cultural que caracteriza a rede humana invisível de que todos fazemos parte\"\n.\nTópico: Intertextualidade e o processo social.\nSubtópico: Cantigas de roda e memória coletiva cultural.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469564-118-83339682",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Difícil.",
+    "contexto": "\"Um chamado João. João era fabulista / fabuloso / fábula? / Sertão místico disparando / no exílio da linguagem comum? / Projetava na gravatinha / a quinta face das coisas... Mágico sem apetrechos, / civilmente mágico...\"\n\"No fragmento de poema anterior, Drummond destaca o caráter fantástico da prosa de João Guimarães Rosa, autor de obras-primas como Sagarana e Grande sertão: veredas. Essa ideia está presente, por exemplo, na expressão “sertão místico” e é retomada em\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "“projetava na gravatinha",
+      "“pastos, buritis",
+      "“ciranda multívoca",
+      "“mágico sem apetrechos",
+      "“pinta de boi risonho”\"\n.\nTópico: Intertextualidade e o processo social.\nSubtópico: Homenagem e diálogo poético (Drummond e Guimarães Rosa).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469564-119-d2ac03b4",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "\"Texto I: Salvador Dalí. A Persistência da Memória. 1931.\" \"Texto II: [Meme com o mesmo quadro e a frase] TÁ TÃO QUENTE QUE SALVADOR DALÍ SERIA CONSIDERADO REALISTA\"\n\"A Persistência da Memória (texto I) é uma das telas mais conhecidas de Salvador Dalí... Em 2012, o cenário de formas rochosas... passou a circular na Internet como referência às altas temperaturas registradas em diversas cidades, conforme se vê no texto II. O diálogo intertextual realizado com a obra de Dalí ocorre pela\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "coloquialidade verbal acrescida ao texto visual",
+      "crítica à construção do cenário absurdo",
+      "ironia no uso do significado denotativo da linguagem",
+      "negação do sentido dado à construção do tempo",
+      "reafirmação do exagero na deformação das imagens\"\n.\nTópico: Intertextualidade e o processo social.\nSubtópico: Memes e interdiscursividade humorística.\n--------------------------------------------------------------------------------\nTÓPICO 13: Formação cultural e linguística brasileira"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469564-120-9550b4d6",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "\"No Brasil de hoje são falados por volta de 200 idiomas. As nações indígenas da país falam cerca de 180 línguas, e as comunidades de descendentes de imigrantes cerca de 30 línguas. Há uma ampla riqueza de usos, práticas e variedades no âmbito da própria língua portuguesa falada no Brasil... Somos, portanto, um país de muitas línguas, tal qual a maioria dos países do mundo...\"\n\"Do ponto de vista histórico, as mudanças linguísticas que afetaram o português do Brasil têm sua origem no contato dos colonizadores com inúmeras línguas indígenas e africanas. Considerando as reflexões apresentadas no texto, verifica-se que esse processo, iniciado no começo da colonização, teve como resultado\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "a constituição do patrimônio linguístico, uma vez que representa a identidade nacional do povo brasileiro\" (Nota: Alternativa realocada a partir de sua essência na fonte)",
+      "a aceitação da escravidão, em que seres humanos foram reduzidos à condição de objeto por seus senhores",
+      "o isolamento de um número enorme de índios durante todo o período da colonização",
+      "a separação entre pessoas que desfrutavam bens e outras que não tinham acesso aos bens de consumo",
+      "a supremacia dos colonizadores portugueses, que muito se empenharam para conquistar os indígenas\"\n.\nTópico: Formação cultural e linguística brasileira.\nSubtópico: Herança multilíngue e diversidade no Brasil.\n--------------------------------------------------------------------------------\nGABARITO DESTE BLOCO (QUESTÕES 106 A 120)\nFunção social dos gêneros textuais (continuação):\n106 (09 original): B\n107 (10 original): C\n108 (11 original): A\n109 (12 original): B\nIntertextualidade e o processo social:\n110 (01 original): B\n111 (02 original): C\n112 (03 original): D\n113 (04 original): B\n114 (05 original): E\n115 (06 original): D\n116 (07 original): D\n117 (08 original): E\n118 (09 original): D\n119 (10 original): C\nFormação cultural e linguística brasileira:\n120 (01 original): A\n\nAqui está o 9º Bloco (Questões 121 a 135), que conclui o tópico de \"Formação cultural e linguística brasileira\" e engloba a maior parte de \"Registros linguísticos: variações e norma-padrão\".\n(Nota: No documento original, as questões 02, 04 e parte da 05 do eixo \"Formação cultural\" estavam suprimidas ou incompletas, bem como algumas alternativas de outras questões\n. Adaptei a numeração para mantermos o bloco contínuo de 15 exercícios).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469565-121-a6a7d6d3",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "(Original 03) \"[...] Ao relacionar-se a temática dos textos I e II, sobre a influência africana no Brasil, constata-se que\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "fazem alusão ao fato de que a contribuição do povo africano para a cultura brasileira não é comprovada",
+      "revelam que os estudos referentes à contribuição do povo africano na formação do Brasil é incipiente",
+      "demonstram que a construção da identidade nacional é mareada pela presença da cultura africana",
+      "informam que os negros foram os responsáveis pela formação cultural do nosso país",
+      "remetem à ideia de que essa influência inexistiu no [...]\"\n.\nTópico: Formação cultural e linguística brasileira.\nSubtópico: Influência africana na identidade nacional.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469565-122-a3b4924c",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "(Original 06) \"A imagem anterior é um dos vários documentos que atestam e descrevem a chegada dos navegantes europeus às colônias e suas primeiras impressões, durante o período das chamadas Grandes Navegações\"\n\"Outro exemplo famoso é a Carta de Pero Vaz de Caminha, escrivão da frota de Pedro Álvares Cabral, a quem se incumbiu a tarefa de relatar ao rei de Portugal os aspectos locais da nova “descoberta”\"\n\"Dos fragmentos a seguir, todos da Carta de Caminha, aquele cujo teor se aproxima da visão evidenciada na gravura de Oscar Pereira da Silva é:\"",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "“Fomos assim diretamente à praia. Ali acudiram logo cerca de duzentos homens, todos nus e com arcos e flechas nas mãos",
+      "“Ali andavam entre eles três ou quatro moças, muito novas e muito gentis, com cabelos muito pretos e compridos",
+      "“A feição deles é parda, algo avermelhada; de bons rostos e bons narizes. Em geral são bem feitos",
+      "“Tudo isso bastará a Vossa Alteza para ver como eles passavam de uma confraternização a um retraimento",
+      "“Todos andavam rapados até por cima das orelhas, bem como as sobrancelhas e pestanas...”\"\nTópico: Formação cultural e linguística brasileira.\nSubtópico: Quinhentismo (Literatura de Informação).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469565-123-f346efd5",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "(Original 07) \"CANDIDO, Antonio. Iniciação à literatura brasileira: resumo para principiantes\"\n\"Baseando-se no texto anterior, o indianismo foi uma tendência importante da produção literária romântica, principalmente porque a representação do índio era orientada para a\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "idealização do índio, que simbolizava a pureza inicial da nação brasileira",
+      "investigação do legado cultural originado a partir do contato de índio e europeus",
+      "mistificação do patrimônio cultural indígena, semelhante ao europeu",
+      "pesquisa da influência cultural indígena na sociedade brasileira",
+      "representação cordial, pelo homem europeu, da alteridade, isto é, os nativos\"\n.\nTópico: Formação cultural e linguística brasileira.\nSubtópico: Romantismo (Fase Indianista).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469570-124-56b071ee",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "(Original 08) \"O Choro, popularmente chamado de Chorinho, é um gênero musical, uma música popular e instrumental brasileira, com mais de 130 anos de existência\"\n\"Os conjuntos que o executam são chamados de regionais, e os músicos, compositores ou instrumentistas, são chamados de chorões\"\n\"Apesar do nome, o gênero é em geral de ritmo agitado e alegre, caracterizado pelo [...]\"\n(Alternativa A ausente no original) B) \"importância de os músicos terem domínio efetivo de seus instrumentos\"\nC) \"junção de instrumentos musicais escolhidos aleatoriamente para sua execução\"\nD) \"necessidade de suprir a falta de um ritmo musical popular autenticamente brasileiro\"\nE) \"performance dos músicos poder contar com improviso, em um ritmo agitado e alegre\"\n.\nTópico: Formação cultural e linguística brasileira.\nSubtópico: Música Popular Brasileira (Chorinho).\n--------------------------------------------------------------------------------",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "importância de os músicos terem domínio efetivo de seus instrumentos",
+      "junção de instrumentos musicais escolhidos aleatoriamente para sua execução",
+      "necessidade de suprir a falta de um ritmo musical popular autenticamente brasileiro",
+      "performance dos músicos poder contar com improviso, em um ritmo agitado e alegre\"\n.\nTópico: Formação cultural e linguística brasileira.\nSubtópico: Música Popular Brasileira (Chorinho).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469570-125-ddd3ca11",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "(Original 09) \"Dentro e fora da legalidade. Quando a ouvi pela primeira vez, num comercial de desodorante, a palavra me caiu mal: “refrescância”\"\n\"Achei-a artificial, mal-ajambrada e desnecessária\"\n\"CASTRO, Ruy. Folha de S. Paulo, 04 nov. 2013\"\n\"A reflexão de Ruy Castro que justifica o título do texto é a de que a língua\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "apresenta limites pouco claros para as intervenções nos usos linguísticos",
+      "compõe-se pelo vocabulário dicionarizado e por usos populares",
+      "corresponde ao que pode ser oficializado pelo uso dos dicionários",
+      "torna-se cada vez mais artificial, mal-ajambrada e desnecessária",
+      "sofre interferências do povo e, por isso, está cada vez mais pobre\"\n.\nTópico: Formação cultural e linguística brasileira.\nSubtópico: Neologismos e dinâmica da língua.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469571-126-f74bb4ae",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "(Original 10) \"Cantigas de roda são um tipo de canção popular que está diretamente relacionada com a brincadeira de roda\"\n\"A prática é comum em todo o Brasil e faz parte do folclore brasileiro\"\n\"Consiste em formar um grupo com várias crianças, dar as mãos e cantar uma música com características próprias, com melodia e ritmo equivalentes à cultura local, letras de fácil compreensão...\"\n(Comando subentendido a partir do texto):",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "apresentarem um repertório oral de costumes e imaginários locais",
+      "associarem brincadeiras populares, ritmo e som",
+      "constituírem-se de mecanismos do universo lúdico humano",
+      "proporem novas leituras de mitos do passado",
+      "registrarem o cotidiano infantil de diferentes regiões do país\"\n.\nTópico: Formação cultural e linguística brasileira.\nSubtópico: Folclore e cantigas de roda.\n--------------------------------------------------------------------------------\nTÓPICO 14: Registros linguísticos: variações e norma-padrão"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469571-127-ecfb31dd",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "(Original 01) \"Evocação do Recife. A vida não me chegava pelos jornais nem pelos livros / Vinha da boca do povo na língua errada do povo / Língua certa do povo / Porque ele é que fala gostoso o português do Brasil / Ao passo que nós / O que fazemos / É macaquear / A sintaxe lusíada...\"\n\"Segundo o poema de Manuel Bandeira, as variações linguísticas originárias das classes populares devem ser\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "satirizadas, pois as várias formas de se falar o português no Brasil ferem a língua portuguesa autêntica",
+      "questionadas, pois o povo brasileiro esquece a sintaxe da língua portuguesa",
+      "subestimadas, pois o português “gostoso” de Portugal deve ser a referência de correção linguística",
+      "reconhecidas, pois a formação cultural brasileira é garantida por meio da fala do povo",
+      "reelaboradas, pois o povo “macaqueia” a língua portuguesa original\"\n.\nTópico: Registros linguísticos: variações e norma-padrão.\nSubtópico: Valorização da variante popular (Modernismo).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469571-128-8afacf34",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "(Original 02) \"Contam, numa anedota, que certo dia Rui Barbosa saiu às ruas da cidade e se assustou com a quantidade de erros existentes nas placas das casas comerciais e que, diante disso, resolveu instituir um prêmio em dinheiro para o comerciante que tivesse o nome de seu estabelecimento grafado corretamente\"\n\"(...) com o objetivo de:\" (Trecho adaptado/suprimido do original)",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "evidenciar a importância de marcas linguísticas valorizadoras da linguagem coloquial",
+      "demonstrar incômodo com a variedade característica de pessoas pouco escolarizadas",
+      "estabelecer um jogo de palavras a fim de produzir efeito de humor",
+      "criticar a linguagem de pessoas originárias de fora dos centros urbanos",
+      "estabelecer uma política de incentivo à escrita correta das palavras\"\n.\nTópico: Registros linguísticos: variações e norma-padrão.\nSubtópico: Preconceito linguístico vs. Humor.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469571-129-facae95c",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "(Original 03) \"Senhora. – Mãe, nooooosssa! Esse seu cabelo novo ficou lindo! Parece que você é, tipo, mais jovem! – Jura, minha filha? Obrigada! – Mas aí você vira de frente e aí a gente vê que, tipo, não é, né?\"\n\"Esse diálogo é real. Claro que achei graça, mas o fato de envelhecer já não é mais segredo para ninguém... O porteiro, o motorista de táxi, o jornaleiro, o garçom, o mundo inteiro resolveu ter um respeito comigo que eu não pedi!\"\n\"A exploração de registros linguísticos é importante estratégia para o estabelecimento do efeito de sentido pretendido em determinados textos. No texto, o recurso a diferentes registros indica\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "mudança na representação social do locutor",
+      "reflexão sobre a identidade profissional da mãe",
+      "referência ao tradicionalismo linguístico da autora do texto",
+      "elogio às situações vivenciadas pela personagem mãe",
+      "compreensão do processo de envelhecimento como algo prazeroso\"\n.\nTópico: Registros linguísticos: variações e norma-padrão.\nSubtópico: Gírias jovens e adequação vocabular.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469571-130-f2d2925b",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "(Original 04) \"O RETIRANTE ENCONTRA DOIS HOMENS CARREGANDO UM DEFUNTO NUMA REDE, AOS GRITOS DE: “Ó IRMÃOS DAS ALMAS! IRMÃOS DAS ALMAS! NÃO FUI EU QUE MATEI NÃO”\"\n\"– A quem estais carregando, / Irmãos das almas, / Embrulhado nessa rede? / Dizei que eu saiba\"\n\"– A um defunto de nada, / Irmão das almas, / Que há muitas horas viaja / À sua morada\"\n(O registro das falas dos personagens):",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "[...] regional",
+      "apresentam diferentes características físicas e psicológicas",
+      "incorporam elementos da tradição local em um contexto teatral",
+      "estão construídos por meio de ações limitadas a um momento histórico",
+      "fazem parte de uma cultura local que restringe a dimensão estética\"\n.\nTópico: Registros linguísticos: variações e norma-padrão.\nSubtópico: Registro oral nordestino na literatura.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469581-131-0421986d",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "(Original 05) \"Diz-se, em termos gerais, que é preciso “falar a mesma língua”: o português, por exemplo, que é a língua que utilizamos. Mas trata-se de uma língua portuguesa ou de várias línguas portuguesas? O português da Bahia é o mesmo português do Rio Grande do Sul?\"\n\"O vocabulário, a sintaxe e mesmo a pronúncia variam segundo esses níveis\"\n(Exemplo de adequação aos níveis de linguagem - Opção A suprimida): B) \"na leitura de um discurso de uma autoridade pública na inauguração de um estabelecimento educacional: “Senhores cidadões do Brasil: com alegria, inauguramos mais uma escola...”\"\nC) \"no memorando da diretora da escola ao responsável por um aluno: “Responsável pelo aluno Henrique, dá uma chegadinha na diretoria da escola para saber o que o seu filhinho anda fazendo de besteira”\"\nD) \"na fala de uma criança, na tentativa de convencer a mãe a entregar-lhe a mesada: “Mãe, assim não dá para ser feliz! Dá pra liberar minha mesada? Prometo que só vou tirar notão nas próximas provas”\"\nE) \"na fala de uma mãe em resposta ao filho que solicitou a mesada: “Caro descendente, por obséquio, antecipe a prestação de suas contas, a fim de fazer jus ao solicitado”\"\n.\nTópico: Registros linguísticos: variações e norma-padrão.\nSubtópico: Adequação situacional do discurso.\n--------------------------------------------------------------------------------",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "na leitura de um discurso de uma autoridade pública na inauguração de um estabelecimento educacional: “Senhores cidadões do Brasil: com alegria, inauguramos mais uma escola",
+      "no memorando da diretora da escola ao responsável por um aluno: “Responsável pelo aluno Henrique, dá uma chegadinha na diretoria da escola para saber o que o seu filhinho anda fazendo de besteira",
+      "na fala de uma criança, na tentativa de convencer a mãe a entregar-lhe a mesada: “Mãe, assim não dá para ser feliz! Dá pra liberar minha mesada? Prometo que só vou tirar notão nas próximas provas",
+      "na fala de uma mãe em resposta ao filho que solicitou a mesada: “Caro descendente, por obséquio, antecipe a prestação de suas contas, a fim de fazer jus ao solicitado”\"\n.\nTópico: Registros linguísticos: variações e norma-padrão.\nSubtópico: Adequação situacional do discurso.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469581-132-9ea6a9e2",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "(Original 06) \"Oração a Santa Teresinha do Menino Jesus. Perdi o jeito de sofrer. Ora essa. Não sinto mais aquele gosto cabotino da tristeza. Quero alegria! Me dá alegria, Santa Teresa! Santa Teresa não, Teresinha... Teresinha... Teresinha...\"\n\"BANDEIRA, Manuel. Poesia completa e prosa\"\n\"Quando se dirige a Santa Teresa, o eu poético reformula-se e altera a forma de tratamento usada, utilizando uma estrutura recorrente na coloquialidade, com a finalidade de\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "aumentar a intimidade com a santa, a fim de ser atendido",
+      "demonstrar que não há mais sentido em sofrer",
+      "evidenciar sua origem simples, a fim de angariar simpatia",
+      "implorar para que seu pedido seja atendido",
+      "reforçar sua confiança na santa, de modo informal\"\n.\nTópico: Registros linguísticos: variações e norma-padrão.\nSubtópico: Registro coloquial afetivo na poesia.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469581-133-5af03b49",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Difícil.",
+    "contexto": "(Original 07) \"INQ.- As mulheres perdem sangue todos os meses, né? Como é que se chama isso? INF.- Aqui pra nós é tudo menstruação né? INQ.- Isso. Tem algum nome mais folclórico, mais popular... Que a gente falava quando era mais mocinha... [...] INF.- A gente falava assim: “Ixe, eu tô de chico” (risos) que eu achava o máximo, né!\"\n\"Esse texto é parte de uma entrevista feita por uma linguista com uma informante a fim de checar certas particularidades da variedade linguística usada pela entrevistada\"\n\"Depreende-se do texto que a variante linguística diretamente relacionada à faixa etária manifesta-se no plano\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "formal, já que a informante usa uma variedade informal da língua em oposição à variedade formal usada pela inquisidora",
+      "histórico, pois a informante revela que o sentido de um termo pode variar de acordo com o contexto e a época",
+      "lexical, visto que a informante percebe que na atualidade o uso de determinado termo é mais aceitável que o de outro",
+      "semântico, porque a informante reconhece que se podem atribuir diferentes sentidos a um mesmo termo",
+      "sintático, uma vez que a informante emprega regras gramaticais diferentes das regras da norma-padrão\"\n.\nTópico: Registros linguísticos: variações e norma-padrão.\nSubtópico: Variação Diacrônica e Etária (Léxico).\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469581-134-64706a9c",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Difícil.",
+    "contexto": "(Original 08) \"Texto I. O preconceito linguístico se baseia na crença de que só existe uma única língua portuguesa digna deste nome e que seria a língua ensinada nas escolas, explicada nas gramáticas e catalogada nos dicionários\"\n\"Texto II. Água. Pato Fu. Nóis mora aqui no poeirão / Nóis mora aqui no poeirão / Nóis mora aqui no poeirão / E existe todo dia uma hora da noite / Em que um trem no meu peito me diz:\"\n\"Na comparação dos dois textos, observa-se que o texto I\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "apresenta uma reflexão crítica acerca do preconceito linguístico presente na sociedade; o texto II satiriza esse tipo de preconceito",
+      "expõe todas as razões para a defesa de uma língua única no contexto escolar; o texto II evidencia um uso dialetal característico de situações não escolarizadas",
+      "tem como objetivo precípuo apresentar uma crítica à existência do preconceito linguístico; o texto II objetiva poetizar um dos usos não formais da língua",
+      "apresenta o posicionamento de um teórico sobre as diferenças dialetais na língua portuguesa; o texto II ilustra um dos regionalismos característicos desses dialetos",
+      "apresenta um alerta sobre as consequências do preconceito linguístico; o texto II ridiculariza o uso de falares que não atendam ao padrão da língua\"\n.\nTópico: Registros linguísticos: variações e norma-padrão.\nSubtópico: Dialetos regionais e literatura musical.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469581-135-bb0fdba1",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "(Original 09) \"O segundo turno nos agraciou com o prolongamento do agradabilíssimo horário político obrigatório. Os candidatos nos honraram de novo com promessas e o anúncio de realizações e nos comoveram quase às lágrimas ao renegar o aborto\"\n\"Quanto aos programas, inesquecível foi um deles, de turno anterior, em que o locutor lembrava que certo político havia criado milhares de novos empregos. Sim, criado novos empregos\"\n\"Josué Machado critica a utilização de um vocabulário típico do discurso político que visa a impressionar o destinatário, mas que nem sempre é cuidadosamente elaborado pela “distraída moçada” que o redige. A distração a que o autor se refere consiste no fato de\"\n:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "os candidatos nos honrarem de novo com promessas",
+      "os políticos assumirem posturas demagógicas, como renegar o aborto",
+      "o locutor dizer que um político havia criado milhares de novos empregos",
+      "os que redigem os discursos políticos não saberem a norma padrão do português",
+      "a “moçada distraída” não acertar o tom do discurso político\"\n.\nTópico: Registros linguísticos: variações e norma-padrão.\nSubtópico: Pleonasmo e Vícios de Linguagem.\n--------------------------------------------------------------------------------\nGABARITO DESTE BLOCO (QUESTÕES 121 A 135)\nFormação cultural e linguística brasileira (continuação):\n121 (03 original): C\n122 (06 original): A\n123 (07 original): A\n124 (08 original): E\n125 (09 original): B\n126 (10 original): A\nRegistros linguísticos: variações e norma-padrão:\n127 (01 original): D\n128 (02 original): C\n129 (03 original): A\n130 (04 original): C\n131 (05 original): D\n132 (06 original): A\n133 (07 original): C\n134 (08 original): D\n135 (09 original): C\n\nAqui está o 10º Bloco (Questões 136 a 150), que finaliza o tópico \"Registros linguísticos\", passa por todo o eixo de \"Meio ambiente e sustentabilidade\" e inicia o último tema do material: \"Política, cidadania e crítica social\".\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469582-136-5509be0f",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "\"Saudosa maloca. [...] Veio os homi c’as ferramentas / O dono mandô derrubá / Peguemo todas nossas coisas / E fumos pro meio da rua / Apreciá a demolição / Que tristeza que nóis sentia / Cada tauba que caía / Duía no coração [...]\"\n\"Nessa música, esse registro tem a intenção artística de\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "demonstrar que o narrador, sem-teto, consegue contar uma história",
+      "expor uma das variantes linguísticas que o narrador domina",
+      "fazer o leitor refletir a respeito da condição social de um sem-teto",
+      "ilustrar como músicas, que são textos orais, devem ser escritas",
+      "representar um relato de um sem-teto que não possui escolarização\"\n.\nTópico: Registros linguísticos: variações e norma-padrão\nSubtópico: Variação Diastrática e representação social\n--------------------------------------------------------------------------------\nTÓPICO 15: Meio ambiente e sustentabilidade"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469582-137-581c9998",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "\"O veneno do bem. Imagine que você cortou o rosto e, em vez de dar pontos, o seu médico passa uma supercola feita de sangue de boi e veneno de cascavel. Isso pode mesmo acontecer. Mas não se assuste\"\n\"Nos diferentes textos, pode-se inferir, entre outras informações, quais são os objetivos de seu produtor e quem é seu público-alvo. No trecho, para aproximar-se do interlocutor, o autor\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "emprega uma linguagem técnica de domínio do leitor",
+      "enfatiza informações importantes para a vida do leitor",
+      "introduz o tema antecipando possíveis reações do leitor",
+      "explora um tema sobre o qual o leitor tem reconhecido interesse",
+      "apresenta ao leitor, de forma minuciosa, a descoberta dos médicos\"\n.\nTópico: Meio ambiente e sustentabilidade\nSubtópico: Estratégias de engajamento do leitor\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469582-138-5fdd1045",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "\"Sacolas. Por que optar pelas duráveis, como faziam nossos avós? O mundo produz sacolas plásticas desde a década de 1950. Como não se degradam facilmente na natureza, grande parte delas ainda vão continuar por mais de 300 anos em algum lugar do planeta\"\n\"Os argumentos utilizados no texto indicam que seu público-alvo é o consumidor e seu objetivo é estimular\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "o abandono do uso de sacolas de plástico",
+      "compra de sacolas de pano em supermercados",
+      "o engajamento em campanhas de consumo consciente",
+      "divulgação dos perigos das sacolas plásticas para os animais marinhos",
+      "a reutilização das sacolas de plástico\"\n.\nTópico: Meio ambiente e sustentabilidade\nSubtópico: Consumo consciente e impacto ambiental\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469582-139-b534d415",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "\"[Imagem de uma gota d'água com o planeta Terra dentro e a frase: 'Eu derreto, Tu derretes, Você derrete... você tem certeza que quer conjugar este verbo?']\"\n\"A relação entre texto e imagem potencializa a força de persuasão desse anúncio, que apresenta como principal objetivo\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "informar as pessoas de que elas podem perder 70% do seu corpo",
+      "confrontar opiniões acerca do descaso para com o meio ambiente",
+      "enumerar fatos que possam trazer mais informações ao contexto",
+      "conscientizar de que o consumismo de água agride o planeta",
+      "sensibilizar quanto à situação dos que vivem sem água em sacrifício pelo planeta\"\n.\nTópico: Meio ambiente e sustentabilidade\nSubtópico: Aquecimento global e desperdício de água\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469582-140-98a2620b",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "\"Esse texto é uma propaganda veiculada nacionalmente [Campanha contra a Dengue: 'Você sabe que dengue mata... Esta luta é de todos nós']. Esse gênero textual utiliza-se da persuasão com uma intencionalidade específica. O principal objetivo desse texto é\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "comprovar que o avanço da dengue no país está relacionado ao fato de a população desconhecer os agentes causadores",
+      "convencer as pessoas a se mobilizarem, com o intuito de eliminar os agentes causadores da doença",
+      "demonstrar que a propaganda tem um caráter institucional e, por essa razão, não pretende vender produtos",
+      "informar à população que a dengue é uma doença que mata e que, por essa razão, deve ser combatida",
+      "sugerir que a sociedade combata a doença, observando os sintomas apresentados e procurando auxílio médico\"\n.\nTópico: Meio ambiente e sustentabilidade\nSubtópico: Saúde pública e mobilização social\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469582-141-ee0a3a85",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Difícil",
+    "contexto": "\"Tampe a panela. Parece conselho de mãe para a comida não esfriar, mas a ciência explica como é possível ser um cidadão ecossustentável adotando o simples ato de tampar a panela enquanto esquenta a água... a cada minuto que a água ferve em uma panela sem tampa, cerca de 20 gramas do líquido evaporam. Com o vapor, vão embora 11 mil calorias\"\n\"É um argumento utilizado pelo físico, para sustentar a ideia de que podemos contribuir para melhorar a qualidade de vida no planeta,\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "tampar a panela para a comida não esfriar, seguindo os conselhos da mãe",
+      "reduzir a quantidade de calorias, fervendo a água em recipientes tampados",
+      "analisar o calor do GLP, enquanto a água estiver em processo de ebulição",
+      "aquecer líquidos utilizando os botijões de 13 quilos, pois consomem menos",
+      "diminuir a chama do fogão, para aquecer quantidades maiores de líquido\"\n.\nTópico: Meio ambiente e sustentabilidade\nSubtópico: Eficiência energética doméstica\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469582-142-85e1e0a0",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "\"O cartaz aborda a questão do aquecimento global. A relação entre os recursos verbais e não verbais nessa propaganda revela que\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "o discurso ambientalista propõe formas radicais de resolver os problemas climáticos",
+      "a preservação da vida na Terra depende de ações de dessalinização da água marinha",
+      "a acomodação da topografia terrestre desencadeia o natural degelo das calotas polares",
+      "o descongelamento das calotas polares diminui a quantidade de água doce potável do mundo",
+      "a agressão ao planeta é dependente da posição assumida pelo homem frente aos problemas ambientais\"\n.\nTópico: Meio ambiente e sustentabilidade\nSubtópico: Mudanças climáticas e responsabilidade humana\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469582-143-0ecd76f4",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "\"Natalia Allen é designer de moda, especialista em novas tecnologias sustentáveis e um dos nomes internacionais frequentemente associados a esse tipo de pesquisa. Em uma palestra promovida pelo EcoSpeakers [...] a estilista aponta os reflexos que a produção têxtil de massa tem na vida de todos nós\"\n\"Os dados apresentados pela estilista na palestra da EcoSpeakers têm por objetivo\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "convencer o público leitor geral a descartar menos suas roupas",
+      "alertar o público sobre os impactos da moda para a sustentabilidade do planeta",
+      "persuadir os consumidores de jeans sobre o quanto ele é antiecológico",
+      "demandar ações das empresas produtoras de poluentes usados em roupas",
+      "exigir que se diminuam os pesticidas na produção do principal componente da indústria têxtil\"\n.\nTópico: Meio ambiente e sustentabilidade\nSubtópico: Moda sustentável e impactos da indústria têxtil\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469582-144-c56a98c6",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "\"Esse texto, publicado em uma revista, inicialmente aponta modificações ocorridas na sociedade e, em seguida\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "descreve as diferentes atividades das mulheres hoje em dia",
+      "estimula as leitoras a buscar sua realização na vida profissional",
+      "alerta as mulheres para a possibilidade de problemas cardíacos",
+      "informa as leitoras sobre mortes por câncer de mama e por infarto",
+      "valoriza as mulheres preocupadas com o bem-estar da família\"\n.\nTópico: Meio ambiente e sustentabilidade / Saúde\nSubtópico: Modificações sociais e saúde da mulher\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469582-145-e9ceb837",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "\"O emprego adequado dos elementos de coesão contribui para a construção de um texto argumentativo e para que os objetivos pretendidos pelo autor possam ser alcançados. A análise desses elementos no texto mostra que o conectivo\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "“ou seja” introduz um esclarecimento sobre a diminuição da quantidade de lixo",
+      "“mas” instaura justificativas para a criação de novos tipos de reciclagem",
+      "“também” antecede um argumento a favor da reciclagem",
+      "“afinal” retoma uma finalidade para o uso de matérias-primas",
+      "“então” reforça a ideia de escassez de matérias-primas na natureza\"\n.\nTópico: Meio ambiente e sustentabilidade\nSubtópico: Conectivos em textos argumentativos ecológicos\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469582-146-d523c193",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "\"Brasil é o maior desmatador, mostra estudo da ONU. O Brasil reduziu sua taxa de desmatamento em vinte anos, mas continua líder entre os países que mais desmatam... Entre 2000 e 2009, esse número caiu para 13 milhões de hectares. Mas o número é considerado alto\"\n\"Na notícia lida, o conectivo “mas” estabelece uma relação de oposição... Uma das formas de se reescreverem esses enunciados, sem que lhes altere o sentido inicial, é:\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "Porque, entre 2000 e 2009, esse número caiu para 13 milhões de hectares, o número é considerado alto",
+      "Entre 2000 e 2009, esse número caiu para 13 milhões de hectares, por isso o número é considerado alto",
+      "Entre 2000 e 2009, esse número caiu para 13 milhões de hectares, uma vez que o número é considerado alto",
+      "Embora, entre 2000 e 2009, esse número tenha caído para 13 milhões de hectares, o número é considerado alto",
+      "Visto que, entre 2000 e 2009, esse número caiu para 13 milhões de hectares, o número é considerado alto\"\n.\nTópico: Meio ambiente e sustentabilidade\nSubtópico: Desmatamento e relações concessivas\n--------------------------------------------------------------------------------\nTÓPICO 16: Política, cidadania e crítica social"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469582-147-2080a697",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "\"Texto I [Grafite do artista BANKSY de um jovem atirando um buquê de flores]. Texto II Só Deus pode me julgar / Soldado da guerra a favor da justiça / Igualdade por aqui é coisa fictícia [...] MV BILL. Declaração de guerra\"\n\"O trecho do rap e o grafite evidenciam o papel social das manifestações artísticas e provocam a\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "consciência do público sobre as razões da desigualdade social",
+      "rejeição do público-alvo à situação representada nas obras",
+      "reflexão contra a indiferença nas relações sociais de forma contundente",
+      "ideia de que a igualdade é atingida por meio da violência",
+      "mobilização do público contra o preconceito racial em contextos diferentes\"\n.\nTópico: Política, cidadania e crítica social\nSubtópico: Arte urbana e denúncia social\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469582-148-89f333d3",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "\"Açúcar. O branco açúcar que adoçará meu café / Nesta manhã de Ipanema / Não foi produzido por mim / Nem surgiu dentro do açucareiro por milagre. [...] Em usinas escuras, homens de vida amarga / E dura / Produziram este açúcar / Branco e puro\"\n\"A Literatura Brasileira desempenha papel importante ao suscitar reflexão sobre desigualdades sociais. No fragmento, essa reflexão ocorre porque o eu lírico\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "descreve as propriedades do açúcar",
+      "se revela mero consumidor de açúcar",
+      "destaca o modo de produção do açúcar",
+      "exalta o trabalho dos cortadores de cana",
+      "explicita a exploração dos trabalhadores\"\n.\nTópico: Política, cidadania e crítica social\nSubtópico: Poesia de denúncia social (Ferreira Gullar)\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469582-149-65e4d9b3",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "\"Anúncio assinado pelo Fundo Cristão para Crianças CCF-Brasil\"\n\"Pela forma como as informações estão organizadas, observa-se que nessa peça publicitária, predominantemente, busca-se\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "conseguir a adesão do leitor à causa anunciada",
+      "reforçar o canal de comunicação com o interlocutor",
+      "divulgar informações a respeito de um dado assunto",
+      "enfatizar os sentimentos e as impressões do próprio enunciador",
+      "ressaltar os elementos estéticos, em detrimento do conteúdo veiculado\"\n.\nTópico: Política, cidadania e crítica social\nSubtópico: Campanhas de solidariedade social\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469582-150-35884c04",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil",
+    "contexto": "\"A DOSE DO PERIGO. Os principais resultados da pesquisa realizada pelo Ibope em maio passado [...] 13 anos é a idade com que atualmente os adolescentes começam a beber. Na década de 90, a iniciação ocorria por volta dos 18 anos\"\n\"Os resultados da pesquisa realizada a respeito do consumo de álcool por adolescentes chamam a atenção para\":",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "os efeitos maléficos do álcool nos adolescentes",
+      "consumo exagerado de álcool entre adolescentes",
+      "o risco do consumo de álcool cada vez mais precoce",
+      "a problemática do consumo de álcool na década de 1990",
+      "a diferença de comportamento entre adolescentes e adultos\"\n.\nTópico: Política, cidadania e crítica social\nSubtópico: Saúde de jovens e estatísticas\n--------------------------------------------------------------------------------\nGABARITO DESTE BLOCO (QUESTÕES 136 A 150)\nRegistros linguísticos: variações e norma-padrão (continuação):\n136 (10 original): E\nMeio ambiente e sustentabilidade:\n137 (01 original): C\n138 (02 original): A\n139 (03 original): D\n140 (04 original): B\n141 (05 original): B\n142 (06 original): E\n143 (07 original): B\n144 (08 original): C\n145 (09 original): A\n146 (10 original): D\nPolítica, cidadania e crítica social:\n147 (01 original): C\n148 (02 original): E\n149 (03 original): A\n150 (04 original): C"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469582-151-34b52658",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "(Original 05) \"O acesso à educação profissional e tecnológica pode mudar a vida de milhões de jovens em todo o país: há uma nova lei do estágio. Com a nova lei, o governo federal define o estágio profissional como ato educativo e determina medidas para que esta atividade contribua para familiarizar o futuro profissional com o mundo do trabalho. Entre as medidas estabelecidas, estão: a obrigatoriedade da supervisão por parte do professor... a definição de jornada máxima de trabalho...\"\nAo listar as mudanças ocorridas na legislação referente ao estágio, o autor do texto tem como objetivo:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "familiarizar milhões de jovens estudantes com o seu futuro profissional",
+      "mostrar que as políticas públicas favorecem os trabalhadores da educação",
+      "incentivar a obrigatoriedade da supervisão por parte do professor",
+      "familiarizar o leitor com as instituições que definem o ensino profissionalizante",
+      "apresentar as novas normas que definem o estágio profissional para estudantes\n.\nTópico: Política, cidadania e crítica social.\nSubtópico: Legislação trabalhista e direitos dos jovens.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469584-152-55bf91c1",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "(Original 06) (Nota: O texto-base e o enunciado desta questão foram suprimidos no material fonte, restando apenas o final das alternativas)\nC) \"elabora seu discurso a fim de demonstrar erudição.\" D) \"fala de forma clara e direta para não haver problema de interpretação.\" E) \"fala por meio de ambiguidades para atingir um público restrito.\"\nTópico: Política, cidadania e crítica social.\nSubtópico: Intencionalidade do discurso político.\n--------------------------------------------------------------------------------",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "elabora seu discurso a fim de demonstrar erudição",
+      "fala de forma clara e direta para não haver problema de interpretação",
+      "fala por meio de ambiguidades para atingir um público restrito.\"\nTópico: Política, cidadania e crítica social.\nSubtópico: Intencionalidade do discurso político.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469586-154-545506f4",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "(Original 08) (Nota: O texto-base desta questão foi suprimido no documento, restando apenas as alternativas que configuram uma crítica a atitudes de políticos)\n",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "ironizar a ignorância dos políticos quanto às previsões meteorológicas",
+      "criticar o clima de Brasília, Distrito Federal, que sedia o Congresso Nacional",
+      "relacionar a ela a expressão 'molhar minha mão', indicativo de corrupção",
+      "defender determinadas atitudes que demonstrariam a transparência",
+      "retomar valores reconhecidamente essenciais à ocupação de cargos públicos.\"\nTópico: Política, cidadania e crítica social.\nSubtópico: Charge política e corrupção.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469590-155-e5ac83b1",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio.",
+    "contexto": "(Original 09) \"Criamos a época da velocidade, mas nos sentimos enclausurados dentro dela. A máquina, que produz abundância, tem-nos deixado na penúria. Nossos conhecimentos fizeram-nos céticos; nossa inteligência, empedernidos e cruéis. Pensamos em demasia e sentimos bem pouco. Mais do que de máquinas, precisamos de humanidade. Mais do que de inteligência, precisamos de afeição e doçura. Sem essas virtudes, a vida será de violência e tudo estará perdido\"\n(Nota: Restaram apenas as duas alternativas finais no material)\nD) \"máquina metaforiza a capacidade produtiva, que degrada o humano.\" E) \"excesso de racionalidade sufoca o sentimento; perde-se a humanidade.\"\nTópico: Política, cidadania e crítica social.\nSubtópico: Alienação moderna e desumanização.\n--------------------------------------------------------------------------------",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "máquina metaforiza a capacidade produtiva, que degrada o humano",
+      "excesso de racionalidade sufoca o sentimento; perde-se a humanidade.\"\nTópico: Política, cidadania e crítica social.\nSubtópico: Alienação moderna e desumanização.\n--------------------------------------------------------------------------------"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779973469590-156-3cdff434",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Fácil.",
+    "contexto": "(Original 10) \"[Charge 'Estacionamento de Shopping', de Jean. Um carro se aproxima da cancela do estacionamento. No quadrinho seguinte, a própria cancela agarra o motorista pelos pés e o sacode de cabeça para baixo, fazendo moedas e notas de dinheiro caírem de seus bolsos]\"\nA charge anterior evidencia uma crítica sobre um problema contemporâneo identificado como a(o):",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "cobrança de taxas abusivas em estacionamentos privados",
+      "dificuldade de acesso a estacionamentos privados",
+      "excesso de veículos em estacionamentos privados",
+      "realidade de lotação de estacionamentos privados",
+      "uso excessivo de estacionamentos privados\n.\nTópico: Política, cidadania e crítica social.\nSubtópico: Consumismo e taxas comerciais abusivas.\n--------------------------------------------------------------------------------\nGABARITO DESTE BLOCO (QUESTÕES 151 A 156)\nPolítica, cidadania e crítica social (continuação):\n151 (05 original): E\n152 (06 original): D\n153 (07 original): D\n154 (08 original): C\n155 (09 original): E\n156 (10 original): A"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: None"
+  },
+  {
+    "id": "native-import-1779974254347-21-f482993e",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\n\"O labirinto dos manuais\"\n\nConsiderando o título do texto, a figura de linguagem predominante é:",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "metáfora, comparando a complexidade dos manuais a um labirinto",
+      "metonímia, substituindo a causa (manual) pelo efeito (confusão)",
+      "hipérbole, exagerando a dificuldade de entender as instruções",
+      "ironia, sugerindo o oposto do que realmente significa",
+      "personificação, atribuindo características humanas aos manuais"
+    ],
+    "correta": "metáfora, comparando a complexidade dos manuais a um labirinto",
+    "explicacao": "Gabarito oficial: A"
+  },
+  {
+    "id": "native-import-1779974254348-26-fa0c78f2",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "Texto de apoio\n\"Todo abacate é verde. O incrível Hulk é verde. O incrível Hulk é um abacate.\"\n\nEsse raciocínio é falho porque",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "utiliza premissas falsas para chegar a uma conclusão verdadeira",
+      "generaliza uma característica particular para todos os elementos de uma classe",
+      "estabelece uma relação de causa e efeito onde não existe",
+      "confunde a relação de inclusão de conjuntos: todo A é B, C é B, logo C é A",
+      "baseia-se em uma analogia inadequada entre objetos e personagens fictícios"
+    ],
+    "correta": "confunde a relação de inclusão de conjuntos: todo A é B, C é B, logo C é A",
+    "explicacao": "Gabarito oficial: D"
+  },
+  {
+    "id": "native-import-1779974254352-4-7dfa0bdf",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: E\nO texto apresenta características de uma resenha: descreve o enredo do filme, analisa seus temas (busca, perda, saudade, legado, memóri",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "e faz uma avaliação crítica, classificando-o como \"um filme sobre a delicadeza"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: E"
+  },
+  {
+    "id": "native-import-1779974254358-17-92844198",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: D\nA afirmativa 2 é verdadeira porque a fala da Dilma na charge (\"prometi acabar com a corrupção, mas o povo não pagou\") retoma o segundo parágrafo do conto (promessa não paga ao flautist",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "A afirmativa 4 é verdadeira porque a intertextualidade é confirmada pelos elementos verbais (referência à promessa não paga)"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: D"
+  },
+  {
+    "id": "native-import-1779974254359-18-72100032",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: B\nPeríodo 2: \"precisar\" usado no sentido de \"detalhar\" (VTD) está correto. Período 3: \"revidar\" como VTD (\"revidar as investidas\") e \"proceder a\" (realizar) estão corretos. Período 1: \"visar a\" (mirar) deveria ser usado com preposição. Período 4: \"desfrutar\" como VTD (\"desfrutar as benesses\") está correto, mas \"atender a demandas\" (VTI) deveria ter preposição",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "está correto. Período 3: \"revidar\" como VTD (\"revidar as investidas\") e \"proceder a\" (realizar) estão corretos. Período 1: \"visar a\" (mirar) deveria ser usado com preposição. Período 4: \"desfrutar\" como VTD (\"desfrutar as benesses\") está correto, mas \"atender a demandas\" (VTI) deveria ter preposição"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254360-19-d3a31de2",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: C\nI (restrição): \"livre jogo do mercado\" (aspas indicam que o autor questiona a real liberdade). II (jargão): \"resto do mundo\" (expressão consagrada em contextos geopolíticos). III (pejorativo): \"mau uso\" (sentido negativo não assumido pelo autor, mas atribuído a terceiros)",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "II (jargão): \"resto do mundo\" (expressão consagrada em contextos geopolíticos). III (pejorativo): \"mau uso\" (sentido negativo não assumido pelo autor, mas atribuído a terceiros)"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254364-26-e50ddc49",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: D\nO raciocínio é falho por confundir a relação de inclusão: todo A (abacate) é B (verde), e C (Hulk) é B (verde), logo C é A. Isso ignora que B pode incluir elementos que não são A",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "é B (verde), e C (Hulk) é B (verde), logo C é A. Isso ignora que B pode incluir elementos que não são A"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: D"
+  },
+  {
+    "id": "native-import-1779974254379-33-46d17e28",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: C\nO estranhamento decorre da ruptura abrupta entre a normalidade da vida cotidiana (o homem em casa, de chinelos) e a irrupção do absurdo (ouvir a própria notícia de morte), criando uma situação paradoxal e surreal",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      ", criando uma situação paradoxal e surreal"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254380-34-1383aaec",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: C\nA repetição exaustiva de termos e a ausência de pontuação criam um efeito de fusão e indistinção, onde todos os elementos (homem, menino, bicho, mato, águ",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "se misturam, remetendo a uma visão panteísta ou mítica da realidade"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254380-35-4157c009",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: C\nO texto tem função argumentativa, pois apresenta uma tese (o plágio é uma forma grave de desonestidade intelectual), desenvolve argumentos (facilidade de acesso, consequências) e defende uma posição (a necessidade de combater o plágio e promover a integridade acadêmic",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      ""
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254382-38-f50b300b",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: C\nA campanha associa o produto (refrigerante) à ideia de conexão e sociabilidade. O som da lata sendo aberta quebra o isolamento das pessoas e o ato de compartilhar a bebida cria um momento de união e felicidade coletiva",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "à ideia de conexão e sociabilidade. O som da lata sendo aberta quebra o isolamento das pessoas e o ato de compartilhar a bebida cria um momento de união e felicidade coletiva"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254384-41-5c72831e",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: C\nA estrutura narrativa do romance é marcada pela alternância entre a história de Tuahir e Muidinga (realidade da guerr",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "e os cadernos de Kindzu (narrativa fantástica), criando um diálogo entre dois planos que se complementam"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254390-54-47bc6ef7",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: B\nA frase é um fato, pois se baseia em um dado mensurável e verificável (índice de desemprego divulgado pelo IBGE), que pode ser confirmado ou refutado por fontes oficiais",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      ", que pode ser confirmado ou refutado por fontes oficiais"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254391-55-355369da",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: C\nJoão Grilo é um anti-herói porque, apesar de seus defeitos (mentiroso, golpist",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      ", luta pela sobrevivência em um contexto de injustiça e opressão. Sua esperteza é uma ferramenta de resistência, e ele desperta a simpatia do público"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254394-62-02418c6a",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: B\nA carta de Caminha é, ao mesmo tempo, um documento histórico (por relatar fatos) e um texto literário (por expressar as impressões subjetivas, a visão de mundo e o deslumbramento do autor diante da nova terr",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      ""
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: B"
+  },
+  {
+    "id": "native-import-1779974254397-69-2f929efa",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: C\nO texto apresenta a internet das coisas de forma equilibrada, destacando seus benefícios (conforto, eficiência, seguranç",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "e também suas preocupações (privacidade e segurança de dados), sem tomar um partido exclusivo"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254415-86-f0360fbd",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: C\nA propaganda utiliza a função conativa (ou apelativ",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "da linguagem, que visa persuadir o interlocutor. O texto apela para o desejo de realização (\"o carro dos seus sonhos\") e oferece condições facilitadas para convencer o consumidor a comprar"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: C"
+  },
+  {
+    "id": "native-import-1779974254421-100-b66e2581",
+    "subject": "Interpretação Textual",
+    "topics": [
+      "Geral"
+    ],
+    "difficulty": "Médio",
+    "contexto": "- Resposta: C\n\"A Moreninha\" é representativo da primeira geração romântica por idealizar o amor (o pacto de infância, o destino romântico), a mulher (a moreninha pura e meig",
+    "tabelaHtml": "",
+    "imagemSvg": "",
+    "pergunta": "",
+    "opcoes": [
+      "e a natureza (o cenário bucólico da Ilha de Paquetá)"
+    ],
+    "correta": "",
+    "explicacao": "Gabarito oficial: C"
   }
 ]

@@ -183,18 +183,24 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
                         <p className={`text-xs ${block.status === 'completed' ? 'text-gray-400' : 'text-gray-500 dark:text-gray-400'}`}>
                           {block.topic} • {block.hours}h
                         </p>
-                        {block.youtubeUrl && (
-                          <button
-                            onClick={() => {
-                              window.dispatchEvent(new CustomEvent('play-youtube-video', {
-                                detail: { url: block.youtubeUrl, topic: block.topic, subject: block.subject }
-                              }));
-                            }}
-                            className="flex items-center gap-1 mt-1 text-[10px] text-red-500 hover:text-red-600 font-bold transition-colors"
-                          >
-                            <CirclePlay className="w-3 h-3" />
-                            Assistir Vídeo
-                          </button>
+                        {/* Múltiplos vídeos */}
+                        {((block.youtubeUrls && block.youtubeUrls.length > 0) || block.youtubeUrl) && (
+                          <div className="flex flex-wrap gap-1.5 mt-1.5">
+                            {(block.youtubeUrls || (block.youtubeUrl ? [block.youtubeUrl] : [])).map((url: string, i: number) => (
+                              <button
+                                key={i}
+                                onClick={() => {
+                                  window.dispatchEvent(new CustomEvent('play-youtube-video', {
+                                    detail: { url, topic: block.topic, subject: block.subject }
+                                  }));
+                                }}
+                                className="flex items-center gap-1 text-[10px] bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 px-1.5 py-0.5 rounded hover:bg-red-100 dark:hover:bg-red-900/40 font-bold transition-colors"
+                              >
+                                <CirclePlay className="w-3 h-3" />
+                                Vídeo {i + 1}
+                              </button>
+                            ))}
+                          </div>
                         )}
                       </div>
                     </div>
