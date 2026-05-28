@@ -3,7 +3,7 @@ import { db } from '../lib/firebase';
 import { collection, query, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import Draggable from 'react-draggable';
-import { Palette, X, GripHorizontal, Tag, PlusCircle, Layers, Eye, EyeOff } from 'lucide-react';
+import { Palette, X, GripHorizontal, Tag, PlusCircle, Layers, Eye, EyeOff, Pipette } from 'lucide-react';
 import { generateNoteTag } from '../lib/gemini';
 
 interface Note {
@@ -475,6 +475,36 @@ function StickyNoteItem({
   const [showPalette, setShowPalette] = useState(false);
   const [showTagPicker, setShowTagPicker] = useState(false);
   const [newTagInput, setNewTagInput] = useState('');
+  
+  const [savedColors, setSavedColors] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem('sticky_saved_colors') || '[]'); } catch { return []; }
+  });
+
+  const handleSaveCustomColor = (color: string) => {
+    setSavedColors(prev => {
+      const next = Array.from(new Set([color, ...prev])).slice(0, 6);
+      localStorage.setItem('sticky_saved_colors', JSON.stringify(next));
+      return next;
+    });
+    onUpdate({ color });
+  };
+
+  const handleEyedropper = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if ('EyeDropper' in window) {
+      try {
+        const eyeDropper = new (window as any).EyeDropper();
+        const result = await eyeDropper.open();
+        handleSaveCustomColor(result.sRGBHex);
+        setShowPalette(false);
+      } catch (err) {
+        // User canceled or error
+      }
+    } else {
+      alert('O seu navegador não suporta a ferramenta de conta-gotas.');
+    }
+  };
+
   const nodeRef = useRef<HTMLDivElement>(null);
   
   // Local state for debouncing typing and dragging
@@ -630,27 +660,52 @@ function StickyNoteItem({
 
         {/* Color Palette Popover */}
         {showPalette && (
-          <div className="flex flex-col gap-2 p-2 bg-white dark:bg-gray-800/80 backdrop-blur border-b border-black/10 rounded-b-lg">
+          <div className="flex flex-col gap-2 p-2 bg-white dark:bg-gray-800/95 backdrop-blur border-b border-black/10 rounded-b-lg">
             <div className="flex gap-1 justify-center items-center">
               {COLORS.map(c => (
                 <button
                   key={c}
                   onClick={(e) => { e.stopPropagation(); onUpdate({ color: c }); setShowPalette(false); }}
-                  className={`w-6 h-6 rounded-full shadow-inner border-2 ${note.color === c ? 'border-gray-800' : 'border-transparent'}`}
+                  className={`w-6 h-6 rounded-full shadow-inner border-2 ${note.color === c ? 'border-gray-800 dark:border-gray-300' : 'border-transparent'}`}
                   style={{ backgroundColor: c }}
                   title="Cor predefinida"
                 />
               ))}
-              {/* Custom Color Picker */}
+            </div>
+
+            {/* Saved Custom Colors */}
+            {savedColors.length > 0 && (
+              <div className="flex gap-1 justify-center items-center flex-wrap pt-1 border-t border-gray-200 dark:border-gray-700">
+                {savedColors.map(c => (
+                  <button
+                    key={c}
+                    onClick={(e) => { e.stopPropagation(); onUpdate({ color: c }); setShowPalette(false); }}
+                    className={`w-5 h-5 rounded-full shadow-inner border border-black/20 ${note.color === c ? 'ring-2 ring-indigo-500' : ''}`}
+                    style={{ backgroundColor: c }}
+                    title="Cor Salva"
+                  />
+                ))}
+              </div>
+            )}
+
+            <div className="flex gap-1 justify-center items-center pt-2 border-t border-gray-200 dark:border-gray-700">
+              <button
+                onClick={handleEyedropper}
+                className="w-7 h-7 rounded-full shadow-sm border border-gray-300 bg-gray-50 flex items-center justify-center hover:bg-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 transition-colors"
+                title="Conta-gotas (Copiar cor da tela)"
+              >
+                <Pipette className="w-3.5 h-3.5 text-gray-700 dark:text-gray-300" />
+              </button>
               <label 
-                className="w-6 h-6 rounded-full shadow-inner border-2 border-transparent bg-gradient-to-tr from-red-500 via-green-500 to-blue-500 cursor-pointer flex items-center justify-center hover:scale-110 transition-transform"
-                title="Cor personalizada"
+                className="w-7 h-7 rounded-full shadow-inner border-2 border-transparent bg-gradient-to-tr from-red-500 via-green-500 to-blue-500 cursor-pointer flex items-center justify-center hover:scale-110 transition-transform"
+                title="Cor personalizada (Paleta do Sistema)"
                 onClick={(e) => e.stopPropagation()}
               >
                 <input 
                   type="color" 
                   value={note.color || '#fef08a'} 
                   onChange={(e) => onUpdate({ color: e.target.value })}
+                  onBlur={(e) => handleSaveCustomColor(e.target.value)}
                   className="opacity-0 absolute w-0 h-0"
                 />
                 <PlusCircle className="w-4 h-4 text-white drop-shadow-md" />
@@ -667,14 +722,14 @@ function StickyNoteItem({
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); onUpdate({ color: getRandomHexColor('vibrant') }); setShowPalette(false); }}
-                className="text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-transparent bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white hover:opacity-90 transition-opacity"
+                className="text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-transparent bg-gradient-to-r from-pink-400 via-red-400 to-yellow-400 text-white hover:opacity-90 transition-opacity"
                 title="Cor Vibrante Aleatória"
               >
                 Vibrante
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); onUpdate({ color: getRandomHexColor('neon') }); setShowPalette(false); }}
-                className="text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-transparent bg-gray-900 text-[#39ff14] hover:text-[#0ff] transition-colors"
+                className="text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-transparent bg-gray-900 text-[#a6ff00] hover:text-[#0ff] transition-colors"
                 title="Cor Neon Aleatória"
                 style={{ textShadow: '0 0 4px currentColor' }}
               >
@@ -818,37 +873,38 @@ function darkenColor(color: string, amount: number) {
 
 // Helper to generate random hex colors by category
 function getRandomHexColor(type: 'pastel' | 'vibrant' | 'neon'): string {
-  const toHex = (n: number) => n.toString(16).padStart(2, '0');
+  // Helper to convert HSL to Hex
+  const hslToHex = (h: number, s: number, l: number) => {
+    l /= 100;
+    const a = s * Math.min(l, 1 - l) / 100;
+    const f = (n: number) => {
+      const k = (n + h / 30) % 12;
+      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * color).toString(16).padStart(2, '0');
+    };
+    return `#${f(0)}${f(8)}${f(4)}`;
+  };
   
   if (type === 'pastel') {
-    // High RGB values for soft pastel colors
-    const r = Math.floor(Math.random() * 56) + 200; // 200-255
-    const g = Math.floor(Math.random() * 56) + 200;
-    const b = Math.floor(Math.random() * 56) + 200;
-    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    // Soft pastel colors (Lightness ~85%)
+    return hslToHex(Math.floor(Math.random() * 360), 100, 85);
   }
   
   if (type === 'vibrant') {
-    // Fully saturated colors (one channel 255, one 0, one random)
-    const channels = [255, 0, Math.floor(Math.random() * 256)];
-    // Shuffle channels
-    for (let i = channels.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [channels[i], channels[j]] = [channels[j], channels[i]];
-    }
-    return `#${toHex(channels[0])}${toHex(channels[1])}${toHex(channels[2])}`;
+    // Vibrant colors but slightly lighter to ensure text is legible (Lightness 75%)
+    return hslToHex(Math.floor(Math.random() * 360), 100, 75);
   }
   
   if (type === 'neon') {
-    // Specific neon hex codes for best effect
+    // Very specific, lighter neon hex codes so black text remains legible
     const neons = [
-      '#39ff14', // Neon Green
-      '#0ff0fc', // Neon Blue/Cyan
-      '#ff00ff', // Neon Magenta
-      '#ffea00', // Neon Yellow
-      '#ff073a', // Neon Red
-      '#ff0055', // Neon Pink
-      '#bc13fe'  // Neon Purple
+      '#a6ff00', // Lighter Neon Green/Lime
+      '#00ffff', // Cyan
+      '#ff66ff', // Lighter Pink/Magenta
+      '#ffcc00', // Neon Gold/Yellow
+      '#ff4d4d', // Bright Lighter Red
+      '#00ffcc', // Teal/Mint Neon
+      '#d455ff'  // Lighter Purple
     ];
     return neons[Math.floor(Math.random() * neons.length)];
   }
