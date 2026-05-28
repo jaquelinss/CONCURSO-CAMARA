@@ -615,25 +615,57 @@ function StickyNoteItem({
 
         {/* Color Palette Popover */}
         {showPalette && (
-          <div className="flex gap-1 p-2 bg-white dark:bg-gray-800/50 backdrop-blur justify-center border-b border-black/10 items-center">
-            {COLORS.map(c => (
+          <div className="flex flex-col gap-2 p-2 bg-white dark:bg-gray-800/80 backdrop-blur border-b border-black/10 rounded-b-lg">
+            <div className="flex gap-1 justify-center items-center">
+              {COLORS.map(c => (
+                <button
+                  key={c}
+                  onClick={(e) => { e.stopPropagation(); onUpdate({ color: c }); setShowPalette(false); }}
+                  className={`w-6 h-6 rounded-full shadow-inner border-2 ${note.color === c ? 'border-gray-800' : 'border-transparent'}`}
+                  style={{ backgroundColor: c }}
+                  title="Cor predefinida"
+                />
+              ))}
+              {/* Custom Color Picker */}
+              <label 
+                className="w-6 h-6 rounded-full shadow-inner border-2 border-transparent bg-gradient-to-tr from-red-500 via-green-500 to-blue-500 cursor-pointer flex items-center justify-center hover:scale-110 transition-transform"
+                title="Cor personalizada"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <input 
+                  type="color" 
+                  value={note.color || '#fef08a'} 
+                  onChange={(e) => onUpdate({ color: e.target.value })}
+                  className="opacity-0 absolute w-0 h-0"
+                />
+                <PlusCircle className="w-4 h-4 text-white drop-shadow-md" />
+              </label>
+            </div>
+            
+            <div className="flex gap-1 justify-center items-center pt-2 border-t border-gray-200 dark:border-gray-700">
               <button
-                key={c}
-                onClick={() => { onUpdate({ color: c }); setShowPalette(false); }}
-                className={`w-6 h-6 rounded-full shadow-inner border-2 ${note.color === c ? 'border-gray-800' : 'border-transparent'}`}
-                style={{ backgroundColor: c }}
-              />
-            ))}
-            {/* Custom Color Picker */}
-            <label className="w-6 h-6 rounded-full shadow-inner border-2 border-transparent bg-gradient-to-tr from-red-500 via-green-500 to-blue-500 cursor-pointer flex items-center justify-center hover:scale-110 transition-transform">
-              <input 
-                type="color" 
-                value={note.color || '#fef08a'} 
-                onChange={(e) => onUpdate({ color: e.target.value })}
-                className="opacity-0 absolute w-0 h-0"
-              />
-              <PlusCircle className="w-4 h-4 text-white drop-shadow-md" />
-            </label>
+                onClick={(e) => { e.stopPropagation(); onUpdate({ color: getRandomHexColor('pastel') }); setShowPalette(false); }}
+                className="text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-gray-200 bg-[#fdfbf7] hover:bg-white text-gray-600 transition-all"
+                title="Cor Pastel Aleatória"
+              >
+                Pastel
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); onUpdate({ color: getRandomHexColor('vibrant') }); setShowPalette(false); }}
+                className="text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-transparent bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white hover:opacity-90 transition-opacity"
+                title="Cor Vibrante Aleatória"
+              >
+                Vibrante
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); onUpdate({ color: getRandomHexColor('neon') }); setShowPalette(false); }}
+                className="text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-transparent bg-gray-900 text-[#39ff14] hover:text-[#0ff] transition-colors"
+                title="Cor Neon Aleatória"
+                style={{ textShadow: '0 0 4px currentColor' }}
+              >
+                Neon
+              </button>
+            </div>
           </div>
         )}
 
@@ -690,6 +722,50 @@ function StickyNoteItem({
 
 // Simple helper to darken hex color for the top border
 function darkenColor(color: string, amount: number) {
-  if (!color || typeof color !== 'string') return '#000000';
-  return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) - amount)).toString(16)).substr(-2));
+  if (!color || typeof color !== 'string' || !color.startsWith('#')) return '#000000';
+  try {
+    return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) - amount)).toString(16)).substr(-2));
+  } catch (e) {
+    return '#000000';
+  }
+}
+
+// Helper to generate random hex colors by category
+function getRandomHexColor(type: 'pastel' | 'vibrant' | 'neon'): string {
+  const toHex = (n: number) => n.toString(16).padStart(2, '0');
+  
+  if (type === 'pastel') {
+    // High RGB values for soft pastel colors
+    const r = Math.floor(Math.random() * 56) + 200; // 200-255
+    const g = Math.floor(Math.random() * 56) + 200;
+    const b = Math.floor(Math.random() * 56) + 200;
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  }
+  
+  if (type === 'vibrant') {
+    // Fully saturated colors (one channel 255, one 0, one random)
+    const channels = [255, 0, Math.floor(Math.random() * 256)];
+    // Shuffle channels
+    for (let i = channels.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [channels[i], channels[j]] = [channels[j], channels[i]];
+    }
+    return `#${toHex(channels[0])}${toHex(channels[1])}${toHex(channels[2])}`;
+  }
+  
+  if (type === 'neon') {
+    // Specific neon hex codes for best effect
+    const neons = [
+      '#39ff14', // Neon Green
+      '#0ff0fc', // Neon Blue/Cyan
+      '#ff00ff', // Neon Magenta
+      '#ffea00', // Neon Yellow
+      '#ff073a', // Neon Red
+      '#ff0055', // Neon Pink
+      '#bc13fe'  // Neon Purple
+    ];
+    return neons[Math.floor(Math.random() * neons.length)];
+  }
+  
+  return '#fef08a';
 }
