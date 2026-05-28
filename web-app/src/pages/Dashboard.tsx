@@ -33,6 +33,7 @@ export default function Dashboard() {
     subTopic: 'Todos',
     specificTopic: '',
     lessonLevel: 'Introdutória',
+    leiSecaEnabled: true,
   };
 
   const [screen, setScreen] = useState<'settings' | 'lesson' | 'quiz'>(

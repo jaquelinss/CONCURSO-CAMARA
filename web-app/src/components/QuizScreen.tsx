@@ -1427,6 +1427,18 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
                     </h4>
                   </div>
                   <p className={`mt-2 text-sm ${selectedAnswer === currentQ.correta ? 'text-green-900 dark:text-green-100' : 'text-red-900 dark:text-red-100'}`}>{currentQ.explicacao}</p>
+                  
+                  {currentQ.lei_seca && (
+                    <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 rounded-r-lg">
+                      <div className="flex items-center gap-2 mb-1">
+                        <svg className="w-4 h-4 text-amber-700 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                        </svg>
+                        <span className="font-bold text-amber-900 dark:text-amber-100 text-sm">Lei Seca</span>
+                      </div>
+                      <p className="text-sm italic text-amber-800 dark:text-amber-200">"{currentQ.lei_seca}"</p>
+                    </div>
+                  )}
                 </div>
                 
                 <div className="mt-6 border-t-2 border-dashed pt-4 border-gray-300">

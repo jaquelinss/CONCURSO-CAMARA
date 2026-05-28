@@ -27,7 +27,7 @@ const renderMarkdownText = (text: string) => {
 const parseLessonContent = (content: string) => {
   if (typeof content !== 'string') return [];
   
-  const regex = /\[EXPLICACAO\](.*?):(.*?)\[\/EXPLICACAO\]/gs;
+  const regex = /\[EXPLICACAO\](.*?):(.*?)\[\/EXPLICACAO\]|\[LEI_SECA\](.*?)\[\/LEI_SECA\]/gs;
   const parts = [];
   let lastIndex = 0;
   let match;
@@ -36,11 +36,13 @@ const parseLessonContent = (content: string) => {
     if (match.index > lastIndex) {
       parts.push({ type: 'text', content: content.substring(lastIndex, match.index) });
     }
-    const term = match[1]?.trim();
-    const explanation = match[2]?.trim();
-    if (term && explanation) {
-      parts.push({ type: 'term', term, explanation });
+    
+    if (match[1] && match[2]) {
+      parts.push({ type: 'term', term: match[1].trim(), explanation: match[2].trim() });
+    } else if (match[3]) {
+      parts.push({ type: 'lei_seca', text: match[3].trim() });
     }
+    
     lastIndex = regex.lastIndex;
   }
   if (lastIndex < content.length) {
@@ -52,19 +54,33 @@ const parseLessonContent = (content: string) => {
 const ParsedSectionContent = React.memo(({ content, theme }: { content: string, theme: any }) => {
   return (
     <div>
-      {parseLessonContent(content).map((part, i) => 
-        part.type === 'term' ? (
-          <span 
-            key={i} 
-            className={`term-highlight cursor-help font-bold underline decoration-dotted underline-offset-4 ${theme.accent}`}
-            data-explanation={part.explanation}
-          >
-            {part.term}
-          </span>
-        ) : (
-          <span key={i}>{renderMarkdownText(part.content!)}</span>
-        )
-      )}
+      {parseLessonContent(content).map((part, i) => {
+        if (part.type === 'term') {
+          return (
+            <span 
+              key={i} 
+              className={`term-highlight cursor-help font-bold underline decoration-dotted underline-offset-4 ${theme.accent}`}
+              data-explanation={part.explanation}
+            >
+              {part.term}
+            </span>
+          );
+        }
+        if (part.type === 'lei_seca') {
+          return (
+            <div key={i} className="my-4 p-4 bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 rounded-r-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <svg className="w-5 h-5 text-amber-700 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                </svg>
+                <span className="font-bold text-amber-900 dark:text-amber-100">Lei Seca</span>
+              </div>
+              <p className="text-sm italic text-amber-800 dark:text-amber-200 leading-relaxed">"{part.text}"</p>
+            </div>
+          );
+        }
+        return <span key={i}>{renderMarkdownText(part.content!)}</span>;
+      })}
     </div>
   );
 });

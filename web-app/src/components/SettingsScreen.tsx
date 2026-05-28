@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { getModelsByMode, themes, defaultTheme, difficulties, lessonLevels, topicsBySubject } from '../lib/constants';
+import { getModelsByMode, themes, defaultTheme, difficulties, lessonLevels, topicsBySubject, isLawSubject } from '../lib/constants';
 import { useAuth } from '../contexts/AuthContext';
 import { useCustomSubjects } from '../contexts/CustomSubjectsContext';
 import { db } from '../lib/firebase';
@@ -271,6 +271,26 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
             theme={theme}
             type="number"
           />
+        )}
+
+        {isLawSubject(settings.subject) && (
+          <div className="flex items-center space-x-3 p-4 bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-200 dark:border-amber-800 rounded-lg transition-colors">
+            <input
+              type="checkbox"
+              id="leiSecaToggle"
+              checked={settings.leiSecaEnabled}
+              onChange={(e) => setSettings({ ...settings, leiSecaEnabled: e.target.checked })}
+              className={`w-5 h-5 rounded border-gray-300 text-amber-600 focus:ring-amber-500`}
+            />
+            <div className="flex-1">
+              <label htmlFor="leiSecaToggle" className="font-semibold text-amber-900 dark:text-amber-100 cursor-pointer">
+                Modo Lei Seca
+              </label>
+              <p className="text-sm text-amber-700 dark:text-amber-300">
+                Incluir texto literal da legislação nas explicações geradas pela IA.
+              </p>
+            </div>
+          </div>
         )}
 
         <button

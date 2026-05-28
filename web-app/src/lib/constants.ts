@@ -29,6 +29,23 @@ export const subjectsConcurso = [
   'Português', 'Raciocínio Lógico-Matemático', 'Matemática', 'Noções de Informática', 'Lei Orgânica de Caruaru', 'Legislação Específica', 'Administração Pública', 'Noções de Arquivologia', 'Noções de Direito Constitucional', 'Noções de Direito Administrativo'
 ];
 
+export const LAW_SUBJECTS = [
+  'Constituição Federal',
+  'Lei Orgânica de Caruaru',
+  'Legislação Específica',
+  'Noções de Direito Constitucional',
+  'Noções de Direito Administrativo'
+];
+
+export const isLawSubject = (subject: string): boolean => {
+  if (!subject) return false;
+  return LAW_SUBJECTS.includes(subject) || 
+         subject.toLowerCase().includes('direito') || 
+         subject.toLowerCase().includes('lei') || 
+         subject.toLowerCase().includes('legislação');
+};
+
+
 
 export const ENEM_TOPICS: Record<string, string[]> = {
   'Matemática': ['Matemática Básica (35%)', 'Estatística (11,7%)', 'Geometria Espacial (11,2%)', 'Funções (11%)', 'Geometria Plana (8,3%)'],

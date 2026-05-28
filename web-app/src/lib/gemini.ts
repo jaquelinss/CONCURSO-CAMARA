@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { ENEM_AREAS } from './constants';
+import { ENEM_AREAS, isLawSubject } from './constants';
 
 /**
  * Sanitiza uma string JSON mal formatada (com backslashes literais, como LaTeX ou caminhos) antes de fazer o parse.
@@ -57,7 +57,7 @@ A resposta DEVE ser estritamente um objeto JSON com o seguinte formato exato:
     "titulo": "Título da Aula",
     "introducao": "Texto de introdução",
     "secoes": [
-      { "subtitulo": "Nome da Seção", "conteudo": "Texto da seção com [EXPLICACAO]Termo: Explicação aqui[/EXPLICACAO]" }
+      { "subtitulo": "Nome da Seção", "conteudo": "Texto da seção com [EXPLICACAO]Termo: Explicação aqui[/EXPLICACAO]${(settings.leiSecaEnabled !== false && isLawSubject(settings.subject)) ? ' e [LEI_SECA]Texto literal da lei aplicável aqui[/LEI_SECA]' : ''}" }
     ]
   }
 }`;
@@ -98,6 +98,7 @@ REGRAS ABSOLUTAS E INVIOLÁVEIS PARA AS QUESTÕES:
 5. Verifique a lógica da questão: se pedir a alternativa CORRETA, as outras 3 precisam estar absolutamente ERRADAS. Se pedir a INCORRETA, as outras 3 precisam estar CERTAS.
 6. Não inclua as letras "A)", "B)", "C)", "D)" no texto das opções, apenas o conteúdo da resposta.
 7. A "explicacao" deve justificar a resposta E APONTAR ESPECIFICAMENTE o erro de cada alternativa incorreta.
+${(settings.leiSecaEnabled !== false && isLawSubject(settings.subject)) ? '8. Como este é um assunto de legislação, inclua também a chave "lei_seca" contendo o trecho exato (literal) da lei, artigo, parágrafo ou inciso que fundamenta a resposta correta.' : ''}
 
 AUTO-VALIDAÇÃO OBRIGATÓRIA (faça ANTES de retornar):
 - Releia cada questão gerada e pergunte-se: "Algum especialista no assunto poderia argumentar que outra alternativa também está correta?"
@@ -115,7 +116,7 @@ A resposta DEVE ser estritamente um objeto JSON com o seguinte formato exato:
       "pergunta": "Texto completo do enunciado da pergunta",
       "opcoes": ["Texto da opção 1", "Texto da opção 2", "Texto da opção 3", "Texto da opção 4"],
       "correta": "O texto exato e idêntico da opção que está correta",
-      "explicacao": "Explicação detalhada justificando a resposta e apontando o erro específico de cada alternativa incorreta"
+      "explicacao": "Explicação detalhada justificando a resposta e apontando o erro específico de cada alternativa incorreta"${(settings.leiSecaEnabled !== false && isLawSubject(settings.subject)) ? ',\n      "lei_seca": "Trecho literal da lei correspondente"' : ''}
     }
   ]
 }`;
