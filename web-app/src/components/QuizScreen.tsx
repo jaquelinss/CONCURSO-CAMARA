@@ -4,7 +4,7 @@ import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp, doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import { generateContentFromGemini, correctEssayFromGemini } from '../lib/gemini';
-import { DownloadIcon, BanIcon, CheckCircleIcon, XCircleIcon, UploadCloud, FileText, Bot, Sparkles, AlertCircle } from 'lucide-react';
+import { DownloadIcon, BanIcon, CheckCircleIcon, XCircleIcon, UploadCloud, FileText, Bot, Sparkles, AlertCircle, Flag, AlertTriangle } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import mammoth from 'mammoth';
@@ -207,6 +207,11 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(isSavedMode);
   const [error, setError] = useState<string | null>(null);
+
+  // Question Report states
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [reportText, setReportText] = useState("");
+  const [isSubmittingReport, setIsSubmittingReport] = useState(false);
 
   const storageKey = settings.id ? `quiz_progress_${settings.id}` : null;
 
@@ -1276,6 +1281,35 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     }
   };
 
+  const handleReportQuestion = async () => {
+    if (!reportText.trim() || !user?.email || !currentQ) {
+      alert("Por favor, preencha a descrição do erro.");
+      return;
+    }
+    
+    setIsSubmittingReport(true);
+    try {
+      await addDoc(collection(db, 'question_reports'), {
+        questionId: currentQ.id || 'N/A',
+        subject: settings.subject,
+        topic: settings.model,
+        questionText: currentQ.pergunta || currentQ.frente || 'N/A',
+        userDescription: reportText,
+        userEmail: user.email,
+        status: 'new',
+        createdAt: serverTimestamp()
+      });
+      alert("Relatório enviado com sucesso! Obrigado por ajudar a melhorar o banco de questões.");
+      setIsReportModalOpen(false);
+      setReportText("");
+    } catch (err) {
+      console.error("Erro ao enviar relatório:", err);
+      alert("Erro ao enviar o relatório. Tente novamente mais tarde.");
+    } finally {
+      setIsSubmittingReport(false);
+    }
+  };
+
   return (
     <div className={`max-w-4xl mx-auto p-4 md:p-8 relative`}>
       <div className="w-full flex justify-between items-center mb-6">
@@ -1381,7 +1415,16 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
           </div>
         ) : (
           <>
-            <h3 className="text-xl md:text-2xl font-semibold mt-4 mb-6 min-h-[6rem]">{currentQ.pergunta}</h3>
+            <div className="flex justify-between items-start gap-4 mt-4 mb-6 min-h-[6rem]">
+              <h3 className="text-xl md:text-2xl font-semibold">{currentQ.pergunta}</h3>
+              <button 
+                onClick={() => setIsReportModalOpen(true)} 
+                title="Reportar erro na questão" 
+                className="text-gray-400 hover:text-red-500 transition-colors p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 flex-shrink-0"
+              >
+                <Flag className="w-5 h-5" />
+              </button>
+            </div>
             
             <div className="space-y-4">
               {currentQ.opcoes.map((option: string, idx: number) => {
@@ -1527,6 +1570,48 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
           </>
         )}
       </div>
+
+      {/* Modal de Reportar Erro */}
+      {isReportModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full shadow-2xl relative animate-in fade-in zoom-in duration-200 border border-red-100 dark:border-red-900/30">
+            <button
+              onClick={() => setIsReportModalOpen(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            >
+              <XCircleIcon className="w-6 h-6" />
+            </button>
+            <div className="flex items-center gap-3 text-red-600 mb-4">
+              <AlertTriangle className="w-8 h-8" />
+              <h2 className="text-2xl font-bold">Reportar Problema</h2>
+            </div>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Encontrou algum erro na questão (ex: gráfico faltando, gabarito incorreto, erro de digitação)? Descreva abaixo para que possamos corrigir.
+            </p>
+            <textarea
+              value={reportText}
+              onChange={(e) => setReportText(e.target.value)}
+              placeholder="Descreva o problema encontrado com detalhes..."
+              className="w-full p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:outline-none focus:border-red-400 focus:ring-1 focus:ring-red-400 resize-none h-32 mb-4"
+            />
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setIsReportModalOpen(false)}
+                className="px-4 py-2 text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleReportQuestion}
+                disabled={isSubmittingReport || !reportText.trim()}
+                className="px-6 py-2 bg-red-600 text-white rounded-lg font-bold hover:bg-red-700 disabled:opacity-50 transition-colors shadow-md"
+              >
+                {isSubmittingReport ? 'Enviando...' : 'Enviar Reporte'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

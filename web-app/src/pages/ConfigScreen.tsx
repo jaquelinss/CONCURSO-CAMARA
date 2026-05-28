@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../lib/firebase';
 import { collection, query, getDocs, orderBy, doc, updateDoc } from 'firebase/firestore';
-import { Bug, ChevronDown, ChevronUp, CheckCircle, Clock, BookOpen } from 'lucide-react';
+import { Bug, ChevronDown, ChevronUp, CheckCircle, Clock, BookOpen, Flag } from 'lucide-react';
 import DocumentationModal from '../components/DocumentationModal';
 
 // Email da conta admin que pode ver os reportes
@@ -25,6 +25,12 @@ export default function ConfigScreen() {
   const [loadingReports, setLoadingReports] = useState(false);
   const [showReports, setShowReports] = useState(false);
   const [expandedReport, setExpandedReport] = useState<string | null>(null);
+
+  // Admin: denúncias de questões
+  const [questionReports, setQuestionReports] = useState<any[]>([]);
+  const [loadingQuestionReports, setLoadingQuestionReports] = useState(false);
+  const [showQuestionReports, setShowQuestionReports] = useState(false);
+  const [expandedQuestionReport, setExpandedQuestionReport] = useState<string | null>(null);
 
   useEffect(() => {
     if (apiKey) {
@@ -53,6 +59,30 @@ export default function ConfigScreen() {
       setReports(prev => prev.map(r => r.id === reportId ? { ...r, status: 'resolved' } : r));
     } catch (err) {
       console.error("Erro ao atualizar status:", err);
+    }
+  };
+
+  const fetchQuestionReports = async () => {
+    if (!isAdmin) return;
+    setLoadingQuestionReports(true);
+    try {
+      const ref = collection(db, 'question_reports');
+      const q = query(ref, orderBy('createdAt', 'desc'));
+      const snap = await getDocs(q);
+      setQuestionReports(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    } catch (err) {
+      console.error("Erro ao buscar denúncias de questões:", err);
+    } finally {
+      setLoadingQuestionReports(false);
+    }
+  };
+
+  const markQuestionAsResolved = async (reportId: string) => {
+    try {
+      await updateDoc(doc(db, 'question_reports', reportId), { status: 'resolved' });
+      setQuestionReports(prev => prev.map(r => r.id === reportId ? { ...r, status: 'resolved' } : r));
+    } catch (err) {
+      console.error("Erro ao atualizar status da questão:", err);
     }
   };
 
@@ -245,6 +275,105 @@ export default function ConfigScreen() {
                             <button
                               onClick={() => markAsResolved(report.id)}
                               className="px-4 py-2 bg-green-600 text-white rounded-lg font-bold text-sm hover:bg-green-700 transition-colors"
+                            >
+                              ✓ Marcar como Resolvido
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Painel de Admin - Denúncias de Questões */}
+        {isAdmin && (
+          <div className="mt-8 bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-semibold text-orange-600 flex items-center gap-2">
+                <Flag className="w-6 h-6" />
+                Denúncias de Questões
+                {questionReports.filter(r => r.status === 'new').length > 0 && (
+                  <span className="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                    {questionReports.filter(r => r.status === 'new').length}
+                  </span>
+                )}
+              </h2>
+              <button
+                onClick={() => { setShowQuestionReports(!showQuestionReports); if (!showQuestionReports && questionReports.length === 0) fetchQuestionReports(); }}
+                className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300"
+              >
+                {showQuestionReports ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                {showQuestionReports ? 'Ocultar' : 'Ver denúncias'}
+              </button>
+            </div>
+
+            {showQuestionReports && (
+              <div className="mt-6 space-y-4">
+                {loadingQuestionReports ? (
+                  <div className="flex justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+                  </div>
+                ) : questionReports.length === 0 ? (
+                  <p className="text-gray-400 text-center py-8">Nenhuma questão denunciada ainda. 🎉</p>
+                ) : (
+                  questionReports.map(report => (
+                    <div 
+                      key={report.id} 
+                      className={`border-2 rounded-xl overflow-hidden transition-all ${report.status === 'resolved' ? 'border-green-100 bg-green-50/30' : 'border-orange-100'}`}
+                    >
+                      <button
+                        onClick={() => setExpandedQuestionReport(expandedQuestionReport === report.id ? null : report.id)}
+                        className="w-full p-4 flex justify-between items-center hover:bg-gray-50 dark:bg-gray-900 transition-colors"
+                      >
+                        <div className="text-left w-full pr-4">
+                          <div className="flex items-center gap-2 mb-1">
+                            {report.status === 'resolved' ? (
+                              <CheckCircle className="w-4 h-4 text-green-500" />
+                            ) : (
+                              <Clock className="w-4 h-4 text-orange-500" />
+                            )}
+                            <span className="text-sm font-bold text-gray-800 dark:text-gray-200">
+                              {report.userEmail}
+                            </span>
+                            <span className="text-xs text-gray-400">
+                              {report.createdAt?.toDate?.()?.toLocaleString('pt-BR') || 'N/A'}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 font-bold">
+                            {report.subject} - {report.topic}
+                          </p>
+                          <p className="text-sm text-gray-500 dark:text-gray-500 truncate max-w-md">
+                            ID: {report.questionId}
+                          </p>
+                        </div>
+                        {expandedQuestionReport === report.id ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                      </button>
+
+                      {expandedQuestionReport === report.id && (
+                        <div className="p-4 border-t bg-gray-50 dark:bg-gray-900 space-y-4">
+                          <div>
+                            <p className="text-xs font-bold text-orange-600 uppercase mb-1">Problema Relatado</p>
+                            <p className="text-sm text-gray-800 dark:text-gray-200 bg-orange-50 dark:bg-orange-900/20 p-3 rounded-lg border border-orange-100 dark:border-orange-800/50">
+                              {report.userDescription}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase mb-1">Texto da Questão</p>
+                            <p className="text-sm text-gray-700 dark:text-gray-300 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                              {report.questionText}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs font-mono text-gray-500 bg-gray-200 dark:bg-gray-800 p-2 rounded">
+                            <span className="font-bold">ID:</span> {report.questionId}
+                          </div>
+                          {report.status !== 'resolved' && (
+                            <button
+                              onClick={() => markQuestionAsResolved(report.id)}
+                              className="px-4 py-2 bg-green-600 text-white rounded-lg font-bold text-sm hover:bg-green-700 transition-colors w-full sm:w-auto"
                             >
                               ✓ Marcar como Resolvido
                             </button>
