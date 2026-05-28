@@ -222,6 +222,7 @@ export default function StickyNotesManager() {
   if (!user) return null;
 
   const activeNotes = notes.filter(n => !n.isArchived);
+  const allTags = Array.from(new Set(notes.map(n => n.subjectTag).filter(Boolean))) as string[];
 
   return (
     <>
@@ -242,6 +243,7 @@ export default function StickyNotesManager() {
             onFocus={() => bringToFront(note.id)}
             onSendToBack={() => sendToBack(note.id)}
             onToggleCascade={handleToggleCascade}
+            allTags={allTags}
           />
         ))}
       </div>
@@ -296,7 +298,7 @@ export default function StickyNotesManager() {
                     >
                       Sem Tags
                     </button>
-                    {(Array.from(new Set(notes.map(n => n.subjectTag).filter(Boolean))) as string[]).map(tag => (
+                    {allTags.map(tag => (
                       <button
                         key={tag}
                         onClick={() => setSelectedTag(tag)}
@@ -455,7 +457,8 @@ function StickyNoteItem({
   onUpdate, 
   onFocus,
   onSendToBack,
-  onToggleCascade
+  onToggleCascade,
+  allTags
 }: { 
   note: Note; 
   isCascadeMode: boolean;
@@ -467,8 +470,11 @@ function StickyNoteItem({
   onFocus: () => void;
   onSendToBack: () => void;
   onToggleCascade: () => void;
+  allTags: string[];
 }) {
   const [showPalette, setShowPalette] = useState(false);
+  const [showTagPicker, setShowTagPicker] = useState(false);
+  const [newTagInput, setNewTagInput] = useState('');
   const nodeRef = useRef<HTMLDivElement>(null);
   
   // Local state for debouncing typing and dragging
@@ -593,13 +599,22 @@ function StickyNoteItem({
               <Layers className="w-3.5 h-3.5 pointer-events-none" />
             </button>
             <button 
-              onClick={(e) => { e.stopPropagation(); setShowPalette(!showPalette); }}
-              onTouchStart={(e) => { e.stopPropagation(); setShowPalette(!showPalette); }}
+              onClick={(e) => { e.stopPropagation(); setShowPalette(!showPalette); setShowTagPicker(false); }}
+              onTouchStart={(e) => { e.stopPropagation(); setShowPalette(!showPalette); setShowTagPicker(false); }}
               onPointerDown={(e) => e.stopPropagation()}
               className="color-picker-btn p-1 hover:bg-black/10 rounded"
               title="Mudar Cor"
             >
               <Palette className="w-3.5 h-3.5 text-gray-700 pointer-events-none" />
+            </button>
+            <button 
+              onClick={(e) => { e.stopPropagation(); setShowTagPicker(!showTagPicker); setShowPalette(false); }}
+              onTouchStart={(e) => { e.stopPropagation(); setShowTagPicker(!showTagPicker); setShowPalette(false); }}
+              onPointerDown={(e) => e.stopPropagation()}
+              className="tag-picker-btn p-1 hover:bg-black/10 rounded"
+              title="Atribuir Tag"
+            >
+              <Tag className="w-3.5 h-3.5 text-gray-700 pointer-events-none" />
             </button>
             <button 
               onClick={(e) => { e.stopPropagation(); onUpdate({ isArchived: true }); }}
@@ -666,6 +681,77 @@ function StickyNoteItem({
                 Neon
               </button>
             </div>
+          </div>
+        )}
+
+        {/* Tag Picker Popover */}
+        {showTagPicker && (
+          <div className="flex flex-col gap-2 p-3 bg-white dark:bg-gray-800/95 backdrop-blur border-b border-black/10 rounded-b-lg text-sm max-h-48 overflow-y-auto">
+            <div className="flex items-center gap-2">
+              <input 
+                type="text"
+                value={newTagInput}
+                onChange={(e) => setNewTagInput(e.target.value)}
+                placeholder="Nova tag..."
+                className="flex-1 bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-indigo-500"
+                onPointerDown={(e) => e.stopPropagation()}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && newTagInput.trim()) {
+                    onUpdate({ subjectTag: newTagInput.trim() });
+                    setNewTagInput('');
+                    setShowTagPicker(false);
+                  }
+                }}
+              />
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (newTagInput.trim()) {
+                    onUpdate({ subjectTag: newTagInput.trim() });
+                    setNewTagInput('');
+                    setShowTagPicker(false);
+                  }
+                }}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white p-1 rounded transition-colors"
+                title="Criar Tag"
+              >
+                <PlusCircle className="w-4 h-4" />
+              </button>
+            </div>
+            
+            <div className="flex flex-wrap gap-1 mt-1">
+              {allTags.length > 0 ? allTags.map(tag => (
+                <button
+                  key={tag}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onUpdate({ subjectTag: tag });
+                    setShowTagPicker(false);
+                  }}
+                  className={`px-2 py-0.5 rounded-full text-[10px] font-bold border transition-colors ${
+                    note.subjectTag === tag 
+                      ? 'bg-indigo-600 text-white border-indigo-600' 
+                      : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  {tag}
+                </button>
+              )) : (
+                <span className="text-[10px] text-gray-500 italic">Nenhuma tag existente.</span>
+              )}
+            </div>
+            {note.subjectTag && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onUpdate({ subjectTag: '' }); // or null, depending on DB schema, let's use empty string so it becomes falsy
+                  setShowTagPicker(false);
+                }}
+                className="text-[10px] text-red-500 hover:text-red-700 font-bold self-start mt-1"
+              >
+                Remover Tag Atual
+              </button>
+            )}
           </div>
         )}
 
