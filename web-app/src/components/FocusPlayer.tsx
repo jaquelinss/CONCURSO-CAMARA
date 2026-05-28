@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Headphones, Play, Pause, Volume2, VolumeX, Waves, CloudRain } from 'lucide-react';
 
-type TrackType = 'none' | 'white-noise' | 'binaural';
+type TrackType = 'none' | 'noise-white' | 'noise-pink' | 'noise-brown' | 'binaural-alpha' | 'binaural-beta' | 'binaural-theta';
 
 export default function FocusPlayer() {
   const [isOpen, setIsOpen] = useState(false);
@@ -77,7 +77,7 @@ export default function FocusPlayer() {
     }
   };
 
-  const playWhiteNoise = () => {
+  const playNoise = (type: 'noise-white' | 'noise-pink' | 'noise-brown') => {
     initAudioContext();
     if (!audioContextRef.current || !gainNodeRef.current) return;
     
@@ -93,10 +93,12 @@ export default function FocusPlayer() {
     noise.buffer = buffer;
     noise.loop = true;
     
-    // Filtro para deixar o som mais suave (ruído rosa / marrom falso)
+    // Filtro para definir a cor do ruído
     const filter = audioContextRef.current.createBiquadFilter();
     filter.type = 'lowpass';
-    filter.frequency.value = 1000;
+    if (type === 'noise-white') filter.frequency.value = 5000;
+    else if (type === 'noise-pink') filter.frequency.value = 1000;
+    else if (type === 'noise-brown') filter.frequency.value = 400;
     
     noise.connect(filter);
     filter.connect(gainNodeRef.current);
@@ -105,13 +107,15 @@ export default function FocusPlayer() {
     whiteNoiseNodeRef.current = noise;
   };
 
-  const playBinaural = () => {
+  const playBinaural = (type: 'binaural-alpha' | 'binaural-beta' | 'binaural-theta') => {
     initAudioContext();
     if (!audioContextRef.current || !gainNodeRef.current) return;
     
-    // Frequência base de 432 Hz e uma diferença de 10Hz (Ondas Alpha - Concentração/Relaxamento)
     const baseFreq = 432;
-    const beatFreq = 10;
+    let beatFreq = 10;
+    if (type === 'binaural-beta') beatFreq = 20; // Beta (20Hz - Foco Intenso)
+    else if (type === 'binaural-theta') beatFreq = 6; // Theta (6Hz - Relaxamento Criativo)
+    // Padrão Alpha (10Hz - Concentração Relaxada)
     
     const osc1 = audioContextRef.current.createOscillator();
     const osc2 = audioContextRef.current.createOscillator();
@@ -139,9 +143,9 @@ export default function FocusPlayer() {
 
   const handleTogglePlay = () => {
     if (activeTrack === 'none') {
-      setActiveTrack('white-noise');
+      setActiveTrack('noise-pink');
       setIsPlaying(true);
-      playWhiteNoise();
+      playNoise('noise-pink');
       return;
     }
 
@@ -156,8 +160,8 @@ export default function FocusPlayer() {
 
   const startTrack = (track: TrackType) => {
     stopAll();
-    if (track === 'white-noise') playWhiteNoise();
-    else if (track === 'binaural') playBinaural();
+    if (track.startsWith('noise-')) playNoise(track as any);
+    else if (track.startsWith('binaural-')) playBinaural(track as any);
   };
 
   const handleTrackChange = (track: TrackType) => {
@@ -201,25 +205,68 @@ export default function FocusPlayer() {
           </div>
 
           <div className="space-y-2 mb-4">
+            <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-2 mb-1 px-1">Ruídos (Foco & Bloqueio)</div>
             <button
-              onClick={() => handleTrackChange('white-noise')}
+              onClick={() => handleTrackChange('noise-white')}
               className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 text-sm transition-colors ${
-                activeTrack === 'white-noise' 
+                activeTrack === 'noise-white' 
                   ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-medium' 
                   : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
               }`}
             >
-              <CloudRain className="w-4 h-4" /> Ruído Suave
+              <CloudRain className="w-4 h-4" /> Ruído Branco (Estático)
             </button>
             <button
-              onClick={() => handleTrackChange('binaural')}
+              onClick={() => handleTrackChange('noise-pink')}
               className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 text-sm transition-colors ${
-                activeTrack === 'binaural' 
+                activeTrack === 'noise-pink' 
                   ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-medium' 
                   : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
               }`}
             >
-              <Waves className="w-4 h-4" /> Ondas Alpha (Binaural)
+              <CloudRain className="w-4 h-4" /> Ruído Rosa (Suave)
+            </button>
+            <button
+              onClick={() => handleTrackChange('noise-brown')}
+              className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 text-sm transition-colors ${
+                activeTrack === 'noise-brown' 
+                  ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-medium' 
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+              }`}
+            >
+              <CloudRain className="w-4 h-4" /> Ruído Marrom (Profundo)
+            </button>
+
+            <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-4 mb-1 px-1">Binaural (Ondas Cerebrais)</div>
+            <button
+              onClick={() => handleTrackChange('binaural-beta')}
+              className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 text-sm transition-colors ${
+                activeTrack === 'binaural-beta' 
+                  ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-medium' 
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+              }`}
+            >
+              <Waves className="w-4 h-4" /> Ondas Beta (Foco Intenso)
+            </button>
+            <button
+              onClick={() => handleTrackChange('binaural-alpha')}
+              className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 text-sm transition-colors ${
+                activeTrack === 'binaural-alpha' 
+                  ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-medium' 
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+              }`}
+            >
+              <Waves className="w-4 h-4" /> Ondas Alpha (Estudo Relaxado)
+            </button>
+            <button
+              onClick={() => handleTrackChange('binaural-theta')}
+              className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-2 text-sm transition-colors ${
+                activeTrack === 'binaural-theta' 
+                  ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-medium' 
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+              }`}
+            >
+              <Waves className="w-4 h-4" /> Ondas Theta (Criatividade)
             </button>
 
           </div>
