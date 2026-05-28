@@ -3,7 +3,7 @@
     "id": "ai-gen-1773362974261-0-tepynlw",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Fácil",
     "contexto": "Uma pequena cooperativa de artesãos produz colares e pulseiras. Em um mês, eles gastaram R$ 1.200,00 em matéria-prima e mão de obra. Venderam todos os produtos por R$ 1.800,00.",
@@ -24,7 +24,7 @@
     "id": "ai-gen-1773362974261-1-ynpxjaa",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Uma família acompanhou o consumo mensal de energia elétrica de sua residência durante um trimestre. Em janeiro, o consumo foi de 180 kWh. Em fevereiro, devido a um período de férias, o consumo reduziu para 120 kWh. Em março, com o retorno às atividades normais e o uso de um novo aparelho, o consumo aumentou para 210 kWh.",
@@ -45,7 +45,7 @@
     "id": "ai-gen-1773362974261-2-ogfa1si",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Um agricultor planeja construir um cercado retangular para suas galinhas, utilizando 120 metros de tela. Um dos lados do cercado será adjacente a um galpão já existente, de forma que este lado não precisará de tela. Para garantir o bem-estar das galinhas, o comprimento do cercado (o lado paralelo ao galpão) deve ter no mínimo 30 metros e no máximo 50 metros.",
@@ -66,7 +66,7 @@
     "id": "ai-gen-1773362974261-3-xj6piqt",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Avançado",
     "contexto": "Uma universidade adota um sistema de avaliação com três provas (P1, P2, P3) e um trabalho final (T). As provas P1 e P2 têm peso 2, a prova P3 tem peso 3 e o trabalho final T tem peso 3. A média final para aprovação é 7,0. Um aluno obteve as seguintes notas: P1 = 6,0; P2 = 7,5; P3 = 6,5. Ele ainda precisa realizar o trabalho final T.",
@@ -87,7 +87,7 @@
     "id": "ai-gen-1773362974261-4-2of074t",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Avançado",
     "contexto": "Uma corrida de revezamento é composta por três etapas. O primeiro corredor percorre 2/5 do total da pista. O segundo corredor percorre 1/3 do restante. O terceiro corredor percorre os últimos 600 metros.",
@@ -108,7 +108,7 @@
     "id": "ai-gen-1773363537848-0-5sqpou9",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Fácil",
     "contexto": "Uma cooperativa agrícola lança um programa de incentivo para pequenos produtores. Se o produtor atingir uma meta de 1500 kg de um determinado grão, ele recebe um bônus de 8% sobre o valor total da venda.",
@@ -129,7 +129,7 @@
     "id": "ai-gen-1773363537848-1-x5ju7m5",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Uma empresa de consultoria analisou a produtividade de três equipes (A, B e C) ao longo de um mês, em termos de projetos concluídos. A Equipe A concluiu 25 projetos, a Equipe B concluiu 30 projetos e a Equipe C concluiu 20 projetos. A empresa estipulou que a equipe mais produtiva (com mais projetos) deveria ter uma proporção de 2:3 de seus membros sendo juniores para seniores, respectivamente. A equipe menos produtiva deveria ter uma proporção de 1:4 (juniores para seniores).",
@@ -150,7 +150,7 @@
     "id": "ai-gen-1773363537848-2-kxpcs0l",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Em um projeto social de reflorestamento, uma comunidade decidiu plantar árvores em uma área degradada. No primeiro dia, foram plantadas 15 árvores. Nos dias seguintes, o número de árvores plantadas aumentou em uma quantidade fixa a cada dia. Sabe-se que no oitavo dia do projeto, foram plantadas 36 árvores. O projeto tem como meta plantar um total de 1200 árvores.",
@@ -171,7 +171,7 @@
     "id": "ai-gen-1773363537848-3-m14liji",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Uma empresa de design de interiores está projetando um novo modelo de luminária em formato de prisma reto de base quadrada. A altura do prisma deve ser o dobro do lado da base. A luminária deve ter um volume interno de 250 cm³.",
@@ -192,7 +192,7 @@
     "id": "ai-gen-1773363537848-4-2a35t4r",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Avançado",
     "contexto": "Um engenheiro agrônomo estuda a relação entre a quantidade de adubo (em kg) aplicada em uma plantação de soja e a produtividade (em sacas por hectare). Ele observou que a produtividade P pode ser modelada pela função P(x) = -0.5x² + 20x + 50, onde x é a quantidade de adubo em kg e P(x) é a produtividade em sacas/hectare. O custo do adubo é de R$ 15 por kg e a saca de soja é vendida por R$ 100. A área plantada é de 1 hectare.",
@@ -213,7 +213,8 @@
     "id": "ai-gen-1773363826223-0-s3mrl9g",
     "subject": "Matemática",
     "topics": [
-      "Geometria Plana (8,3%)"
+      "Geometria",
+      "Geometria Plana (Áreas e Perímetros)"
     ],
     "difficulty": "Fácil",
     "contexto": "Um designer de interiores está planejando a disposição de um tapete retangular em uma sala quadrada. A sala tem 6 metros de lado e o tapete tem 3 metros de largura por 4 metros de comprimento. Ele deseja que o tapete fique centralizado na sala.",
@@ -234,7 +235,8 @@
     "id": "ai-gen-1773363826223-1-krkv7me",
     "subject": "Matemática",
     "topics": [
-      "Geometria Plana (8,3%)"
+      "Geometria",
+      "Geometria Plana (Áreas e Perímetros)"
     ],
     "difficulty": "Médio",
     "contexto": "Um terreno triangular ABC, com um ângulo reto em B, será dividido em duas partes por uma cerca que parte do vértice B e encontra o lado AC em um ponto D. Sabendo que o lado AB mede 80 metros e o lado BC mede 60 metros, e que a cerca BD é a altura relativa à hipotenusa AC.",
@@ -255,7 +257,8 @@
     "id": "ai-gen-1773363826223-2-3mipg0o",
     "subject": "Matemática",
     "topics": [
-      "Geometria Plana (8,3%)"
+      "Geometria",
+      "Geometria Plana (Áreas e Perímetros)"
     ],
     "difficulty": "Difícil",
     "contexto": "Um arquiteto está projetando um telhado em forma de trapézio isósceles para uma cobertura de garagem. A base maior do telhado mede 20 metros e a base menor mede 10 metros. A inclinação dos lados não paralelos é tal que a altura do trapézio é de 5 metros.",
@@ -276,7 +279,8 @@
     "id": "ai-gen-1773363826223-3-irlud5j",
     "subject": "Matemática",
     "topics": [
-      "Geometria Plana (8,3%)"
+      "Geometria",
+      "Geometria Plana (Áreas e Perímetros)"
     ],
     "difficulty": "Difícil",
     "contexto": "Em um painel quadrado de 1 metro de lado, um artista pintou um grande círculo inscrito. Em cada um dos quatro cantos do quadrado, ele pintou um pequeno quarto de círculo. Cada um desses quartos de círculo tem raio igual à metade do raio do círculo inscrito.",
@@ -297,7 +301,8 @@
     "id": "ai-gen-1773363826223-4-7ga3vv2",
     "subject": "Matemática",
     "topics": [
-      "Geometria Plana (8,3%)"
+      "Geometria",
+      "Geometria Plana (Áreas e Perímetros)"
     ],
     "difficulty": "Avançado",
     "contexto": "Um engenheiro paisagista está projetando uma calçada em torno de um jardim circular. O jardim tem um raio de 5 metros e a calçada terá uma largura constante de 2 metros. Para a primeira fase da obra, a calçada será construída apenas em um setor do anel circular (formado pelo jardim e calçada) que corresponde a 270 graus.",
@@ -318,7 +323,7 @@
     "id": "ai-gen-1773404726631-0-fo92af0",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Uma startup de tecnologia está desenvolvendo um algoritmo para distribuir bônus anuais entre seus colaboradores, considerando o tempo de casa e a avaliação de desempenho. O critério estabelecido é que o bônus seja diretamente proporcional ao tempo de casa (em anos completos) e inversamente proporcional à quantidade de faltas não justificadas no último ano. Dois colaboradores, Ana e Bruno, têm os seguintes dados: Ana: 5 anos de casa, 1 falta não justificada. Bruno: 3 anos de casa, 2 faltas não justificadas. O bônus total a ser distribuído é de R$ 32.500,00.",
@@ -339,7 +344,7 @@
     "id": "ai-gen-1773404726631-1-uz4ijh6",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Uma loja de eletrônicos lançou uma promoção com descontos progressivos. No primeiro mês, todos os produtos tiveram um desconto de 15% sobre o preço original. No segundo mês, para liquidar o estoque, os produtos remanescentes receberam um desconto adicional de 10% sobre o preço já reduzido. Para o terceiro mês, caso ainda houvesse estoque, a loja planejava aplicar um acréscimo de 5% sobre o preço do segundo mês, pois a demanda por um item específico (um modelo de smartphone) aumentou inesperadamente devido a uma atualização de software.",
@@ -360,7 +365,7 @@
     "id": "ai-gen-1773404726631-2-wwi6w97",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Uma empresa de embalagens está projetando caixas para um novo produto. Eles têm duas opções de design para a base da caixa, ambas com o mesmo perímetro de 80 cm, para economizar material nas laterais. Opção A: Uma base quadrada. Opção B: Uma base retangular, onde um dos lados é o triplo do outro. A tampa de ambas as caixas será feita de um material especial e custa R$ 0,05 por cm². O custo total para produzir a tampa deve ser o menor possível.",
@@ -381,7 +386,7 @@
     "id": "ai-gen-1773404726631-3-8cvnm5m",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Um cientista está monitorando o crescimento de uma cultura de bactérias em um laboratório. Ele observa que, a cada hora, a população de bactérias aumenta em 200 indivíduos. No entanto, a cada 3 horas, devido à ação de um agente inibidor, 10% da população total daquele momento é eliminada. No início do experimento (hora 0), a cultura tinha 1000 bactérias.",
@@ -402,7 +407,7 @@
     "id": "ai-gen-1773404726631-4-t7f7x0t",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Um arquiteto está projetando um complexo de edifícios e utiliza um modelo em escala para visualizar o projeto. Ele informa que a escala do modelo é de 1:250, o que significa que 1 cm no modelo representa 250 cm na realidade. Uma área de lazer no modelo tem dimensões de 12 cm por 8 cm. Além disso, o custo de manutenção da área de lazer real é de R$ 0,80 por metro quadrado por mês.",
@@ -423,7 +428,7 @@
     "id": "ai-gen-1773406580690-0-5v0otq3",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Uma empresa de e-commerce está analisando o desempenho de suas vendas mensais e a eficiência de suas campanhas de marketing. Em janeiro, as vendas foram de R$ 200.000. Em fevereiro, houve um aumento de 15% em relação a janeiro. Em março, devido a uma campanha promocional agressiva, as vendas dobraram em relação a fevereiro. Contudo, em abril, a empresa observou uma queda de 20% em relação a março, e em maio, as vendas foram 10% menores que as de abril. Para otimizar seus investimentos, a diretoria precisa entender o impacto acumulado dessas variações.",
@@ -444,7 +449,7 @@
     "id": "ai-gen-1773406580690-1-n71c8zw",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Um estudo sobre o desempenho acadêmico de alunos do ensino médio em uma cidade revelou que, em 2022, a média das notas em Matemática foi 6,8. Em 2023, após a implementação de um novo método de ensino, a média aumentou 10%. Para 2024, a secretaria de educação estabeleceu uma meta de alcançar uma média de 8,0. Para atingir essa meta, qual deve ser o aumento percentual mínimo na média de 2023 para 2024, e qual seria a média se houvesse um aumento de 15% de 2023 para 2024?",
@@ -465,7 +470,7 @@
     "id": "ai-gen-1773406580690-2-xvj0x19",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Um arquiteto está projetando um complexo de apartamentos com uma área de lazer retangular que terá 45 metros de comprimento por 20 metros de largura. Dentro desta área, haverá uma piscina circular com 8 metros de diâmetro e um deque de madeira em formato de 'L' que ocupará o restante da área, excluindo a piscina. O custo para construir o deque de madeira é de R$ 120,00 por metro quadrado. O arquiteto precisa calcular o custo total do deque e a porcentagem da área de lazer que será ocupada pela piscina.",
@@ -486,7 +491,7 @@
     "id": "ai-gen-1773406580690-3-04uecid",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Em uma fábrica de doces, a produção diária de brigadeiros segue uma progressão aritmética. No primeiro dia, foram produzidos 150 brigadeiros. No quinto dia, a produção atingiu 230 brigadeiros. A fábrica opera 20 dias por mês. Para atender a uma demanda crescente, a gerência decidiu aumentar a produção diária de forma que a produção do primeiro dia do próximo mês seja 10% maior que a produção do último dia deste mês.",
@@ -507,7 +512,7 @@
     "id": "ai-gen-1773406580690-4-tbm31n4",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Uma loja de eletrônicos está fazendo uma promoção. Um smartphone custa R$ 2.500,00. O cliente pode escolher entre duas formas de pagamento: Opção A: Desconto de 15% para pagamento à vista. Opção B: Entrada de R$ 500,00 e o restante parcelado em 10 vezes sem juros, com um acréscimo de 5% sobre o valor parcelado. Pergunta: Qual o valor do desconto total na Opção A e qual o valor de cada parcela na Opção B? (Arredonde os valores monetários para duas casas decimais).",
@@ -528,7 +533,7 @@
     "id": "ai-gen-1773406580690-5-sdkvw54",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Um artesão produz colares e pulseiras. Para cada colar, ele gasta 12 cm de fio e 5 miçangas. Para cada pulseira, ele gasta 8 cm de fio e 3 miçangas. Ele possui um rolo de 5 metros de fio e um pacote com 200 miçangas. Ele deseja produzir o maior número possível de colares e pulseiras, mantendo a proporção de 2 colares para cada 3 pulseiras.",
@@ -549,7 +554,7 @@
     "id": "ai-gen-1773407166467-0-crvmgxd",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Em uma comunidade, os números das casas são sequenciais e iniciam em 1. Um carteiro percebe que, ao entregar correspondências, o número de casas ímpares que ele visitou é sempre o dobro do número de casas pares, até um certo ponto. No entanto, se ele considerasse o número total de casas visitadas (ímpares e pares), e então calculasse a média aritmética dos números das casas ímpares e a média aritmética dos números das casas pares que ele visitou, ele notaria uma particularidade.",
@@ -570,7 +575,7 @@
     "id": "ai-gen-1773407166467-1-opowc1z",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Um designer de interiores está projetando uma estante modular para um cliente. A estante será composta por módulos cúbicos idênticos. Cada módulo tem uma aresta de 'x' centímetros. O cliente deseja que a área total da superfície externa da estante (incluindo a base e o topo, mas excluindo as faces que se tocam entre módulos) seja de 34.200 cm². A estante final terá 4 módulos de altura e 3 módulos de largura, formando um bloco retangular.",
@@ -591,7 +596,7 @@
     "id": "ai-gen-1773407166467-2-4iysz9x",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Três amigos, Ana, Bruno e Carla, estão jogando um jogo de tabuleiro. No início do jogo, Ana tinha o dobro de fichas que Bruno, e Carla tinha 50% a mais de fichas que Ana. Durante a primeira rodada, Ana perdeu 20% de suas fichas, Bruno ganhou 25% de suas fichas, e Carla perdeu 10 fichas. Ao final da primeira rodada, Carla tinha 25 fichas a mais que Bruno.",
@@ -612,7 +617,7 @@
     "id": "ai-gen-1773407166467-3-cye0hzr",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Um artista está criando uma obra utilizando uma sequência de caixas cúbicas. A primeira caixa tem 3 cm de lado. A segunda caixa tem 6 cm de lado. A terceira caixa tem 9 cm de lado, e assim por diante, seguindo uma progressão aritmética. Ele planeja pintar as superfícies externas de todas as 6 caixas, exceto as bases, que ficarão em contato com o chão ou com outras caixas.",
@@ -633,7 +638,7 @@
     "id": "ai-gen-1773407166467-4-4yfkw7g",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Uma empresa de consultoria realizou um levantamento sobre a idade de seus 20 funcionários. Os dados coletados, em anos, foram: 10, 15, 20, 22, 25, 25, 28, 30, 32, 34, 35, 36, 38, 40, 41, 42, 43, 44, 45, 46. A empresa deseja analisar a distribuição das idades.",
@@ -665,7 +670,8 @@
     "correta": "D",
     "explicacao": "A área foi ampliada aproximadamente (25000000 / 4000000)² = (6,25)² = 39,06 vezes. Portanto, está entre 30 e 40.",
     "topics": [
-      "Grandezas Proporcionais"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "id": "ai-gen-1773423257911-106-dl6u8qk",
     "contexto": "",
@@ -687,7 +693,8 @@
     "correta": "C",
     "explicacao": "Vazão de um ralo = 900 / (6 * 6) = 25 m³/h. Novo reservatório: 500 = n * 25 * 4 => 500 = 100n => n = 5 ralos.",
     "topics": [
-      "Grandezas Proporcionais"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "id": "ai-gen-1773423257911-107-cdzv1dj",
     "contexto": "",
@@ -709,7 +716,8 @@
     "correta": "B",
     "explicacao": "Total = 1 + 4 + 2 = 7 partes. Volume de 1 parte = 14 / 7 = 2 m³. Sendo 1 parte de cimento, o volume de cimento é 2,00 m³.",
     "topics": [
-      "Grandezas Proporcionais"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "id": "ai-gen-1773423257911-108-h6g31x0",
     "contexto": "",
@@ -731,7 +739,8 @@
     "correta": "B",
     "explicacao": "Lucro = R$ 34.000 - R$ 26.000 = R$ 8.000. Imposto = 15% de 8000 = 0,15 * 8000 = R$ 1.200,00.",
     "topics": [
-      "Porcentagem Comercial"
+      "Matemática Financeira",
+      "Porcentagem"
     ],
     "id": "ai-gen-1773423257911-109-t0cwybv",
     "contexto": "",
@@ -753,7 +762,8 @@
     "correta": "E",
     "explicacao": "Valor remarcado: 50 - 20% = R$ 40,00. Desconto adicional (cartão fidelidade): 10% de R$ 40,00 = R$ 4,00. A economia adicional seria de R$ 4,00.",
     "topics": [
-      "Porcentagem Comercial"
+      "Matemática Financeira",
+      "Porcentagem"
     ],
     "id": "ai-gen-1773423257911-110-6p4te6d",
     "contexto": "",
@@ -775,7 +785,8 @@
     "correta": "A",
     "explicacao": "Regra de três simples: 5 gotas / 2 kg = 30 gotas / x kg. 5x = 60 => x = 12 kg.",
     "topics": [
-      "Grandezas Proporcionais"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "id": "ai-gen-1773423257911-111-aw6xm3l",
     "contexto": "",
@@ -797,7 +808,8 @@
     "correta": "B",
     "explicacao": "Descargas diárias (não ecológica) = 60 / 15 = 4 descargas. Gasto diário com bacia ecológica = 4 * 6 = 24 litros. Economia diária = 60 - 24 = 36 litros.",
     "topics": [
-      "Grandezas Proporcionais"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "id": "ai-gen-1773423257911-112-xblelby",
     "contexto": "",
@@ -819,7 +831,8 @@
     "correta": "B",
     "explicacao": "A segunda divisão é proporcional a 4:4:2. Isso significa José e Carlos levam a mesma quantia (4x) e Paulo leva a metade (2x). O valor de Carlos (4x) é 50 a mais que Paulo em relação à sua divisão anterior.. Portanto, testando a resposta B: 300, 300, 150 atende.",
     "topics": [
-      "Grandezas Proporcionais"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "id": "ai-gen-1773423257911-113-wvy3v6f",
     "contexto": "",
@@ -841,7 +854,8 @@
     "correta": "C",
     "explicacao": "1ª redução: 300 - 30% = 300 - 90 = 210 mg/dL. 2ª redução: 210 - 10% = 210 - 21 = 189 mg/dL.",
     "topics": [
-      "Porcentagem Comercial"
+      "Matemática Financeira",
+      "Porcentagem"
     ],
     "id": "ai-gen-1773423257911-114-1h04hl9",
     "contexto": "",
@@ -863,7 +877,8 @@
     "correta": "C",
     "explicacao": "Comprimento: 28 m = 2800 cm. Na escala 1:250: 2800 / 250 = 11,2 cm. Largura: 12 m = 1200 cm. Na escala 1:250: 1200 / 250 = 4,8 cm.",
     "topics": [
-      "Escalas"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "id": "ai-gen-1773423257911-115-f70v424",
     "contexto": "",
@@ -885,7 +900,7 @@
     "correta": "D",
     "explicacao": "Tempo por dia = 2 * 10 min = 20 min = 1/3 h. Tempo em 7 dias = 7/3 h. Consumo = Potência * Tempo = 4,8 kW * (7/3) h = (4,8 * 7) / 3 = 33,6 / 3 = 11,2 kWh.",
     "topics": [
-      "Consumo Eletricidade"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257911-116-hnj6ebw",
     "contexto": "",
@@ -907,7 +922,8 @@
     "correta": "B",
     "explicacao": "Regra de três para tirar o pó: 150 cal -> 30 min, 200 cal -> x min. 150x = 6000 => x = 40 min. Tempo a mais = 40 min - 30 min = 10 minutos.",
     "topics": [
-      "Grandezas Proporcionais"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "id": "ai-gen-1773423257912-117-mhm156q",
     "contexto": "",
@@ -929,7 +945,8 @@
     "correta": "E",
     "explicacao": "Escala = dist_mapa / dist_real. dist_mapa = 8 cm. dist_real = 2000 km = 2.000.000 m = 200.000.000 cm. Escala = 8 / 200.000.000 = 1 / 25.000.000.",
     "topics": [
-      "Escalas"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "id": "ai-gen-1773423257912-118-bansytv",
     "contexto": "",
@@ -951,7 +968,8 @@
     "correta": "D",
     "explicacao": "Proporção de acréscimo das mulheres = 8 mil / 32 mil = 1/4 = 25%. Acréscimo dos homens = 25% de 28 mil = 7 mil. Total de homens internados nos próximos 5 anos = 28 mil + 7 mil = 35 mil.",
     "topics": [
-      "Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "id": "ai-gen-1773423257912-119-ssfsle6",
     "contexto": "",
@@ -995,7 +1013,7 @@
     "correta": "E",
     "explicacao": "10 L de óleo -> 10^7 L de água. 1000 L de óleo (10^3) -> X L de água. 10 * X = 10^3 * 10^7 = 10^10 => X = 10^9 litros.",
     "topics": [
-      "Matéria de Consumo"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-121-q65vg07",
     "contexto": "",
@@ -1017,7 +1035,8 @@
     "correta": "C",
     "explicacao": "Comprimento: 50 m = 5000 cm. Escala 1:100 => 5000/100 = 50 cm. Largura: 25 m = 2500 cm. Escala 1:100 => 2500/100 = 25 cm.",
     "topics": [
-      "Escalas"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "id": "ai-gen-1773423257912-122-zy8fba1",
     "contexto": "",
@@ -1061,7 +1080,8 @@
     "correta": "A",
     "explicacao": "Novo C(x) = (1 - 0,12)*(2x+7) = 0,88 * (2x+7) = 1,76x + 6,16. L(x) = V(x) - Novo C(x) = (-2x² + 229,76x - 441,84) - (1,76x + 6,16) = -2x² + 228x - 448,00.",
     "topics": [
-      "Função 1º Grau"
+      "Conjuntos e Funções",
+      "Função do 1º Grau"
     ],
     "id": "ai-gen-1773423257912-124-sgea8kz",
     "contexto": "",
@@ -1083,7 +1103,7 @@
     "correta": "D",
     "explicacao": "João pega 1500 emprestado de José. Jose cobra 25% de juros, então João pagará: 1500 * (1 + 0,25) = 1500 * 1,25 = R$ 1.875,00.",
     "topics": [
-      "Matemática Comercial"
+      "Matemática Financeira"
     ],
     "id": "ai-gen-1773423257912-125-d5h47pw",
     "contexto": "",
@@ -1149,7 +1169,7 @@
     "correta": "A",
     "explicacao": "A resposta correta é a alternativa A.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-257-gn3exz4",
     "contexto": "",
@@ -1171,7 +1191,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-258-f7oqlvf",
     "contexto": "",
@@ -1193,7 +1213,7 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-259-1xk0hnm",
     "contexto": "",
@@ -1215,7 +1235,7 @@
     "correta": "A",
     "explicacao": "A resposta correta é a alternativa A.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-260-cn68l0o",
     "contexto": "",
@@ -1237,7 +1257,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-261-fhacujz",
     "contexto": "",
@@ -1259,7 +1279,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-262-g05e11w",
     "contexto": "",
@@ -1281,7 +1301,7 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-263-zeyottw",
     "contexto": "",
@@ -1303,7 +1323,7 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-264-wk5bg3m",
     "contexto": "",
@@ -1325,7 +1345,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-265-6frmtir",
     "contexto": "",
@@ -1347,7 +1367,7 @@
     "correta": "A",
     "explicacao": "A resposta correta é a alternativa A.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-266-ljgr6nr",
     "contexto": "",
@@ -1369,7 +1389,7 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-267-grbbu2d",
     "contexto": "",
@@ -1391,7 +1411,7 @@
     "correta": "A",
     "explicacao": "A resposta correta é a alternativa A.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-268-ti570l6",
     "contexto": "",
@@ -1413,7 +1433,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-269-hk5f7b3",
     "contexto": "",
@@ -1435,7 +1455,7 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-270-aspcr8g",
     "contexto": "",
@@ -1457,7 +1477,7 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-271-lku826s",
     "contexto": "",
@@ -1479,7 +1499,7 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-272-smeh6wg",
     "contexto": "",
@@ -1501,7 +1521,7 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-273-q247gf8",
     "contexto": "",
@@ -1523,7 +1543,7 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-274-q1s6ccf",
     "contexto": "",
@@ -1545,7 +1565,7 @@
     "correta": "A",
     "explicacao": "A resposta correta é a alternativa A.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-275-ln3hy57",
     "contexto": "",
@@ -1567,7 +1587,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-276-byb432f",
     "contexto": "",
@@ -1589,7 +1609,7 @@
     "correta": "A",
     "explicacao": "A resposta correta é a alternativa A.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-277-c6rma30",
     "contexto": "",
@@ -1611,7 +1631,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-278-ssg4ytx",
     "contexto": "",
@@ -1633,7 +1653,7 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-279-tgpeitb",
     "contexto": "",
@@ -1655,7 +1675,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-280-97mumrk",
     "contexto": "",
@@ -1677,7 +1697,7 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-281-2o8mz8t",
     "contexto": "",
@@ -1699,7 +1719,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-282-6w4ss4i",
     "contexto": "",
@@ -1721,7 +1741,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-283-6u9mzoh",
     "contexto": "",
@@ -1743,7 +1763,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-284-6wfu6tz",
     "contexto": "",
@@ -1765,7 +1785,7 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-285-3nrcf26",
     "contexto": "",
@@ -1787,7 +1807,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-286-2xbmsxm",
     "contexto": "",
@@ -1809,7 +1829,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-287-kmcs8rw",
     "contexto": "",
@@ -1831,7 +1851,7 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-288-kn5wpxf",
     "contexto": "",
@@ -1853,7 +1873,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-289-vl9vrfm",
     "contexto": "",
@@ -1875,7 +1895,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-290-if6lky2",
     "contexto": "",
@@ -1897,7 +1917,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-291-6q7ux1m",
     "contexto": "",
@@ -1919,7 +1939,7 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257912-292-4qo3wu0",
     "contexto": "",
@@ -1941,7 +1961,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-293-g4uff9k",
     "contexto": "",
@@ -1963,7 +1983,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-294-icej3eb",
     "contexto": "",
@@ -1985,7 +2005,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-295-zjm6nsf",
     "contexto": "",
@@ -2007,7 +2027,7 @@
     "correta": "A",
     "explicacao": "A resposta correta é a alternativa A.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-296-bs10ndz",
     "contexto": "",
@@ -2029,7 +2049,7 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-297-ayqikp5",
     "contexto": "",
@@ -2051,7 +2071,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-298-r7ilymy",
     "contexto": "",
@@ -2073,7 +2093,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-299-w0zw1zo",
     "contexto": "",
@@ -2095,7 +2115,7 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-300-54ce9ln",
     "contexto": "",
@@ -2117,7 +2137,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-301-hev7gff",
     "contexto": "",
@@ -2139,7 +2159,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-302-khltc9d",
     "contexto": "",
@@ -2161,7 +2181,7 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-303-btcspaz",
     "contexto": "",
@@ -2183,7 +2203,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-304-jt2a5uf",
     "contexto": "",
@@ -2205,7 +2225,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-305-oj4j6l3",
     "contexto": "",
@@ -2227,7 +2247,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-306-ammiz6e",
     "contexto": "",
@@ -2249,7 +2269,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-307-dwgpncd",
     "contexto": "",
@@ -2271,7 +2291,7 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-308-4nh1luz",
     "contexto": "",
@@ -2293,7 +2313,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-309-rdvue9z",
     "contexto": "",
@@ -2315,7 +2335,7 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-310-zmyydnd",
     "contexto": "",
@@ -2337,7 +2357,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-311-i3qaeh7",
     "contexto": "",
@@ -2359,7 +2379,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-312-ghk4ffy",
     "contexto": "",
@@ -2381,7 +2401,7 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-313-ve7fhkp",
     "contexto": "",
@@ -2403,7 +2423,7 @@
     "correta": "A",
     "explicacao": "A resposta correta é a alternativa A.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-314-2f55xcl",
     "contexto": "",
@@ -2425,7 +2445,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-315-8guqlp8",
     "contexto": "",
@@ -2447,7 +2467,7 @@
     "correta": "E",
     "explicacao": "A resposta correta é a alternativa E.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-316-ewkcd6r",
     "contexto": "",
@@ -2469,7 +2489,7 @@
     "correta": "A",
     "explicacao": "A resposta correta é a alternativa A.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-317-y48pabd",
     "contexto": "",
@@ -2491,7 +2511,7 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-318-9e7c4ra",
     "contexto": "",
@@ -2513,7 +2533,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-319-sjxi92j",
     "contexto": "",
@@ -2535,7 +2555,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-320-nox7yub",
     "contexto": "",
@@ -2557,7 +2577,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-321-tp8xorv",
     "contexto": "",
@@ -2579,7 +2599,7 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-322-slb0awt",
     "contexto": "",
@@ -2601,7 +2621,7 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-323-k0k8zf8",
     "contexto": "",
@@ -2623,7 +2643,7 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-324-o7nzbkf",
     "contexto": "",
@@ -2645,7 +2665,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-325-yb9vei9",
     "contexto": "",
@@ -2667,7 +2687,7 @@
     "correta": "E",
     "explicacao": "A resposta correta é a alternativa E.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-326-u0s6irn",
     "contexto": "",
@@ -2689,7 +2709,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-327-pq8v1e6",
     "contexto": "",
@@ -2711,7 +2731,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-328-7zmmwmv",
     "contexto": "",
@@ -2733,7 +2753,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-329-w4ybmuz",
     "contexto": "",
@@ -2755,7 +2775,7 @@
     "correta": "A",
     "explicacao": "A resposta correta é a alternativa A.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-330-xmqptdz",
     "contexto": "",
@@ -2777,7 +2797,7 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-331-k8528wi",
     "contexto": "",
@@ -2799,7 +2819,7 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-332-37fz1ff",
     "contexto": "",
@@ -2821,7 +2841,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-333-pm8l3ke",
     "contexto": "",
@@ -2843,7 +2863,7 @@
     "correta": "E",
     "explicacao": "A resposta correta é a alternativa E.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-334-kc6kaf2",
     "contexto": "",
@@ -2865,7 +2885,7 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-335-hnvvk9m",
     "contexto": "",
@@ -2887,7 +2907,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-336-pxp3vmt",
     "contexto": "",
@@ -2909,7 +2929,7 @@
     "correta": "A",
     "explicacao": "A resposta correta é a alternativa A.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-337-tpc3wan",
     "contexto": "",
@@ -2931,7 +2951,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-338-9nmz6ui",
     "contexto": "",
@@ -2953,7 +2973,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-339-k5skxl4",
     "contexto": "",
@@ -2975,7 +2995,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-340-nf8wvu7",
     "contexto": "",
@@ -2997,7 +3017,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-341-yw70kvd",
     "contexto": "",
@@ -3019,7 +3039,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-342-umuhro5",
     "contexto": "",
@@ -3041,7 +3061,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-343-4gqczu7",
     "contexto": "",
@@ -3063,7 +3083,7 @@
     "correta": "A",
     "explicacao": "A resposta correta é a alternativa A.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-344-vza3vzt",
     "contexto": "",
@@ -3085,7 +3105,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-345-spld9rn",
     "contexto": "",
@@ -3107,7 +3127,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-346-coi0dd1",
     "contexto": "",
@@ -3129,7 +3149,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-347-0jftbya",
     "contexto": "",
@@ -3151,7 +3171,7 @@
     "correta": "A",
     "explicacao": "A resposta correta é a alternativa A.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-348-mrdnaxd",
     "contexto": "",
@@ -3173,7 +3193,7 @@
     "correta": "A",
     "explicacao": "A resposta correta é a alternativa A.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-349-pyj7usm",
     "contexto": "",
@@ -3195,7 +3215,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-350-re9uu3e",
     "contexto": "",
@@ -3217,7 +3237,7 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-351-sfzoqg6",
     "contexto": "",
@@ -3239,7 +3259,7 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-352-bvvaat5",
     "contexto": "",
@@ -3261,7 +3281,7 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-353-ielp60q",
     "contexto": "",
@@ -3283,7 +3303,7 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-354-r8mw1i8",
     "contexto": "",
@@ -3305,7 +3325,7 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-355-oc2j5ve",
     "contexto": "",
@@ -3327,7 +3347,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-356-ewoatql",
     "contexto": "",
@@ -3349,7 +3369,7 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-357-go00qbu",
     "contexto": "",
@@ -3371,7 +3391,7 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-358-6ah6vwo",
     "contexto": "",
@@ -3393,7 +3413,7 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-359-euhbpg0",
     "contexto": "",
@@ -3415,7 +3435,7 @@
     "correta": "A",
     "explicacao": "A resposta correta é a alternativa A.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-360-iug3uwe",
     "contexto": "",
@@ -3437,7 +3457,7 @@
     "correta": "E",
     "explicacao": "A resposta correta é a alternativa E.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-361-4httqjb",
     "contexto": "",
@@ -3459,7 +3479,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-362-zqk8vw6",
     "contexto": "",
@@ -3481,7 +3501,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-363-oc22tgr",
     "contexto": "",
@@ -3503,7 +3523,7 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-364-3aefiu5",
     "contexto": "",
@@ -3525,7 +3545,7 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-365-sjcila5",
     "contexto": "",
@@ -3547,7 +3567,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-366-glqso9g",
     "contexto": "",
@@ -3569,7 +3589,7 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-367-71o8poc",
     "contexto": "",
@@ -3591,7 +3611,7 @@
     "correta": "A",
     "explicacao": "A resposta correta é a alternativa A.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-368-15z9f76",
     "contexto": "",
@@ -3613,7 +3633,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-369-keb4w7i",
     "contexto": "",
@@ -3635,7 +3655,7 @@
     "correta": "A",
     "explicacao": "A resposta correta é a alternativa A.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-370-7ymjand",
     "contexto": "",
@@ -3657,7 +3677,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-371-ajow6kz",
     "contexto": "",
@@ -3679,7 +3699,7 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-372-12l9hzl",
     "contexto": "",
@@ -3701,7 +3721,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-373-xq502hc",
     "contexto": "",
@@ -3723,7 +3743,7 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-374-pbpny5o",
     "contexto": "",
@@ -3745,7 +3765,7 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-375-1cwmr30",
     "contexto": "",
@@ -3767,7 +3787,7 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "id": "ai-gen-1773423257913-376-q77hpxh",
     "contexto": "",
@@ -3789,7 +3809,8 @@
     "correta": "A",
     "explicacao": "A resposta correta é a alternativa A.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-377-w5xb1g7",
     "contexto": "",
@@ -3811,7 +3832,8 @@
     "correta": "A",
     "explicacao": "A resposta correta é a alternativa A.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-378-8uxsh7p",
     "contexto": "",
@@ -3833,7 +3855,8 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-379-d3u8luo",
     "contexto": "",
@@ -3855,7 +3878,8 @@
     "correta": "A",
     "explicacao": "A resposta correta é a alternativa A.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-380-keasc4a",
     "contexto": "",
@@ -3877,7 +3901,8 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-381-tpyq0sk",
     "contexto": "",
@@ -3899,7 +3924,8 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-382-ny2ihra",
     "contexto": "",
@@ -3921,7 +3947,8 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-383-cz6pbtr",
     "contexto": "",
@@ -3943,7 +3970,8 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-384-2k40mc1",
     "contexto": "",
@@ -3965,7 +3993,8 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-385-bqzpblx",
     "contexto": "",
@@ -3987,7 +4016,8 @@
     "correta": "E",
     "explicacao": "A resposta correta é a alternativa E.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-386-xwr3jot",
     "contexto": "",
@@ -4009,7 +4039,8 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-387-imuwn51",
     "contexto": "",
@@ -4031,7 +4062,8 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-388-l4pqxqg",
     "contexto": "",
@@ -4053,7 +4085,8 @@
     "correta": "A",
     "explicacao": "A resposta correta é a alternativa A.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-389-ujzwnms",
     "contexto": "",
@@ -4075,7 +4108,8 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-390-i4ixs0p",
     "contexto": "",
@@ -4097,7 +4131,8 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-391-kxvrqcg",
     "contexto": "",
@@ -4119,7 +4154,8 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-392-glpodcx",
     "contexto": "",
@@ -4141,7 +4177,8 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-393-9ufltbg",
     "contexto": "",
@@ -4163,7 +4200,8 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-394-tlvjec9",
     "contexto": "",
@@ -4185,7 +4223,8 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-395-77uejx3",
     "contexto": "",
@@ -4207,7 +4246,8 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-396-thre8s7",
     "contexto": "",
@@ -4229,7 +4269,8 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-397-j3f8pe1",
     "contexto": "",
@@ -4251,7 +4292,8 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-398-fvu0amw",
     "contexto": "",
@@ -4273,7 +4315,8 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-399-o6c5vbn",
     "contexto": "",
@@ -4295,7 +4338,8 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-400-viwbk3x",
     "contexto": "",
@@ -4317,7 +4361,8 @@
     "correta": "D",
     "explicacao": "A resposta correta é a alternativa D.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-401-gksuer6",
     "contexto": "",
@@ -4339,7 +4384,8 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-402-3pv2dt4",
     "contexto": "",
@@ -4361,7 +4407,8 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-403-94qicz3",
     "contexto": "",
@@ -4383,7 +4430,8 @@
     "correta": "B",
     "explicacao": "A resposta correta é a alternativa B.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-404-4nscr8j",
     "contexto": "",
@@ -4405,7 +4453,8 @@
     "correta": "C",
     "explicacao": "A resposta correta é a alternativa C.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-405-enqptn7",
     "contexto": "",
@@ -4427,7 +4476,8 @@
     "correta": "A",
     "explicacao": "A resposta correta é a alternativa A.",
     "topics": [
-      "Potenciação e Radiciação Avançada"
+      "Matemática Básica",
+      "Potenciação e Radiciação"
     ],
     "id": "ai-gen-1773423257913-406-cioozqz",
     "contexto": "",
@@ -4438,7 +4488,7 @@
     "id": "ai-gen-1773425205257-Mat-1-xvh8b",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Fácil",
     "contexto": "",
@@ -4459,7 +4509,7 @@
     "id": "ai-gen-1773425205257-Mat-2-cvp0i",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -4480,7 +4530,7 @@
     "id": "ai-gen-1773425205257-Mat-3-exd18",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -4501,7 +4551,7 @@
     "id": "ai-gen-1773425205257-Mat-4-fqd7c",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -4521,7 +4571,7 @@
     "id": "ai-gen-1773425205257-Mat-7-cwb6y",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -4542,7 +4592,7 @@
     "id": "ai-gen-1773425205257-Mat-8-0zoo0",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -4563,7 +4613,7 @@
     "id": "ai-gen-1773425205257-Mat-9-4wug7",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -4583,7 +4633,7 @@
     "id": "ai-gen-1773425205257-Mat-11-zmgr6",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -4604,7 +4654,7 @@
     "id": "ai-gen-1773425205257-Mat-12-i585b",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -4625,7 +4675,7 @@
     "id": "ai-gen-1773425205257-Mat-13-mrvum",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -4646,7 +4696,7 @@
     "id": "ai-gen-1773425205257-Mat-14-7tddi",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -4667,7 +4717,7 @@
     "id": "ai-gen-1773425205257-Mat-15-p6a5k",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -4688,7 +4738,7 @@
     "id": "ai-gen-1773425205257-Mat-16-uepb8",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -4709,7 +4759,7 @@
     "id": "ai-gen-1773425205257-Mat-17-ouffl",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -4730,7 +4780,8 @@
     "id": "ai-gen-1773425205257-Mat-18-qpxmn",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -4751,7 +4802,7 @@
     "id": "ai-gen-1773425205257-Mat-19-85i5v",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -4772,7 +4823,7 @@
     "id": "ai-gen-1773425205257-Mat-20-ystnk",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -4793,7 +4844,7 @@
     "id": "ai-gen-1773425205257-Mat-21-65iik",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -4814,7 +4865,7 @@
     "id": "ai-gen-1773425205257-Mat-22-kczla",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -4835,7 +4886,7 @@
     "id": "ai-gen-1773425205257-Mat-24-acbj7",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -4856,7 +4907,7 @@
     "id": "ai-gen-1773425205257-Mat-26-rgq69",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -4877,7 +4928,7 @@
     "id": "ai-gen-1773425205257-Mat-27-adqcu",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -4898,7 +4949,8 @@
     "id": "ai-gen-1773425205257-Mat-28-wckd5",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -4919,7 +4971,7 @@
     "id": "ai-gen-1773425205257-Mat-29-d1h58",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -4940,7 +4992,7 @@
     "id": "ai-gen-1773425205257-Mat-30-ou5a7",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -4961,7 +5013,7 @@
     "id": "ai-gen-1773425205258-Mat-31-f1uj5",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -4981,7 +5033,7 @@
     "id": "ai-gen-1773425205258-Mat-32-fstmz",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -5002,7 +5054,8 @@
     "id": "ai-gen-1773425205258-Mat-33-k8gbb",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5023,7 +5076,7 @@
     "id": "ai-gen-1773425205258-Mat-34-4j7cx",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5044,7 +5097,8 @@
     "id": "ai-gen-1773425205258-Mat-35-boy2w",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -5065,7 +5119,7 @@
     "id": "ai-gen-1773425205258-Mat-36-31wmx",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5086,7 +5140,7 @@
     "id": "ai-gen-1773425205258-Mat-37-d0wmu",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5107,7 +5161,7 @@
     "id": "ai-gen-1773425205258-Mat-38-bwste",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5128,7 +5182,7 @@
     "id": "ai-gen-1773425205258-Mat-39-5xyer",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5149,7 +5203,7 @@
     "id": "ai-gen-1773425205258-Mat-40-letpb",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -5170,7 +5224,7 @@
     "id": "ai-gen-1773425205258-Mat-41-aacjc",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5191,7 +5245,7 @@
     "id": "ai-gen-1773425205258-Mat-43-d2qfe",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5212,7 +5266,7 @@
     "id": "ai-gen-1773425205258-Mat-45-s2jpr",
     "subject": "Matemática",
     "topics": [
-      "Estatística (8,6%)"
+      "Estatística"
     ],
     "difficulty": "Fácil",
     "contexto": "",
@@ -5233,7 +5287,7 @@
     "id": "ai-gen-1773425205258-Mat-47-5fx21",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5254,7 +5308,7 @@
     "id": "ai-gen-1773425205258-Mat-48-7m0dn",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5275,7 +5329,7 @@
     "id": "ai-gen-1773425205258-Mat-49-y5qdi",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -5296,7 +5350,7 @@
     "id": "ai-gen-1773425205258-Mat-50-p8vz1",
     "subject": "Matemática",
     "topics": [
-      "Estatística (8,6%)"
+      "Estatística"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -5317,7 +5371,8 @@
     "id": "ai-gen-1773425205258-Mat-51-fen5r",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -5338,7 +5393,7 @@
     "id": "ai-gen-1773425205258-Mat-52-hvlna",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5359,7 +5414,8 @@
     "id": "ai-gen-1773425205258-Mat-54-t30zf",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -5380,7 +5436,7 @@
     "id": "ai-gen-1773425205258-Mat-55-kjdfl",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5401,7 +5457,7 @@
     "id": "ai-gen-1773425205258-Mat-56-5ulsc",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5421,7 +5477,7 @@
     "id": "ai-gen-1773425205258-Mat-57-w8l8c",
     "subject": "Matemática",
     "topics": [
-      "Estatística (8,6%)"
+      "Estatística"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5442,7 +5498,7 @@
     "id": "ai-gen-1773425205258-Mat-58-qm2qc",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5463,7 +5519,7 @@
     "id": "ai-gen-1773425205258-Mat-59-3jbr6",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5483,7 +5539,7 @@
     "id": "ai-gen-1773425205258-Mat-60-uh84q",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5504,7 +5560,7 @@
     "id": "ai-gen-1773425205258-Mat-61-6xfqz",
     "subject": "Matemática",
     "topics": [
-      "Estatística (8,6%)"
+      "Estatística"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -5525,7 +5581,7 @@
     "id": "ai-gen-1773425205258-Mat-62-6i0kf",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -5546,7 +5602,7 @@
     "id": "ai-gen-1773425205258-Mat-64-7qw65",
     "subject": "Matemática",
     "topics": [
-      "Estatística (8,6%)"
+      "Estatística"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5567,7 +5623,7 @@
     "id": "ai-gen-1773425205258-Mat-65-5egd4",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Fácil",
     "contexto": "",
@@ -5588,7 +5644,8 @@
     "id": "ai-gen-1773425205258-Mat-66-ip8k0",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5609,7 +5666,7 @@
     "id": "ai-gen-1773425205258-Mat-67-dcngz",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5630,7 +5687,7 @@
     "id": "ai-gen-1773425205259-Mat-6-aqhtr",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5651,7 +5708,7 @@
     "id": "ai-gen-1773425205259-Mat-5-sth1e",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5672,7 +5729,7 @@
     "id": "ai-gen-1773425205260-Mat-10-o78md",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5693,7 +5750,8 @@
     "id": "ai-gen-1773425205260-Mat-23-j9nqv",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5714,7 +5772,8 @@
     "id": "ai-gen-1773425205260-Mat-25-bfutn",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5735,7 +5794,7 @@
     "id": "ai-gen-1773425904512-Mat-1-60965",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Fácil",
     "contexto": "",
@@ -5756,7 +5815,7 @@
     "id": "ai-gen-1773425904512-Mat-2-1fk71",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5777,7 +5836,7 @@
     "id": "ai-gen-1773425904512-Mat-3-nuql5",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5798,7 +5857,7 @@
     "id": "ai-gen-1773425904512-Mat-4-8mpri",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5818,7 +5877,7 @@
     "id": "ai-gen-1773425904513-Mat-7-2x3bi",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5839,7 +5898,7 @@
     "id": "ai-gen-1773425904513-Mat-8-yngb7",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5860,7 +5919,7 @@
     "id": "ai-gen-1773425904513-Mat-9-nxqno",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5880,7 +5939,7 @@
     "id": "ai-gen-1773425904513-Mat-11-uleig",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5901,7 +5960,7 @@
     "id": "ai-gen-1773425904513-Mat-12-a4uxr",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5922,7 +5981,7 @@
     "id": "ai-gen-1773425904513-Mat-13-l8ruw",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5943,7 +6002,7 @@
     "id": "ai-gen-1773425904513-Mat-14-03pp7",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -5964,7 +6023,7 @@
     "id": "ai-gen-1773425904513-Mat-15-h2tph",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -5985,7 +6044,7 @@
     "id": "ai-gen-1773425904513-Mat-16-fqdzb",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6006,7 +6065,7 @@
     "id": "ai-gen-1773425904513-Mat-17-l7y1d",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6027,7 +6086,8 @@
     "id": "ai-gen-1773425904513-Mat-18-03cdh",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6048,7 +6108,7 @@
     "id": "ai-gen-1773425904513-Mat-19-cluc5",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -6069,7 +6129,7 @@
     "id": "ai-gen-1773425904513-Mat-20-c24ps",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -6090,7 +6150,7 @@
     "id": "ai-gen-1773425904513-Mat-21-4rnpj",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6111,7 +6171,7 @@
     "id": "ai-gen-1773425904513-Mat-22-q88bd",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -6132,7 +6192,7 @@
     "id": "ai-gen-1773425904513-Mat-24-g69wb",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -6153,7 +6213,7 @@
     "id": "ai-gen-1773425904513-Mat-26-b5lh4",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -6174,7 +6234,7 @@
     "id": "ai-gen-1773425904513-Mat-27-q6b0w",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6195,7 +6255,8 @@
     "id": "ai-gen-1773425904513-Mat-28-bn51l",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6216,7 +6277,7 @@
     "id": "ai-gen-1773425904513-Mat-29-01nw7",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6237,7 +6298,7 @@
     "id": "ai-gen-1773425904513-Mat-30-i6hbf",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6258,7 +6319,7 @@
     "id": "ai-gen-1773425904513-Mat-31-gxatt",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6278,7 +6339,7 @@
     "id": "ai-gen-1773425904513-Mat-32-dy8zo",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -6299,7 +6360,8 @@
     "id": "ai-gen-1773425904513-Mat-33-lfgmd",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6320,7 +6382,7 @@
     "id": "ai-gen-1773425904513-Mat-34-8r0tf",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6341,7 +6403,8 @@
     "id": "ai-gen-1773425904513-Mat-35-8c028",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -6362,7 +6425,7 @@
     "id": "ai-gen-1773425904513-Mat-36-a3j0m",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6383,7 +6446,7 @@
     "id": "ai-gen-1773425904513-Mat-37-c1fks",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6404,7 +6467,7 @@
     "id": "ai-gen-1773425904513-Mat-38-j87rc",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6425,7 +6488,7 @@
     "id": "ai-gen-1773425904513-Mat-39-eq3il",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6446,7 +6509,7 @@
     "id": "ai-gen-1773425904513-Mat-40-cnroc",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -6467,7 +6530,7 @@
     "id": "ai-gen-1773425904513-Mat-41-2yt4r",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6488,7 +6551,7 @@
     "id": "ai-gen-1773425904513-Mat-43-xdlh1",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6509,7 +6572,7 @@
     "id": "ai-gen-1773425904514-Mat-45-x12y2",
     "subject": "Matemática",
     "topics": [
-      "Estatística (8,6%)"
+      "Estatística"
     ],
     "difficulty": "Fácil",
     "contexto": "",
@@ -6530,7 +6593,7 @@
     "id": "ai-gen-1773425904514-Mat-47-3sngx",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6551,7 +6614,7 @@
     "id": "ai-gen-1773425904514-Mat-48-wz836",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6572,7 +6635,7 @@
     "id": "ai-gen-1773425904514-Mat-49-3mg5g",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -6593,7 +6656,7 @@
     "id": "ai-gen-1773425904514-Mat-50-kkfa6",
     "subject": "Matemática",
     "topics": [
-      "Estatística (8,6%)"
+      "Estatística"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -6614,7 +6677,8 @@
     "id": "ai-gen-1773425904514-Mat-51-6i3mx",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -6635,7 +6699,7 @@
     "id": "ai-gen-1773425904514-Mat-52-e4yuj",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6656,7 +6720,8 @@
     "id": "ai-gen-1773425904514-Mat-54-eo0n8",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -6677,7 +6742,7 @@
     "id": "ai-gen-1773425904514-Mat-55-joxrk",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6698,7 +6763,7 @@
     "id": "ai-gen-1773425904514-Mat-56-baab7",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6718,7 +6783,7 @@
     "id": "ai-gen-1773425904514-Mat-57-a5x5s",
     "subject": "Matemática",
     "topics": [
-      "Estatística (8,6%)"
+      "Estatística"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6739,7 +6804,7 @@
     "id": "ai-gen-1773425904514-Mat-58-dn3zk",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6760,7 +6825,7 @@
     "id": "ai-gen-1773425904514-Mat-59-fgzxu",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6780,7 +6845,7 @@
     "id": "ai-gen-1773425904514-Mat-60-7o46g",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6801,7 +6866,7 @@
     "id": "ai-gen-1773425904514-Mat-61-7s3zx",
     "subject": "Matemática",
     "topics": [
-      "Estatística (8,6%)"
+      "Estatística"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -6822,7 +6887,7 @@
     "id": "ai-gen-1773425904514-Mat-62-f7pqe",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -6843,7 +6908,7 @@
     "id": "ai-gen-1773425904514-Mat-64-vxfc0",
     "subject": "Matemática",
     "topics": [
-      "Estatística (8,6%)"
+      "Estatística"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6864,7 +6929,7 @@
     "id": "ai-gen-1773425904514-Mat-65-ez4fi",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Fácil",
     "contexto": "",
@@ -6885,7 +6950,8 @@
     "id": "ai-gen-1773425904514-Mat-66-gevqp",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6906,7 +6972,7 @@
     "id": "ai-gen-1773425904514-Mat-67-46rrd",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6927,7 +6993,7 @@
     "id": "ai-gen-1773425904515-Mat-6-5409s",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6948,7 +7014,7 @@
     "id": "ai-gen-1773425904515-Mat-5-39qva",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6969,7 +7035,7 @@
     "id": "ai-gen-1773425904517-Mat-10-k7jst",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -6990,7 +7056,8 @@
     "id": "ai-gen-1773425904518-Mat-23-6d7vp",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7011,7 +7078,8 @@
     "id": "ai-gen-1773425904518-Mat-25-2lnyb",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7032,7 +7100,7 @@
     "id": "ai-gen-1773426062414-Mat-1-g5p7e",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Fácil",
     "contexto": "",
@@ -7053,7 +7121,7 @@
     "id": "ai-gen-1773426062414-Mat-2-x4ynb",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7074,7 +7142,7 @@
     "id": "ai-gen-1773426062414-Mat-3-385s3",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7095,7 +7163,7 @@
     "id": "ai-gen-1773426062414-Mat-4-5854d",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7115,7 +7183,7 @@
     "id": "ai-gen-1773426062414-Mat-7-tlpi5",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7136,7 +7204,7 @@
     "id": "ai-gen-1773426062414-Mat-8-mgpjz",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7157,7 +7225,7 @@
     "id": "ai-gen-1773426062414-Mat-9-877xf",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7177,7 +7245,7 @@
     "id": "ai-gen-1773426062415-Mat-11-inyk8",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7198,7 +7266,7 @@
     "id": "ai-gen-1773426062415-Mat-12-hderq",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7219,7 +7287,7 @@
     "id": "ai-gen-1773426062415-Mat-13-ole0v",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7240,7 +7308,7 @@
     "id": "ai-gen-1773426062415-Mat-14-epo0z",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7261,7 +7329,7 @@
     "id": "ai-gen-1773426062415-Mat-15-2sxow",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -7282,7 +7350,7 @@
     "id": "ai-gen-1773426062415-Mat-16-d1osl",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7303,7 +7371,7 @@
     "id": "ai-gen-1773426062415-Mat-17-lxt6n",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7324,7 +7392,8 @@
     "id": "ai-gen-1773426062415-Mat-18-zwanu",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7345,7 +7414,7 @@
     "id": "ai-gen-1773426062415-Mat-19-nfqp2",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -7366,7 +7435,7 @@
     "id": "ai-gen-1773426062415-Mat-20-dcn6k",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -7387,7 +7456,7 @@
     "id": "ai-gen-1773426062415-Mat-21-6orr3",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7408,7 +7477,7 @@
     "id": "ai-gen-1773426062415-Mat-22-ovikc",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -7429,7 +7498,7 @@
     "id": "ai-gen-1773426062415-Mat-24-8xbll",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -7450,7 +7519,7 @@
     "id": "ai-gen-1773426062415-Mat-26-3pg86",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -7471,7 +7540,7 @@
     "id": "ai-gen-1773426062415-Mat-27-xdxf8",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7492,7 +7561,8 @@
     "id": "ai-gen-1773426062415-Mat-28-9qzks",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7513,7 +7583,7 @@
     "id": "ai-gen-1773426062415-Mat-29-snf44",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7534,7 +7604,7 @@
     "id": "ai-gen-1773426062415-Mat-30-ov4jo",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7555,7 +7625,7 @@
     "id": "ai-gen-1773426062415-Mat-31-2wwhf",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7575,7 +7645,7 @@
     "id": "ai-gen-1773426062415-Mat-32-1b1ia",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -7596,7 +7666,8 @@
     "id": "ai-gen-1773426062415-Mat-33-m2b1d",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7617,7 +7688,7 @@
     "id": "ai-gen-1773426062415-Mat-34-k6fc2",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7638,7 +7709,8 @@
     "id": "ai-gen-1773426062415-Mat-35-d7rha",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -7659,7 +7731,7 @@
     "id": "ai-gen-1773426062415-Mat-36-bxqmg",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7680,7 +7752,7 @@
     "id": "ai-gen-1773426062415-Mat-37-kxs6j",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7701,7 +7773,7 @@
     "id": "ai-gen-1773426062415-Mat-38-zsgxn",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7722,7 +7794,7 @@
     "id": "ai-gen-1773426062415-Mat-39-szqhs",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7743,7 +7815,7 @@
     "id": "ai-gen-1773426062415-Mat-40-yaqpt",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -7764,7 +7836,7 @@
     "id": "ai-gen-1773426062415-Mat-41-a08eu",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7785,7 +7857,7 @@
     "id": "ai-gen-1773426062415-Mat-43-qc1et",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7806,7 +7878,7 @@
     "id": "ai-gen-1773426062415-Mat-45-vkulc",
     "subject": "Matemática",
     "topics": [
-      "Estatística (8,6%)"
+      "Estatística"
     ],
     "difficulty": "Fácil",
     "contexto": "",
@@ -7827,7 +7899,7 @@
     "id": "ai-gen-1773426062416-Mat-47-u6vro",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7848,7 +7920,7 @@
     "id": "ai-gen-1773426062416-Mat-48-accg3",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7869,7 +7941,7 @@
     "id": "ai-gen-1773426062416-Mat-49-qcu4r",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -7890,7 +7962,7 @@
     "id": "ai-gen-1773426062416-Mat-50-sfakm",
     "subject": "Matemática",
     "topics": [
-      "Estatística (8,6%)"
+      "Estatística"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -7911,7 +7983,8 @@
     "id": "ai-gen-1773426062416-Mat-51-f87gj",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -7932,7 +8005,7 @@
     "id": "ai-gen-1773426062416-Mat-52-f2fi1",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7953,7 +8026,8 @@
     "id": "ai-gen-1773426062416-Mat-54-ipqgb",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -7974,7 +8048,7 @@
     "id": "ai-gen-1773426062416-Mat-55-lia7o",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -7995,7 +8069,7 @@
     "id": "ai-gen-1773426062416-Mat-56-fhmts",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -8015,7 +8089,7 @@
     "id": "ai-gen-1773426062416-Mat-57-dzqv9",
     "subject": "Matemática",
     "topics": [
-      "Estatística (8,6%)"
+      "Estatística"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -8036,7 +8110,7 @@
     "id": "ai-gen-1773426062416-Mat-58-t94k5",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -8057,7 +8131,7 @@
     "id": "ai-gen-1773426062416-Mat-59-rrx0a",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -8077,7 +8151,7 @@
     "id": "ai-gen-1773426062416-Mat-60-wwooh",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -8098,7 +8172,7 @@
     "id": "ai-gen-1773426062416-Mat-61-gnb43",
     "subject": "Matemática",
     "topics": [
-      "Estatística (8,6%)"
+      "Estatística"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -8119,7 +8193,7 @@
     "id": "ai-gen-1773426062416-Mat-62-1f3nh",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "",
@@ -8140,7 +8214,7 @@
     "id": "ai-gen-1773426062416-Mat-64-rz0cq",
     "subject": "Matemática",
     "topics": [
-      "Estatística (8,6%)"
+      "Estatística"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -8161,7 +8235,7 @@
     "id": "ai-gen-1773426062416-Mat-65-f3rlm",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Fácil",
     "contexto": "",
@@ -8182,7 +8256,8 @@
     "id": "ai-gen-1773426062416-Mat-66-oej7k",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -8203,7 +8278,7 @@
     "id": "ai-gen-1773426062416-Mat-67-o49gu",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -8224,7 +8299,7 @@
     "id": "ai-gen-1773426062416-Mat-6-u1n51",
     "subject": "Matemática",
     "topics": [
-      "Razão, Proporção e Porcentagem (22,3%)"
+      "Razão, Proporção e Porcentagem"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -8245,7 +8320,7 @@
     "id": "ai-gen-1773426062417-Mat-5-vq49z",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -8266,7 +8341,7 @@
     "id": "ai-gen-1773426062418-Mat-10-j3703",
     "subject": "Matemática",
     "topics": [
-      "Matemática Básica (35%)"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -8287,7 +8362,8 @@
     "id": "ai-gen-1773426062418-Mat-23-9iyge",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -8308,7 +8384,8 @@
     "id": "ai-gen-1773426062419-Mat-25-f7e35",
     "subject": "Matemática",
     "topics": [
-      "Geometria Espacial (9,2%)"
+      "Geometria",
+      "Geometria Espacial (Volumes e Áreas)"
     ],
     "difficulty": "Médio",
     "contexto": "",
@@ -8328,7 +8405,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Um hospital monitora o tempo de espera (em minutos) dos pacientes no pronto-socorro. Em um determinado dia, foram registrados os tempos de 10 pacientes: {15, 20, 25, 25, 30, 30, 30, 35, 40, 45}. A direção do hospital considera que, para um atendimento ser considerado \"eficiente\", o tempo de espera deve ser inferior a 35 minutos. Para melhorar seus indicadores, o hospital decide analisar a mediana desse conjunto de dados, pois ela é menos sensível a valores extremos.",
@@ -8349,7 +8426,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Uma empresa de logística está analisando o tempo de entrega (em dias) de seus pedidos em duas regiões distintas, A e B. Foram coletadas amostras do tempo de entrega em cada região, e os resultados estão resumidos na tabela abaixo:\\n| Região | Mínimo | 1º Quartil | Mediana | 3º Quartil | Máximo |\\n|--------|--------|------------|---------|------------|--------|\\n| A      | 2      | 4          | 5       | 6          | 10     |\\n| B      | 1      | 3          | 7       | 9          | 12     |\\nA empresa deseja que o tempo de entrega seja o mais consistente possível (menor variabilidade) e, ao mesmo tempo, tenha o menor tempo mediano de entrega.",
@@ -8370,7 +8447,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Quatro amigos, cada um com 100 moedas, criaram um jogo, no qual cada um assume uma das quatro posições, 1, 2, 3 ou 4, indicadas na figura, e nela permanece até o final. O desenvolvimento do jogo se dá em rodadas e, em todas elas, cada jogador transfere e recebe uma quantidade de moedas, da seguinte maneira:\\n- o jogador na posição 1 transfere 1 moeda para o jogador na posição 2;\\n- o jogador na posição 2 transfere 2 moedas para o jogador na posição 3;\\n- o jogador na posição 3 transfere 3 moedas para o jogador na posição 4;\\n- o jogador na posição 4 transfere 4 moedas para o jogador na posição 1, completando a rodada.",
@@ -8391,7 +8468,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Uma pessoa tem um carro bicombustível, que funciona a gás natural veicular (GNV) e a gasolina. O rendimento do carro, medido em km/m³ no caso do gás, ou em km/L no caso da gasolina, depende da velocidade (km/h). Em uma viagem de 240 km, a velocidade constante foi de 60 km/h. No gráfico do GNV, a 60 km/h, o rendimento é de 10 km/m³. No gráfico da gasolina, na mesma velocidade, o rendimento é de 8 km/L. Durante metade do caminho (120 km), foi usado GNV e, na outra metade, gasolina. O preço do GNV é R$ 2,00 por m³ e o da gasolina é R$ 3,00 por litro.",
@@ -8412,7 +8489,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Ao calcular a média de suas notas em 4 provas, um estudante dividiu, por engano, a soma das notas por 5. Com isso, a média obtida foi 1 unidade menor do que deveria ser, caso fosse calculada corretamente.",
@@ -8433,7 +8510,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Uma caixa de descarga, acoplada a um vaso sanitário, tem a forma de paralelepípedo reto retângulo cujas dimensões internas da base são 2,5 dm e 1,5 dm. Nessa caixa há uma boia que interrompe o abastecimento quando a altura da coluna de água atinge 2 dm. A cada acionamento da descarga, todo o volume de água contida na caixa é despejado. Para reduzir o volume de água despejado, uma pessoa colocará, no interior dessa caixa, garrafas de 300 mL, cheias de areia e tampadas, de modo a ficarem submersas. Para garantir o funcionamento eficiente, o mínimo de água despejada a cada acionamento deve ser de 5 L.",
@@ -8454,7 +8531,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Um confeiteiro produz tortas em formato de cilindro circular reto, com raio da base variando entre 6 cm e 8 cm e altura fixa de 6 cm. Essas tortas devem ser embaladas em caixas com formato de prisma reto de base quadrada, de modo que seja possível acomodar a torta e ainda restar pelo menos 1 cm de distância entre a torta e as superfícies internas da caixa (laterais e superior). Ele dispõe de caixas com lado da base de 14 cm e altura de 7 cm, que não servem. Ele comprará novas caixas, com o mesmo formato, mas com lado da base maior.",
@@ -8475,7 +8552,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Um arquiteto projetou um jardim no formato de um triângulo equilátero com 6 metros de lado. Ele deseja construir um caminho reto que ligue o ponto médio de um dos lados ao vértice oposto a este lado.",
@@ -8496,7 +8573,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Um recipiente tem um formato que faz com que, ao ser enchido de água com uma vazão constante, a distância D da lâmina de água ao tampo da mesa, em centímetro, aumente em relação ao tempo T, em minuto, de acordo com uma função do tipo D = k + tan[p(T + m)], sendo os parâmetros k, p e m números reais. O gráfico para T entre 0 e 4 minutos mostra duas assíntotas verticais em T = (5 - 2π)/2 e T = (5 + 2π)/2.",
@@ -8517,7 +8594,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Uma empresa de telefonia oferece dois planos de internet. No Plano A, o cliente paga um valor fixo de R$ 50,00 por mês, que dá direito a 10 GB de dados, e mais R$ 5,00 por GB excedente. No Plano B, o cliente paga um valor fixo de R$ 30,00, que dá direito a 5 GB de dados, e mais R$ 7,00 por GB excedente. Um cliente analisa seu consumo médio dos últimos meses, que foi de 12 GB, e quer saber a partir de qual volume de dados mensal o Plano A se torna mais vantajoso que o Plano B.",
@@ -8538,7 +8615,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Uma loja oferece um desconto de 10% para pagamento à vista em um produto que custa R$ 900,00. No cartão de crédito, o mesmo produto pode ser parcelado em 3 vezes sem juros, com a primeira parcela no ato da compra (entrada). Um cliente tem dinheiro suficiente para pagar à vista, mas decide aplicar esse dinheiro em um investimento que rende 2% ao mês, durante os 3 meses, para pagar as parcelas.",
@@ -8559,7 +8636,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Quatro candidatos se apresentaram para realizar a prova de um concurso. Antes de iniciar a prova, os celulares dos quatro candidatos foram recolhidos pelo aplicador, que os guardou, cada um, dentro de um envelope preto. Ao término da prova, o aplicador devolveu os quatro envelopes com os celulares aos quatro candidatos, de maneira aleatória.",
@@ -8580,7 +8657,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Um código de acesso é formado por uma sequência de 3 letras (escolhidas entre as 26 do alfabeto) seguidas de 3 algarismos (de 0 a 9). Para aumentar a segurança, o sistema não permite códigos com todas as letras iguais nem com todos os algarismos iguais.",
@@ -8601,7 +8678,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Em uma urna, há 5 bolas vermelhas e 3 bolas azuis. Duas bolas são retiradas sucessivamente, sem reposição.",
@@ -8622,7 +8699,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Um observador avista o topo de um prédio sob um ângulo de 30° em relação à horizontal. Ao se aproximar 20 metros em linha reta em direção ao prédio, ele passa a avistar o topo sob um ângulo de 45°. A altura do prédio é h metros.",
@@ -8643,7 +8720,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Uma escada de 10 metros de comprimento está apoiada em uma parede vertical, formando um ângulo de 60° com o solo (horizontal). A escada escorrega de forma que sua base se afaste da parede e seu topo desça pela parede. Em um determinado instante, o ângulo com o solo passa a ser de 30°.",
@@ -8664,7 +8741,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "No plano cartesiano, uma circunferência tem centro no ponto C(3, 4) e passa pela origem O(0, 0). Uma reta r tangencia essa circunferência no ponto P, que está localizado no primeiro quadrante, e sua inclinação é tal que ela é perpendicular ao raio CP.",
@@ -8685,7 +8762,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Seja f: ℝ → ℝ uma função definida por f(x) = ax³ + bx² + cx + d. Sabe-se que f(0) = -2, f(1) = 0, f(2) = 4 e f(3) = 18.",
@@ -8706,7 +8783,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Um restaurante universitário serve refeições com preço reduzido para estudantes. O preço da refeição é calculado pela função P(m) = 2m + 5, onde m é o número de refeições compradas no mês. Um estudante comprou 20 refeições em um mês. No mês seguinte, o preço por refeição foi reajustado e a nova função passou a ser P'(m) = 2,5m + 5. O estudante comprou a mesma quantidade de refeições.",
@@ -8727,7 +8804,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Em um mapa na escala 1:500.000, a distância entre duas cidades é de 8 cm. Um viajante percorre essa distância em 4 horas, mantendo uma velocidade constante. Ele parte da primeira cidade às 8h da manhã.",
@@ -8748,7 +8825,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Uma maquete de um prédio foi construída na escala 1:75. O prédio real tem 30 m de altura. Na maquete, uma porta de entrada tem 4 cm de altura.",
@@ -8769,7 +8846,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Uma professora realizou uma atividade com seus alunos utilizando canudos de refrigerante para montar figuras, onde cada lado foi representado por um canudo. A quantidade de canudos (C) de cada figura depende da quantidade de quadrados (Q) que formam cada figura.\\n- Figura com 1 quadrado: 4 canudos\\n- Figura com 2 quadrados: 7 canudos\\n- Figura com 3 quadrados: 10 canudos",
@@ -8790,7 +8867,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Em uma progressão aritmética de 7 termos, a soma dos três primeiros é 12 e a soma dos três últimos é 30.",
@@ -8811,7 +8888,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "A magnitude de um terremoto na escala Richter é dada por M = (2/3) * log(E/E0), onde E é a energia liberada (em kWh) e E0 = 10⁻³ kWh é uma energia de referência. Um terremoto de magnitude 6 na escala Richter libera uma energia E1.",
@@ -8832,7 +8909,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "A meia-vida de um isótopo radioativo é de 20 anos. Isso significa que a cada 20 anos, a massa do isótopo se reduz à metade. Uma amostra inicial de 100 g desse isótopo terá sua massa reduzida ao longo do tempo.",
@@ -8853,7 +8930,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Uma empresa produz mochilas escolares sob encomenda. Essa empresa tem um custo total de produção, composto por um custo fixo, que não depende do número de mochilas, mais um custo variável, que é proporcional ao número de mochilas produzidas. O custo total cresce de forma linear, e a tabela apresenta esse custo para três quantidades de mochilas produzidas:\\n- 20 mochilas: R$ 900,00\\n- 40 mochilas: R$ 1.500,00\\n- 60 mochilas: R$ 2.100,00",
@@ -8874,7 +8951,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Em uma sala de aula, há 30 alunos. A professora percebeu que 18 alunos gostam de Matemática, 16 gostam de Português, e 6 não gostam de nenhuma das duas disciplinas.",
@@ -8895,7 +8972,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Os 100 funcionários de uma empresa estão distribuídos em dois setores: Produção e Administração. Os funcionários de um mesmo setor recebem salários com valores iguais. O quadro apresenta a quantidade de funcionários por setor e seus respectivos salários.\\n- Produção: 60 funcionários, salário de R$ 2.000,00\\n- Administração: 40 funcionários, salário de R$ 3.500,00",
@@ -8916,7 +8993,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Em uma competição esportiva, as notas de um atleta em 5 apresentações foram: 8,5; 9,0; 9,5; 8,0; 9,0. A nota final é calculada descartando-se a menor e a maior nota e calculando a média das três notas restantes.",
@@ -8937,7 +9014,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Uma pessoa esqueceu a senha do celular, que é formada por 4 dígitos numéricos (de 0 a 9). Ela lembra que os dois primeiros dígitos são ímpares e diferentes entre si, e que os dois últimos são pares e também diferentes entre si.",
@@ -8958,7 +9035,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "No alojamento de uma universidade, há um quarto vago. Para escolher quem ficará com o quarto, um sorteio será realizado. Para esse sorteio, cartões com os nomes serão depositados em uma urna: para cada estudante de primeiro ano, 1 cartão; segundo ano, 2 cartões; terceiro ano, 3 cartões. Foram inscritos 200 estudantes de primeiro, 150 de segundo e 100 de terceiro.",
@@ -8979,7 +9056,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Um terreno retangular tem 20 m de frente por 30 m de fundo. Em seu interior, será construída uma piscina circular de raio 3 m, e o restante será gramado. O gramado custa R$ 15,00 por metro quadrado, e a construção da piscina custa R$ 500,00 por metro quadrado. (Use π = 3)",
@@ -9000,7 +9077,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "O estádio do Maracanã passou por algumas modificações estruturais. As dimensões do campo foram reduzidas de 110 m × 75 m para 105 m × 68 m.",
@@ -9021,7 +9098,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "O gerente de uma fábrica pretende comparar a evolução das vendas de dois produtos similares (I e II). Para isso, passou a verificar o número de unidades vendidas de cada um em cada mês. Os resultados, de abril a junho, são:\\n- Abril: I=100, II=200\\n- Maio: I=120, II=190\\n- Junho: I=140, II=180\\nO gerente decidiu cessar a produção do produto II no mês seguinte àquele em que as vendas de I superassem as de II. Suponha que a variação se manteve constante.",
@@ -9042,7 +9119,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Uma empresa de transporte faz um levantamento do número de viagens realizadas por seus 160 motoristas. O gráfico de barras mostra a distribuição: 40 motoristas fizeram 1 viagem, 50 fizeram 2 viagens, 30 fizeram 3 viagens, 20 fizeram 4 viagens, 20 fizeram 5 viagens.",
@@ -9063,7 +9140,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "A água utilizada pelos 75 moradores de um vilarejo provém de um reservatório cilíndrico com raio da base de 5 metros. Cada morador consome 200 litros de água por dia. No mês de junho, houve um gasto extra nos primeiros 20 dias, e o nível da água no reservatório estava em 1,5 metro. Eles decidiram fazer racionamento nos 10 dias seguintes. Use π = 3.",
@@ -9084,7 +9161,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Uma pessoa investe R$ 5.000,00 em um título que rende juros compostos de 1% ao mês. Após 12 meses, ela resgata o montante.",
@@ -9105,7 +9182,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "A escala de pH é definida por pH = -log[H⁺], onde [H⁺] é a concentração de íons de hidrogênio em mol/L. Uma solução ácida tem pH = 4. Outra solução tem concentração de H⁺ igual a 100 vezes maior que a primeira.",
@@ -9126,7 +9203,7 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Matemática Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Difícil",
     "contexto": "Uma pessoa nasceu no ano de 19XY e faleceu no ano de 20XY, onde X e Y são algarismos. Sabe-se que a idade que ela teria em 2020, se viva estivesse, é igual a cinco vezes a soma dos algarismos do ano de seu nascimento, mais um.",
@@ -9147,7 +9224,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Fácil",
     "contexto": "Em uma receita de bolo, a proporção entre a quantidade de farinha e açúcar é de 3 para 2. Para fazer um bolo maior, uma confeiteira decidiu usar 9 xícaras de farinha.",
@@ -9168,7 +9246,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Fácil",
     "contexto": "Um mapa está desenhado na escala 1:500.000. A distância entre duas cidades no mapa é de 8 cm.",
@@ -9189,7 +9268,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Fácil",
     "contexto": "Em uma escola, a razão entre o número de meninos e meninas é de 5 para 3. Sabendo que há 120 meninos.",
@@ -9210,7 +9290,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Fácil",
     "contexto": "Para fazer uma limonada, mistura-se suco de limão e água na proporção de 1 para 4. Se forem utilizados 200 ml de suco de limão.",
@@ -9231,7 +9312,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Fácil",
     "contexto": "Dois números estão na razão de 2 para 7. A soma desses números é 54.",
@@ -9252,7 +9334,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Fácil",
     "contexto": "Um automóvel consome 1 litro de gasolina a cada 12 km percorridos.",
@@ -9273,7 +9356,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Fácil",
     "contexto": "Em uma prova de 40 questões, a razão entre o número de acertos e erros de um aluno foi de 3 para 2.",
@@ -9294,7 +9378,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Médio",
     "contexto": "Uma herança de R$ 240.000,00 será dividida entre três herdeiros em partes diretamente proporcionais às suas idades: 20, 30 e 50 anos.",
@@ -9315,7 +9400,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Médio",
     "contexto": "Em uma mistura, as quantidades de areia, cimento e brita estão na proporção 3:2:5. Serão utilizados 180 kg de areia.",
@@ -9336,7 +9422,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Médio",
     "contexto": "Em um concurso, a razão entre o número de candidatos inscritos e o número de vagas é de 15 para 2. Sabendo que há 450 candidatos inscritos.",
@@ -9357,7 +9444,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Médio",
     "contexto": "Três números são proporcionais a 2, 5 e 8. A soma dos dois maiores é 78.",
@@ -9378,7 +9466,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Médio",
     "contexto": "Para preparar 800 ml de suco concentrado, usam-se 300 ml de polpa e o restante de água. Deseja-se preparar 2 litros de suco com a mesma concentração.",
@@ -9399,7 +9488,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Médio",
     "contexto": "A escala de um mapa é 1:1.250.000. A distância real entre duas cidades é de 375 km.",
@@ -9420,7 +9510,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Médio",
     "contexto": "Dois irmãos dividiram uma herança de R$ 180.000,00 em partes inversamente proporcionais às suas idades, que são 24 e 30 anos.",
@@ -9441,7 +9532,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Médio",
     "contexto": "Em uma mistura, as quantidades de álcool e gasolina estão na razão de 2 para 5. O volume total da mistura é de 56 litros.",
@@ -9462,7 +9554,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Médio",
     "contexto": "A razão entre as medidas de dois lados de um retângulo é de 2 para 5. O perímetro do retângulo é 84 cm.",
@@ -9483,7 +9576,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Médio",
     "contexto": "Uma pessoa percorre 240 km em 3 horas. Mantendo a mesma velocidade média, ela deseja percorrer 400 km.",
@@ -9504,7 +9598,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Médio",
     "contexto": "Em uma empresa, 3/8 dos funcionários são mulheres. Sabendo que há 60 homens a mais que mulheres.",
@@ -9525,7 +9620,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Médio",
     "contexto": "Para fazer uma parede de 12 m², um pedreiro utiliza 240 tijolos. Ele precisa construir uma parede de 45 m² com a mesma altura e espessura.",
@@ -9546,7 +9642,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Médio",
     "contexto": "A razão entre as idades de um pai e seu filho é de 5 para 2. Há 5 anos, a soma das idades era 40 anos.",
@@ -9567,7 +9664,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Médio",
     "contexto": "Uma liga metálica é composta por cobre e zinco na razão de 4 para 3. Se a massa de cobre na liga é 36 kg.",
@@ -9588,7 +9686,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Difícil",
     "contexto": "Em uma prova, a razão entre o número de questões de Matemática e Português é de 3 para 5. A razão entre o número de questões de Português e Ciências é de 2 para 3. O total de questões da prova é 124.",
@@ -9609,7 +9708,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Difícil",
     "contexto": "Em uma mistura de concreto, as proporções de cimento, areia e brita são, respectivamente, 2:3:5. O pedreiro dispõe de 200 kg de cimento, 400 kg de areia e 600 kg de brita. Ele usará a mistura para fazer uma laje, respeitando a proporção, mas limitado pelo material que acabar primeiro.",
@@ -9630,7 +9730,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Razão E Proporção"
+      "Matemática Básica",
+      "Razão e Proporção"
     ],
     "difficulty": "Difícil",
     "contexto": "Dois recipientes contêm misturas de água e vinho. No primeiro, a razão água/vinho é de 2:3. No segundo, a razão é de 3:4. Deseja-se obter uma nova mistura de 35 litros, na qual a razão água/vinho seja de 5:7, misturando volumes dos dois recipientes.",
@@ -9651,7 +9752,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Fácil",
     "contexto": "Um carro consome 30 litros de combustível para percorrer 360 km.",
@@ -9672,7 +9774,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Fácil",
     "contexto": "Uma torneira despeja 18 litros de água em 3 minutos.",
@@ -9693,7 +9796,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Fácil",
     "contexto": "Quatro pedreiros constroem um muro em 9 dias.",
@@ -9714,7 +9818,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Fácil",
     "contexto": "Uma máquina produz 120 peças em 4 horas.",
@@ -9735,7 +9840,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Fácil",
     "contexto": "Um trem percorre 200 km em 2 horas e 30 minutos.",
@@ -9756,7 +9862,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Fácil",
     "contexto": "Uma fábrica produz 600 unidades de um produto em 5 dias com 4 máquinas operando 8 horas por dia.",
@@ -9777,7 +9884,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Fácil",
     "contexto": "Um pintor pinta 30 m² de parede em 2 horas.",
@@ -9798,7 +9906,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Médio",
     "contexto": "Se 8 operários, trabalhando 6 horas por dia, constroem um muro em 10 dias.",
@@ -9819,7 +9928,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Médio",
     "contexto": "Uma indústria produz 1.200 peças em 6 dias com 4 máquinas operando 8 horas por dia.",
@@ -9840,7 +9950,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Médio",
     "contexto": "Um automóvel, com velocidade média de 60 km/h, percorre certa distância em 4 horas.",
@@ -9861,7 +9972,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Médio",
     "contexto": "Uma torneira enche um tanque em 5 horas. Outra torneira enche o mesmo tanque em 3 horas.",
@@ -9882,7 +9994,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Médio",
     "contexto": "Para alimentar 15 vacas durante 20 dias, são necessários 600 kg de ração.",
@@ -9903,7 +10016,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Médio",
     "contexto": "Uma gráfica imprime 1.500 livros em 6 horas com 4 máquinas. Para imprimir 2.500 livros, a gráfica utilizou 5 máquinas durante algumas horas.",
@@ -9924,7 +10038,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Médio",
     "contexto": "Se 5 homens, trabalhando 6 horas por dia, colhem 300 kg de café em 4 dias.",
@@ -9945,7 +10060,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Médio",
     "contexto": "Para pintar um prédio, 8 pintores levam 15 dias. Depois de 5 dias de trabalho, 2 pintores foram dispensados.",
@@ -9966,7 +10082,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Médio",
     "contexto": "Uma fábrica produz 900 peças em 5 dias com 3 máquinas operando 4 horas por dia. Para atender uma encomenda urgente, a fábrica precisa produzir 2.400 peças em 8 dias, utilizando 4 máquinas.",
@@ -9987,7 +10104,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Médio",
     "contexto": "Uma obra foi planejada para ser executada por 12 operários em 30 dias. Após 10 dias de trabalho, 4 operários abandonaram a obra.",
@@ -10008,7 +10126,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Médio",
     "contexto": "Se 6 pessoas, trabalhando 5 horas por dia, produzem 400 unidades de um artigo em 8 dias.",
@@ -10029,7 +10148,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Médio",
     "contexto": "Um trem percorre 240 km em 3 horas com velocidade constante. Outro trem, com velocidade 20% maior, percorre a mesma distância.",
@@ -10050,7 +10170,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Médio",
     "contexto": "Uma empresa tem estoque de ração suficiente para alimentar 40 cavalos durante 15 dias. Após 3 dias, chegaram mais 10 cavalos.",
@@ -10071,7 +10192,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Médio",
     "contexto": "Uma obra seria realizada por 15 operários em 20 dias. No entanto, após 5 dias de trabalho, a obra precisou ser paralisada por 4 dias devido a chuvas. Para compensar o atraso, o engenheiro contratou mais 5 operários.",
@@ -10092,7 +10214,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Difícil",
     "contexto": "Para encher uma piscina, duas bombas idênticas levam 6 horas funcionando juntas. Após 2 horas de funcionamento, uma das bombas quebrou.",
@@ -10113,7 +10236,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Difícil",
     "contexto": "Um avião, com velocidade média de 800 km/h, leva 3 horas para fazer certo percurso. Se o avião aumentar sua velocidade em 25%, mantendo a mesma distância.",
@@ -10134,7 +10258,8 @@
   {
     "subject": "Matemática",
     "topics": [
-      "Regra De Três Simples E Composta"
+      "Matemática Básica",
+      "Regra de Três Simples e Composta"
     ],
     "difficulty": "Difícil",
     "contexto": "Três torneiras, com vazões diferentes, enchem um tanque em 4 horas quando abertas simultaneamente. A primeira torneira, sozinha, enche o tanque em 10 horas. A segunda, sozinha, enche em 12 horas.",
@@ -10156,7 +10281,7 @@
     "id": "native-import-1779974254282-1-06dd198f",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: C)\nA mediana é o valor central em um conjunto ordenado. Como há 10 dados (número par), a mediana é a média dos dois termos centrais (5º e 6º). Ordenando: 15, 20, 25, 25, 30, 30, 30, 35, 40, 45. Os termos centrais são 30 e 30, média = 30",
@@ -10173,7 +10298,7 @@
     "id": "native-import-1779974254283-2-1b9444c5",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: B)\nDistância interquartil (DIQ) = 3º quartil - 1º quartil.\nRegião A: DIQ = 6 - 4 = 2.\nRegião B: DIQ = 9 - 3 = 6. Menor DIQ indica menor variabilidade.\nMediana: A = 5, B = 7. A região A tem menor mediana e menor variabilidade",
@@ -10190,7 +10315,7 @@
     "id": "native-import-1779974254284-3-cf814cd0",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: B)\nO jogador 1 perde 1 moeda (para o 2) e ganha 4 (do 4), saldo de +3 por rodada. Começando com 100, após n rodadas: 100 + 3n",
@@ -10207,7 +10332,7 @@
     "id": "native-import-1779974254285-4-7528f1ea",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: D)\nGNV: 120 km / 10 km/m³ = 12 m³ → custo = 12 × 2 = R$ 24,00.\nGasolina: 120 km / 8 km/L = 15 L → custo = 15 × 3 = R$ 45,00.\nDiferença = 45 - 24 = R$ 21,00",
@@ -10224,7 +10349,7 @@
     "id": "native-import-1779974254286-5-4266f161",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: B)\nSeja S a soma das 4 notas. Média correta = S/4, média errada = S/5. S/5 = S/4 - 1 → multiplicando por 20: 4S = 5S - 20 → S = 20. Média correta = 20/4 = 5",
@@ -10241,7 +10366,7 @@
     "id": "native-import-1779974254288-6-1f2153b5",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: B)\nVolume total da caixa = 2,5 × 1,5 × 2 = 7,5 dm³ = 7,5 L.\nVolume mínimo de água = 5 L, então volume máximo ocupado pelas garrafas = 7,5 - 5 = 2,5 L = 2500 mL.\nCada garrafa = 300 mL. Número máximo = 2500 / 300 = 8,33 → 8 garrafas (8 × 300 = 2400 mL, deixando 7,5 - 2,4 = 5,1 L de água, acima de 5 L)",
@@ -10258,7 +10383,7 @@
     "id": "native-import-1779974254289-7-68646527",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta:",
@@ -10275,7 +10400,7 @@
     "id": "native-import-1779974254290-8-b72db59e",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta:",
@@ -10292,7 +10417,7 @@
     "id": "native-import-1779974254291-9-5416ac07",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: D) (ou E, a que tiver (T-2,5)/2)\nPeríodo = diferença entre assíntotas = 2π. Para tan(pT), período = π/|p|, então π/|p| = 2π → p = 1/2. Ponto médio das assíntotas é T = 2,5, onde tan=0, então p(T+m)=0 → (1/2)(2,5+m)=0 → m = -2,5. Em T=2,5, D=30, então k=30. Logo D = 30 + tan[(T-2,5)/2]",
@@ -10309,7 +10434,7 @@
     "id": "native-import-1779974254294-10-84e923ff",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: B)\nPara consumo x > 10, C_A = 50 + 5(x-10); para x > 5, C_B = 30 + 7(x-5). Igualando: 50 + 5x -50 = 30 + 7x -35 → 5x = 7x -5 → 2x = 5 → x = 2,5. Mas isso não faz sentido, pois a comparação deve ser feita considerando as franquias. Na faixa entre 5 e 10 GB, C_A é fixo em 50, e C_B é crescente. O ponto de equilíbrio ocorre quando C_B = 50: 30 + 7(x-5) = 50 → 7x -35 = 20 → 7x = 55 → x ≈ 7,86 GB. A partir desse valor, C_A é menor. A alternativa mais próxima é 7,5 GB",
@@ -10326,7 +10451,7 @@
     "id": "native-import-1779974254296-12-e16f3604",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: B)\nPreço à vista com desconto: 900 * 0,9 = R$ 810,00. Mas ele opta por parcelar: 3 × R$ 300,00 com entrada. Ele tem R$ 900,00. No ato, paga R$ 300,00 e aplica R$ 600,00. Mês 1: 600 × 1,02 = 612, paga 2ª parcela (300) → saldo 312. Mês 2: 312 × 1,02 = 318,24, paga 3ª parcela (300) → saldo 18,24. Mês 3: 18,24 × 1,02 = 18,60. Aproximadamente R$ 18,00",
@@ -10343,7 +10468,7 @@
     "id": "native-import-1779974254297-13-32c00520",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: D)\nTotal de permutações = 4! = 24. Apenas 1 permutação é a correta. Probabilidade = 1/24",
@@ -10360,7 +10485,7 @@
     "id": "native-import-1779974254298-14-cddf7fd6",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: B)\nTotal de combinações de letras: 26³, mas 26 delas têm todas as letras iguais. Total de combinações de algarismos: 10³, mas 10 têm todos iguais. Os eventos são independentes, então o total válido é (26³ - 26) × (10³ - 10)",
@@ -10377,7 +10502,7 @@
     "id": "native-import-1779974254299-15-703c5cf5",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto da questão\nEm uma urna, há 5 bolas vermelhas e 3 bolas azuis. Duas bolas são retiradas sucessivamente, sem reposição.\n\nEnunciado\nQual é a probabilidade de que as duas bolas retiradas sejam da mesma cor?",
@@ -10398,7 +10523,7 @@
     "id": "native-import-1779974254300-15-ab4c788e",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta:",
@@ -10415,7 +10540,7 @@
     "id": "native-import-1779974254301-16-f3e9bac2",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta:",
@@ -10432,7 +10557,7 @@
     "id": "native-import-1779974254301-17-67670954",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta:",
@@ -10449,7 +10574,7 @@
     "id": "native-import-1779974254301-18-01ecc044",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta:",
@@ -10466,7 +10591,7 @@
     "id": "native-import-1779974254302-19-14eaa77b",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto da questão\nSeja f: ℝ → ℝ uma função definida por f(x) = ax³ + bx² + cx + d. Sabe-se que f(0) = -2, f(1) = 0, f(2) = 4 e f(3) = 18.\n\nEnunciado\nQual é o valor de a + b + c + d?",
@@ -10487,7 +10612,7 @@
     "id": "native-import-1779974254302-19-408eb54d",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: B)\nf(0) = d = -2. f(1) = a+b+c+d = 0 → a+b+c = 2. Então a+b+c+d = 2 + (-2) = 0",
@@ -10504,7 +10629,7 @@
     "id": "native-import-1779974254303-20-8ee83a1e",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: B)\nGasto no 1º mês: P(20) = 2*20+5 = 45. Gasto no 2º mês: P'(20) = 2,5*20+5 = 55. Aumento = 10. Percentual = 10/45 ≈ 0,2222 = 22,22% ≈ 22,5%",
@@ -10521,7 +10646,7 @@
     "id": "native-import-1779974254304-21-e5ea778d",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: C)\nDistância real = 8 cm × 500.000 = 4.000.000 cm = 40 km. Velocidade = 40 km / 4 h = 10 km/h. Tempo de viagem = 40 km / 10 km/h = 4 h. Chegada = 8h + 4h = 12h",
@@ -10538,7 +10663,7 @@
     "id": "native-import-1779974254305-22-a2e95233",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: E)\nEscala 1:75 significa que 1 cm na maquete equivale a 75 cm na realidade. Porta na maquete: 4 cm → real: 4 × 75 = 300 cm = 3 m",
@@ -10555,7 +10680,7 @@
     "id": "native-import-1779974254306-23-38b7cc6e",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: B)\nA sequência é PA com razão 3. Para Q=1, C=4; Q=2, C=7. Então C = 3Q + 1 (pois 3*1+1=4, 3*2+1=7)",
@@ -10572,7 +10697,7 @@
     "id": "native-import-1779974254306-24-dece103b",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto da questão\nEm uma progressão aritmética de 7 termos, a soma dos três primeiros é 12 e a soma dos três últimos é 30.\n\nEnunciado\nQual é o termo médio (4º termo) dessa PA?",
@@ -10593,7 +10718,7 @@
     "id": "native-import-1779974254307-24-259f65a0",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: C)\nSeja a4 o termo médio e r a razão. a1 = a4 - 3r, a2 = a4 - 2r, a3 = a4 - r, a5 = a4 + r, a6 = a4 + 2r, a7 = a4 + 3r. Soma dos três primeiros: 3a4 - 6r = 12 → a4 - 2r = 4. Soma dos três últimos: 3a4 + 6r = 30 → a4 + 2r = 10. Somando: 2a4 = 14 → a4 = 7",
@@ -10610,7 +10735,7 @@
     "id": "native-import-1779974254308-25-e83923fc",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: D)\nPara M=6: 6 = (2/3) log(E1/E0) → log(E1/E0) = 9 → E1/E0 = 10⁹. Para E2 = 1000 E1, E2/E0 = 10³ * 10⁹ = 10¹². M2 = (2/3) log(10¹²) = (2/3)*12 = 8",
@@ -10627,7 +10752,7 @@
     "id": "native-import-1779974254309-26-23ee5c5e",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: B)\nApós 20 anos: 50 g; 40 anos: 25 g; 60 anos: 12,5 g",
@@ -10644,7 +10769,7 @@
     "id": "native-import-1779974254310-27-be342592",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: D)\nCusto linear: C(x) = CF + CV * x. De 20 para 40, aumento de 20 mochilas e aumento de 600 no custo → CV = 600/20 = 30. Então C(20) = CF + 600 = 900 → CF = 300. C(80) = 300 + 30*80 = 300 + 2400 = 2700",
@@ -10661,7 +10786,7 @@
     "id": "native-import-1779974254311-28-c6329373",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: D)\nTotal que gosta de pelo menos uma = 30 - 6 = 24. Pela fórmula: 24 = 18 + 16 - x → x = 10",
@@ -10678,7 +10803,7 @@
     "id": "native-import-1779974254311-29-a7d10072",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: B)\nMédia = (60×2000 + 40×3500) / 100 = (120.000 + 140.000) / 100 = 260.000 / 100 = 2.600",
@@ -10695,7 +10820,7 @@
     "id": "native-import-1779974254312-30-62f58db2",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: B)\nOrdenando: 8,0; 8,5; 9,0; 9,0; 9,5. Descartam-se 8,0 e 9,5. Restam: 8,5; 9,0; 9,0. Média = (8,5+9+9)/3 = 26,5/3 = 8,833... ≈ 8,8",
@@ -10712,7 +10837,7 @@
     "id": "native-import-1779974254313-31-4790cc0c",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta:",
@@ -10729,7 +10854,7 @@
     "id": "native-import-1779974254313-32-ef3e3538",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta:",
@@ -10746,7 +10871,7 @@
     "id": "native-import-1779974254313-33-abbcf8aa",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: D)\nÁrea total = 20×30 = 600 m². Área da piscina = π×3² = 3×9 = 27 m². Área do gramado = 600 - 27 = 573 m². Custo piscina = 27×500 = 13.500. Custo gramado = 573×15 = 8.595. Total = 13.500 + 8.595 = 22.095 ≈ R$ 22.500 (aproximadamente, considerando arredondamento ou uso de π=3,14 resultaria em 22.500? Não, mas a alternativa D é a mais próxim",
@@ -10763,7 +10888,7 @@
     "id": "native-import-1779974254314-34-c8666b69",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: D)\nÁrea antiga = 110×75 = 8.250 m². Área nova = 105×68 = 7.140 m². Redução = 8.250 - 7.140 = 1.110 m²",
@@ -10780,7 +10905,7 @@
     "id": "native-import-1779974254316-35-d3652ff9",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: C)\nAs vendas são lineares: I = 100 + 20t, II = 200 - 10t, com t=0 em abril. Queremos I > II: 100+20t > 200-10t → 30t > 100 → t > 3,33. Em t=3 (julho): I=160, II=170 (I < II). Em t=4 (agosto): I=180, II=160 (I > II). O mês em que superou foi agosto, então a produção cessa no mês seguinte: setembro",
@@ -10797,7 +10922,7 @@
     "id": "native-import-1779974254317-36-f8eaf0ba",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: D)\nModa = 2 (maior frequênci",
@@ -10814,7 +10939,7 @@
     "id": "native-import-1779974254317-37-daa937b0",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta:",
@@ -10831,7 +10956,7 @@
     "id": "native-import-1779974254318-38-33dfc617",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto da questão\nUma pessoa investe R$ 5.000,00 em um título que rende juros compostos de 1% ao mês. Após 12 meses, ela resgata o montante.\n\nEnunciado\nQual é o montante aproximado? (Use (1,01)^12 ≈ 1,1268)",
@@ -10852,7 +10977,7 @@
     "id": "native-import-1779974254318-38-c355f544",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: B)\nM = 5000 × 1,1268 = R$ 5.634,00",
@@ -10869,7 +10994,7 @@
     "id": "native-import-1779974254318-39-3d213e1a",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: B)\npH=4 → [H⁺]=10⁻⁴. Segunda: [H⁺]=100×10⁻⁴ = 10⁻². pH = -log(10⁻²) = 2",
@@ -10886,7 +11011,7 @@
     "id": "native-import-1779974254320-40-ba90767e",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Resposta correta: C)\nIdade em 2020 = 2020 - (1900+10X+Y) = 120 -10X -Y. Soma dos algarismos do nascimento = 1+9+X+Y = 10+X+Y. Condição: 120 -10X -Y = 5(10+X+Y) + 1 → 120 -10X -Y = 50 +5X+5Y +1 → 120 -10X -Y = 51 +5X+5Y → 69 = 15X+6Y → dividindo por 3: 23 = 5X+2Y. Testando X e Y de 0 a 9: X=1, Y=9 → 5+18=23. Portanto, nascimento em 1919, falecimento em 2019",
@@ -10903,7 +11028,7 @@
     "id": "native-import-1779974254464-2-b287eb60",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nUm mapa está desenhado na escala 1:500.000. A distância entre duas cidades no mapa é de 8 cm.\n\nEnunciado\nQual é a distância real entre essas cidades, em quilômetros?",
@@ -10924,7 +11049,7 @@
     "id": "native-import-1779974254464-3-8fa112f2",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nEm uma escola, a razão entre o número de meninos e meninas é de 5 para 3. Sabendo que há 120 meninos.\n\nEnunciado\nQuantas meninas estudam nessa escola?",
@@ -10945,7 +11070,7 @@
     "id": "native-import-1779974254464-4-d5ce2317",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nPara fazer uma limonada, mistura-se suco de limão e água na proporção de 1 para 4. Se forem utilizados 200 ml de suco de limão.\n\nEnunciado\nQuantos litros de água serão necessários?",
@@ -10966,7 +11091,7 @@
     "id": "native-import-1779974254465-5-11d13158",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nDois números estão na razão de 2 para 7. A soma desses números é 54.\n\nEnunciado\nQual é o menor desses números?",
@@ -10987,7 +11112,7 @@
     "id": "native-import-1779974254465-6-287fdd12",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nUm automóvel consome 1 litro de gasolina a cada 12 km percorridos.\n\nEnunciado\nQuantos litros serão necessários para percorrer 360 km?",
@@ -11008,7 +11133,7 @@
     "id": "native-import-1779974254466-7-de0714e8",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nEm uma prova de 40 questões, a razão entre o número de acertos e erros de um aluno foi de 3 para 2.\n\nEnunciado\nQuantas questões ele acertou?",
@@ -11029,7 +11154,7 @@
     "id": "native-import-1779974254467-9-0d1a6956",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nEm uma mistura, as quantidades de areia, cimento e brita estão na proporção 3:2:5. Serão utilizados 180 kg de areia.\n\nEnunciado\nQual a massa total de concreto produzida?",
@@ -11050,7 +11175,7 @@
     "id": "native-import-1779974254467-11-66a6f110",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nTrês números são proporcionais a 2, 5 e 8. A soma dos dois maiores é 78.\n\nEnunciado\nQual é o menor número?",
@@ -11071,7 +11196,7 @@
     "id": "native-import-1779974254468-13-d3f89368",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nA escala de um mapa é 1:1.250.000. A distância real entre duas cidades é de 375 km.\n\nEnunciado\nQual é a distância no mapa, em centímetros?",
@@ -11092,7 +11217,7 @@
     "id": "native-import-1779974254469-15-2452eae5",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nEm uma mistura, as quantidades de álcool e gasolina estão na razão de 2 para 5. O volume total da mistura é de 56 litros.\n\nEnunciado\nQuantos litros de gasolina há na mistura?",
@@ -11113,7 +11238,7 @@
     "id": "native-import-1779974254469-16-f0f1fef5",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nA razão entre as medidas de dois lados de um retângulo é de 2 para 5. O perímetro do retângulo é 84 cm.\n\nEnunciado\nQual é a medida do maior lado?",
@@ -11134,7 +11259,7 @@
     "id": "native-import-1779974254470-17-47a53e67",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nUma pessoa percorre 240 km em 3 horas. Mantendo a mesma velocidade média, ela deseja percorrer 400 km.\n\nEnunciado\nQuantas horas serão necessárias?",
@@ -11155,7 +11280,7 @@
     "id": "native-import-1779974254470-18-6a84d9de",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nEm uma empresa, 3/8 dos funcionários são mulheres. Sabendo que há 60 homens a mais que mulheres.\n\nEnunciado\nQuantos funcionários tem a empresa?",
@@ -11176,7 +11301,7 @@
     "id": "native-import-1779974254471-20-af19c787",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nA razão entre as idades de um pai e seu filho é de 5 para 2. Há 5 anos, a soma das idades era 40 anos.\n\nEnunciado\nQual é a idade do filho hoje?",
@@ -11197,7 +11322,7 @@
     "id": "native-import-1779974254471-21-f2f1ca1f",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nUma liga metálica é composta por cobre e zinco na razão de 4 para 3. Se a massa de cobre na liga é 36 kg.\n\nEnunciado\nQual é a massa total da liga?",
@@ -11218,7 +11343,7 @@
     "id": "native-import-1779974254473-25-9ace024f",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nUm carro consome 30 litros de combustível para percorrer 360 km.\n\nEnunciado\nMantendo o mesmo consumo, quantos litros serão necessários para percorrer 480 km?",
@@ -11239,7 +11364,7 @@
     "id": "native-import-1779974254473-26-ef941278",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nUma torneira despeja 18 litros de água em 3 minutos.\n\nEnunciado\nEm quanto tempo essa torneira encherá um tanque de 450 litros?",
@@ -11260,7 +11385,7 @@
     "id": "native-import-1779974254474-27-b2b190f7",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nQuatro pedreiros constroem um muro em 9 dias.\n\nEnunciado\nTrabalhando no mesmo ritmo, quantos dias serão necessários para 6 pedreiros construírem o mesmo muro?",
@@ -11281,7 +11406,7 @@
     "id": "native-import-1779974254474-28-f854e3bd",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nUma máquina produz 120 peças em 4 horas.\n\nEnunciado\nQuantas peças serão produzidas por 3 máquinas iguais, trabalhando juntas, em 5 horas?",
@@ -11302,7 +11427,7 @@
     "id": "native-import-1779974254474-29-5ad94e59",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nUm trem percorre 200 km em 2 horas e 30 minutos.\n\nEnunciado\nMantendo a mesma velocidade, quantos quilômetros percorrerá em 4 horas?",
@@ -11323,7 +11448,7 @@
     "id": "native-import-1779974254475-30-ddec9407",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nUma fábrica produz 600 unidades de um produto em 5 dias com 4 máquinas operando 8 horas por dia.\n\nEnunciado\nQuantas unidades serão produzidas em 10 dias, com 6 máquinas operando 8 horas por dia?",
@@ -11344,7 +11469,7 @@
     "id": "native-import-1779974254475-31-077f6b95",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nUm pintor pinta 30 m² de parede em 2 horas.\n\nEnunciado\nQuantos metros quadrados ele pintará em 5 horas, mantendo o mesmo ritmo?",
@@ -11365,7 +11490,7 @@
     "id": "native-import-1779974254476-32-bb2cf10d",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nSe 8 operários, trabalhando 6 horas por dia, constroem um muro em 10 dias.\n\nEnunciado\nQuantos dias levarão 12 operários, trabalhando 5 horas por dia, para construir o mesmo muro?",
@@ -11386,7 +11511,7 @@
     "id": "native-import-1779974254476-33-b2534228",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nUma indústria produz 1.200 peças em 6 dias com 4 máquinas operando 8 horas por dia.\n\nEnunciado\nQuantas peças serão produzidas em 10 dias com 5 máquinas operando 6 horas por dia?",
@@ -11407,7 +11532,7 @@
     "id": "native-import-1779974254477-34-e334fb25",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nUm automóvel, com velocidade média de 60 km/h, percorre certa distância em 4 horas.\n\nEnunciado\nSe a velocidade média fosse de 80 km/h, em quanto tempo percorreria a mesma distância?",
@@ -11428,7 +11553,7 @@
     "id": "native-import-1779974254477-35-c0f64fc4",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nUma torneira enche um tanque em 5 horas. Outra torneira enche o mesmo tanque em 3 horas.\n\nEnunciado\nEm quanto tempo as duas torneiras juntas encherão o tanque?",
@@ -11449,7 +11574,7 @@
     "id": "native-import-1779974254478-36-43e5113c",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nPara alimentar 15 vacas durante 20 dias, são necessários 600 kg de ração.\n\nEnunciado\nQuantos quilos de ração serão necessários para alimentar 20 vacas durante 30 dias?",
@@ -11470,7 +11595,7 @@
     "id": "native-import-1779974254479-38-71777697",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nSe 5 homens, trabalhando 6 horas por dia, colhem 300 kg de café em 4 dias.\n\nEnunciado\nQuantos quilos de café serão colhidos por 8 homens, trabalhando 5 horas por dia, durante 6 dias?",
@@ -11491,7 +11616,7 @@
     "id": "native-import-1779974254479-39-75630eec",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nPara pintar um prédio, 8 pintores levam 15 dias. Depois de 5 dias de trabalho, 2 pintores foram dispensados.\n\nEnunciado\nQuantos dias no total serão necessários para pintar o prédio?",
@@ -11512,7 +11637,7 @@
     "id": "native-import-1779974254480-42-1bd4652b",
     "subject": "Matemática",
     "topics": [
-      "Geral"
+      "Matemática Básica"
     ],
     "difficulty": "Médio",
     "contexto": "Texto de apoio\nSe 6 pessoas, trabalhando 5 horas por dia, produzem 400 unidades de um artigo em 8 dias.\n\nEnunciado\nQuantas pessoas, trabalhando 6 horas por dia, serão necessárias para produzir 600 unidades em 10 dias?",
