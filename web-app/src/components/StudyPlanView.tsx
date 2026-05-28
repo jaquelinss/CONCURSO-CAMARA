@@ -238,6 +238,72 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
     }
   };
 
+  const rescheduleAllPendingBlocks = async (dayDate: string) => {
+    if (!user) return;
+    if (!window.confirm('Deseja reagendar todas as matérias pendentes deste dia para o próximo dia disponível?')) return;
+    
+    setUpdating(`all-${dayDate}`);
+    try {
+      const dayIdx = schedule.findIndex((d: any) => d.date === dayDate);
+      if (dayIdx < 0) return;
+      
+      const futureSchedule = schedule.slice(dayIdx + 1);
+      if (futureSchedule.length === 0) {
+        alert('Não há dias futuros disponíveis no plano para reagendar.');
+        setUpdating(null);
+        return;
+      }
+
+      const newSchedule = [...schedule];
+      let hasChanges = false;
+      
+      const pendingBlocks = newSchedule[dayIdx].blocks.filter((b: any) => b.status === 'pending');
+      if (pendingBlocks.length === 0) {
+        setUpdating(null);
+        return;
+      }
+
+      const nextDate = futureSchedule[0].date;
+      const nextDayIdx = schedule.findIndex((d: any) => d.date === nextDate);
+      
+      const rescheduledBlocksToAdd: any[] = [];
+      
+      newSchedule[dayIdx] = {
+        ...newSchedule[dayIdx],
+        blocks: newSchedule[dayIdx].blocks.map((b: any) => {
+          if (b.status === 'pending') {
+            hasChanges = true;
+            rescheduledBlocksToAdd.push({
+              ...b,
+              id: `${nextDate}-r${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+              status: 'pending',
+              rescheduledFrom: dayDate,
+              originalBlockId: b.id
+            });
+            return { ...b, status: 'rescheduled', rescheduledTo: nextDate };
+          }
+          return b;
+        })
+      };
+      
+      if (hasChanges && nextDayIdx >= 0) {
+        newSchedule[nextDayIdx] = {
+          ...newSchedule[nextDayIdx],
+          blocks: [...newSchedule[nextDayIdx].blocks, ...rescheduledBlocksToAdd]
+        };
+        
+        const planRef = doc(db, 'users', user.uid, 'studyPlans', plan.id);
+        await updateDoc(planRef, { schedule: newSchedule });
+        plan.schedule = newSchedule;
+        onUpdate();
+      }
+    } catch (err) {
+      console.error('Erro ao reagendar todas:', err);
+    } finally {
+      setUpdating(null);
+    }
+  };
+
   const deletePlan = async () => {
     if (!user) return;
     if (!window.confirm('Tem certeza que deseja excluir este plano de estudos? Esta ação não pode ser desfeita.')) return;
@@ -353,6 +419,19 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
               {/* Day blocks */}
               {isExpanded && day.blocks && (
                 <div className="px-4 pb-4 space-y-2">
+                  {/* Reschedule All Button */}
+                  {day.blocks.some((b: any) => b.status === 'pending') && (
+                    <div className="flex justify-end mb-3">
+                      <button
+                        onClick={() => rescheduleAllPendingBlocks(day.date)}
+                        disabled={updating === `all-${day.date}`}
+                        className="px-3 py-1.5 text-[11px] font-bold text-orange-600 bg-orange-50 border border-orange-200 rounded-lg hover:bg-orange-100 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800/50 dark:hover:bg-orange-900/40 transition-colors flex items-center gap-1.5"
+                      >
+                        {updating === `all-${day.date}` ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RotateCcw className="w-3.5 h-3.5" />}
+                        Reagendar Todas
+                      </button>
+                    </div>
+                  )}
                   {day.blocks.map((block: any) => (
                     <div
                       key={block.id}
