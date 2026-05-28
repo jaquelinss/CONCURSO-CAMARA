@@ -156,12 +156,22 @@ export default function QuestionsDatabase() {
   };
 
 
-  // Toggle subject accordion
+  // Toggle subject accordion - also select and show all questions
   const toggleSubject = (subject: string) => {
+    const willExpand = !expandedSubjects[subject];
     setExpandedSubjects(prev => ({
       ...prev,
-      [subject]: !prev[subject]
+      [subject]: willExpand
     }));
+    
+    // When expanding a subject, auto-select it to show all questions
+    if (willExpand) {
+      setSelectedSubject(subject);
+      setSelectedTopic(null);
+      setSelectedSubtopic('__ALL__');
+      setUserAnswers({});
+      setCheckedAnswers({});
+    }
   };
 
   // Toggle topic accordion
@@ -274,8 +284,8 @@ export default function QuestionsDatabase() {
 
     let list: any[];
 
-    // "Ver todas" shows ALL questions for the subject
-    if (selectedSubtopic === 'Ver todas') {
+    // "__ALL__" or "Ver todas" shows ALL questions for the subject
+    if (selectedSubtopic === '__ALL__' || selectedSubtopic === 'Ver todas') {
       list = [...subjectQuestions];
     } else {
       list = subjectQuestions.filter(q => {
@@ -429,19 +439,32 @@ export default function QuestionsDatabase() {
               subjectsToDisplay.map(subject => {
                 const isExpanded = !!expandedSubjects[subject];
                 
-                // Build topics from static constants AND from loaded question data
+                // Build topics dynamically from actual question data when this subject is loaded
                 const topics: Record<string, string[]> = {};
                 
-                // Add static topics from constants
-                const regularTopics = topicsBySubject[subject] || {};
-                Object.keys(regularTopics).forEach(k => {
-                  topics[k] = [...regularTopics[k]];
-                });
-
-                // Always add "Todas as Questões" as a virtual topic so all questions are reachable
-                topics['📋 Todas as Questões'] = ['Ver todas'];
+                if (selectedSubject === subject && subjectQuestions.length > 0) {
+                  // Build from real question topics
+                  const topicSet = new Set<string>();
+                  subjectQuestions.forEach(q => {
+                    if (q.topics && Array.isArray(q.topics)) {
+                      q.topics.forEach((t: string) => topicSet.add(t));
+                    }
+                  });
+                  // Group topics under a single "Tópicos" header for simplicity
+                  const sortedTopics = Array.from(topicSet).sort();
+                  if (sortedTopics.length > 0) {
+                    topics['Tópicos Disponíveis'] = sortedTopics;
+                  }
+                } else {
+                  // For non-selected subjects, use static topics from constants (if any)
+                  const regularTopics = topicsBySubject[subject] || {};
+                  Object.keys(regularTopics).forEach(k => {
+                    topics[k] = [...regularTopics[k]];
+                  });
+                }
 
                 const hasTopics = Object.keys(topics).length > 0;
+                const isSelected = selectedSubject === subject;
 
                 return (
                   <div key={subject} className="border border-transparent hover:border-gray-100 dark:hover:border-gray-700/30 rounded-xl transition-all">
@@ -462,9 +485,14 @@ export default function QuestionsDatabase() {
                         )}
                         <span className="truncate">{subject}</span>
                       </div>
-                      {hasTopics && (
-                        isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />
-                      )}
+                      <div className="flex items-center gap-1.5">
+                        {isSelected && subjectQuestions.length > 0 && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400">
+                            {subjectQuestions.length}
+                          </span>
+                        )}
+                        {isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+                      </div>
                     </button>
 
                     {/* LEVEL 2: Topics list under Subject */}
@@ -537,10 +565,20 @@ export default function QuestionsDatabase() {
               <div className="flex flex-wrap items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/40 p-2.5 rounded-xl border border-gray-200/50 dark:border-gray-800/40">
                 <GraduationCap className="w-4 h-4 text-indigo-500" />
                 <span className="font-semibold text-gray-700 dark:text-gray-300">{selectedSubject}</span>
-                <ChevronRight className="w-3 h-3" />
-                <span>{selectedTopic}</span>
-                <ChevronRight className="w-3 h-3" />
-                <span className="text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50 dark:bg-indigo-950/30 px-2 py-0.5 rounded-lg border border-indigo-100 dark:border-indigo-900/20">{selectedSubtopic}</span>
+                {selectedSubtopic !== '__ALL__' && (
+                  <>
+                    <ChevronRight className="w-3 h-3" />
+                    <span>{selectedTopic}</span>
+                    <ChevronRight className="w-3 h-3" />
+                    <span className="text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50 dark:bg-indigo-950/30 px-2 py-0.5 rounded-lg border border-indigo-100 dark:border-indigo-900/20">{selectedSubtopic}</span>
+                  </>
+                )}
+                {selectedSubtopic === '__ALL__' && (
+                  <>
+                    <ChevronRight className="w-3 h-3" />
+                    <span className="text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50 dark:bg-indigo-950/30 px-2 py-0.5 rounded-lg border border-indigo-100 dark:border-indigo-900/20">Todas as Questões ({displayQuestions.length})</span>
+                  </>
+                )}
               </div>
 
               {/* YouTube Support Class Section */}
