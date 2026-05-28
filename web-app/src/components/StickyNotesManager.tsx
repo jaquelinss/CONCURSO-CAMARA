@@ -886,7 +886,12 @@ function getRandomHexColor(type: 'pastel' | 'vibrant' | 'neon'): string {
       '#74f6c9', '#cc82e3', '#8876ec', '#71b0ec', '#94dff3', // neon fever dream
       '#ffcece', '#b0ffb5', '#a2bbff', '#f4bcff', '#fffdd1', // neon pastels
       '#fbd4af', '#f7c6c3', '#edd4d9', '#c2e5ea', '#bcdbca', // muted earthy pastels
-      '#db96b9', '#e4a8b9', '#c8a8d5', '#d2ccf2', '#e4eeff' // cool mauve pastels
+      '#db96b9', '#e4a8b9', '#c8a8d5', '#d2ccf2', '#e4eeff', // cool mauve pastels
+      '#a7f8ef', '#f7fa6d', '#d5b3ff', '#ffd000', '#f086be', // mixed pastel 1
+      '#8b8cff', '#ff88fb', '#ffbefe', '#ffbd7a', '#fffb81', // mixed pastel 2
+      '#ffcbe1', '#d6e5bd', '#f9e1a8', '#bcd8ec', '#dcccec', '#ffdab4', // gelato days
+      '#f0d9ef', '#fcdce1', '#ffe6bb', '#e9ecce', '#cde9dc', '#c4dfe5', // pale pastels
+      '#c8ceee', '#cbd3ad', '#ffc697', '#f7e5b7', '#f9c5c7', '#ddc3e3' // muted pastels 2
     ];
     return pastels[Math.floor(Math.random() * pastels.length)];
   }
