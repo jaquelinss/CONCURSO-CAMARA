@@ -896,7 +896,9 @@ function getRandomHexColor(type: 'pastel' | 'vibrant' | 'neon'): string {
       '#ffcbcb', '#ffa7a7', '#c9fdff', '#dffeff', '#fff4f4', // soft pinks and cyans
       '#ffc6e9', '#ebb1ff', '#d1f2ff', '#ffe0e0', '#dadaff', // sweet pastels
       '#b8e8ff', '#fff0ff', '#efc3ff', '#e1b6ff', '#d190ff', // cool pastels
-      '#a8e6cf', '#dcedc1', '#ffd3b6', '#ffaaa5', '#ff8b94' // mint and peach pastels
+      '#a8e6cf', '#dcedc1', '#ffd3b6', '#ffaaa5', '#ff8b94', // mint and peach pastels
+      '#ffb3ba', '#ffdfba', '#ffffba', '#baffc9', '#bae1ff', // classic soft pastels
+      '#feff9c', '#ffcf85', '#b6d1ff', '#c386ee', '#9885ec' // bright pastels
     ];
     return pastels[Math.floor(Math.random() * pastels.length)];
   }
@@ -907,7 +909,10 @@ function getRandomHexColor(type: 'pastel' | 'vibrant' | 'neon'): string {
       '#fb923c', '#f472b6', '#38bdf8', '#4ade80', '#fbbf24', // extra standard vibrants
       '#2b90f5', // from light neon pastel (it's vibrant)
       '#ffec01', '#51d0e5', '#fe9d01', '#e0ab28', '#7aca6f', // aqua marine neon
-      '#ff7eb9', '#ff65a3', '#7afcff', '#feff9c', '#fff740' // bright pinks/cyan/yellow
+      '#ff7eb9', '#ff65a3', '#7afcff', '#feff9c', '#fff740', // bright pinks/cyan/yellow
+      '#ffec53', '#008dcb', '#f47d4a', '#00cffa', '#ffce38', // vibrant bold
+      '#cffc5b', '#f61ca6', '#fe8f71', '#fd90a3', '#f5646b', // vibrant neon coral
+      '#23f0c7', '#ff8cc6', '#8447ff', '#fffd82', '#3083dc' // vibrant neonish
     ];
     return vibrants[Math.floor(Math.random() * vibrants.length)];
   }
