@@ -3,15 +3,28 @@ import { doc, getDoc, setDoc, onSnapshot, serverTimestamp } from 'firebase/fires
 import { db } from '../lib/firebase';
 import { useAuth } from './AuthContext';
 
+export interface StickerInstance {
+  instanceId: string;
+  stickerId: string;
+}
+
 interface RewardContextType {
   effortPoints: number;
+  unlockedStickers: StickerInstance[];
   awardPoints: (amount: number, reason: string) => void;
+  spendPoints: (amount: number, reason: string) => Promise<boolean>;
+  addStickerToInventory: (stickerId: string) => Promise<void>;
+  removeStickerFromInventory: (instanceId: string) => Promise<void>;
   floatingPoints: { id: string; amount: number }[];
 }
 
 const RewardContext = createContext<RewardContextType>({
   effortPoints: 0,
+  unlockedStickers: [],
   awardPoints: () => {},
+  spendPoints: async () => false,
+  addStickerToInventory: async () => {},
+  removeStickerFromInventory: async () => {},
   floatingPoints: [],
 });
 
@@ -32,9 +45,12 @@ export const RewardProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [floatingPoints, setFloatingPoints] = useState<{ id: string; amount: number }[]>([]);
   const [lastActionTimes, setLastActionTimes] = useState<Record<string, number>>({});
 
+  const [unlockedStickers, setUnlockedStickers] = useState<StickerInstance[]>([]);
+
   useEffect(() => {
     if (!user) {
       setEffortPoints(0);
+      setUnlockedStickers([]);
       return;
     }
 
@@ -43,10 +59,12 @@ export const RewardProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (docSnap.exists()) {
         const data = docSnap.data();
         setEffortPoints(data.effortPoints || 0);
+        setUnlockedStickers(data.unlockedStickers || []);
       } else {
         // Document doesn't exist, create it
-        setDoc(docRef, { effortPoints: 0, unlockedItems: [] }, { merge: true });
+        setDoc(docRef, { effortPoints: 0, unlockedStickers: [] }, { merge: true });
         setEffortPoints(0);
+        setUnlockedStickers([]);
       }
     });
 
@@ -87,9 +105,70 @@ export const RewardProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }).catch(e => console.error("Erro ao dar pontos:", e));
 
   }, [user, lastActionTimes]);
+  const spendPoints = useCallback(async (amount: number, reason: string): Promise<boolean> => {
+    if (!user) return false;
+    try {
+      const docRef = doc(db, 'users', user.uid, 'settings', 'rewards');
+      const snap = await getDoc(docRef);
+      const currentPoints = snap.exists() ? (snap.data().effortPoints || 0) : 0;
+      
+      if (currentPoints < amount) {
+        return false;
+      }
+      
+      await setDoc(docRef, { 
+        effortPoints: currentPoints - amount,
+        lastSpentAt: serverTimestamp(),
+        lastSpentReason: reason
+      }, { merge: true });
+      
+      return true;
+    } catch (e) {
+      console.error("Erro ao gastar pontos:", e);
+      return false;
+    }
+  }, [user]);
+
+  const addStickerToInventory = useCallback(async (stickerId: string) => {
+    if (!user) return;
+    try {
+      const docRef = doc(db, 'users', user.uid, 'settings', 'rewards');
+      const snap = await getDoc(docRef);
+      const currentStickers = snap.exists() ? (snap.data().unlockedStickers || []) : [];
+      
+      const newInstance: StickerInstance = {
+        instanceId: Math.random().toString(36).substring(2) + Date.now().toString(36),
+        stickerId
+      };
+      
+      await setDoc(docRef, { 
+        unlockedStickers: [...currentStickers, newInstance]
+      }, { merge: true });
+    } catch (e) {
+      console.error("Erro ao adicionar sticker ao inventário:", e);
+    }
+  }, [user]);
+
+  const removeStickerFromInventory = useCallback(async (instanceId: string) => {
+    if (!user) return;
+    try {
+      const docRef = doc(db, 'users', user.uid, 'settings', 'rewards');
+      const snap = await getDoc(docRef);
+      if (!snap.exists()) return;
+      
+      const currentStickers: StickerInstance[] = snap.data().unlockedStickers || [];
+      const updatedStickers = currentStickers.filter(s => s.instanceId !== instanceId);
+      
+      await setDoc(docRef, { 
+        unlockedStickers: updatedStickers
+      }, { merge: true });
+    } catch (e) {
+      console.error("Erro ao remover sticker do inventário:", e);
+    }
+  }, [user]);
 
   return (
-    <RewardContext.Provider value={{ effortPoints, awardPoints, floatingPoints }}>
+    <RewardContext.Provider value={{ effortPoints, unlockedStickers, awardPoints, spendPoints, addStickerToInventory, removeStickerFromInventory, floatingPoints }}>
       {children}
     </RewardContext.Provider>
   );

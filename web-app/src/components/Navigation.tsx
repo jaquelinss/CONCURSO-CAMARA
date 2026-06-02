@@ -2,9 +2,10 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useReward } from '../contexts/RewardContext';
-import { LogOut, Menu, X, CalendarDays, FolderHeart, Sun, Moon, TrendingUp, Database, HelpCircle, Focus, Book, Home, BookOpen, Archive, Flame } from 'lucide-react';
+import { LogOut, Menu, X, CalendarDays, FolderHeart, Sun, Moon, TrendingUp, Database, HelpCircle, Focus, Book, Home, BookOpen, Archive, Flame, Store } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import FocusPlayer from './FocusPlayer';
+import { RewardShop } from './RewardShop';
 
 export default function Navigation() {
   const { signOut } = useAuth();
@@ -12,6 +13,7 @@ export default function Navigation() {
   const { effortPoints, floatingPoints } = useReward();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showShop, setShowShop] = useState(false);
 
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
@@ -158,6 +160,15 @@ export default function Navigation() {
 
             {/* Separador */}
             <div className="hidden sm:block w-px h-6 bg-gray-200 dark:bg-gray-700 mx-0.5" />
+
+            {/* Lojinha */}
+            <button
+              onClick={() => setShowShop(true)}
+              className="p-2 rounded-lg text-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors relative group"
+              title="Lojinha de Recompensas"
+            >
+              <Store className="w-5 h-5" />
+            </button>
 
             {/* Pontos de Esforço */}
             <div className="flex items-center relative gap-1.5 px-2 sm:px-3 py-1.5 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 rounded-lg font-bold text-xs sm:text-sm cursor-help transition-transform hover:scale-105 group" title="Pontos de Esforço">
@@ -327,6 +338,8 @@ export default function Navigation() {
           </div>
         </div>
       )}
+
+      {showShop && <RewardShop onClose={() => setShowShop(false)} />}
       </nav>
       {/* Spacer para a nav fixed */}
       <div className="h-16 w-full shrink-0" />
