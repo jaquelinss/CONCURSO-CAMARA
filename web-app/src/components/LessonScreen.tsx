@@ -9,6 +9,7 @@ import html2canvas from 'html2canvas';
 import PracticeQuiz from './PracticeQuiz';
 import { generateContentFromGemini } from '../lib/gemini';
 import ReadingLaser from './ReadingLaser';
+import DockableWrapper, { DockMenuButton } from './DockableWrapper';
 
 const renderMarkdownText = (text: string) => {
   if (!text) return null;
@@ -698,12 +699,16 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
   }
 
   return (
-    <div className={`max-w-4xl mx-auto p-4 md:p-8 relative`}>
-      <div className="flex justify-between items-center mb-6">
-        <button onClick={onBack} className="text-sm bg-black/5 p-2 rounded-lg hover:bg-black/10 transition-colors">
-          Voltar
-        </button>
-        <div className="flex items-center gap-2">
+    <DockableWrapper>
+      <div className={`max-w-4xl mx-auto p-4 md:p-8 relative`}>
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-4">
+            <button onClick={onBack} className="text-sm bg-black/5 p-2 rounded-lg hover:bg-black/10 transition-colors">
+              Voltar
+            </button>
+            <DockMenuButton />
+          </div>
+          <div className="flex items-center gap-2">
           {currentLesson && (
             <div className="flex items-center gap-1 bg-white dark:bg-gray-800 rounded-lg p-1 shadow-sm mr-4 border border-gray-200 dark:border-gray-700">
               <button onClick={zoomOut} disabled={zoom <= 0.5} className="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-gray-100 rounded-lg disabled:opacity-30 transition-colors" title="Diminuir zoom"><ZoomOut className="w-4 h-4" /></button>
@@ -914,6 +919,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
 
     </div>
     ) : null}
-  </div>
-);
+      </div>
+    </DockableWrapper>
+  );
 }

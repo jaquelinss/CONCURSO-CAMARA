@@ -4,7 +4,7 @@ import { Eraser, Trash2, X, Undo2, Redo2, Minus, Plus, Maximize2, Minimize2, Gri
 import { getStroke } from 'perfect-freehand';
 import Draggable from 'react-draggable';
 import { useAuth } from '../contexts/AuthContext';
-import { doc, getDoc, setDoc, collection, query, getDocs, orderBy } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, query, getDocs, orderBy, where } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import localforage from 'localforage';
 
@@ -20,6 +20,8 @@ interface Stroke {
   width: number;
   isEraser: boolean;
   isHighlighter?: boolean;
+  isSticker?: boolean;
+  stickerNumber?: number;
 }
 
 interface PenPreset {
@@ -59,8 +61,8 @@ export default function WhiteboardOverlay() {
   const [mode, setMode] = useState<'transparent' | 'lined' | 'grid' | 'dotted'>('lined');
   
   // Menu Principal Original
-  const [tool, setTool] = useState<'pen' | 'eraser' | 'pointer' | 'highlighter'>('pen');
-  const previousTool = useRef<'pen' | 'eraser' | 'highlighter'>('pen');
+  const [tool, setTool] = useState<'pen' | 'eraser' | 'pointer' | 'highlighter' | 'sticker'>('pen');
+  const previousTool = useRef<'pen' | 'eraser' | 'highlighter' | 'sticker'>('pen');
 
   useEffect(() => {
     if (tool !== 'pointer') {
@@ -218,6 +220,7 @@ export default function WhiteboardOverlay() {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const currentStrokeRef = useRef<Stroke | null>(null);
   const animFrameRef = useRef<number>(0);
+  const isStraightLineRef = useRef(false);
 
   // Floating Window Size
   const savedSize = (() => { try { return JSON.parse(localStorage.getItem('wb_size') || 'null'); } catch { return null; } })();
@@ -526,7 +529,7 @@ export default function WhiteboardOverlay() {
   }, [strokes, scrollY]);
 
   const drawStroke = (ctx: CanvasRenderingContext2D, stroke: Stroke) => {
-    if (stroke.points.length === 0) return;
+    if (stroke.points.length === 0 || stroke.isSticker) return;
 
     ctx.save();
     if (stroke.isEraser) {
@@ -590,19 +593,57 @@ export default function WhiteboardOverlay() {
     }
   };
 
-  const handlePointerDown = (e: React.PointerEvent) => {
+  const handlePointerDown = async (e: React.PointerEvent) => {
     if ((e.target as HTMLElement).closest('.whiteboard-toolbar') || (e.target as HTMLElement).closest('.whiteboard-sidebar')) {
       return;
     }
     setEditingPreset(null);
     e.preventDefault();
-    setIsDrawing(true);
-
+    
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
-
     const x = e.clientX - rect.left;
     const y = (e.clientY - rect.top) + scrollY;
+
+    if (tool === 'sticker') {
+      setIsDrawing(false);
+      const postitNumberStr = window.prompt("Digite o número do Post-it para linkar:");
+      if (postitNumberStr) {
+        const num = parseInt(postitNumberStr.replace(/\D/g, ''), 10);
+        if (!isNaN(num)) {
+          let stickerColor = '#fef08a';
+          if (user) {
+            try {
+              const q = query(collection(db, 'users', user.uid, 'notes'), where('noteNumber', '==', num));
+              const querySnapshot = await getDocs(q);
+              if (!querySnapshot.empty) {
+                stickerColor = querySnapshot.docs[0].data().color || '#fef08a';
+              }
+            } catch (e) {
+              console.error("Erro ao buscar cor do post-it", e);
+            }
+          }
+          const newStroke: Stroke = {
+            points: [{ x, y, pressure: 0.5 }],
+            color: stickerColor,
+            width: 1,
+            isEraser: false,
+            isSticker: true,
+            stickerNumber: num
+          };
+          setStrokesByPage(prev => ({
+            ...prev,
+            [currentPage]: [...(prev[currentPage] || []), newStroke]
+          }));
+        }
+      }
+      return;
+    }
+
+    setIsDrawing(true);
+    
+    isStraightLineRef.current = e.button === 2 || (e.buttons & 2) !== 0;
+
     const pressure = e.pressure !== undefined && e.pressure > 0 ? e.pressure : 0.5;
 
     if (tool === 'eraser' && activeEraser.type === 'stroke') {
@@ -632,7 +673,15 @@ export default function WhiteboardOverlay() {
     if (tool === 'eraser' && activeEraser.type === 'stroke') {
       eraseIntersectingStrokes(x, y);
     } else if (currentStrokeRef.current) {
-      currentStrokeRef.current.points.push({ x, y, pressure });
+      if (isStraightLineRef.current || (e.buttons & 2) !== 0) {
+        if (currentStrokeRef.current.points.length > 1) {
+          currentStrokeRef.current.points[1] = { x, y, pressure };
+        } else {
+          currentStrokeRef.current.points.push({ x, y, pressure });
+        }
+      } else {
+        currentStrokeRef.current.points.push({ x, y, pressure });
+      }
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
       animFrameRef.current = requestAnimationFrame(() => redrawAll());
     }
@@ -788,7 +837,53 @@ export default function WhiteboardOverlay() {
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
         onPointerLeave={handlePointerUp}
+        onContextMenu={(e) => e.preventDefault()}
       />
+      
+      {strokes.filter(s => s.isSticker && s.points && s.points.length > 0).map((s, idx) => (
+        <StickerNode
+          key={`sticker-${idx}`}
+          s={s}
+          scrollY={scrollY}
+          onStop={(_e: any, data: any) => {
+            const updatedStrokes = strokes.map(stroke => 
+              stroke === s ? { ...stroke, points: [{ x: data.x, y: data.y + scrollY, pressure: stroke.points[0]?.pressure || 0.5 }] } : stroke
+            );
+            setStrokesByPage(prev => ({ ...prev, [currentPage]: updatedStrokes }));
+          }}
+          onDelete={(e: any) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (window.confirm("Excluir este adesivo?")) {
+              const updatedStrokes = strokes.filter(stroke => stroke !== s);
+              setStrokesByPage(prev => ({ ...prev, [currentPage]: updatedStrokes }));
+            }
+          }}
+          onEdit={async (e: any) => {
+            e.stopPropagation();
+            const newNumStr = window.prompt("Editar número do Post-it linkado:", s.stickerNumber?.toString());
+            if (newNumStr) {
+              const num = parseInt(newNumStr.replace(/\D/g, ''), 10);
+              if (!isNaN(num)) {
+                let newColor = s.color;
+                if (user) {
+                  try {
+                    const q = query(collection(db, 'users', user.uid, 'notes'), where('noteNumber', '==', num));
+                    const querySnapshot = await getDocs(q);
+                    if (!querySnapshot.empty) {
+                      newColor = querySnapshot.docs[0].data().color || '#fef08a';
+                    }
+                  } catch (err) {}
+                }
+                const updatedStrokes = strokes.map(stroke => 
+                  stroke === s ? { ...stroke, stickerNumber: num, color: newColor } : stroke
+                );
+                setStrokesByPage(prev => ({ ...prev, [currentPage]: updatedStrokes }));
+              }
+            }
+          }}
+        />
+      ))}
 
       {/* Transparent Custom Sidebar */}
       {sidebarMode !== 'hidden' && (
@@ -836,6 +931,11 @@ export default function WhiteboardOverlay() {
                 {/* Mouse / Pointer Tool */}
                 <button onClick={() => setTool('pointer')} className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${tool === 'pointer' ? 'bg-indigo-50 text-indigo-600 ring-2 ring-indigo-400' : 'bg-white/90 shadow-sm text-gray-500 hover:text-indigo-600'}`} title="Mouse (Atalho: V ou Esc)">
                   <MousePointer2 className="w-4 h-4" />
+                </button>
+
+                {/* Sticker Tool */}
+                <button onClick={() => setTool('sticker')} className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${tool === 'sticker' ? 'bg-yellow-50 text-yellow-600 ring-2 ring-yellow-400' : 'bg-white/90 shadow-sm text-gray-500 hover:text-yellow-600'}`} title="Linkar Post-it">
+                  <span className="text-lg">📌</span>
                 </button>
 
                 {/* Notebooks Menu */}
@@ -1112,5 +1212,29 @@ export default function WhiteboardOverlay() {
       </Draggable>
     </div>,
     document.body
+  );
+}
+
+function StickerNode({ s, zoom = 1, scrollY = 0, onStop, onDelete, onEdit }: any) {
+  const nodeRef = useRef<HTMLDivElement>(null);
+  return (
+    <Draggable
+      nodeRef={nodeRef}
+      position={{ x: s.points[0].x * zoom, y: s.points[0].y * zoom - scrollY }}
+      onStop={onStop}
+    >
+      <div ref={nodeRef} className="absolute top-0 left-0 z-50 cursor-move">
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent('open-postit', { detail: s.stickerNumber }))}
+          onContextMenu={onDelete}
+          onDoubleClick={onEdit}
+          className="hover:scale-110 transition-transform text-gray-800 px-3 py-1.5 rounded-md shadow-md border border-black/10 font-bold text-sm flex items-center gap-1 group"
+          style={{ backgroundColor: s.color || '#fef08a' }}
+          title={`Duplo-clique para editar. Botão direito para excluir.`}
+        >
+          📌 #{s.stickerNumber}
+        </button>
+      </div>
+    </Draggable>
   );
 }

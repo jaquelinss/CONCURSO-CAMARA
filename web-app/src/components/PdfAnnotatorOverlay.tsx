@@ -11,16 +11,17 @@ import mammoth from 'mammoth';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { db } from '../lib/firebase';
-import { collection, doc, setDoc, getDocs, getDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
+import { collection, doc, setDoc, getDocs, getDoc, deleteDoc, query, orderBy, where } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { supabase } from '../lib/supabase';
+import Draggable from 'react-draggable';
 import ReadingLaser from './ReadingLaser';
 import DrawingSidebar from './DrawingSidebar';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 interface StrokePoint { x: number; y: number; pressure: number; }
-interface Stroke { points: StrokePoint[]; color: string; width: number; type: 'pen' | 'highlighter' | 'eraser'; }
+interface Stroke { points: StrokePoint[]; color: string; width: number; type: 'pen' | 'highlighter' | 'eraser' | 'sticker'; isSticker?: boolean; stickerNumber?: number; }
 interface SavedDocument {
   id: string;
   name: string;
@@ -57,7 +58,7 @@ export default function PdfAnnotatorOverlay() {
   
   const [strokesByPage, setStrokesByPage] = useState<Record<number, Stroke[]>>({});
   const [redoStackByPage, setRedoStackByPage] = useState<Record<number, Stroke[]>>({});
-  const [tool, setTool] = useState<'pen' | 'highlighter' | 'eraser' | 'pointer'>('pen');
+  const [tool, setTool] = useState<'pen' | 'highlighter' | 'eraser' | 'pointer' | 'sticker'>('pen');
   const [penColor, setPenColor] = useState('#ef4444');
   const [highlighterColor, setHighlighterColor] = useState('#ffff00');
   const [penWidth, setPenWidth] = useState(3);
@@ -656,7 +657,7 @@ export default function PdfAnnotatorOverlay() {
 
       {active && createPortal(
         <div 
-          className={`fixed z-[9999] bg-gray-900 flex flex-col ${splitMode ? 'top-0 right-0 h-full' : 'inset-0'}`}
+          className={`fixed bg-gray-900 flex flex-col ${splitMode ? 'top-16 right-0 bottom-0 z-[40]' : 'inset-0 z-[9999]'}`}
           style={splitMode ? { width: `${splitWidth}%` } : undefined}
         >
           {/* Draggable split divider */}
@@ -894,6 +895,7 @@ export default function PdfAnnotatorOverlay() {
                         key={`${pdfDoc.fingerprints?.[0] || 'doc'}-${pageNum}`}
                         pageNum={pageNum}
                         pdfDoc={pdfDoc}
+                        zoom={zoom}
                         tool={tool}
                         penColor={penColor}
                         highlighterColor={highlighterColor}
@@ -1004,12 +1006,13 @@ export default function PdfAnnotatorOverlay() {
 }
 
 // Custom Hook for common Canvas drawing logic
-function useCanvasDrawing(tool: string, penColor: string, highlighterColor: string, penWidth: number, highlighterWidth: number, eraserWidth: number, strokes: Stroke[], onUpdateStrokes: (s: Stroke[]) => void, onUpdateRedo: (s: Stroke[]) => void, drawStroke: any) {
+function useCanvasDrawing(zoom: number, tool: string, penColor: string, highlighterColor: string, penWidth: number, highlighterWidth: number, eraserWidth: number, strokes: Stroke[], onUpdateStrokes: (s: Stroke[]) => void, onUpdateRedo: (s: Stroke[]) => void, drawStroke: any) {
   const highlighterCanvasRef = useRef<HTMLCanvasElement>(null);
   const penCanvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const currentStrokeRef = useRef<Stroke | null>(null);
   const animFrameRef = useRef<number>(0);
+  const isStraightLineRef = useRef(false);
 
   const redrawStrokes = useCallback(() => {
     const hCtx = highlighterCanvasRef.current?.getContext('2d');
@@ -1019,7 +1022,18 @@ function useCanvasDrawing(tool: string, penColor: string, highlighterColor: stri
     hCtx.clearRect(0, 0, highlighterCanvasRef.current.width, highlighterCanvasRef.current.height);
     pCtx.clearRect(0, 0, penCanvasRef.current.width, penCanvasRef.current.height);
 
+    hCtx.save();
+    pCtx.save();
+    
+    // Scale the context by the current zoom level so that old strokes (drawn at zoom=1 equivalent)
+    // are rendered correctly on the higher-resolution canvas.
+    if (zoom !== 1) {
+      hCtx.scale(zoom, zoom);
+      pCtx.scale(zoom, zoom);
+    }
+
     for (const stroke of strokes) {
+      if (stroke.isSticker) continue;
       if (stroke.type === 'highlighter') drawStroke(hCtx, stroke);
       else if (stroke.type === 'pen') drawStroke(pCtx, stroke);
       else if (stroke.type === 'eraser') { drawStroke(hCtx, stroke); drawStroke(pCtx, stroke); }
@@ -1031,7 +1045,10 @@ function useCanvasDrawing(tool: string, penColor: string, highlighterColor: stri
       else if (stroke.type === 'pen') drawStroke(pCtx, stroke);
       else if (stroke.type === 'eraser') { drawStroke(hCtx, stroke); drawStroke(pCtx, stroke); }
     }
-  }, [strokes, drawStroke]);
+    
+    hCtx.restore();
+    pCtx.restore();
+  }, [strokes, drawStroke, zoom]);
 
   useEffect(() => { redrawStrokes(); }, [strokes, redrawStrokes]);
 
@@ -1051,16 +1068,54 @@ function useCanvasDrawing(tool: string, penColor: string, highlighterColor: stri
     }
   };
 
-  const handlePointerDown = (e: React.PointerEvent) => {
+  const handlePointerDown = async (e: React.PointerEvent) => {
     if (tool === 'pointer') return;
     e.preventDefault();
     setIsDrawing(true);
+    
+    // Check if right click (button 2) is used to start the stroke
+    isStraightLineRef.current = e.button === 2 || (e.buttons & 2) !== 0;
+
     const rect = penCanvasRef.current?.getBoundingClientRect();
     if (!rect) return;
 
-    const x = (e.clientX - rect.left) * (penCanvasRef.current!.width / rect.width);
-    const y = (e.clientY - rect.top) * (penCanvasRef.current!.height / rect.height);
+    // Divide the x, y by zoom so they are stored normalized to zoom=1
+    const x = ((e.clientX - rect.left) * (penCanvasRef.current!.width / rect.width)) / zoom;
+    const y = ((e.clientY - rect.top) * (penCanvasRef.current!.height / rect.height)) / zoom;
     const pressure = e.pressure !== undefined && e.pressure > 0 ? e.pressure : 0.5;
+
+    if (tool === 'sticker') {
+      setIsDrawing(false);
+      const postitNumberStr = window.prompt("Digite o número do Post-it para linkar:");
+      if (postitNumberStr) {
+        const num = parseInt(postitNumberStr.replace(/\D/g, ''), 10);
+        if (!isNaN(num)) {
+          let stickerColor = '#fef08a';
+          const user = getAuth().currentUser;
+          if (user) {
+            try {
+              const q = query(collection(db, 'users', user.uid, 'notes'), where('noteNumber', '==', num));
+              const querySnapshot = await getDocs(q);
+              if (!querySnapshot.empty) {
+                stickerColor = querySnapshot.docs[0].data().color || '#fef08a';
+              }
+            } catch (e) {
+              console.error("Erro ao buscar cor do post-it", e);
+            }
+          }
+          const newStroke: Stroke = {
+            points: [{ x, y, pressure }],
+            color: stickerColor,
+            width: 1,
+            type: 'sticker',
+            isSticker: true,
+            stickerNumber: num
+          };
+          onUpdateStrokes([...strokes, newStroke]);
+        }
+      }
+      return;
+    }
 
     if (tool === 'eraser') {
       eraseIntersecting(x, y);
@@ -1081,11 +1136,22 @@ function useCanvasDrawing(tool: string, penColor: string, highlighterColor: stri
     const rect = penCanvasRef.current?.getBoundingClientRect();
     if (!rect) return;
 
-    const x = (e.clientX - rect.left) * (penCanvasRef.current!.width / rect.width);
-    const y = (e.clientY - rect.top) * (penCanvasRef.current!.height / rect.height);
+    // Divide the x, y by zoom so they are stored normalized to zoom=1
+    const x = ((e.clientX - rect.left) * (penCanvasRef.current!.width / rect.width)) / zoom;
+    const y = ((e.clientY - rect.top) * (penCanvasRef.current!.height / rect.height)) / zoom;
     const pressure = e.pressure !== undefined && e.pressure > 0 ? e.pressure : 0.5;
 
-    currentStrokeRef.current.points.push({ x, y, pressure });
+    // Se começou com botão direito OU se agora está segurando o botão direito
+    if (isStraightLineRef.current || (e.buttons & 2) !== 0) {
+      if (currentStrokeRef.current.points.length > 1) {
+        currentStrokeRef.current.points[1] = { x, y, pressure };
+      } else {
+        currentStrokeRef.current.points.push({ x, y, pressure });
+      }
+    } else {
+      currentStrokeRef.current.points.push({ x, y, pressure });
+    }
+    
     if (tool === 'eraser') eraseIntersecting(x, y);
 
     if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
@@ -1107,14 +1173,14 @@ function useCanvasDrawing(tool: string, penColor: string, highlighterColor: stri
 }
 
 // Subcomponent for each PDF page
-function PdfPage({ pageNum, pdfDoc, tool, penColor, highlighterColor, penWidth, highlighterWidth, eraserWidth, strokes, onUpdateStrokes, onUpdateRedo, drawStroke, onVisible }: any) {
+function PdfPage({ pageNum, pdfDoc, zoom, tool, penColor, highlighterColor, penWidth, highlighterWidth, eraserWidth, strokes, onUpdateStrokes, onUpdateRedo, drawStroke, onVisible }: any) {
   const containerRef = useRef<HTMLDivElement>(null);
   const bgCanvasRef = useRef<HTMLCanvasElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 1131 });
   const hasCalledVisible = useRef(false);
-  const renderAttempted = useRef(false);
+  const lastRenderedZoom = useRef<number | null>(null);
 
-  const { highlighterCanvasRef, penCanvasRef, handlePointerDown, handlePointerMove, handlePointerUp } = useCanvasDrawing(tool, penColor, highlighterColor, penWidth, highlighterWidth, eraserWidth, strokes, onUpdateStrokes, onUpdateRedo, drawStroke);
+  const { highlighterCanvasRef, penCanvasRef, handlePointerDown, handlePointerMove, handlePointerUp } = useCanvasDrawing(zoom, tool, penColor, highlighterColor, penWidth, highlighterWidth, eraserWidth, strokes, onUpdateStrokes, onUpdateRedo, drawStroke);
 
   // Track visibility for scroll mode page tracking
   useEffect(() => {
@@ -1123,14 +1189,14 @@ function PdfPage({ pageNum, pdfDoc, tool, penColor, highlighterColor, penWidth, 
         hasCalledVisible.current = true;
         if (onVisible) onVisible();
       }
-    }, { rootMargin: '500px' });
+    }, { threshold: 0.5 });
     if (containerRef.current) observer.observe(containerRef.current);
     return () => observer.disconnect();
   }, [onVisible]);
 
   // Render the PDF page directly once pdfDoc is available
   useEffect(() => {
-    if (!pdfDoc || renderAttempted.current) return;
+    if (!pdfDoc || lastRenderedZoom.current === zoom) return;
 
     const doRender = async () => {
       // Wait a tick for canvas refs to be attached
@@ -1146,7 +1212,7 @@ function PdfPage({ pageNum, pdfDoc, tool, penColor, highlighterColor, penWidth, 
         return;
       }
 
-      renderAttempted.current = true;
+      lastRenderedZoom.current = zoom;
 
       try {
         const page = await pdfDoc.getPage(pageNum);
@@ -1154,7 +1220,7 @@ function PdfPage({ pageNum, pdfDoc, tool, penColor, highlighterColor, penWidth, 
         const availableHeight = window.innerHeight - 160;
         const baseScale = availableHeight / unscaledViewport.height;
         const dpr = window.devicePixelRatio || 1;
-        const renderScale = baseScale * dpr;
+        const renderScale = baseScale * dpr * (zoom || 1);
 
         const viewport = page.getViewport({ scale: renderScale });
         const cssWidth = unscaledViewport.width * baseScale;
@@ -1179,13 +1245,58 @@ function PdfPage({ pageNum, pdfDoc, tool, penColor, highlighterColor, penWidth, 
     };
 
     doRender();
-  }, [pdfDoc, pageNum, highlighterCanvasRef, penCanvasRef]);
+  }, [pdfDoc, pageNum, zoom, highlighterCanvasRef, penCanvasRef]);
 
   return (
     <div id={`pdf-page-${pageNum}`} ref={containerRef} className="relative shadow-2xl bg-white flex-shrink-0" style={{ width: dimensions.width, height: dimensions.height }}>
       <canvas ref={bgCanvasRef} className="absolute inset-0 pointer-events-none z-0" style={{ width: '100%', height: '100%' }} />
       <canvas ref={highlighterCanvasRef} className="absolute inset-0 pointer-events-none z-10" style={{ mixBlendMode: 'multiply', width: '100%', height: '100%' }} />
-      <canvas ref={penCanvasRef} className={`absolute inset-0 z-20 ${tool === 'pointer' ? 'pointer-events-none' : 'cursor-crosshair'}`} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onPointerLeave={handlePointerUp} style={{ touchAction: 'none', width: '100%', height: '100%' }} />
+      <canvas ref={penCanvasRef} className={`absolute inset-0 z-20 ${tool === 'pointer' ? 'pointer-events-none' : 'cursor-crosshair'}`} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onPointerLeave={handlePointerUp} onContextMenu={(e) => e.preventDefault()} style={{ touchAction: 'none', width: '100%', height: '100%' }} />
+      {strokes.filter((s: Stroke) => s.isSticker && s.points && s.points.length > 0).map((s: Stroke, idx: number) => (
+        <StickerNode
+          key={`sticker-${idx}`}
+          s={s}
+          zoom={zoom}
+          onStop={(_e: any, data: any) => {
+            const updatedStrokes = strokes.map((stroke: Stroke) => 
+              stroke === s ? { ...stroke, points: [{ x: data.x / zoom, y: data.y / zoom, pressure: stroke.points[0]?.pressure || 0.5 }] } : stroke
+            );
+            onUpdateStrokes(updatedStrokes);
+          }}
+          onDelete={(e: any) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (window.confirm("Excluir este adesivo?")) {
+              const updatedStrokes = strokes.filter((stroke: Stroke) => stroke !== s);
+              onUpdateStrokes(updatedStrokes);
+            }
+          }}
+          onEdit={async (e: any) => {
+            e.stopPropagation();
+            const newNumStr = window.prompt("Editar número do Post-it linkado:", s.stickerNumber?.toString());
+            if (newNumStr) {
+              const num = parseInt(newNumStr.replace(/\D/g, ''), 10);
+              if (!isNaN(num)) {
+                let newColor = s.color;
+                const user = getAuth().currentUser;
+                if (user) {
+                  try {
+                    const q = query(collection(db, 'users', user.uid, 'notes'), where('noteNumber', '==', num));
+                    const querySnapshot = await getDocs(q);
+                    if (!querySnapshot.empty) {
+                      newColor = querySnapshot.docs[0].data().color || '#fef08a';
+                    }
+                  } catch (err) {}
+                }
+                const updatedStrokes = strokes.map((stroke: Stroke) => 
+                  stroke === s ? { ...stroke, stickerNumber: num, color: newColor } : stroke
+                );
+                onUpdateStrokes(updatedStrokes);
+              }
+            }
+          }}
+        />
+      ))}
     </div>
   );
 }
@@ -1193,7 +1304,7 @@ function PdfPage({ pageNum, pdfDoc, tool, penColor, highlighterColor, penWidth, 
 // Subcomponent for DOCX rendering
 function DocxPage({ html, tool, penColor, highlighterColor, penWidth, highlighterWidth, eraserWidth, strokes, onUpdateStrokes, onUpdateRedo, drawStroke }: any) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { highlighterCanvasRef, penCanvasRef, handlePointerDown, handlePointerMove, handlePointerUp, redrawStrokes } = useCanvasDrawing(tool, penColor, highlighterColor, penWidth, highlighterWidth, eraserWidth, strokes, onUpdateStrokes, onUpdateRedo, drawStroke);
+  const { highlighterCanvasRef, penCanvasRef, handlePointerDown, handlePointerMove, handlePointerUp, redrawStrokes } = useCanvasDrawing(1, tool, penColor, highlighterColor, penWidth, highlighterWidth, eraserWidth, strokes, onUpdateStrokes, onUpdateRedo, drawStroke);
 
   useEffect(() => {
     if (containerRef.current) {
@@ -1220,7 +1331,52 @@ function DocxPage({ html, tool, penColor, highlighterColor, penWidth, highlighte
     <div className="relative shadow-2xl bg-white flex-shrink-0 mx-auto" style={{ width: '800px', minHeight: '1131px' }}>
       <div ref={containerRef} className="p-12 prose max-w-none text-black w-full min-h-[1131px]" dangerouslySetInnerHTML={{ __html: html }} />
       <canvas ref={highlighterCanvasRef} className="absolute inset-0 pointer-events-none z-10" style={{ mixBlendMode: 'multiply' }} />
-      <canvas ref={penCanvasRef} className={`absolute inset-0 z-20 ${tool === 'pointer' ? 'pointer-events-none' : 'cursor-crosshair'}`} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onPointerLeave={handlePointerUp} style={{ touchAction: 'none' }} />
+      <canvas ref={penCanvasRef} className={`absolute inset-0 z-20 ${tool === 'pointer' ? 'pointer-events-none' : 'cursor-crosshair'}`} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onPointerLeave={handlePointerUp} onContextMenu={(e) => e.preventDefault()} style={{ touchAction: 'none' }} />
+      {strokes.filter((s: Stroke) => s.isSticker && s.points && s.points.length > 0).map((s: Stroke, idx: number) => (
+        <StickerNode
+          key={`sticker-${idx}`}
+          s={s}
+          zoom={1}
+          onStop={(_e: any, data: any) => {
+            const updatedStrokes = strokes.map((stroke: Stroke) => 
+              stroke === s ? { ...stroke, points: [{ x: data.x, y: data.y, pressure: stroke.points[0]?.pressure || 0.5 }] } : stroke
+            );
+            onUpdateStrokes(updatedStrokes);
+          }}
+          onDelete={(e: any) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (window.confirm("Excluir este adesivo?")) {
+              const updatedStrokes = strokes.filter((stroke: Stroke) => stroke !== s);
+              onUpdateStrokes(updatedStrokes);
+            }
+          }}
+          onEdit={async (e: any) => {
+            e.stopPropagation();
+            const newNumStr = window.prompt("Editar número do Post-it linkado:", s.stickerNumber?.toString());
+            if (newNumStr) {
+              const num = parseInt(newNumStr.replace(/\D/g, ''), 10);
+              if (!isNaN(num)) {
+                let newColor = s.color;
+                const user = getAuth().currentUser;
+                if (user) {
+                  try {
+                    const q = query(collection(db, 'users', user.uid, 'notes'), where('noteNumber', '==', num));
+                    const querySnapshot = await getDocs(q);
+                    if (!querySnapshot.empty) {
+                      newColor = querySnapshot.docs[0].data().color || '#fef08a';
+                    }
+                  } catch (err) {}
+                }
+                const updatedStrokes = strokes.map((stroke: Stroke) => 
+                  stroke === s ? { ...stroke, stickerNumber: num, color: newColor } : stroke
+                );
+                onUpdateStrokes(updatedStrokes);
+              }
+            }
+          }}
+        />
+      ))}
     </div>
   );
 }
@@ -1232,7 +1388,7 @@ function EpubPage({ book, pageNum, viewMode, tool, penColor, highlighterColor, p
   const bookIdRef = useRef<string>('');
   const [dimensions, setDimensions] = useState({ width: 800, height: 1131 });
 
-  const { highlighterCanvasRef, penCanvasRef, handlePointerDown, handlePointerMove, handlePointerUp } = useCanvasDrawing(tool, penColor, highlighterColor, penWidth, highlighterWidth, eraserWidth, strokes, onUpdateStrokes, onUpdateRedo, drawStroke);
+  const { highlighterCanvasRef, penCanvasRef, handlePointerDown, handlePointerMove, handlePointerUp } = useCanvasDrawing(1, tool, penColor, highlighterColor, penWidth, highlighterWidth, eraserWidth, strokes, onUpdateStrokes, onUpdateRedo, drawStroke);
 
   // Initialize rendition when book changes
   useEffect(() => {
@@ -1319,7 +1475,76 @@ function EpubPage({ book, pageNum, viewMode, tool, penColor, highlighterColor, p
     <div className="relative shadow-2xl bg-white flex-shrink-0" style={{ width: dimensions.width, height: dimensions.height }}>
       <div ref={viewerRef} className="absolute inset-0 overflow-hidden" />
       <canvas ref={highlighterCanvasRef} className="absolute inset-0 pointer-events-none z-10" style={{ mixBlendMode: 'multiply', width: '100%', height: '100%' }} />
-      <canvas ref={penCanvasRef} className={`absolute inset-0 z-20 ${tool === 'pointer' ? 'pointer-events-none' : 'cursor-crosshair'}`} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onPointerLeave={handlePointerUp} style={{ touchAction: 'none', width: '100%', height: '100%' }} />
+      <canvas ref={penCanvasRef} className={`absolute inset-0 z-20 ${tool === 'pointer' ? 'pointer-events-none' : 'cursor-crosshair'}`} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={handlePointerUp} onPointerLeave={handlePointerUp} onContextMenu={(e) => e.preventDefault()} style={{ touchAction: 'none', width: '100%', height: '100%' }} />
+      {strokes.filter((s: Stroke) => s.isSticker && s.points && s.points.length > 0).map((s: Stroke, idx: number) => (
+        <StickerNode
+          key={`sticker-${idx}`}
+          s={s}
+          zoom={1}
+          onStop={(_e: any, data: any) => {
+            const updatedStrokes = strokes.map((stroke: Stroke) => 
+              stroke === s ? { ...stroke, points: [{ x: data.x, y: data.y, pressure: stroke.points[0]?.pressure || 0.5 }] } : stroke
+            );
+            onUpdateStrokes(updatedStrokes);
+          }}
+          onDelete={(e: any) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (window.confirm("Excluir este adesivo?")) {
+              const updatedStrokes = strokes.filter((stroke: Stroke) => stroke !== s);
+              onUpdateStrokes(updatedStrokes);
+            }
+          }}
+          onEdit={async (e: any) => {
+            e.stopPropagation();
+            const newNumStr = window.prompt("Editar número do Post-it linkado:", s.stickerNumber?.toString());
+            if (newNumStr) {
+              const num = parseInt(newNumStr.replace(/\D/g, ''), 10);
+              if (!isNaN(num)) {
+                let newColor = s.color;
+                const user = getAuth().currentUser;
+                if (user) {
+                  try {
+                    const q = query(collection(db, 'users', user.uid, 'notes'), where('noteNumber', '==', num));
+                    const querySnapshot = await getDocs(q);
+                    if (!querySnapshot.empty) {
+                      newColor = querySnapshot.docs[0].data().color || '#fef08a';
+                    }
+                  } catch (err) {}
+                }
+                const updatedStrokes = strokes.map((stroke: Stroke) => 
+                  stroke === s ? { ...stroke, stickerNumber: num, color: newColor } : stroke
+                );
+                onUpdateStrokes(updatedStrokes);
+              }
+            }
+          }}
+        />
+      ))}
     </div>
+  );
+}
+
+function StickerNode({ s, zoom = 1, onStop, onDelete, onEdit }: any) {
+  const nodeRef = useRef<HTMLDivElement>(null);
+  return (
+    <Draggable
+      nodeRef={nodeRef}
+      position={{ x: s.points[0].x * zoom, y: s.points[0].y * zoom }}
+      onStop={onStop}
+    >
+      <div ref={nodeRef} className="absolute top-0 left-0 z-50 cursor-move">
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent('open-postit', { detail: s.stickerNumber }))}
+          onContextMenu={onDelete}
+          onDoubleClick={onEdit}
+          className="hover:scale-110 transition-transform text-gray-800 px-3 py-1.5 rounded-md shadow-md border border-black/10 font-bold text-sm flex items-center gap-1 group"
+          style={{ backgroundColor: s.color || '#fef08a' }}
+          title={`Duplo-clique para editar. Botão direito para excluir.`}
+        >
+          📌 #{s.stickerNumber}
+        </button>
+      </div>
+    </Draggable>
   );
 }

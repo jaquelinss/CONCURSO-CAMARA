@@ -1,8 +1,10 @@
 import React, { useState, useRef } from 'react';
+import DockableWrapper, { DockMenuButton } from './DockableWrapper';
 import { themes, defaultTheme } from '../lib/constants';
 import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp, doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
+import { useReward } from '../contexts/RewardContext';
 import { generateContentFromGemini, correctEssayFromGemini } from '../lib/gemini';
 import { DownloadIcon, BanIcon, CheckCircleIcon, XCircleIcon, UploadCloud, FileText, Bot, Sparkles, AlertCircle, Flag, AlertTriangle } from 'lucide-react';
 import { jsPDF } from 'jspdf';
@@ -200,6 +202,7 @@ interface QuizScreenProps {
 
 export default function QuizScreen({ settings, onBack, savedData }: QuizScreenProps) {
   const { user, apiKey, selectedBanca } = useAuth();
+  const { awardPoints } = useReward();
   const theme = themes[settings.subject] || defaultTheme;
   const isSavedMode = !!savedData;
   const [questions, setQuestions] = useState<any[]>(savedData || []);
@@ -897,11 +900,13 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     const proposal = isCorrectionMode ? { tema: userEssayTheme, frase_tema: 'Fornecida pelo usuário' } : questions[0];
 
     return (
+      <DockableWrapper>
       <div className="max-w-4xl mx-auto p-4 md:p-8 space-y-6">
         <div className="w-full flex justify-between items-center mb-6">
           <button onClick={onBack} className="text-sm bg-black/5 p-2 rounded-lg hover:bg-black/10 transition-colors">
             Voltar
           </button>
+          <DockMenuButton />
           {correction && (
             <button
               onClick={() => handleSavePdf('correction')}
@@ -1112,6 +1117,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
           </div>
         )}
       </div>
+      </DockableWrapper>
     );
   }
 
@@ -1121,6 +1127,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
 
   if (isFinished) {
     return (
+      <DockableWrapper>
       <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md max-w-2xl mx-auto">
         <h2 className="text-3xl font-bold mb-4">{isFlashcard ? 'Flashcards Finalizados!' : 'Quiz Finalizado!'}</h2>
         {!isFlashcard && (() => {
@@ -1136,6 +1143,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
           )}
         </div>
       </div>
+      </DockableWrapper>
     );
   }
 
@@ -1147,10 +1155,12 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
       const newScore = score + 1;
       setScore(newScore);
       if (currentIndex === questions.length - 1) {
+        awardPoints(questions.length * 2, 'finish_quiz');
         updateRevisionPerformance(newScore);
       }
     } else {
       if (currentIndex === questions.length - 1) {
+        awardPoints(questions.length * 2, 'finish_quiz');
         updateRevisionPerformance(score);
       }
     }
@@ -1158,6 +1168,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
 
   const handleNext = () => {
     if (isFlashcard && currentIndex === questions.length - 1) {
+      awardPoints(questions.length * 1, 'finish_flashcards');
       updateRevisionPerformance(-1);
     }
     setSelectedAnswer(null);
@@ -1196,6 +1207,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
   const handleAskDoubt = async () => {
     if (!doubt || !currentQ || !apiKey) return;
     setIsAsking(true);
+    awardPoints(2, 'ask_doubt');
     setDoubtResponse("");
     setSubQuestions([]);
     
@@ -1311,12 +1323,14 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
   };
 
   return (
+    <DockableWrapper>
     <div className={`max-w-4xl mx-auto p-4 md:p-8 relative`}>
       <div className="w-full flex justify-between items-center mb-6">
         <button onClick={onBack} className="text-sm bg-black/5 p-2 rounded-lg hover:bg-black/10 transition-colors">
           Voltar
         </button>
         <div className="flex gap-2 flex-wrap">
+          <DockMenuButton />
           <div className="flex items-center gap-1">
             <button
               onClick={() => window.dispatchEvent(new Event('toggle-archive'))}
@@ -1613,5 +1627,6 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
         </div>
       )}
     </div>
+    </DockableWrapper>
   );
 }

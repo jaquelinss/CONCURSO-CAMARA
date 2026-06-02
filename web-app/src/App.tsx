@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { KnowledgeBaseProvider } from './contexts/KnowledgeBaseContext';
 import { CustomSubjectsProvider } from './contexts/CustomSubjectsContext';
+import { RewardProvider } from './contexts/RewardContext';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import SavedContent from './pages/SavedContent';
@@ -50,37 +51,39 @@ export default function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
-        <KnowledgeBaseProvider>
-          <CustomSubjectsProvider>
-            <Router>
-              <div className="min-h-screen font-sans transition-colors duration-200 overflow-x-hidden">
-                <AppRoutes />
-              
-                <ReportButton isHidden={!showTools} />
-                <StickyNotesManager />
-                <FloatingYouTubePlayer />
-                <TodayStudyButton isHidden={!showTools} />
-                <AITeacherChat isHidden={!showTools} />
-                <TextSelectionPopover />
-                <KnowledgeBaseManager />
-                <WhiteboardOverlay />
-                <PdfAnnotatorOverlay />
+        <RewardProvider>
+          <KnowledgeBaseProvider>
+            <CustomSubjectsProvider>
+              <Router>
+                <div className="min-h-screen font-sans transition-colors duration-200 overflow-x-hidden">
+                  <AppRoutes />
+                
+                  <ReportButton isHidden={!showTools} />
+                  <StickyNotesManager />
+                  <FloatingYouTubePlayer />
+                  <TodayStudyButton isHidden={!showTools} />
+                  <AITeacherChat isHidden={!showTools} />
+                  <TextSelectionPopover />
+                  <KnowledgeBaseManager />
+                  <WhiteboardOverlay />
+                  <PdfAnnotatorOverlay />
 
-                {/* Toggle Tools Button */}
-                <button
-                  onClick={() => setShowTools(!showTools)}
-                  onTouchEnd={(e) => { e.preventDefault(); setShowTools(!showTools); }}
-                  className="fixed bottom-8 right-0 z-[9999] w-10 h-12 sm:w-8 sm:h-10 bg-gray-800/60 hover:bg-gray-800 backdrop-blur-sm text-white rounded-l-lg shadow-lg flex items-center justify-center transition-all cursor-pointer"
-                  title={showTools ? "Ocultar ferramentas" : "Mostrar ferramentas"}
-                >
-                  {showTools ? <ChevronRight className="w-6 h-6 sm:w-5 sm:h-5" /> : <ChevronLeft className="w-6 h-6 sm:w-5 sm:h-5" />}
-                </button>
+                  {/* Toggle Tools Button */}
+                  <button
+                    onClick={() => setShowTools(!showTools)}
+                    onTouchEnd={(e) => { e.preventDefault(); setShowTools(!showTools); }}
+                    className="fixed bottom-8 right-0 z-[9999] w-10 h-12 sm:w-8 sm:h-10 bg-gray-800/60 hover:bg-gray-800 backdrop-blur-sm text-white rounded-l-lg shadow-lg flex items-center justify-center transition-all cursor-pointer"
+                    title={showTools ? "Ocultar ferramentas" : "Mostrar ferramentas"}
+                  >
+                    {showTools ? <ChevronRight className="w-6 h-6 sm:w-5 sm:h-5" /> : <ChevronLeft className="w-6 h-6 sm:w-5 sm:h-5" />}
+                  </button>
 
-                <NavigationTutorial />
-              </div>
-            </Router>
-          </CustomSubjectsProvider>
-        </KnowledgeBaseProvider>
+                  <NavigationTutorial />
+                </div>
+              </Router>
+            </CustomSubjectsProvider>
+          </KnowledgeBaseProvider>
+        </RewardProvider>
       </ThemeProvider>
     </AuthProvider>
   );

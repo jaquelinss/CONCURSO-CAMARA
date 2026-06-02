@@ -29,10 +29,21 @@ export default function TextSelectionPopover() {
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect();
 
-      // Show popover slightly below the selection to avoid native OS copy/paste toolbars
+      let isBackwards = false;
+      if (selection.anchorNode && selection.focusNode) {
+        const position = selection.anchorNode.compareDocumentPosition(selection.focusNode);
+        if (
+          position === Node.DOCUMENT_POSITION_PRECEDING ||
+          (!position && selection.anchorOffset > selection.focusOffset)
+        ) {
+          isBackwards = true;
+        }
+      }
+
+      // Show popover near the mouse cursor end (bottom if forward, top if backward)
       setPosition({
         x: rect.left + rect.width / 2,
-        y: rect.bottom + 15
+        y: isBackwards ? Math.max(10, rect.top - 40) : rect.bottom + 15
       });
     };
 

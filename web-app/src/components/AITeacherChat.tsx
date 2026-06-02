@@ -4,6 +4,8 @@ import { useCustomSubjects } from '../contexts/CustomSubjectsContext';
 import { db } from '../lib/firebase';
 import { collection, query, getDocs, orderBy, doc, setDoc, addDoc, deleteDoc } from 'firebase/firestore';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { useReward } from '../contexts/RewardContext';
+import { formatTextToPostIt } from '../lib/gemini';
 import {
   GraduationCap,
   Send,
@@ -309,6 +311,7 @@ const DEFAULT_TEACHER: Teacher = {
 
 export default function AITeacherChat({ isHidden = false }: { isHidden?: boolean }) {
   const { user, apiKey } = useAuth();
+  const { awardPoints } = useReward();
   const [isGeneratingPostIt, setIsGeneratingPostIt] = useState<string | null>(null);
   
   // Knowledge Base State
@@ -322,7 +325,6 @@ export default function AITeacherChat({ isHidden = false }: { isHidden?: boolean
     }
     setIsGeneratingPostIt(msgId);
     try {
-      const { formatTextToPostIt } = await import('../lib/gemini');
       const { title, content } = await formatTextToPostIt(text, apiKey);
       const event = new CustomEvent('add-note', { detail: { title, content } });
       window.dispatchEvent(event);
@@ -535,8 +537,23 @@ Diretrizes:
         });
       }
 
-      const result = await model.generateContent(parts);
-      const responseText = result.response.text().trim();
+      let responseText = '';
+      const maxRetries = 3;
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+          const result = await model.generateContent(parts);
+          responseText = result.response.text().trim();
+          break;
+        } catch (retryError: any) {
+          const is503 = retryError?.message?.includes('503') || retryError?.status === 503;
+          if (is503 && attempt < maxRetries - 1) {
+            const delay = (attempt + 1) * 2000;
+            await new Promise(r => setTimeout(r, delay));
+            continue;
+          }
+          throw retryError;
+        }
+      }
 
       const teacherMessage: ChatMessage = {
         sender: 'teacher',
@@ -546,13 +563,48 @@ Diretrizes:
 
       setMessages((prev) => [...prev, teacherMessage]);
       setSaveStatus('idle');
+      
+      // Recompensa o esforço por perguntar
+      awardPoints(5, 'ask_question');
+
+      // Auto-criar post-it se o usuário pediu
+      const postItKeywords = /post.?it|postit|cria.*nota|gera.*nota|anota.*pra\s*m|faz.*resumo.*post|cria.*resumo|faz.*post/i;
+      if (postItKeywords.test(userText)) {
+        try {
+          setIsGeneratingPostIt('auto');
+          const { title, content } = await formatTextToPostIt(responseText, apiKey);
+          const event = new CustomEvent('add-note', { detail: { title, content } });
+          window.dispatchEvent(event);
+          setMessages((prev) => [...prev, {
+            sender: 'teacher',
+            text: '📌 **Post-it criado!** Dá uma olhada na sua tela — acabei de fixar um resumo pra você! 😉',
+            timestamp: new Date().toISOString()
+          }]);
+        } catch (e) {
+          console.error('Erro ao criar post-it automático:', e);
+        } finally {
+          setIsGeneratingPostIt(null);
+        }
+      }
     } catch (error: any) {
       console.error('Error generating tutor response:', error);
+      const is503 = error?.message?.includes('503');
+      const isNetwork = error?.message?.includes('Failed to fetch') || error?.message?.includes('NetworkError');
+      
+      let friendlyMsg = '';
+      if (is503) {
+        friendlyMsg = `😅 **Opa, o servidor da IA está sobrecarregado agora!**\n\nIsso acontece quando muita gente está usando ao mesmo tempo. Já tentei novamente algumas vezes, mas não rolou.\n\n💡 **Tente enviar sua pergunta de novo em alguns segundos** — geralmente volta rápido!`;
+      } else if (isNetwork) {
+        friendlyMsg = `📡 **Parece que sua internet oscilou!**\n\nNão consegui me conectar ao servidor. Verifique sua conexão e tente novamente.`;
+      } else {
+        friendlyMsg = `😕 **Algo deu errado ao gerar a resposta.**\n\nPode ser uma instabilidade temporária. Tente enviar sua pergunta novamente.\n\nSe o problema continuar, verifique sua Chave API nas Configurações.`;
+      }
+      
       setMessages((prev) => [
         ...prev,
         {
           sender: 'teacher',
-          text: `❌ **Ocorreu um erro técnico ao gerar a resposta.**\n\nPor favor, verifique a estabilidade da sua internet e a validade da sua Chave API do Gemini nas Configurações.\n\n*(Detalhes: ${error.message || 'Erro desconhecido'})*`,
+          text: friendlyMsg,
           timestamp: new Date().toISOString()
         }
       ]);
@@ -672,7 +724,7 @@ Diretrizes:
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed right-[10.5rem] bottom-6 z-[999] w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 bg-gradient-to-tr from-purple-500 via-indigo-500 to-indigo-600 text-white border border-indigo-400/20 group hover:shadow-purple-500/30 ${isHidden ? 'opacity-0 translate-x-12 pointer-events-none' : 'opacity-100 translate-x-0'}`}
+        className={`fixed right-[10.5rem] bottom-6 z-[10005] w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 bg-gradient-to-tr from-purple-500 via-indigo-500 to-indigo-600 text-white border border-indigo-400/20 group hover:shadow-purple-500/30 ${isHidden ? 'opacity-0 translate-x-12 pointer-events-none' : 'opacity-100 translate-x-0'}`}
         title="Tirar dúvida com IA"
       >
         <div className="relative">

@@ -1,13 +1,15 @@
 import { useEffect, useState, useRef } from 'react';
 import { db } from '../lib/firebase';
-import { collection, query, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, setDoc, getDoc } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
+import { useReward } from '../contexts/RewardContext';
 import Draggable from 'react-draggable';
-import { Palette, X, GripHorizontal, Tag, PlusCircle, Layers, Eye, EyeOff, Pipette } from 'lucide-react';
+import { Palette, X, GripHorizontal, Tag, PlusCircle, Layers, Eye, EyeOff, Pipette, ChevronRight, ChevronUp, ChevronDown, History, RotateCcw } from 'lucide-react';
 import { generateNoteTag } from '../lib/gemini';
 
 interface Note {
   id: string;
+  noteNumber?: number;
   title?: string;
   content: string;
   x: number;
@@ -16,8 +18,13 @@ interface Note {
   zIndex: number;
   isArchived?: boolean;
   subjectTag?: string;
+  subTag?: string;
   w?: number;
   h?: number;
+  isMinimized?: boolean;
+  createdAt?: any;
+  isFlashcard?: boolean;
+  backContent?: string;
 }
 
 const COLORS = [
@@ -30,24 +37,55 @@ const COLORS = [
 
 // Gerenciador Global que escuta os eventos
 export default function StickyNotesManager() {
-  const { user } = useAuth();
+  const { user, apiKey } = useAuth();
+  const { awardPoints } = useReward();
   const [notes, setNotes] = useState<Note[]>([]);
   const [highestZ, setHighestZ] = useState(100);
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
-  const [isCascadeMode, setIsCascadeMode] = useState(false);
+  const [sidebarTab, setSidebarTab] = useState<'postits' | 'flashcards'>('postits');
+  const [isCascadeMode, setIsCascadeMode] = useState(() => {
+    try {
+      const saved = localStorage.getItem('isCascadeMode');
+      return saved ? JSON.parse(saved) : false;
+    } catch {
+      return false;
+    }
+  });
+  
+  useEffect(() => {
+    localStorage.setItem('isCascadeMode', JSON.stringify(isCascadeMode));
+  }, [isCascadeMode]);
+
   const [cascadePos, setCascadePos] = useState({ x: 100, y: 100 });
   const [cascadeSize, setCascadeSize] = useState({ w: 256, h: 280 });
   const [isDraggingFromSidebar, setIsDraggingFromSidebar] = useState(false);
-  const { apiKey } = useAuth();
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [selectedSubTag, setSelectedSubTag] = useState<string | null>(null);
   const NO_TAG = '__no_tag__';
   const processingTagsRef = useRef<Set<string>>(new Set());
 
-  // Get notes filtered by the current tag selection
+  // Load preferences from firestore
+  useEffect(() => {
+    if (!user) return;
+    getDoc(doc(db, 'users', user.uid, 'settings', 'stickyNotes')).then(snap => {
+      if (snap.exists()) {
+        const data = snap.data();
+        if (data.isCascadeMode !== undefined) setIsCascadeMode(data.isCascadeMode);
+        if (data.cascadePos) setCascadePos(data.cascadePos);
+        if (data.cascadeSize) setCascadeSize(data.cascadeSize);
+      }
+    }).catch(console.error);
+  }, [user]);
+
+  // Get notes filtered by the current tab and tag selection
   const getFilteredNotes = () => {
-    if (selectedTag === NO_TAG) return notes.filter(n => !n.subjectTag);
-    if (selectedTag) return notes.filter(n => n.subjectTag === selectedTag);
-    return notes;
+    let filtered = sidebarTab === 'flashcards' 
+      ? notes.filter(n => n.isFlashcard) 
+      : notes.filter(n => !n.isFlashcard);
+    if (selectedTag === NO_TAG) return filtered.filter(n => !n.subjectTag);
+    if (selectedTag && selectedSubTag) return filtered.filter(n => n.subjectTag === selectedTag && n.subTag === selectedSubTag);
+    if (selectedTag) return filtered.filter(n => n.subjectTag === selectedTag);
+    return filtered;
   };
 
   // Batch show all (un-archive) filtered notes
@@ -78,15 +116,46 @@ export default function StickyNotesManager() {
   useEffect(() => {
     const handleAdd = (e: Event) => handleAddNote(e);
     const handleToggleArchive = () => setIsArchiveOpen(prev => !prev);
+    const handleArchiveAll = () => {
+      if (!user) return;
+      const activeNotes = notes.filter(n => !n.isArchived);
+      activeNotes.forEach(async (note) => {
+        const noteRef = doc(db, 'users', user.uid, 'notes', note.id);
+        await updateDoc(noteRef, { isArchived: true }).catch(console.error);
+      });
+    };
+
+    const handleOpenPostit = async (e: Event) => {
+      const customEvent = e as CustomEvent;
+      const postitNumber = customEvent.detail;
+      const noteToOpen = notes.find(n => n.noteNumber === postitNumber);
+      if (noteToOpen) {
+        if (!user) return;
+        const noteRef = doc(db, 'users', user.uid, 'notes', noteToOpen.id);
+        const newZ = highestZ + 1;
+        setHighestZ(newZ);
+        await updateDoc(noteRef, { isArchived: false, isMinimized: false, zIndex: newZ });
+      } else {
+        console.warn(`Post-it #${postitNumber} não encontrado.`);
+      }
+    };
+
+    const handleAddFC = (e: Event) => handleAddFlashcard(e);
 
     window.addEventListener('add-note', handleAdd);
+    window.addEventListener('add-flashcard', handleAddFC);
     window.addEventListener('toggle-archive', handleToggleArchive);
+    window.addEventListener('archive-all-notes', handleArchiveAll);
+    window.addEventListener('open-postit', handleOpenPostit);
 
     return () => {
       window.removeEventListener('add-note', handleAdd);
+      window.removeEventListener('add-flashcard', handleAddFC);
       window.removeEventListener('toggle-archive', handleToggleArchive);
+      window.removeEventListener('archive-all-notes', handleArchiveAll);
+      window.removeEventListener('open-postit', handleOpenPostit);
     };
-  }, [user]);
+  }, [user, notes, highestZ]);
 
   // Carrega notas do firebase
   useEffect(() => {
@@ -110,19 +179,49 @@ export default function StickyNotesManager() {
     return () => unsubscribe();
   }, [user]);
 
+  // Retrofit old notes without noteNumber
+  useEffect(() => {
+    if (!user || notes.length === 0) return;
+    
+    const notesWithoutNumber = notes.filter(n => typeof n.noteNumber === 'undefined');
+    if (notesWithoutNumber.length === 0) return;
+
+    const assignNumbers = async () => {
+      const sortedByOldest = [...notesWithoutNumber].sort((a, b) => {
+        const timeA = a.createdAt?.toMillis?.() || 0;
+        const timeB = b.createdAt?.toMillis?.() || 0;
+        return timeA - timeB;
+      });
+
+      let currentMax = Math.max(0, ...notes.filter(n => n.noteNumber).map(n => n.noteNumber!));
+      
+      for (const note of sortedByOldest) {
+        currentMax++;
+        try {
+          const noteRef = doc(db, 'users', user.uid, 'notes', note.id);
+          await updateDoc(noteRef, { noteNumber: currentMax });
+        } catch (e) {
+          console.error('Erro ao atribuir número à nota antiga:', e);
+        }
+      }
+    };
+
+    assignNumbers();
+  }, [user, notes]);
+
   // Retrofit old notes without tags and handle new ones that get archived
   useEffect(() => {
     if (!user || !apiKey || notes.length === 0) return;
     
-    // Find the first archived note that has content but no tag, and is not currently being processed
-    const noteToProcess = notes.find(n => n.isArchived && !n.subjectTag && n.content && !processingTagsRef.current.has(n.id));
+    // Find the first archived note that has content but no tag/subtag, and is not currently being processed
+    const noteToProcess = notes.find(n => n.isArchived && (!n.subjectTag || n.subTag === undefined) && n.content && !processingTagsRef.current.has(n.id));
     
     if (noteToProcess) {
       processingTagsRef.current.add(noteToProcess.id);
-      generateNoteTag(noteToProcess.content, noteToProcess.title || '', apiKey).then(async (tag) => {
-        if (tag) {
+      generateNoteTag(noteToProcess.content, noteToProcess.title || '', apiKey).then(async (result) => {
+        if (result && result.tag) {
           const noteRef = doc(db, 'users', user.uid, 'notes', noteToProcess.id);
-          await updateDoc(noteRef, { subjectTag: tag });
+          await updateDoc(noteRef, { subjectTag: result.tag, subTag: result.subtag || '' });
         }
       }).catch(e => {
         console.error("Erro ao gerar tag:", e);
@@ -156,7 +255,10 @@ export default function StickyNotesManager() {
         y = savedPos.y + (Math.random() * 20 - 10);
       }
 
+      const nextNoteNumber = notes.length > 0 ? Math.max(0, ...notes.filter(n => n.noteNumber).map(n => n.noteNumber!)) + 1 : 1;
+
       await addDoc(collection(db, 'users', user.uid, 'notes'), {
+        noteNumber: nextNoteNumber,
         title: initialTitle,
         content: initialContent,
         color: COLORS[0],
@@ -168,8 +270,60 @@ export default function StickyNotesManager() {
         isArchived: false,
         createdAt: serverTimestamp()
       });
+      
+      awardPoints(2, 'create_note');
     } catch (error) {
       console.error("Erro ao adicionar nota:", error);
+    }
+  };
+
+  const handleAddFlashcard = async (e?: Event) => {
+    if (!user) return;
+    try {
+      const newZ = highestZ + 1;
+      setHighestZ(newZ);
+
+      let initialTitle = '';
+      let initialContent = '';
+      let initialBackContent = '';
+
+      if (e instanceof CustomEvent && e.detail) {
+        initialTitle = e.detail.title || '';
+        initialContent = e.detail.content || '';
+        initialBackContent = e.detail.backContent || '';
+      }
+
+      const savedPos = (() => { try { return JSON.parse(localStorage.getItem('last_note_pos') || 'null'); } catch { return null; } })();
+      const savedSize = (() => { try { return JSON.parse(localStorage.getItem('last_note_size') || 'null'); } catch { return null; } })();
+
+      let x = Math.max(100, window.innerWidth / 2 - 120 + (Math.random() * 40 - 20));
+      let y = Math.max(100, window.innerHeight / 2 - 120 + (Math.random() * 40 - 20));
+      if (savedPos) {
+        x = savedPos.x + (Math.random() * 20 - 10);
+        y = savedPos.y + (Math.random() * 20 - 10);
+      }
+
+      const nextNoteNumber = notes.length > 0 ? Math.max(0, ...notes.filter(n => n.noteNumber).map(n => n.noteNumber!)) + 1 : 1;
+
+      await addDoc(collection(db, 'users', user.uid, 'notes'), {
+        noteNumber: nextNoteNumber,
+        title: initialTitle,
+        content: initialContent,
+        backContent: initialBackContent,
+        isFlashcard: true,
+        color: COLORS[0],
+        x,
+        y,
+        w: savedSize?.w || 256,
+        h: savedSize?.h || 280,
+        zIndex: newZ,
+        isArchived: false,
+        createdAt: serverTimestamp()
+      });
+
+      awardPoints(2, 'create_note');
+    } catch (error) {
+      console.error("Erro ao adicionar flashcard:", error);
     }
   };
 
@@ -216,18 +370,31 @@ export default function StickyNotesManager() {
       
       if (savedSize) setCascadeSize(savedSize);
     }
-    setIsCascadeMode(!isCascadeMode);
+    const newMode = !isCascadeMode;
+    setIsCascadeMode(newMode);
+    if (user) {
+      setDoc(doc(db, 'users', user.uid, 'settings', 'stickyNotes'), { isCascadeMode: newMode }, { merge: true }).catch(console.error);
+    }
   };
 
   if (!user) return null;
 
   const activeNotes = notes.filter(n => !n.isArchived);
-  const allTags = Array.from(new Set(notes.map(n => n.subjectTag).filter(Boolean))) as string[];
+  
+  const tagsHierarchy = notes.reduce((acc, note) => {
+    if (note.subjectTag) {
+      if (!acc[note.subjectTag]) acc[note.subjectTag] = new Set<string>();
+      if (note.subTag) acc[note.subjectTag].add(note.subTag);
+    }
+    return acc;
+  }, {} as Record<string, Set<string>>);
+  
+  const allTags = Object.keys(tagsHierarchy);
 
   return (
     <>
       <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 9999 }}>
-        {activeNotes.map(note => (
+        {activeNotes.filter(n => !n.isFlashcard).map(note => (
           <StickyNoteItem 
             key={`${note.id}-${isCascadeMode ? 'cascade' : 'free'}`} 
             note={note} 
@@ -238,12 +405,39 @@ export default function StickyNotesManager() {
             onCascadeStop={(pos) => {
               setCascadePos(pos);
               localStorage.setItem('last_note_pos', JSON.stringify(pos));
+              if (user) {
+                setDoc(doc(db, 'users', user.uid, 'settings', 'stickyNotes'), { cascadePos: pos }, { merge: true }).catch(console.error);
+              }
             }}
             onUpdate={(updates) => handleUpdateNote(note.id, updates)}
+            onMinimizeAll={(minimize) => {
+              const activeNotes = notes.filter(n => !n.isArchived);
+              activeNotes.forEach(an => handleUpdateNote(an.id, { isMinimized: minimize }));
+            }}
             onFocus={() => bringToFront(note.id)}
             onSendToBack={() => sendToBack(note.id)}
             onToggleCascade={handleToggleCascade}
             allTags={allTags}
+            tagsHierarchy={tagsHierarchy}
+          />
+        ))}
+        {activeNotes.filter(n => n.isFlashcard).map(note => (
+          <FlashcardItem
+            key={`fc-${note.id}`}
+            note={note}
+            isCascadeMode={isCascadeMode}
+            cascadePos={cascadePos}
+            cascadeSize={cascadeSize}
+            onCascadeResize={(size) => setCascadeSize(size)}
+            onCascadeStop={(pos) => {
+              setCascadePos(pos);
+              localStorage.setItem('last_note_pos', JSON.stringify(pos));
+              if (user) {
+                setDoc(doc(db, 'users', user.uid, 'settings', 'stickyNotes'), { cascadePos: pos }, { merge: true }).catch(console.error);
+              }
+            }}
+            onUpdate={(updates) => handleUpdateNote(note.id, updates)}
+            onFocus={() => bringToFront(note.id)}
           />
         ))}
       </div>
@@ -251,14 +445,38 @@ export default function StickyNotesManager() {
       {isArchiveOpen && (
         <div className="fixed inset-0 pointer-events-none flex justify-end z-[10000]">
           <div className={`bg-white dark:bg-gray-800 shadow-2xl h-full w-[90%] sm:w-96 flex flex-col pointer-events-auto border-l border-gray-200 dark:border-gray-700 transition-all ${isDraggingFromSidebar ? 'overflow-visible' : 'overflow-hidden'}`}>
-            <div className="p-4 border-b bg-yellow-50 dark:bg-yellow-900/30 flex justify-between items-center z-10">
-              <h2 className="text-xl font-bold flex items-center gap-2 text-yellow-900 dark:text-yellow-100">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-                Meus Post-its
-              </h2>
+            <div className="p-4 border-b bg-yellow-50 dark:bg-yellow-900/30 flex flex-col gap-2 z-10">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-bold flex items-center gap-2 text-yellow-900 dark:text-yellow-100">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                  {sidebarTab === 'postits' ? 'Meus Post-its' : 'Meus Flashcards'}
+                </h2>
               <button onClick={() => setIsArchiveOpen(false)} className="text-gray-400 hover:text-gray-600 dark:text-gray-400">
                 <X className="w-6 h-6" />
               </button>
+              </div>
+              {/* Tabs */}
+              <div className="flex gap-1">
+                <button
+                  onClick={() => setSidebarTab('postits')}
+                  className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${sidebarTab === 'postits' ? 'bg-yellow-500 text-yellow-950 shadow-sm' : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300'}`}
+                >
+                  📝 Post-its
+                </button>
+                <button
+                  onClick={() => setSidebarTab('flashcards')}
+                  className={`flex-1 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${sidebarTab === 'flashcards' ? 'bg-indigo-500 text-white shadow-sm' : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300'}`}
+                >
+                  🔄 Flashcards
+                </button>
+                <button
+                  onClick={() => sidebarTab === 'flashcards' ? handleAddFlashcard() : handleAddNote()}
+                  className="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-500 text-white hover:bg-emerald-600 transition-all shadow-sm"
+                  title={sidebarTab === 'flashcards' ? 'Novo Flashcard' : 'Novo Post-it'}
+                >
+                  + Novo
+                </button>
+              </div>
             </div>
             <div className={`p-6 flex-1 bg-gray-50 dark:bg-gray-900 ${isDraggingFromSidebar ? 'overflow-visible' : 'overflow-y-auto'}`}>
               <div className="flex justify-between items-center mb-4">
@@ -268,6 +486,19 @@ export default function StickyNotesManager() {
                 >
                   <Layers className="w-4 h-4" />
                   {isCascadeMode ? 'Modo Cascata Ativo' : 'Modo Cascata'}
+                </button>
+                <button
+                  onClick={() => {
+                     const archivedNotes = notes.filter(n => n.isArchived);
+                     const recent = archivedNotes.slice(-3);
+                     recent.forEach(n => handleUpdateNote(n.id, { isArchived: false, isMinimized: false }));
+                     if (!isCascadeMode) handleToggleCascade();
+                     setIsArchiveOpen(false); // fechar sidebar após abrir
+                  }}
+                  className="px-4 py-2 rounded-lg font-bold text-sm bg-yellow-500 text-yellow-950 hover:bg-yellow-400 transition-all shadow-sm flex items-center gap-2"
+                  title="Reabrir últimos post-its fechados em modo cascata"
+                >
+                  <History className="w-4 h-4" /> Reabrir Últimos
                 </button>
               </div>
               {notes.length === 0 ? (
@@ -299,18 +530,41 @@ export default function StickyNotesManager() {
                       Sem Tags
                     </button>
                     {allTags.map(tag => (
-                      <button
-                        key={tag}
-                        onClick={() => setSelectedTag(tag)}
-                        className={`px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1 ${
-                          selectedTag === tag
-                            ? 'bg-indigo-600 text-white shadow-md'
-                            : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50'
-                        }`}
-                      >
-                        <Tag className="w-3 h-3" />
-                        {tag}
-                      </button>
+                      <div key={tag} className="flex flex-col gap-1 items-start">
+                        <button
+                          onClick={() => {
+                            setSelectedTag(tag);
+                            setSelectedSubTag(null);
+                          }}
+                          className={`px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1 ${
+                            selectedTag === tag
+                              ? 'bg-indigo-600 text-white shadow-md'
+                              : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50'
+                          }`}
+                        >
+                          <Tag className="w-3 h-3" />
+                          {tag}
+                        </button>
+                        
+                        {/* Subtags */}
+                        {selectedTag === tag && Array.from(tagsHierarchy[tag]).length > 0 && (
+                          <div className="flex flex-wrap gap-1 ml-4 mt-1 border-l-2 border-indigo-200 dark:border-indigo-800 pl-2">
+                            {Array.from(tagsHierarchy[tag]).map(subtag => (
+                              <button
+                                key={subtag}
+                                onClick={() => setSelectedSubTag(subtag)}
+                                className={`px-2 py-0.5 rounded-md text-[10px] font-semibold transition-all ${
+                                  selectedSubTag === subtag
+                                    ? 'bg-indigo-500 text-white shadow-sm'
+                                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-700'
+                                }`}
+                              >
+                                {subtag}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     ))}
                   </div>
 
@@ -366,6 +620,7 @@ function SidebarNoteItem({
   onDragEnd: () => void;
 }) {
   const nodeRef = useRef<HTMLDivElement>(null);
+  // const { awardPoints } = useReward();
 
   const [title, setTitle] = useState(note.title || '');
 
@@ -399,22 +654,36 @@ function SidebarNoteItem({
         }
       }}
     >
-      <div ref={nodeRef} className="rounded-lg shadow-md p-4 relative cursor-move border border-black/5" style={{ backgroundColor: note.color || '#fef08a' }}>
+      <div ref={nodeRef} className={`rounded-lg shadow-md p-4 relative cursor-move border ${note.isFlashcard ? 'border-indigo-400 border-t-4' : 'border-black/5'}`} style={{ backgroundColor: note.color || '#fef08a' }}>
+        {note.noteNumber && (
+          <div className={`absolute -top-2 -right-2 ${note.isFlashcard ? 'bg-indigo-100 border-indigo-400 text-indigo-900' : 'bg-yellow-100 border-yellow-400 text-yellow-900'} font-bold text-[10px] px-1.5 py-0.5 rounded shadow-sm z-10 flex items-center gap-0.5`}>
+            {note.isFlashcard ? '🔄' : '📌'} #{note.noteNumber}
+          </div>
+        )}
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Sem título"
+          placeholder={note.isFlashcard ? "Flashcard sem título" : "Sem título"}
           className="w-full bg-transparent outline-none font-bold text-gray-800 mb-1 placeholder-black/30 font-sans"
           onPointerDown={(e) => e.stopPropagation()} // Prevent drag when typing
           onTouchStart={(e) => e.stopPropagation()}
         />
-        <p className="text-sm text-gray-800 line-clamp-4 min-h-[60px] font-sans">
-          {note.content || <span className="italic opacity-50">Nota vazia</span>}
-        </p>
+        {note.content ? (
+          <div 
+            className="text-sm text-gray-800 line-clamp-4 min-h-[60px] font-sans"
+            dangerouslySetInnerHTML={{ __html: note.content }}
+          />
+        ) : (
+          <p className="text-sm text-gray-800 line-clamp-4 min-h-[60px] font-sans italic opacity-50">
+            {note.isFlashcard ? 'Flashcard vazio' : 'Nota vazia'}
+          </p>
+        )}
         <div className="flex gap-2 mt-4 justify-between border-t border-black/10 pt-2 items-center">
           <button 
-            onPointerDown={(e) => e.stopPropagation()} 
+            onPointerDown={(e) => {
+              e.stopPropagation();
+            }} 
             onClick={onDelete} 
             className="text-xs font-bold text-red-600 hover:text-red-800 bg-red-50 px-2 py-1 rounded"
           >
@@ -454,11 +723,13 @@ function StickyNoteItem({
   cascadeSize,
   onCascadeResize,
   onCascadeStop,
-  onUpdate, 
+  onUpdate,
+  onMinimizeAll,
   onFocus,
   onSendToBack,
   onToggleCascade,
-  allTags
+  allTags,
+  tagsHierarchy
 }: { 
   note: Note; 
   isCascadeMode: boolean;
@@ -466,15 +737,19 @@ function StickyNoteItem({
   cascadeSize?: {w: number, h: number};
   onCascadeResize?: (size: {w: number, h: number}) => void;
   onCascadeStop?: (pos: {x: number, y: number}) => void;
-  onUpdate: (u: Partial<Note>) => void; 
+  onUpdate: (u: Partial<Note>) => void;
+  onMinimizeAll?: (minimize: boolean) => void;
   onFocus: () => void;
   onSendToBack: () => void;
   onToggleCascade: () => void;
   allTags: string[];
+  tagsHierarchy?: Record<string, Set<string>>;
 }) {
+  // const { awardPoints } = useReward();
   const [showPalette, setShowPalette] = useState(false);
   const [showTagPicker, setShowTagPicker] = useState(false);
-  const [newTagInput, setNewTagInput] = useState('');
+  const [newTagInput, setNewTagInput] = useState(note.subjectTag || '');
+  const [newSubTagInput, setNewSubTagInput] = useState(note.subTag || '');
   
   const [savedColors, setSavedColors] = useState<string[]>(() => {
     try { return JSON.parse(localStorage.getItem('sticky_saved_colors') || '[]'); } catch { return []; }
@@ -587,51 +862,64 @@ function StickyNoteItem({
           localStorage.setItem('last_note_pos', JSON.stringify({ x: data.x, y: data.y }));
         }
       }}
-      onStart={onFocus}
+      onStart={() => {
+        onFocus();
+      }}
       bounds="parent"
+      cancel="button"
     >
       <div 
         ref={nodeRef}
         className={`sticky-note absolute rounded-lg shadow-xl overflow-hidden pointer-events-auto border-t-8 flex flex-col group transition-shadow hover:shadow-2xl ${isCascadeMode ? 'cascade-mode-item' : ''}`}
         style={{ 
           width: isCascadeMode && cascadeSize ? `${cascadeSize.w}px` : `${size.w}px`,
-          height: isCascadeMode && cascadeSize ? `${cascadeSize.h}px` : `${size.h}px`,
+          height: note.isMinimized ? '32px' : (isCascadeMode && cascadeSize ? `${cascadeSize.h}px` : `${size.h}px`),
           minWidth: '180px',
-          minHeight: '180px',
+          minHeight: note.isMinimized ? '32px' : '180px',
           backgroundColor: note.color || '#fef08a', 
           borderColor: darkenColor(note.color || '#fef08a', 20),
           zIndex: note.zIndex || 100 
         }}
         onClick={isCascadeMode ? undefined : onFocus}
+        onDoubleClick={() => {
+          if (isCascadeMode) {
+            onSendToBack();
+          }
+        }}
       >
         {/* Header (Drag Handle) */}
         <div 
           className="drag-handle h-8 bg-black/5 flex items-center justify-between px-2 cursor-grab active:cursor-grabbing"
-          onClick={(e) => {
-            if (isCascadeMode) {
-              const target = e.target as HTMLElement;
-              if (!target.closest('.color-picker-btn') && !target.closest('.close-btn')) {
-                onSendToBack();
-              }
-            }
-          }}
         >
-          <GripHorizontal className="w-4 h-4 text-black/30" />
+          <div className="flex items-center gap-2">
+            <GripHorizontal className="w-4 h-4 text-black/30" />
+            {note.noteNumber && (
+              <span className="text-xs font-semibold text-black/30">
+                #{note.noteNumber}
+              </span>
+            )}
+          </div>
           
           <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+            {isCascadeMode && (
+              <button 
+                onClick={(e) => { e.stopPropagation(); onSendToBack(); }}
+                className="cascade-next-btn p-1 flex items-center justify-center gap-1 text-xs font-bold text-gray-700 bg-black/5 hover:bg-black/10 rounded px-2 transition-colors"
+                title="Próximo post-it"
+              >
+                Próximo
+                <ChevronRight className="w-3.5 h-3.5 pointer-events-none" />
+              </button>
+            )}
             <button 
               onClick={(e) => { e.stopPropagation(); onToggleCascade(); }}
-              onTouchStart={(e) => { e.stopPropagation(); onToggleCascade(); }}
-              onPointerDown={(e) => e.stopPropagation()}
-              className={`p-1 hover:bg-black/10 rounded ${isCascadeMode ? 'bg-indigo-100 text-indigo-600' : 'text-gray-700'}`}
+              className={`p-1 hover:bg-black/10 rounded transition-colors ${isCascadeMode ? 'bg-black/10 text-gray-900' : 'text-gray-700'}`}
               title={isCascadeMode ? "Sair do Modo Cascata" : "Modo Cascata"}
             >
               <Layers className="w-3.5 h-3.5 pointer-events-none" />
             </button>
             <button 
               onClick={(e) => { e.stopPropagation(); setShowPalette(!showPalette); setShowTagPicker(false); }}
-              onTouchStart={(e) => { e.stopPropagation(); setShowPalette(!showPalette); setShowTagPicker(false); }}
-              onPointerDown={(e) => e.stopPropagation()}
               className="color-picker-btn p-1 hover:bg-black/10 rounded"
               title="Mudar Cor"
             >
@@ -639,27 +927,43 @@ function StickyNoteItem({
             </button>
             <button 
               onClick={(e) => { e.stopPropagation(); setShowTagPicker(!showTagPicker); setShowPalette(false); }}
-              onTouchStart={(e) => { e.stopPropagation(); setShowTagPicker(!showTagPicker); setShowPalette(false); }}
-              onPointerDown={(e) => e.stopPropagation()}
               className="tag-picker-btn p-1 hover:bg-black/10 rounded"
               title="Atribuir Tag"
             >
               <Tag className="w-3.5 h-3.5 text-gray-700 pointer-events-none" />
             </button>
             <button 
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                if (isCascadeMode && onMinimizeAll) {
+                  onMinimizeAll(!note.isMinimized);
+                } else {
+                  onUpdate({ isMinimized: !note.isMinimized });
+                }
+              }}
+              className="minimize-btn p-1 hover:bg-black/10 rounded"
+              title={note.isMinimized ? "Maximizar" : "Minimizar"}
+            >
+              {note.isMinimized ? (
+                <ChevronDown className="w-4 h-4 text-gray-700 pointer-events-none" />
+              ) : (
+                <ChevronUp className="w-4 h-4 text-gray-700 pointer-events-none" />
+              )}
+            </button>
+            <button 
               onClick={(e) => { e.stopPropagation(); onUpdate({ isArchived: true }); }}
-              onTouchStart={(e) => { e.stopPropagation(); onUpdate({ isArchived: true }); }}
-              onPointerDown={(e) => e.stopPropagation()}
-              className="close-btn p-1 hover:bg-black/10 rounded"
+              className="close-btn p-2 -mr-1 hover:bg-black/10 rounded"
               title="Fechar (Guardar)"
             >
-              <X className="w-4 h-4 text-gray-700" />
+              <X className="w-4 h-4 text-gray-700 pointer-events-none" />
             </button>
           </div>
         </div>
 
-        {/* Color Palette Popover */}
-        {showPalette && (
+        {!note.isMinimized && (
+          <>
+            {/* Color Palette Popover */}
+            {showPalette && (
           <div className="flex flex-col gap-2 p-2 bg-white dark:bg-gray-800/95 backdrop-blur border-b border-black/10 rounded-b-lg">
             <div className="flex gap-1 justify-center items-center">
               {COLORS.map(c => (
@@ -742,70 +1046,97 @@ function StickyNoteItem({
 
         {/* Tag Picker Popover */}
         {showTagPicker && (
-          <div className="flex flex-col gap-2 p-3 bg-white dark:bg-gray-800/95 backdrop-blur border-b border-black/10 rounded-b-lg text-sm max-h-48 overflow-y-auto">
-            <div className="flex items-center gap-2">
-              <input 
-                type="text"
-                value={newTagInput}
-                onChange={(e) => setNewTagInput(e.target.value)}
-                placeholder="Nova tag..."
-                className="flex-1 bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-indigo-500"
-                onPointerDown={(e) => e.stopPropagation()}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && newTagInput.trim()) {
-                    onUpdate({ subjectTag: newTagInput.trim() });
-                    setNewTagInput('');
-                    setShowTagPicker(false);
-                  }
-                }}
-              />
+          <div className="flex flex-col gap-3 p-3 bg-white dark:bg-gray-800/95 backdrop-blur border-b border-black/10 rounded-b-lg text-sm z-50 shadow-xl">
+            <div className="flex flex-col gap-2">
+              <div>
+                <label className="text-[10px] font-bold text-gray-500 uppercase">Matéria (Tag Principal)</label>
+                <input 
+                  type="text"
+                  value={newTagInput}
+                  onChange={(e) => setNewTagInput(e.target.value)}
+                  placeholder="Ex: Português"
+                  className="w-full bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-indigo-500"
+                  onPointerDown={(e) => e.stopPropagation()}
+                />
+              </div>
+              
+              <div>
+                <label className="text-[10px] font-bold text-gray-500 uppercase">Assunto (Subtag)</label>
+                <input 
+                  type="text"
+                  value={newSubTagInput}
+                  onChange={(e) => setNewSubTagInput(e.target.value)}
+                  placeholder="Ex: Gramática"
+                  className="w-full bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-indigo-500"
+                  onPointerDown={(e) => e.stopPropagation()}
+                />
+              </div>
+
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (newTagInput.trim()) {
-                    onUpdate({ subjectTag: newTagInput.trim() });
-                    setNewTagInput('');
-                    setShowTagPicker(false);
-                  }
+                  onUpdate({ 
+                    subjectTag: newTagInput.trim() || '',
+                    subTag: newSubTagInput.trim() || ''
+                  });
+                  setShowTagPicker(false);
                 }}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white p-1 rounded transition-colors"
-                title="Criar Tag"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 rounded transition-colors font-bold text-xs mt-1 shadow-sm"
               >
-                <PlusCircle className="w-4 h-4" />
+                Salvar Tags
               </button>
             </div>
             
-            <div className="flex flex-wrap gap-1 mt-1">
+            <div className="flex flex-col gap-1 mt-1 max-h-32 overflow-y-auto">
+              <span className="text-[10px] font-bold text-gray-500 uppercase">Tags Existentes</span>
               {allTags.length > 0 ? allTags.map(tag => (
-                <button
-                  key={tag}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onUpdate({ subjectTag: tag });
-                    setShowTagPicker(false);
-                  }}
-                  className={`px-2 py-0.5 rounded-full text-[10px] font-bold border transition-colors ${
-                    note.subjectTag === tag 
-                      ? 'bg-indigo-600 text-white border-indigo-600' 
-                      : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  {tag}
-                </button>
+                <div key={tag} className="flex flex-col gap-1 items-start">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setNewTagInput(tag);
+                    }}
+                    className={`px-2 py-0.5 rounded-md text-[10px] font-bold border transition-colors ${
+                      newTagInput === tag 
+                        ? 'bg-indigo-100 text-indigo-700 border-indigo-300 dark:bg-indigo-900/40 dark:text-indigo-300' 
+                        : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600'
+                    }`}
+                  >
+                    {tag}
+                  </button>
+                  {tagsHierarchy && tagsHierarchy[tag] && newTagInput === tag && Array.from<string>(tagsHierarchy[tag]).map((subtag: string) => (
+                    <button
+                      key={subtag}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setNewSubTagInput(subtag);
+                      }}
+                      className={`ml-3 px-2 py-0.5 rounded-md text-[9px] font-semibold border transition-colors ${
+                        newSubTagInput === subtag
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400'
+                          : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700'
+                      }`}
+                    >
+                      {subtag}
+                    </button>
+                  ))}
+                </div>
               )) : (
                 <span className="text-[10px] text-gray-500 italic">Nenhuma tag existente.</span>
               )}
             </div>
-            {note.subjectTag && (
+            {(note.subjectTag || note.subTag) && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onUpdate({ subjectTag: '' }); // or null, depending on DB schema, let's use empty string so it becomes falsy
+                  onUpdate({ subjectTag: '', subTag: '' });
+                  setNewTagInput('');
+                  setNewSubTagInput('');
                   setShowTagPicker(false);
                 }}
                 className="text-[10px] text-red-500 hover:text-red-700 font-bold self-start mt-1"
               >
-                Remover Tag Atual
+                Remover Tags Atuais
               </button>
             )}
           </div>
@@ -825,21 +1156,24 @@ function StickyNoteItem({
           />
         </div>
 
-        {/* Text Area */}
-        <textarea
-          value={content}
-          onChange={(e) => {
-            let val = e.target.value;
-            // Conversões rápidas para atalhos do teclado
-            val = val.replace(/(^|\n)- /g, '$1• ');
-            val = val.replace(/->/g, '→');
-            val = val.replace(/=>/g, '⇒');
-            setContent(val);
+        {/* Rich Text Toolbar */}
+        <RichTextToolbar />
+
+        {/* Editable Content */}
+        <div
+          contentEditable
+          suppressContentEditableWarning
+          data-placeholder="Escreva algo..."
+          className="note-editable w-full flex-grow p-3 text-gray-800 font-medium"
+          style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}
+          onInput={(e) => {
+            const html = (e.target as HTMLDivElement).innerHTML;
+            setContent(html);
           }}
           onFocus={onFocus}
-          placeholder="Escreva algo..."
-          className="w-full flex-grow min-h-[80px] p-3 bg-transparent resize-none outline-none placeholder-black/30 text-gray-800 font-medium"
-          style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }} // Post-it feel
+          onPointerDown={(e) => e.stopPropagation()}
+          onTouchStart={(e) => e.stopPropagation()}
+          dangerouslySetInnerHTML={{ __html: content }}
         />
 
         {/* Custom Resize Handle - large touch target */}
@@ -857,6 +1191,8 @@ function StickyNoteItem({
             <line x1="14" y1="12" x2="12" y2="14" stroke="currentColor" strokeWidth="1.5" />
           </svg>
         </div>
+          </>
+        )}
       </div>
     </Draggable>
   );
@@ -933,4 +1269,265 @@ function getRandomHexColor(type: 'pastel' | 'vibrant' | 'neon'): string {
   }
   
   return '#fef08a';
+}
+
+// Rich Text Mini-Toolbar Component
+function RichTextToolbar() {
+  const exec = (cmd: string) => {
+    document.execCommand(cmd, false);
+  };
+  return (
+    <div className="rich-toolbar" onPointerDown={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()}>
+      <button onClick={() => exec('bold')} title="Negrito (Ctrl+B)"><b>B</b></button>
+      <button onClick={() => exec('italic')} title="Itálico (Ctrl+I)"><i>I</i></button>
+      <button onClick={() => exec('underline')} title="Sublinhado (Ctrl+U)"><u>U</u></button>
+      <button onClick={() => exec('strikeThrough')} title="Tachado"><s>S</s></button>
+    </div>
+  );
+}
+
+// FlashcardItem Component
+function FlashcardItem({
+  note,
+  isCascadeMode,
+  cascadePos,
+  cascadeSize,
+  onCascadeResize,
+  onCascadeStop,
+  onUpdate,
+  onFocus
+}: {
+  note: Note;
+  isCascadeMode: boolean;
+  cascadePos?: {x: number, y: number};
+  cascadeSize?: {w: number, h: number};
+  onCascadeResize?: (size: {w: number, h: number}) => void;
+  onCascadeStop?: (pos: {x: number, y: number}) => void;
+  onUpdate: (u: Partial<Note>) => void;
+  onFocus: () => void;
+}) {
+  const nodeRef = useRef<HTMLDivElement>(null);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [showPalette, setShowPalette] = useState(false);
+  const [title, setTitle] = useState(note.title || '');
+  const [content, setContent] = useState(note.content || '');
+  const [backContent, setBackContent] = useState(note.backContent || '');
+  const [size, setSize] = useState({ w: note.w || 256, h: note.h || 280 });
+  const resizeRef = useRef<{ startX: number; startY: number; startW: number; startH: number } | null>(null);
+
+  // Debounce saves
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      const updates: Partial<Note> = {};
+      if (content !== note.content) updates.content = content;
+      if (backContent !== note.backContent) updates.backContent = backContent;
+      if (title !== note.title) updates.title = title;
+      if (Object.keys(updates).length > 0) onUpdate(updates);
+    }, 1000);
+    return () => clearTimeout(timeoutId);
+  }, [content, backContent, title]);
+
+  const onResizeStart = (e: React.PointerEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    resizeRef.current = { startX: e.clientX, startY: e.clientY, startW: size.w, startH: size.h };
+  };
+
+  const onResizeMove = (e: React.PointerEvent) => {
+    if (!resizeRef.current) return;
+    e.preventDefault();
+    const dx = e.clientX - resizeRef.current.startX;
+    const dy = e.clientY - resizeRef.current.startY;
+    const newW = Math.max(180, resizeRef.current.startW + dx);
+    const newH = Math.max(200, resizeRef.current.startH + dy);
+    if (isCascadeMode && onCascadeResize) onCascadeResize({ w: newW, h: newH });
+    else setSize({ w: newW, h: newH });
+  };
+
+  const onResizeEnd = (e: React.PointerEvent) => {
+    resizeRef.current = null;
+    (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    if (!isCascadeMode) {
+      onUpdate({ w: size.w, h: size.h });
+      localStorage.setItem('last_note_size', JSON.stringify(size));
+    }
+  };
+
+  const backColor = darkenColor(note.color || '#fef08a', 25);
+  const currentW = isCascadeMode && cascadeSize ? cascadeSize.w : size.w;
+  const currentH = isCascadeMode && cascadeSize ? cascadeSize.h : size.h;
+
+  return (
+    <Draggable
+      nodeRef={nodeRef}
+      handle=".drag-handle"
+      defaultPosition={isCascadeMode && cascadePos ? cascadePos : { x: note.x || 0, y: note.y || 0 }}
+      onStop={(_e, data) => {
+        if (isCascadeMode) onCascadeStop?.({ x: data.x, y: data.y });
+        else {
+          onUpdate({ x: data.x, y: data.y });
+          localStorage.setItem('last_note_pos', JSON.stringify({ x: data.x, y: data.y }));
+        }
+      }}
+      onStart={() => onFocus()}
+      bounds="parent"
+      cancel="button"
+    >
+      <div
+        ref={nodeRef}
+        className="sticky-note absolute rounded-lg shadow-xl pointer-events-auto border-t-4 flashcard-container group transition-shadow hover:shadow-2xl"
+        style={{
+          width: `${currentW}px`,
+          height: `${currentH}px`,
+          minWidth: '180px',
+          minHeight: '200px',
+          borderColor: darkenColor(note.color || '#fef08a', 20),
+          zIndex: note.zIndex || 100
+        }}
+        onClick={onFocus}
+      >
+        <div className={`flashcard-inner ${isFlipped ? 'flipped' : ''}`}>
+          {/* FRONT */}
+          <div className="flashcard-front rounded-lg overflow-hidden" style={{ backgroundColor: note.color || '#fef08a' }}>
+            {/* Header */}
+            <div className="drag-handle h-8 bg-black/5 flex items-center justify-between px-2 cursor-grab active:cursor-grabbing">
+              <div className="flex items-center gap-2">
+                <GripHorizontal className="w-4 h-4 text-black/30" />
+                <span className="text-[10px] font-bold text-indigo-600/60">FLASHCARD</span>
+                {note.noteNumber && <span className="text-xs font-semibold text-black/30">#{note.noteNumber}</span>}
+              </div>
+              <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={(e) => { e.stopPropagation(); setIsFlipped(true); }}
+                  className="p-1 hover:bg-black/10 rounded transition-colors text-indigo-600"
+                  title="Virar para o verso"
+                >
+                  <RotateCcw className="w-3.5 h-3.5 pointer-events-none" />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); setShowPalette(!showPalette); }}
+                  className="p-1 hover:bg-black/10 rounded"
+                  title="Mudar Cor"
+                >
+                  <Palette className="w-3.5 h-3.5 text-gray-700 pointer-events-none" />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onUpdate({ isArchived: true }); }}
+                  className="p-2 -mr-1 hover:bg-black/10 rounded"
+                  title="Fechar"
+                >
+                  <X className="w-4 h-4 text-gray-700 pointer-events-none" />
+                </button>
+              </div>
+            </div>
+
+            {/* Color Palette */}
+            {showPalette && (
+              <div className="flex gap-1 p-2 bg-white/80 backdrop-blur border-b border-black/10 justify-center flex-wrap">
+                {COLORS.map(c => (
+                  <button key={c} onClick={(e) => { e.stopPropagation(); onUpdate({ color: c }); setShowPalette(false); }}
+                    className={`w-6 h-6 rounded-full shadow-inner border-2 ${note.color === c ? 'border-gray-800' : 'border-transparent'}`}
+                    style={{ backgroundColor: c }}
+                  />
+                ))}
+                <button onClick={(e) => { e.stopPropagation(); onUpdate({ color: getRandomHexColor('pastel') }); }}
+                  className="text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-gray-200 bg-white hover:bg-gray-50 text-gray-600"
+                >Pastel</button>
+              </div>
+            )}
+
+            {/* Title */}
+            <div className="bg-black/5 border-b border-black/10">
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                onFocus={onFocus}
+                onPointerDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
+                placeholder="Pergunta / Frente..."
+                className="w-full px-3 py-1 bg-transparent outline-none font-bold text-gray-800 placeholder-black/40 text-sm font-sans"
+              />
+            </div>
+
+            <RichTextToolbar />
+
+            {/* Front Content */}
+            <div
+              contentEditable
+              suppressContentEditableWarning
+              data-placeholder="Escreva a pergunta..."
+              className="note-editable w-full flex-grow p-3 text-gray-800 font-medium overflow-y-auto"
+              style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}
+              onInput={(e) => setContent((e.target as HTMLDivElement).innerHTML)}
+              onFocus={onFocus}
+              onPointerDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+              dangerouslySetInnerHTML={{ __html: content }}
+            />
+          </div>
+
+          {/* BACK */}
+          <div className="flashcard-back rounded-lg overflow-hidden" style={{ backgroundColor: backColor }}>
+            {/* Header */}
+            <div className="drag-handle h-8 bg-black/5 flex items-center justify-between px-2 cursor-grab active:cursor-grabbing">
+              <div className="flex items-center gap-2">
+                <GripHorizontal className="w-4 h-4 text-black/30" />
+                <span className="text-[10px] font-bold text-indigo-600/60">VERSO</span>
+                {note.noteNumber && <span className="text-xs font-semibold text-black/30">#{note.noteNumber}</span>}
+              </div>
+              <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={(e) => { e.stopPropagation(); setIsFlipped(false); }}
+                  className="p-1 hover:bg-black/10 rounded transition-colors text-indigo-600"
+                  title="Virar para a frente"
+                >
+                  <RotateCcw className="w-3.5 h-3.5 pointer-events-none" />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onUpdate({ isArchived: true }); }}
+                  className="p-2 -mr-1 hover:bg-black/10 rounded"
+                  title="Fechar"
+                >
+                  <X className="w-4 h-4 text-gray-700 pointer-events-none" />
+                </button>
+              </div>
+            </div>
+
+            <RichTextToolbar />
+
+            {/* Back Content */}
+            <div
+              contentEditable
+              suppressContentEditableWarning
+              data-placeholder="Escreva a resposta..."
+              className="note-editable w-full flex-grow p-3 text-gray-800 font-medium overflow-y-auto"
+              style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}
+              onInput={(e) => setBackContent((e.target as HTMLDivElement).innerHTML)}
+              onFocus={onFocus}
+              onPointerDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+              dangerouslySetInnerHTML={{ __html: backContent }}
+            />
+          </div>
+        </div>
+
+        {/* Resize Handle */}
+        <div
+          onPointerDown={onResizeStart}
+          onPointerMove={onResizeMove}
+          onPointerUp={onResizeEnd}
+          onPointerCancel={onResizeEnd}
+          className="absolute bottom-0 right-0 w-10 h-10 cursor-se-resize touch-none flex items-end justify-end z-50"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" className="mr-1 mb-1 opacity-40">
+            <line x1="14" y1="2" x2="2" y2="14" stroke="currentColor" strokeWidth="1.5" />
+            <line x1="14" y1="7" x2="7" y2="14" stroke="currentColor" strokeWidth="1.5" />
+            <line x1="14" y1="12" x2="12" y2="14" stroke="currentColor" strokeWidth="1.5" />
+          </svg>
+        </div>
+      </div>
+    </Draggable>
+  );
 }

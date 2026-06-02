@@ -100,7 +100,7 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
       {/* Floating button */}
       <button
         onClick={() => setOpen(!open)}
-        className={`fixed right-[6.25rem] bottom-6 z-[999] w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 ${
+        className={`fixed right-[6.25rem] bottom-6 z-[10005] w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110 ${
           todayAllDone
             ? 'bg-green-500 hover:bg-green-600'
             : todayBlocks.length > 0
@@ -119,7 +119,7 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
 
       {/* Sidebar panel */}
       {open && (
-        <div className="fixed right-4 bottom-[5.5rem] z-[999] w-80 max-h-[60vh] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col">
+        <div className="fixed right-4 bottom-[5.5rem] z-[10005] w-80 max-h-[60vh] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
             <div>

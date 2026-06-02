@@ -124,7 +124,7 @@ export default function ErrorReportModal({ errorMessage, onClose }: ErrorReportM
 
   if (sent) {
     return (
-      <div id="error-report-modal-overlay" className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+      <div id="error-report-modal-overlay" className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[10006] p-4">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-8 text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Reporte enviado!</h2>
@@ -138,7 +138,7 @@ export default function ErrorReportModal({ errorMessage, onClose }: ErrorReportM
   }
 
   return (
-    <div id="error-report-modal-overlay" className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+    <div id="error-report-modal-overlay" className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[10006] p-4">
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="p-6 border-b bg-red-50 rounded-t-2xl">

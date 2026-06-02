@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { ENEM_AREAS, isLawSubject } from './constants';
+import { ENEM_AREAS, isLawSubject, subjectsGeral } from './constants';
 
 /**
  * Sanitiza uma string JSON mal formatada (com backslashes literais, como LaTeX ou caminhos) antes de fazer o parse.
@@ -323,7 +323,27 @@ export const formatTextToPostIt = async (text: string, apiKey: string, contextPr
     if (!apiKey) throw new Error("Chave de API não configurada.");
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    const prompt = `${contextPromptSuffix ? `Instrução do Sistema: Você é um assistente focado em resumir informações cruciais em formatos curtos para post-its. ${contextPromptSuffix}\n\n` : ''}Atue como um estudante de alta performance. Crie um resumo conciso (estilo post-it de parede) a partir do seguinte texto:\n"${text}"\n\nRegras:\n1. Resuma as informações principais em tópicos (bullet points) usando o caractere "•".\n2. Seja MUITO visual, objetivo e didático. Se necessário, use "→" ou "⇒" para conectar ideias.\n3. Crie um Título curto e chamativo para o post-it na PRIMEIRA LINHA.\n4. O título DEVE estar na primeira linha e NÃO deve ter marcadores.\n5. O restante do texto (os tópicos) deve vir a partir da segunda linha.\n6. ABSOLUTAMENTE NENHUMA formatação Markdown (NÃO use ** para negrito ou * para itálico) em NENHUM lugar. O sistema de post-it só aceita texto puro.\n\nRetorne SOMENTE o título na linha 1 e o resumo na linha 2 em diante. Nada mais.`;
+    const prompt = `${contextPromptSuffix ? `Instrução do Sistema: Você é um assistente focado em resumir informações cruciais em formatos curtos para post-its. ${contextPromptSuffix}\n\n` : ''}Atue como um estudante de alta performance. Crie um resumo conciso e VISUALMENTE BONITO (estilo post-it de parede) a partir do seguinte texto:
+"${text}"
+
+Regras OBRIGATÓRIAS:
+1. PRIMEIRA LINHA: Um título curto e chamativo seguido de um emoji relevante (ex: "Advérbios: O Toque Mágico! ✨"). SEM marcadores no título.
+2. LINHAS SEGUINTES: Organize as informações em tópicos usando "•" como marcador.
+3. Use emojis temáticos (📍🕐💪✅❌🤔⇒→) para tornar o post-it visualmente rico e fácil de escanear.
+4. Destaque PALAVRAS-CHAVE em MAIÚSCULAS quando apropriado.
+5. Use "⇒" ou "→" para conectar causa/consequência ou explicações complementares.
+6. Se o texto tiver categorias/tipos, organize como subtópicos com "  •" (indentado).
+7. Seja EXTREMAMENTE conciso — cada tópico deve ter no máximo 1 linha.
+8. PROIBIDO: Markdown (**, *, #, etc). Apenas texto puro com emojis e marcadores "•".
+
+Exemplo de formato ideal:
+Tipos de Verbos 📝
+• AÇÃO 🏃: Correr, pular, estudar
+• ESTADO 😌: Ser, estar, parecer
+• LIGAÇÃO 🔗: Conecta sujeito ao predicativo
+  ⇒ Ex: "Ela PARECE feliz"
+
+Retorne SOMENTE o post-it. Nada mais.`;
     
     const modelConfig: any = {
         model: 'gemini-2.5-flash',
@@ -333,9 +353,24 @@ export const formatTextToPostIt = async (text: string, apiKey: string, contextPr
     };
 
     const model = genAI.getGenerativeModel(modelConfig);
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const textResp = response.text().trim();
+    
+    let textResp = '';
+    const maxRetries = 3;
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        textResp = response.text().trim();
+        break;
+      } catch (retryError: any) {
+        const is503 = retryError?.message?.includes('503') || retryError?.status === 503;
+        if (is503 && attempt < maxRetries - 1) {
+          await new Promise(r => setTimeout(r, (attempt + 1) * 2000));
+          continue;
+        }
+        throw retryError;
+      }
+    }
     
     const lines = textResp.split('\n');
     const title = lines[0].replace(/\*\*/g, '').replace(/#/g, '').trim();
@@ -344,23 +379,13 @@ export const formatTextToPostIt = async (text: string, apiKey: string, contextPr
     return { title, content };
 };
 
-export const generateNoteTag = async (content: string, title: string, apiKey: string): Promise<string> => {
+export const generateNoteTag = async (content: string, title: string, apiKey: string): Promise<{tag: string, subtag: string}> => {
     if (!apiKey) throw new Error("Chave de API não configurada.");
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    const prompt = `Analise o seguinte post-it:\n\nTítulo: "${title}"\nConteúdo: "${content}"\n\nRegras:\n1. Responda APENAS com o nome da matéria (Ex: "Português", "Direito Administrativo", "Raciocínio Lógico", "Matemática", "Constitucional").\n2. Seja sucinto (máximo de 3 palavras).\n3. Se não conseguir identificar, responda "Geral".\n4. Retorne APENAS o texto da tag, sem aspas, sem formatação JSON, sem introdução.`;
+    const prompt = `Analise o seguinte post-it:\n\nTítulo: "${title}"\nConteúdo: "${content}"\n\nRegras:\n1. Identifique a Matéria principal. Você DEVE priorizar dar o match exato com uma das seguintes matérias oficiais do aplicativo: ${subjectsGeral.join(', ')}. Se nenhuma se encaixar perfeitamente, use nomes abrangentes padrão. Se não conseguir identificar, use "Geral".\n2. Identifique o Tópico ou Assunto Específico (ex: "Crase", "Licitações", "Porcentagem"). Seja sucinto.\n\nA resposta DEVE ser estritamente um objeto JSON com o formato:\n{"tag": "Nome da Matéria", "subtag": "Nome do Tópico"}`;
     
-    const modelConfig: any = {
-        model: 'gemini-2.5-flash',
-        generationConfig: {
-            temperature: 0.1, 
-        }
-    };
-
-    const model = genAI.getGenerativeModel(modelConfig);
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    return response.text().trim();
+    return await callGemini(genAI, prompt, false, 'gemini-2.5-flash');
 };
 
 export async function suggestVideoSearches(subject: string, topic: string, apiKey: string, modelName: string = 'gemini-2.5-flash') {

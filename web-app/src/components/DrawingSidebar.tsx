@@ -39,7 +39,10 @@ export default function DrawingSidebar({
             <button onClick={() => setTool('pointer')} className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${tool === 'pointer' ? 'bg-indigo-50 text-indigo-600 ring-2 ring-indigo-400' : 'bg-white/90 shadow-sm text-gray-500 hover:text-indigo-600'}`} title="Mouse">
               <MousePointer2 className="w-4 h-4" />
             </button>
-            <button onClick={() => {}} className="w-8 h-8 rounded-full flex items-center justify-center opacity-0 pointer-events-none" />
+            {/* Sticker Tool */}
+            <button onClick={() => setTool('sticker')} className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${tool === 'sticker' ? 'bg-yellow-50 text-yellow-600 ring-2 ring-yellow-400' : 'bg-white/90 shadow-sm text-gray-500 hover:text-yellow-600'}`} title="Linkar Post-it">
+              <span className="text-lg">📌</span>
+            </button>
 
             {/* Undo / Redo */}
             <button onClick={handleUndo} disabled={strokes?.length === 0} className="w-8 h-8 rounded-full bg-white/90 shadow-sm flex items-center justify-center text-gray-500 hover:text-indigo-600 disabled:opacity-30"><Undo2 className="w-4 h-4" /></button>

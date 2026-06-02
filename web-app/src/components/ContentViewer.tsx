@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { themes, defaultTheme } from '../lib/constants';
+import DockableWrapper, { DockMenuButton } from './DockableWrapper';
 
 interface ContentViewerProps {
   type: 'lesson' | 'quiz' | 'flashcard';
@@ -97,26 +98,30 @@ export default function ContentViewer({ type, content, onBack }: ContentViewerPr
   };
 
   return (
-    <div ref={contentRef} className={`max-w-4xl mx-auto p-6 rounded-xl shadow-lg relative ${theme.cardFront} text-gray-900 dark:text-gray-100`}>
-      {tooltip.visible && (
-        <div 
-          ref={tooltipRef}
-          className="absolute bg-gray-800 text-white p-3 rounded shadow-lg text-sm z-50 max-w-xs"
-          style={{ top: tooltip.top, left: tooltip.left, transform: 'translate(-50%, -100%)', marginTop: '-8px' }}
-        >
-          {tooltip.content}
-          <div className="absolute left-1/2 bottom-[-6px] -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-gray-800"></div>
-        </div>
-      )}
+    <DockableWrapper>
+      <div ref={contentRef} className={`max-w-4xl mx-auto p-6 rounded-xl shadow-lg relative ${theme.cardFront} text-gray-900 dark:text-gray-100`}>
+        {tooltip.visible && (
+          <div 
+            ref={tooltipRef}
+            className="absolute bg-gray-800 text-white p-3 rounded shadow-lg text-sm z-50 max-w-xs"
+            style={{ top: tooltip.top, left: tooltip.left, transform: 'translate(-50%, -100%)', marginTop: '-8px' }}
+          >
+            {tooltip.content}
+            <div className="absolute left-1/2 bottom-[-6px] -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-gray-800"></div>
+          </div>
+        )}
 
-      <div className="flex justify-between items-center mb-6">
-        <button onClick={onBack} className="text-sm bg-black/5 p-2 rounded-lg hover:bg-black/10 transition-colors">
-          ← Voltar para Meus Salvamentos
-        </button>
-        <div className="text-sm opacity-70">
-          {content.subject} - {content.topic}
+        <div className="flex justify-between items-center mb-6">
+          <button onClick={onBack} className="text-sm bg-black/5 p-2 rounded-lg hover:bg-black/10 transition-colors">
+            ← Voltar para Meus Salvamentos
+          </button>
+          <div className="flex items-center gap-4">
+            <DockMenuButton />
+            <div className="text-sm opacity-70">
+              {content.subject} - {content.topic}
+            </div>
+          </div>
         </div>
-      </div>
 
       {type === 'lesson' && data && (
         <>
@@ -178,6 +183,7 @@ export default function ContentViewer({ type, content, onBack }: ContentViewerPr
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </DockableWrapper>
   );
 }

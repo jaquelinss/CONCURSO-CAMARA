@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { db } from '../lib/firebase';
 import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
+import { useReward } from '../contexts/RewardContext';
 import { CheckCircle, RotateCcw, Calendar, Clock, BookOpen, Trash2, ChevronDown, ChevronUp, Trophy, CirclePlay, Link, X, Sparkles, Search, Loader2, Undo2 } from 'lucide-react';
 import { suggestVideoSearches, suggestRescheduleDate } from '../lib/gemini';
 import { format, isToday, isBefore, startOfDay, parseISO } from 'date-fns';
@@ -14,6 +15,7 @@ interface StudyPlanViewProps {
 
 export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
   const { user, apiKey } = useAuth();
+  const { awardPoints } = useReward();
   const [expandedDay, setExpandedDay] = useState<string | null>(null);
   const [updating, setUpdating] = useState<string | null>(null);
   const [editingYoutube, setEditingYoutube] = useState<string | null>(null);
@@ -123,6 +125,10 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
       await updateDoc(planRef, { schedule: newSchedule });
       plan.schedule = newSchedule;
       onUpdate();
+      
+      if (newStatus === 'completed') {
+        awardPoints(10, 'complete_task');
+      }
     } catch (err) {
       console.error('Erro ao atualizar:', err);
     } finally {

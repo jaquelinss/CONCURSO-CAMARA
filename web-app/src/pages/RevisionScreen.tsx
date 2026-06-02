@@ -702,13 +702,26 @@ function RevisionCard({ revision, onAction, onLink, onReschedule, onUpdate }: { 
           </button>
         )}
 
-        {canReschedule && (
+        {canReschedule ? (
           <button
             onClick={() => onReschedule(revision)}
-            className="w-full py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:from-green-600 hover:to-emerald-700 transition-all active:scale-95 shadow-md animate-fade-in"
+            className="w-full py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:from-green-600 hover:to-emerald-700 transition-all active:scale-95 shadow-md animate-fade-in mt-2"
           >
             <RefreshCw className="w-4 h-4" />
             Reagendar Revisão
+          </button>
+        ) : (
+          <button
+            onClick={() => {
+              if (window.confirm("Deseja marcar esta revisão como concluída manualmente?")) {
+                onReschedule(revision);
+              }
+            }}
+            className="w-full py-2.5 bg-gray-100 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-900/30 dark:hover:text-emerald-400 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-95 border border-transparent hover:border-emerald-200 dark:hover:border-emerald-800 mt-2"
+            title="Concluir revisão sem fazer os exercícios vinculados"
+          >
+            <CheckCircle className="w-4 h-4" />
+            Marcar como Concluída
           </button>
         )}
       </div>
