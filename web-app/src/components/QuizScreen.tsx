@@ -802,6 +802,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
   const handleAskEssayDoubt = async (proposal: any) => {
     if (!essayDoubt || !proposal || !apiKey) return;
     setIsAskingEssayDoubt(true);
+    awardPoints(2, 'ask_doubt');
     setEssayDoubtResponse("");
 
     const doubtPrompt = `Você é um professor de redação especialista no modelo ENEM. Com base na proposta de redação (Tema: "${proposal.tema || proposal.frase_tema}"), responda à seguinte dúvida do aluno de forma clara e didática: "${essayDoubt}". Formate sua resposta usando HTML para melhor legibilidade (<p>, <strong>, <ul>, <li>). Não inclua tags <html>, <head> ou <body>.`;

@@ -130,7 +130,7 @@ export default function Navigation() {
             {/* Ferramentas de estudo */}
             <button
               onClick={() => window.dispatchEvent(new Event('toggle-archive'))}
-              className="p-2 rounded-lg text-yellow-500 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/30 transition-colors"
+              className="hidden sm:block p-2 rounded-lg text-yellow-500 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/30 transition-colors"
               title="Meus Post-its (Ctrl+Shift+P)"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -140,7 +140,7 @@ export default function Navigation() {
 
             <button
               onClick={() => window.dispatchEvent(new Event('add-note'))}
-              className="p-2 rounded-lg text-yellow-600 dark:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/30 transition-colors"
+              className="hidden sm:block p-2 rounded-lg text-yellow-600 dark:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/30 transition-colors"
               title="Novo Post-it (Ctrl+Shift+N)"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -150,7 +150,7 @@ export default function Navigation() {
 
             <button
               onClick={() => window.dispatchEvent(new Event('archive-all-notes'))}
-              className="p-2 rounded-lg text-yellow-600 dark:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/30 transition-colors"
+              className="hidden sm:block p-2 rounded-lg text-yellow-600 dark:text-yellow-300 hover:bg-yellow-50 dark:hover:bg-yellow-900/30 transition-colors"
               title="Guardar todos os Post-its"
             >
               <Archive className="w-5 h-5" />
@@ -224,7 +224,7 @@ export default function Navigation() {
             {/* Config */}
             <Link
               to="/config"
-              className={`p-2 rounded-lg transition-colors ${
+              className={`hidden sm:block p-2 rounded-lg transition-colors ${
                 isActive('/config')
                   ? 'text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40'
                   : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -249,7 +249,7 @@ export default function Navigation() {
             {/* Tema */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="hidden sm:block p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               title="Alternar Tema"
             >
               {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
@@ -312,6 +312,12 @@ export default function Navigation() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
               </svg>
               Novo Post-it
+            </button>
+            <button
+              onClick={() => { setMobileMenuOpen(false); window.dispatchEvent(new Event('archive-all-notes')); }}
+              className="w-full flex items-center gap-3 pl-3 pr-4 py-3 border-l-4 border-transparent text-base font-medium text-yellow-600 dark:text-yellow-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              <Archive className="w-5 h-5" /> Guardar todos os Post-its
             </button>
             <button
               onClick={() => { setMobileMenuOpen(false); window.dispatchEvent(new Event('open-pdf-annotator')); }}

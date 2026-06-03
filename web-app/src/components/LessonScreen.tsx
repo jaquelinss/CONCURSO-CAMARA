@@ -3,6 +3,7 @@ import { themes, defaultTheme } from '../lib/constants';
 import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
+import { useReward } from '../contexts/RewardContext';
 import { DownloadIcon, ClipboardListIcon, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -126,6 +127,7 @@ const HighlighterPalette = ({ top, left, onHighlight }: { top: number, left: num
 
 export default function LessonScreen({ settings, onBack, savedData }: LessonScreenProps) {
   const { user, apiKey, selectedBanca } = useAuth();
+  const { awardPoints } = useReward();
   const theme = themes[settings.subject] || defaultTheme;
   const isSavedMode = !!savedData;
   
@@ -612,6 +614,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
   const handleAskLessonDoubt = async () => {
     if (!doubt || !apiKey || !currentLesson) return;
     setIsAsking(true);
+    awardPoints(2, 'ask_doubt');
     setDoubtResponse("");
     setSubQuestions([]);
     

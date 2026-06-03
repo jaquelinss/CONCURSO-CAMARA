@@ -668,8 +668,6 @@ export default function WhiteboardOverlay() {
         ...prev,
         [currentPage]: [...(prev[currentPage] || []), newStroke]
       }));
-      // Sticker stays in inventory for unlimited reuse
-      setActiveStamper(null);
       return;
     }
 

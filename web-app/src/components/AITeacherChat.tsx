@@ -337,7 +337,7 @@ export default function AITeacherChat({ isHidden = false }: { isHidden?: boolean
   };
   const [isOpen, setIsOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'chat' | 'history'>('chat');
-  const [activeSubject, setActiveSubject] = useState('Geografia');
+  const [activeSubject, setActiveSubject] = useState('Geral');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -352,9 +352,12 @@ export default function AITeacherChat({ isHidden = false }: { isHidden?: boolean
 
   // Combine and sort unique subjects from application constants and custom subjects
   const allSubjects = useMemo(() => {
-    return Array.from(
-      new Set([...subjectsConcurso, ...subjectsEnem, ...subjectsGeral, ...customSubjects.map(s => s.id)])
-    ).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+    return [
+      'Geral',
+      ...Array.from(
+        new Set([...subjectsConcurso, ...subjectsEnem, ...subjectsGeral, ...customSubjects.map(s => s.id)])
+      ).filter(s => s !== 'Geral').sort((a, b) => a.localeCompare(b, 'pt-BR'))
+    ];
   }, [customSubjects]);
 
   // Determine active teacher based on activeSubject

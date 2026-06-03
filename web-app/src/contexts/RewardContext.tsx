@@ -17,6 +17,7 @@ interface RewardContextType {
   awardPoints: (amount: number, reason: string) => void;
   spendPoints: (amount: number, reason: string) => Promise<boolean>;
   addStickerToInventory: (stickerId: string, customUrl?: string) => Promise<void>;
+  addMultipleStickersToInventory: (stickers: { id: string, url: string }[]) => Promise<void>;
   markStickerAsUsed: (instanceId: string, route: string) => Promise<void>;
   markStickerAsUnused: (instanceId: string) => Promise<void>;
   activeStamper: { instanceId: string; stickerId: string; customUrl?: string } | null;
@@ -30,6 +31,7 @@ const RewardContext = createContext<RewardContextType>({
   awardPoints: () => {},
   spendPoints: async () => false,
   addStickerToInventory: async () => {},
+  addMultipleStickersToInventory: async () => {},
   markStickerAsUsed: async () => {},
   markStickerAsUnused: async () => {},
   activeStamper: null,
@@ -160,6 +162,29 @@ export const RewardProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, [user]);
 
+  const addMultipleStickersToInventory = useCallback(async (stickers: { id: string, url: string }[]) => {
+    if (!user || stickers.length === 0) return;
+    try {
+      const docRef = doc(db, 'users', user.uid, 'settings', 'rewards');
+      const snap = await getDoc(docRef);
+      const currentStickers = snap.exists() ? (snap.data().unlockedStickers || []) : [];
+      
+      const newInstances: StickerInstance[] = stickers.map((s, i) => ({
+        instanceId: Date.now().toString() + Math.random().toString(36).substr(2, 5) + i,
+        stickerId: s.id,
+        customUrl: s.url,
+        isUsed: false
+      }));
+      
+      await setDoc(docRef, { 
+        unlockedStickers: [...currentStickers, ...newInstances]
+      }, { merge: true });
+    } catch (e) {
+      console.error("Erro ao adicionar stickers do pacote ao inventário:", e);
+    }
+  }, [user]);
+
+
   const markStickerAsUsed = useCallback(async (instanceId: string, route: string) => {
     if (!user) return;
     try {
@@ -205,7 +230,7 @@ export const RewardProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, [user]);
 
   return (
-    <RewardContext.Provider value={{ effortPoints, unlockedStickers, awardPoints, spendPoints, addStickerToInventory, markStickerAsUsed, markStickerAsUnused, activeStamper, setActiveStamper, floatingPoints }}>
+    <RewardContext.Provider value={{ effortPoints, unlockedStickers, awardPoints, spendPoints, addStickerToInventory, addMultipleStickersToInventory, markStickerAsUsed, markStickerAsUnused, activeStamper, setActiveStamper, floatingPoints }}>
       {children}
     </RewardContext.Provider>
   );

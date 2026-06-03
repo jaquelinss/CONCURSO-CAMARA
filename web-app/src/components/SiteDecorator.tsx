@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useReward } from '../contexts/RewardContext';
 import Draggable from 'react-draggable';
 import { StickerImage } from './StickerImage';
-import { Unlock } from 'lucide-react';
+import { Unlock, Trash2 } from 'lucide-react';
 
 interface PlacedSticker {
   id: string;
@@ -36,9 +36,17 @@ export default function SiteDecorator() {
   const location = useLocation();
   const { markStickerAsUsed, activeStamper, setActiveStamper } = useReward();
   const [stickers, setStickers] = useState<PlacedSticker[]>([]);
-  
-  // Create a safe document ID from the pathname
+
+  // Per-route document ID
   const docId = `decorations_${location.pathname.replace(/[^a-zA-Z0-9]/g, '_') || 'root'}`;
+
+  // Keep a ref to always have the latest stickers (avoids stale closure)
+  const stickersRef = useRef<PlacedSticker[]>(stickers);
+  useEffect(() => { stickersRef.current = stickers; }, [stickers]);
+
+  // Also keep docId in a ref so the click handler always uses the current one
+  const docIdRef = useRef(docId);
+  useEffect(() => { docIdRef.current = docId; }, [docId]);
 
   // Fetch stickers for current route
   useEffect(() => {
@@ -58,74 +66,82 @@ export default function SiteDecorator() {
 
   // Handle global click to place stamper
   useEffect(() => {
-    const handleGlobalClick = async (e: MouseEvent) => {
-      // If we don't have an active stamper, ignore
-      if (!activeStamper) return;
-      // If the event was prevented or stopped by Post-it / Whiteboard, ignore
-      if (e.defaultPrevented) return;
+    if (!activeStamper || !user) return;
 
-      if (!user) return;
+    const handleGlobalClick = async (e: MouseEvent) => {
+      // Ignore clicks on interactive UI elements
+      const target = e.target as HTMLElement;
+      if (target.closest('button, a, input, textarea, select, [role="dialog"], [role="menu"], .modal, .reward-shop, .whiteboard-toolbar, .whiteboard-sidebar, .palette-popover')) return;
 
       const newSticker: PlacedSticker = {
-        id: activeStamper.instanceId,
+        id: `decor_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
         stickerId: activeStamper.stickerId,
-        customUrl: activeStamper.customUrl,
-        x: e.clientX + window.scrollX,
-        y: e.clientY + window.scrollY,
+        x: e.clientX - 64,
+        y: e.clientY - 64,
         isLocked: false
       };
+      
+      if (activeStamper.customUrl) {
+        newSticker.customUrl = activeStamper.customUrl;
+      }
 
-      const newStickers = [...stickers, newSticker];
+      const currentDocId = docIdRef.current;
+      const newStickers = [...stickersRef.current, newSticker];
+      setStickers(newStickers);
       
-      const docRef = doc(db, 'users', user.uid, 'settings', docId);
+      const docRef = doc(db, 'users', user.uid, 'settings', currentDocId);
       await setDoc(docRef, { stickers: newStickers }, { merge: true });
-      
-      // Sticker stays in inventory for unlimited reuse
-      setActiveStamper(null);
     };
 
     window.addEventListener('click', handleGlobalClick);
     return () => window.removeEventListener('click', handleGlobalClick);
-  }, [user, docId, stickers, markStickerAsUsed, activeStamper, setActiveStamper]);
+  }, [user, activeStamper]);
 
-  // Handle remove sticker
+  // Handle remove sticker via global event
   useEffect(() => {
+    if (!user) return;
     const handleRemoveSticker = async (e: Event) => {
       const customEvent = e as CustomEvent<{ instanceId: string }>;
       const { instanceId } = customEvent.detail;
       
-      if (!user) return;
-      
-      const stickerExists = stickers.some(s => s.id === instanceId);
-      if (!stickerExists) return;
+      const current = stickersRef.current;
+      if (!current.some(s => s.id === instanceId)) return;
 
-      const newStickers = stickers.filter(s => s.id !== instanceId);
+      const newStickers = current.filter(s => s.id !== instanceId);
       setStickers(newStickers);
       
-      const docRef = doc(db, 'users', user.uid, 'settings', docId);
+      const docRef = doc(db, 'users', user.uid, 'settings', docIdRef.current);
       await setDoc(docRef, { stickers: newStickers }, { merge: true });
     };
 
     window.addEventListener('remove-sticker', handleRemoveSticker);
     return () => window.removeEventListener('remove-sticker', handleRemoveSticker);
-  }, [user, docId, stickers]);
+  }, [user]);
 
   const updateSticker = async (id: string, updates: Partial<PlacedSticker>) => {
     if (!user) return;
-    const updated = stickers.map(s => s.id === id ? { ...s, ...updates } : s);
-    const docRef = doc(db, 'users', user.uid, 'settings', docId);
+    const updated = stickersRef.current.map(s => s.id === id ? { ...s, ...updates } : s);
+    setStickers(updated);
+    const docRef = doc(db, 'users', user.uid, 'settings', docIdRef.current);
     await setDoc(docRef, { stickers: updated }, { merge: true });
   };
 
-  // removeSticker is removed because returning is now only done via the drawer
+  const removeSticker = async (id: string) => {
+    if (!user) return;
+    const newStickers = stickersRef.current.filter(s => s.id !== id);
+    setStickers(newStickers);
+    const docRef = doc(db, 'users', user.uid, 'settings', docIdRef.current);
+    await setDoc(docRef, { stickers: newStickers }, { merge: true });
+  };
 
   return (
-    <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-[10]">
+    <div className="fixed inset-0 pointer-events-none z-[10]">
       {stickers.map(sticker => (
         <DraggableSticker 
           key={sticker.id}
           sticker={sticker}
           onUpdate={(updates) => updateSticker(sticker.id, updates)}
+          onRemove={() => removeSticker(sticker.id)}
         />
       ))}
     </div>
@@ -134,14 +150,25 @@ export default function SiteDecorator() {
 
 function DraggableSticker({ 
   sticker, 
-  onUpdate
+  onUpdate,
+  onRemove
 }: { 
   sticker: PlacedSticker; 
   onUpdate: (u: Partial<PlacedSticker>) => void;
+  onRemove: () => void;
 }) {
   const nodeRef = useRef<HTMLDivElement>(null);
+  const [showMenu, setShowMenu] = useState(false);
   const url = sticker.customUrl || STICKERS_DEFS[sticker.stickerId];
   
+  // Close menu when clicking anywhere else
+  useEffect(() => {
+    if (!showMenu) return;
+    const close = () => setShowMenu(false);
+    window.addEventListener('click', close);
+    return () => window.removeEventListener('click', close);
+  }, [showMenu]);
+
   if (!url) return null;
 
   return (
@@ -153,24 +180,48 @@ function DraggableSticker({
     >
       <div 
         ref={nodeRef} 
-        className="absolute inline-block group pointer-events-auto"
+        className="absolute inline-block pointer-events-auto"
+        onContextMenu={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setShowMenu(!showMenu);
+        }}
       >
         <StickerImage 
           src={url}
           className={`w-32 h-32 object-contain drop-shadow-md transition-opacity ${sticker.isLocked ? 'opacity-90' : 'opacity-100 cursor-move'}`}
         />
         
-        {/* Hover Controls - Only visible when NOT locked. Once locked, it can only be removed from the drawer. */}
-        {!sticker.isLocked && (
+        {/* Right-click context menu */}
+        {showMenu && (
           <div 
-            className="absolute -top-4 -right-4 bg-white/90 backdrop-blur shadow-sm border border-gray-200 rounded-lg p-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-auto"
+            className="absolute -top-2 -right-2 bg-white/95 backdrop-blur-md shadow-lg border border-gray-200 rounded-xl p-1.5 flex flex-col gap-1 pointer-events-auto z-50 animate-in fade-in"
+            onClick={(e) => e.stopPropagation()}
           >
+            {!sticker.isLocked && (
+              <button 
+                onClick={(e) => { e.stopPropagation(); onUpdate({ isLocked: true }); setShowMenu(false); }}
+                className="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-100 rounded-lg text-gray-700 text-xs font-medium transition-colors whitespace-nowrap"
+              >
+                <Unlock className="w-3.5 h-3.5" />
+                Travar no fundo
+              </button>
+            )}
+            {sticker.isLocked && (
+              <button 
+                onClick={(e) => { e.stopPropagation(); onUpdate({ isLocked: false }); setShowMenu(false); }}
+                className="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-100 rounded-lg text-gray-700 text-xs font-medium transition-colors whitespace-nowrap"
+              >
+                <Unlock className="w-3.5 h-3.5" />
+                Destravar
+              </button>
+            )}
             <button 
-              onClick={(e) => { e.stopPropagation(); onUpdate({ isLocked: true }); }}
-              className="p-1.5 hover:bg-gray-100 rounded text-gray-600 transition-colors"
-              title="Colar (travar no fundo)"
+              onClick={(e) => { e.stopPropagation(); onRemove(); setShowMenu(false); }}
+              className="flex items-center gap-2 px-3 py-1.5 hover:bg-red-50 text-red-600 rounded-lg text-xs font-medium transition-colors whitespace-nowrap"
             >
-              <Unlock className="w-4 h-4" />
+              <Trash2 className="w-3.5 h-3.5" />
+              Remover
             </button>
           </div>
         )}
@@ -178,3 +229,4 @@ function DraggableSticker({
     </Draggable>
   );
 }
+

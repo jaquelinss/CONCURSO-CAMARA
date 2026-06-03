@@ -738,21 +738,26 @@ function SidebarNoteItem({
         
         {isEditing ? (
           <div className="flex flex-col gap-2" onPointerDown={e => e.stopPropagation()}>
+            <RichTextToolbar />
             <div>
               <label className="text-xs font-bold opacity-60">FRENTE:</label>
-              <textarea 
-                value={editContent} 
-                onChange={e => setEditContent(e.target.value)} 
-                className="w-full bg-white/50 rounded p-2 text-sm outline-none resize-none h-20 font-sans"
+              <div 
+                contentEditable
+                suppressContentEditableWarning
+                onInput={e => setEditContent((e.target as HTMLDivElement).innerHTML)} 
+                className="w-full bg-white/50 rounded p-2 text-sm outline-none overflow-y-auto h-20 font-sans cursor-text border border-transparent focus:border-indigo-300"
+                dangerouslySetInnerHTML={{ __html: note.content || '' }}
               />
             </div>
             {note.isFlashcard && (
               <div>
                 <label className="text-xs font-bold text-indigo-800 opacity-60">VERSO:</label>
-                <textarea 
-                  value={editBackContent} 
-                  onChange={e => setEditBackContent(e.target.value)} 
-                  className="w-full bg-indigo-50/50 rounded p-2 text-sm outline-none resize-none h-20 font-sans border border-indigo-100"
+                <div 
+                  contentEditable
+                  suppressContentEditableWarning
+                  onInput={e => setEditBackContent((e.target as HTMLDivElement).innerHTML)} 
+                  className="w-full bg-indigo-50/50 rounded p-2 text-sm outline-none overflow-y-auto h-20 font-sans border border-indigo-100 focus:border-indigo-300 cursor-text"
+                  dangerouslySetInnerHTML={{ __html: note.backContent || '' }}
                 />
               </div>
             )}
@@ -939,6 +944,8 @@ function FlashcardItem({
 
   const baseColor = note.color || '#6366f1'; // indigo-500
   const backColor = darkenColor(baseColor, 30);
+  const frontTextColor = getContrastColor(baseColor);
+  const backTextColor = getContrastColor(backColor);
 
   return (
     <Draggable
@@ -980,11 +987,11 @@ function FlashcardItem({
         <div className={`relative w-full h-full transition-transform duration-500 transform-style-3d ${flipped ? 'rotate-y-180' : ''}`}>
           
           {/* FRENTE */}
-          <div className="absolute w-full h-full backface-hidden rounded-xl shadow-xl flex flex-col text-white" style={{ backgroundColor: baseColor }}>
+          <div className="absolute w-full h-full backface-hidden rounded-xl shadow-xl flex flex-col" style={{ backgroundColor: baseColor, color: frontTextColor }}>
             <div className="drag-handle h-8 bg-black/10 flex items-center justify-between px-2 cursor-grab active:cursor-grabbing rounded-t-xl" onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center gap-2">
-                <GripHorizontal className="w-4 h-4 text-white/50" />
-                {note.noteNumber && <span className="text-xs font-semibold text-white/50">#{note.noteNumber}</span>}
+                <GripHorizontal className="w-4 h-4 opacity-50" />
+                {note.noteNumber && <span className="text-xs font-semibold opacity-50">#{note.noteNumber}</span>}
               </div>
               <div className="flex gap-1">
                 <button 
@@ -992,14 +999,14 @@ function FlashcardItem({
                   className="p-1 hover:bg-black/20 rounded"
                   title="Mudar Cor"
                 >
-                  <Palette className="w-3.5 h-3.5 text-white/80 pointer-events-none" />
+                  <Palette className="w-3.5 h-3.5 opacity-80 pointer-events-none" />
                 </button>
                 <button 
                   onClick={(e) => { e.stopPropagation(); onUpdate({ isArchived: true }); }}
                   className="p-1 hover:bg-black/20 rounded"
                   title="Fechar"
                 >
-                  <X className="w-4 h-4 text-white/80 pointer-events-none" />
+                  <X className="w-4 h-4 opacity-80 pointer-events-none" />
                 </button>
               </div>
             </div>
@@ -1050,7 +1057,10 @@ function FlashcardItem({
               className="flip-content flex-grow flex items-center justify-center p-6 cursor-pointer overflow-auto text-center"
               onClick={(e) => { e.stopPropagation(); setFlipped(true); }}
             >
-              <div className="font-bold whitespace-pre-wrap">{note.content || "Frente do flashcard"}</div>
+              <div 
+                className="font-bold whitespace-pre-wrap"
+                dangerouslySetInnerHTML={{ __html: note.content || "Frente do flashcard" }}
+              />
             </div>
             <div
               onPointerDown={onResizeStart}
@@ -1060,7 +1070,7 @@ function FlashcardItem({
               className="absolute bottom-0 right-0 w-10 h-10 cursor-se-resize touch-none flex items-end justify-end"
               style={{ zIndex: 10 }}
             >
-              <svg width="16" height="16" viewBox="0 0 16 16" className="mr-1 mb-1 opacity-40 text-white">
+              <svg width="16" height="16" viewBox="0 0 16 16" className="mr-1 mb-1 opacity-40" style={{ color: frontTextColor }}>
                 <line x1="14" y1="2" x2="2" y2="14" stroke="currentColor" strokeWidth="1.5" />
                 <line x1="14" y1="7" x2="7" y2="14" stroke="currentColor" strokeWidth="1.5" />
                 <line x1="14" y1="12" x2="12" y2="14" stroke="currentColor" strokeWidth="1.5" />
@@ -1069,17 +1079,29 @@ function FlashcardItem({
           </div>
 
           {/* VERSO */}
-          <div className="absolute w-full h-full backface-hidden rounded-xl shadow-xl flex flex-col text-white rotate-y-180" style={{ backgroundColor: backColor }}>
+          <div className="absolute w-full h-full backface-hidden rounded-xl shadow-xl flex flex-col rotate-y-180" style={{ backgroundColor: backColor, color: backTextColor }}>
             <div className="drag-handle h-8 bg-black/10 flex items-center justify-between px-2 cursor-grab active:cursor-grabbing rounded-t-xl" onClick={(e) => e.stopPropagation()}>
                <div className="flex items-center gap-2">
-                 <GripHorizontal className="w-4 h-4 text-white/50" />
+                 <GripHorizontal className="w-4 h-4 opacity-50" />
+               </div>
+               <div className="flex gap-1">
+                 <button 
+                   onClick={(e) => { e.stopPropagation(); onUpdate({ isArchived: true }); }}
+                   className="p-1 hover:bg-black/20 rounded"
+                   title="Fechar"
+                 >
+                   <X className="w-4 h-4 opacity-80 pointer-events-none" />
+                 </button>
                </div>
             </div>
             <div 
               className="flip-content flex-grow flex items-center justify-center p-6 cursor-pointer overflow-auto text-center"
               onClick={(e) => { e.stopPropagation(); setFlipped(false); }}
             >
-              <div className="font-bold whitespace-pre-wrap">{note.backContent || "Verso do flashcard"}</div>
+              <div 
+                className="font-bold whitespace-pre-wrap"
+                dangerouslySetInnerHTML={{ __html: note.backContent || "Verso do flashcard" }}
+              />
             </div>
           </div>
         </div>
@@ -1609,6 +1631,20 @@ function darkenColor(color: string, amount: number) {
     return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) - amount)).toString(16)).substr(-2));
   } catch (e) {
     return '#000000';
+  }
+}
+
+function getContrastColor(hexColor: string) {
+  if (!hexColor || typeof hexColor !== 'string' || !hexColor.startsWith('#')) return '#ffffff';
+  try {
+    const hex = hexColor.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+    return (yiq >= 140) ? '#1f2937' : '#ffffff'; // gray-800 or white
+  } catch (e) {
+    return '#ffffff';
   }
 }
 
