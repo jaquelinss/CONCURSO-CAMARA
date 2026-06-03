@@ -14,6 +14,7 @@ interface AuthContextType {
   saveApiKey: (key: string) => Promise<void>;
   saveBanca: (banca: string) => Promise<void>;
   markWelcomeAsSeen: () => Promise<void>;
+  isAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -26,6 +27,7 @@ const AuthContext = createContext<AuthContextType>({
   saveApiKey: async () => {},
   saveBanca: async () => {},
   markWelcomeAsSeen: async () => {},
+  isAdmin: false,
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -109,7 +111,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = () => firebaseSignOut(auth);
 
   return (
-    <AuthContext.Provider value={{ user, loading, signOut, apiKey, hasSeenWelcome, selectedBanca, saveApiKey, saveBanca, markWelcomeAsSeen }}>
+    <AuthContext.Provider value={{ user, loading, signOut, apiKey, hasSeenWelcome, selectedBanca, saveApiKey, saveBanca, markWelcomeAsSeen, isAdmin: user?.email === 'quelinalins@gmail.com' }}>
       {!loading && children}
     </AuthContext.Provider>
   );

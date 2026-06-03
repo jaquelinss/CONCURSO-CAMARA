@@ -78,7 +78,7 @@ export function DockMenuButton() {
       </button>
 
       {showMenu && (
-        <div className="absolute right-0 top-full mt-2 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 z-[10001] w-72 animate-fade-in">
+        <div className="absolute left-0 top-full mt-2 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 z-[10001] w-72 animate-fade-in">
           <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
             <Columns className="w-3.5 h-3.5" /> Modo de Tela
           </p>

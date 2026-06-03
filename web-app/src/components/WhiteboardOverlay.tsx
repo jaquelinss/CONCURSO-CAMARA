@@ -4,9 +4,10 @@ import { Eraser, Trash2, X, Undo2, Redo2, Minus, Plus, Maximize2, Minimize2, Gri
 import { getStroke } from 'perfect-freehand';
 import Draggable from 'react-draggable';
 import { useAuth } from '../contexts/AuthContext';
-import { doc, getDoc, setDoc, collection, query, getDocs, orderBy, where } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, query, getDocs, orderBy, where, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import localforage from 'localforage';
+import { useReward } from '../contexts/RewardContext';
 
 interface StrokePoint {
   x: number;
@@ -22,6 +23,10 @@ interface Stroke {
   isHighlighter?: boolean;
   isSticker?: boolean;
   stickerNumber?: number;
+  isRewardSticker?: boolean;
+  rewardStickerId?: string;
+  rewardCustomUrl?: string;
+  rewardInstanceId?: string;
 }
 
 interface PenPreset {
@@ -44,11 +49,26 @@ interface EraserPreset {
 
 const COLORS = ['#000000', '#ffffff', '#ef4444', '#3b82f6', '#22c55e', '#eab308', '#a855f7', '#f97316'];
 
+const STICKERS_DEFS: Record<string, string> = {
+  '1': '/stickers/1.png',
+  '2': '/stickers/2.png',
+  '3': '/stickers/3.png',
+  '4': '/stickers/4.png',
+  '5': '/stickers/5.png',
+  '6': '/stickers/6.png',
+  '7': '/stickers/7.png',
+  '8': '/stickers/8.png',
+  '9': '/stickers/9.png',
+  '10': '/stickers/10.png',
+  '11': '/stickers/11.png',
+};
+
 import NotebooksManager from './NotebooksManager';
 import type { Notebook } from '../types/notebook';
 
 export default function WhiteboardOverlay() {
   const { user } = useAuth();
+  const { activeStamper, setActiveStamper, markStickerAsUsed } = useReward();
   const [active, setActive] = useState(false);
   
   // Notebooks
@@ -177,6 +197,34 @@ export default function WhiteboardOverlay() {
 
     loadData();
   }, [activeNotebook, user]);
+
+  // Handle remove sticker
+  useEffect(() => {
+    const handleRemoveSticker = (e: Event) => {
+      const customEvent = e as CustomEvent<{ instanceId: string }>;
+      const { instanceId } = customEvent.detail;
+      
+      setStrokesByPage(prev => {
+        let changed = false;
+        const newStrokesByPage = { ...prev };
+        
+        for (const pageStr in prev) {
+          const page = parseInt(pageStr);
+          const strokes = prev[page];
+          const hasSticker = strokes.some(s => s.rewardInstanceId === instanceId);
+          if (hasSticker) {
+            newStrokesByPage[page] = strokes.filter(s => s.rewardInstanceId !== instanceId);
+            changed = true;
+          }
+        }
+        
+        return changed ? newStrokesByPage : prev;
+      });
+    };
+
+    window.addEventListener('remove-sticker', handleRemoveSticker);
+    return () => window.removeEventListener('remove-sticker', handleRemoveSticker);
+  }, []);
 
   // Auto-save: Salvar no IndexedDB ou Firebase sempre que mudar
   useEffect(() => {
@@ -605,6 +653,26 @@ export default function WhiteboardOverlay() {
     const x = e.clientX - rect.left;
     const y = (e.clientY - rect.top) + scrollY;
 
+    if (activeStamper) {
+      const newStroke: Stroke = {
+        points: [{ x, y, pressure: 0.5 }],
+        color: 'transparent',
+        width: 1,
+        isEraser: false,
+        isRewardSticker: true,
+        rewardStickerId: activeStamper.stickerId,
+        rewardCustomUrl: activeStamper.customUrl,
+        rewardInstanceId: activeStamper.instanceId
+      };
+      setStrokesByPage(prev => ({
+        ...prev,
+        [currentPage]: [...(prev[currentPage] || []), newStroke]
+      }));
+      // Sticker stays in inventory for unlimited reuse
+      setActiveStamper(null);
+      return;
+    }
+
     if (tool === 'sticker') {
       setIsDrawing(false);
       const postitNumberStr = window.prompt("Digite o número do Post-it para linkar:");
@@ -859,6 +927,7 @@ export default function WhiteboardOverlay() {
               setStrokesByPage(prev => ({ ...prev, [currentPage]: updatedStrokes }));
             }
           }}
+          onContextMenu={(e: any) => e.preventDefault()}
           onEdit={async (e: any) => {
             e.stopPropagation();
             const newNumStr = window.prompt("Editar número do Post-it linkado:", s.stickerNumber?.toString());
@@ -873,7 +942,7 @@ export default function WhiteboardOverlay() {
                     if (!querySnapshot.empty) {
                       newColor = querySnapshot.docs[0].data().color || '#fef08a';
                     }
-                  } catch (err) {}
+                  } catch (err: any) {}
                 }
                 const updatedStrokes = strokes.map(stroke => 
                   stroke === s ? { ...stroke, stickerNumber: num, color: newColor } : stroke
@@ -884,6 +953,28 @@ export default function WhiteboardOverlay() {
           }}
         />
       ))}
+
+      {strokes.filter(s => s.isRewardSticker && s.points && s.points.length > 0).map((s, idx) => {
+        const url = s.rewardCustomUrl || STICKERS_DEFS[s.rewardStickerId || ''];
+        if (!url) return null;
+        return (
+          <div
+            key={`reward-sticker-${idx}`}
+            className="absolute pointer-events-none"
+            style={{
+              left: s.points[0].x,
+              top: s.points[0].y - scrollY,
+              transform: 'translate(-50%, -50%)',
+            }}
+          >
+            <img 
+              src={url} 
+              alt="Adesivo" 
+              className="w-24 h-24 object-contain drop-shadow-md opacity-90" 
+            />
+          </div>
+        );
+      })}
 
       {/* Transparent Custom Sidebar */}
       {sidebarMode !== 'hidden' && (
@@ -1217,6 +1308,71 @@ export default function WhiteboardOverlay() {
 
 function StickerNode({ s, zoom = 1, scrollY = 0, onStop, onDelete, onEdit }: any) {
   const nodeRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  const [noteData, setNoteData] = useState<any>(null);
+  const [isFlipped, setIsFlipped] = useState(false);
+
+  useEffect(() => {
+    if (!user || !s.stickerNumber) return;
+    const q = query(collection(db, 'users', user.uid, 'notes'), where('noteNumber', '==', s.stickerNumber));
+    const unsub = onSnapshot(q, (snap) => {
+      if (!snap.empty) {
+        setNoteData(snap.docs[0].data());
+      }
+    });
+    return () => unsub();
+  }, [user, s.stickerNumber]);
+
+  const isFlashcard = noteData?.isFlashcard;
+
+  if (isFlashcard) {
+    return (
+      <Draggable
+        nodeRef={nodeRef}
+        position={{ x: s.points[0].x * zoom, y: s.points[0].y * zoom - scrollY }}
+        onStop={onStop}
+      >
+        <div ref={nodeRef} className="absolute top-0 left-0 z-50 cursor-move" style={{ width: '160px', height: '110px' }}>
+          <div 
+            className="w-full h-full relative group" 
+            style={{ perspective: '1000px' }}
+            onContextMenu={onDelete}
+            onDoubleClick={onEdit}
+            onClick={(e) => { e.stopPropagation(); setIsFlipped(!isFlipped); }}
+            title="Clique para virar o cartão. Duplo-clique para editar. Botão direito para excluir."
+          >
+            <div 
+              className="w-full h-full absolute top-0 left-0 transition-transform duration-500 rounded-lg shadow-lg border border-gray-200 overflow-hidden cursor-pointer"
+              style={{
+                transformStyle: 'preserve-3d',
+                transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                backgroundColor: s.color || '#fef08a'
+              }}
+            >
+              {/* Front */}
+              <div 
+                className="absolute inset-0 w-full h-full p-3 flex flex-col items-center justify-center bg-white/40 pointer-events-none"
+                style={{ backfaceVisibility: 'hidden' }}
+              >
+                <div className="text-[10px] font-bold text-gray-500 mb-1">FRENTE #{s.stickerNumber}</div>
+                <div className="text-xs font-semibold text-gray-800 line-clamp-3 text-center" dangerouslySetInnerHTML={{ __html: noteData?.content || '...' }} />
+              </div>
+
+              {/* Back */}
+              <div 
+                className="absolute inset-0 w-full h-full p-3 flex flex-col items-center justify-center bg-indigo-50 pointer-events-none"
+                style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+              >
+                <div className="text-[10px] font-bold text-indigo-500 mb-1">VERSO</div>
+                <div className="text-xs font-semibold text-gray-800 line-clamp-3 text-center" dangerouslySetInnerHTML={{ __html: noteData?.backContent || '...' }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </Draggable>
+    );
+  }
+
   return (
     <Draggable
       nodeRef={nodeRef}

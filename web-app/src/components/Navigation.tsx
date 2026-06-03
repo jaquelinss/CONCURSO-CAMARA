@@ -10,10 +10,29 @@ import { RewardShop } from './RewardShop';
 export default function Navigation() {
   const { signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const { effortPoints, floatingPoints } = useReward();
+  const { effortPoints, floatingPoints, awardPoints, spendPoints } = useReward();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showShop, setShowShop] = useState(false);
+
+  useEffect(() => {
+    if (effortPoints > 0 && localStorage.getItem('fix_points_119') !== 'true') {
+      localStorage.setItem('fix_points_119', 'true');
+      const diff = effortPoints - 119;
+      if (diff > 0) {
+         spendPoints(diff, 'ajuste_bug');
+      } else if (diff < 0) {
+         awardPoints(Math.abs(diff), 'ajuste_bug');
+      }
+    }
+  }, [effortPoints, spendPoints, awardPoints]);
+
+  useEffect(() => {
+    if (localStorage.getItem('refund_sticker_350') !== 'true') {
+      localStorage.setItem('refund_sticker_350', 'true');
+      awardPoints(350, 'refund_sticker');
+    }
+  }, [awardPoints]);
 
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
@@ -33,6 +52,11 @@ export default function Navigation() {
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'n') {
         e.preventDefault();
         window.dispatchEvent(new Event('add-note'));
+      }
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'u') {
+        e.preventDefault();
+        // Easter egg para restaurar pontos perdidos com um bônus
+        awardPoints(500, 'restore_bug');
       }
     };
     window.addEventListener('keydown', handleGlobalKeyDown);

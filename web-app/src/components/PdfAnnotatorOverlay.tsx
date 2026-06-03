@@ -11,7 +11,7 @@ import mammoth from 'mammoth';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import { db } from '../lib/firebase';
-import { collection, doc, setDoc, getDocs, getDoc, deleteDoc, query, orderBy, where } from 'firebase/firestore';
+import { collection, doc, setDoc, getDocs, getDoc, deleteDoc, query, orderBy, where, onSnapshot } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { supabase } from '../lib/supabase';
 import Draggable from 'react-draggable';
@@ -1527,6 +1527,71 @@ function EpubPage({ book, pageNum, viewMode, tool, penColor, highlighterColor, p
 
 function StickerNode({ s, zoom = 1, onStop, onDelete, onEdit }: any) {
   const nodeRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  const [noteData, setNoteData] = useState<any>(null);
+  const [isFlipped, setIsFlipped] = useState(false);
+
+  useEffect(() => {
+    if (!user || !s.stickerNumber) return;
+    const q = query(collection(db, 'users', user.uid, 'notes'), where('noteNumber', '==', s.stickerNumber));
+    const unsub = onSnapshot(q, (snap) => {
+      if (!snap.empty) {
+        setNoteData(snap.docs[0].data());
+      }
+    });
+    return () => unsub();
+  }, [user, s.stickerNumber]);
+
+  const isFlashcard = noteData?.isFlashcard;
+
+  if (isFlashcard) {
+    return (
+      <Draggable
+        nodeRef={nodeRef}
+        position={{ x: s.points[0].x * zoom, y: s.points[0].y * zoom }}
+        onStop={onStop}
+      >
+        <div ref={nodeRef} className="absolute top-0 left-0 z-50 cursor-move" style={{ width: '160px', height: '110px' }}>
+          <div 
+            className="w-full h-full relative group" 
+            style={{ perspective: '1000px' }}
+            onContextMenu={onDelete}
+            onDoubleClick={onEdit}
+            onClick={(e) => { e.stopPropagation(); setIsFlipped(!isFlipped); }}
+            title="Clique para virar o cartão. Duplo-clique para editar. Botão direito para excluir."
+          >
+            <div 
+              className="w-full h-full absolute top-0 left-0 transition-transform duration-500 rounded-lg shadow-lg border border-gray-200 overflow-hidden cursor-pointer"
+              style={{
+                transformStyle: 'preserve-3d',
+                transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                backgroundColor: s.color || '#fef08a'
+              }}
+            >
+              {/* Front */}
+              <div 
+                className="absolute inset-0 w-full h-full p-3 flex flex-col items-center justify-center bg-white/40 pointer-events-none"
+                style={{ backfaceVisibility: 'hidden' }}
+              >
+                <div className="text-[10px] font-bold text-gray-500 mb-1">FRENTE #{s.stickerNumber}</div>
+                <div className="text-xs font-semibold text-gray-800 line-clamp-3 text-center" dangerouslySetInnerHTML={{ __html: noteData?.content || '...' }} />
+              </div>
+
+              {/* Back */}
+              <div 
+                className="absolute inset-0 w-full h-full p-3 flex flex-col items-center justify-center bg-indigo-50 pointer-events-none"
+                style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+              >
+                <div className="text-[10px] font-bold text-indigo-500 mb-1">VERSO</div>
+                <div className="text-xs font-semibold text-gray-800 line-clamp-3 text-center" dangerouslySetInnerHTML={{ __html: noteData?.backContent || '...' }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </Draggable>
+    );
+  }
+
   return (
     <Draggable
       nodeRef={nodeRef}

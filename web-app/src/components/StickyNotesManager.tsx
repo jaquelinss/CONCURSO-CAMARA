@@ -4,7 +4,7 @@ import { collection, query, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serve
 import { useAuth } from '../contexts/AuthContext';
 import { useReward } from '../contexts/RewardContext';
 import Draggable from 'react-draggable';
-import { Palette, X, GripHorizontal, Tag, PlusCircle, Layers, Eye, EyeOff, Pipette, ChevronRight, ChevronUp, ChevronDown, History, RotateCcw } from 'lucide-react';
+import { Palette, X, GripHorizontal, Tag, PlusCircle, Layers, Eye, EyeOff, Pipette, ChevronRight, ChevronUp, ChevronDown, History, RotateCcw, AlignLeft, AlignCenter } from 'lucide-react';
 import { generateNoteTag } from '../lib/gemini';
 
 interface Note {
@@ -25,6 +25,7 @@ interface Note {
   createdAt?: any;
   isFlashcard?: boolean;
   backContent?: string;
+  stickers?: { id: string; stickerId: string; x: number; y: number }[];
 }
 
 const COLORS = [
@@ -58,6 +59,22 @@ export default function StickyNotesManager() {
 
   const [cascadePos, setCascadePos] = useState({ x: 100, y: 100 });
   const [cascadeSize, setCascadeSize] = useState({ w: 256, h: 280 });
+
+  const [isFlashcardCascadeMode, setIsFlashcardCascadeMode] = useState(() => {
+    try {
+      const saved = localStorage.getItem('isFlashcardCascadeMode');
+      return saved ? JSON.parse(saved) : false;
+    } catch {
+      return false;
+    }
+  });
+  
+  useEffect(() => {
+    localStorage.setItem('isFlashcardCascadeMode', JSON.stringify(isFlashcardCascadeMode));
+  }, [isFlashcardCascadeMode]);
+
+  const [flashcardCascadePos, setFlashcardCascadePos] = useState({ x: 150, y: 150 });
+  const [flashcardCascadeSize, setFlashcardCascadeSize] = useState({ w: 320, h: 220 });
   const [isDraggingFromSidebar, setIsDraggingFromSidebar] = useState(false);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [selectedSubTag, setSelectedSubTag] = useState<string | null>(null);
@@ -73,6 +90,9 @@ export default function StickyNotesManager() {
         if (data.isCascadeMode !== undefined) setIsCascadeMode(data.isCascadeMode);
         if (data.cascadePos) setCascadePos(data.cascadePos);
         if (data.cascadeSize) setCascadeSize(data.cascadeSize);
+        if (data.isFlashcardCascadeMode !== undefined) setIsFlashcardCascadeMode(data.isFlashcardCascadeMode);
+        if (data.flashcardCascadePos) setFlashcardCascadePos(data.flashcardCascadePos);
+        if (data.flashcardCascadeSize) setFlashcardCascadeSize(data.flashcardCascadeSize);
       }
     }).catch(console.error);
   }, [user]);
@@ -148,12 +168,31 @@ export default function StickyNotesManager() {
     window.addEventListener('archive-all-notes', handleArchiveAll);
     window.addEventListener('open-postit', handleOpenPostit);
 
+    const handleRemoveSticker = async (e: Event) => {
+      const customEvent = e as CustomEvent<{ instanceId: string }>;
+      const { instanceId } = customEvent.detail;
+      
+      if (!user) return;
+      
+      // Find which note has this sticker
+      const noteToUpdate = notes.find(n => n.stickers?.some(s => s.id === instanceId));
+      if (!noteToUpdate || !noteToUpdate.stickers) return;
+
+      const newStickers = noteToUpdate.stickers.filter(s => s.id !== instanceId);
+      
+      const noteRef = doc(db, 'users', user.uid, 'notes', noteToUpdate.id);
+      await updateDoc(noteRef, { stickers: newStickers });
+    };
+    
+    window.addEventListener('remove-sticker', handleRemoveSticker);
+
     return () => {
       window.removeEventListener('add-note', handleAdd);
       window.removeEventListener('add-flashcard', handleAddFC);
       window.removeEventListener('toggle-archive', handleToggleArchive);
       window.removeEventListener('archive-all-notes', handleArchiveAll);
       window.removeEventListener('open-postit', handleOpenPostit);
+      window.removeEventListener('remove-sticker', handleRemoveSticker);
     };
   }, [user, notes, highestZ]);
 
@@ -361,19 +400,35 @@ export default function StickyNotesManager() {
     handleUpdateNote(id, { zIndex: lowestZ - 1 });
   };
 
-  const handleToggleCascade = () => {
-    if (!isCascadeMode) {
-      const savedPos = (() => { try { return JSON.parse(localStorage.getItem('last_note_pos') || 'null'); } catch { return null; } })();
-      const savedSize = (() => { try { return JSON.parse(localStorage.getItem('last_note_size') || 'null'); } catch { return null; } })();
-      if (savedPos) setCascadePos(savedPos);
-      else setCascadePos({ x: window.innerWidth / 2 - 150, y: window.innerHeight / 2 - 150 });
-      
-      if (savedSize) setCascadeSize(savedSize);
-    }
-    const newMode = !isCascadeMode;
-    setIsCascadeMode(newMode);
-    if (user) {
-      setDoc(doc(db, 'users', user.uid, 'settings', 'stickyNotes'), { isCascadeMode: newMode }, { merge: true }).catch(console.error);
+  const handleToggleCascade = (forceFlashcard?: boolean) => {
+    const isFlashcard = forceFlashcard !== undefined ? forceFlashcard : sidebarTab === 'flashcards';
+    
+    if (isFlashcard) {
+      if (!isFlashcardCascadeMode) {
+        const savedPos = (() => { try { return JSON.parse(localStorage.getItem('last_flashcard_pos') || 'null'); } catch { return null; } })();
+        const savedSize = (() => { try { return JSON.parse(localStorage.getItem('last_flashcard_size') || 'null'); } catch { return null; } })();
+        if (savedPos) setFlashcardCascadePos(savedPos);
+        else setFlashcardCascadePos({ x: window.innerWidth / 2 - 150, y: window.innerHeight / 2 - 150 });
+        if (savedSize) setFlashcardCascadeSize(savedSize);
+      }
+      const newMode = !isFlashcardCascadeMode;
+      setIsFlashcardCascadeMode(newMode);
+      if (user) {
+        setDoc(doc(db, 'users', user.uid, 'settings', 'stickyNotes'), { isFlashcardCascadeMode: newMode }, { merge: true }).catch(console.error);
+      }
+    } else {
+      if (!isCascadeMode) {
+        const savedPos = (() => { try { return JSON.parse(localStorage.getItem('last_note_pos') || 'null'); } catch { return null; } })();
+        const savedSize = (() => { try { return JSON.parse(localStorage.getItem('last_note_size') || 'null'); } catch { return null; } })();
+        if (savedPos) setCascadePos(savedPos);
+        else setCascadePos({ x: window.innerWidth / 2 - 150, y: window.innerHeight / 2 - 150 });
+        if (savedSize) setCascadeSize(savedSize);
+      }
+      const newMode = !isCascadeMode;
+      setIsCascadeMode(newMode);
+      if (user) {
+        setDoc(doc(db, 'users', user.uid, 'settings', 'stickyNotes'), { isCascadeMode: newMode }, { merge: true }).catch(console.error);
+      }
     }
   };
 
@@ -416,27 +471,31 @@ export default function StickyNotesManager() {
             }}
             onFocus={() => bringToFront(note.id)}
             onSendToBack={() => sendToBack(note.id)}
-            onToggleCascade={handleToggleCascade}
+            onToggleCascade={() => handleToggleCascade(false)}
             allTags={allTags}
             tagsHierarchy={tagsHierarchy}
           />
         ))}
         {activeNotes.filter(n => n.isFlashcard).map(note => (
-          <FlashcardItem
-            key={`fc-${note.id}`}
-            note={note}
-            isCascadeMode={isCascadeMode}
-            cascadePos={cascadePos}
-            cascadeSize={cascadeSize}
-            onCascadeResize={(size) => setCascadeSize(size)}
-            onCascadeStop={(pos) => {
-              setCascadePos(pos);
-              localStorage.setItem('last_note_pos', JSON.stringify(pos));
+          <FlashcardItem 
+            key={`${note.id}-${isFlashcardCascadeMode ? 'cascade' : 'free'}`} 
+            note={note} 
+            isCascadeMode={isFlashcardCascadeMode}
+            cascadePos={flashcardCascadePos}
+            cascadeSize={flashcardCascadeSize}
+            onCascadeResize={(size) => {
+              setFlashcardCascadeSize(size);
               if (user) {
-                setDoc(doc(db, 'users', user.uid, 'settings', 'stickyNotes'), { cascadePos: pos }, { merge: true }).catch(console.error);
+                setDoc(doc(db, 'users', user.uid, 'settings', 'stickyNotes'), { flashcardCascadeSize: size }, { merge: true }).catch(console.error);
               }
             }}
-            onUpdate={(updates) => handleUpdateNote(note.id, updates)}
+            onCascadeStop={(pos) => {
+              setFlashcardCascadePos(pos);
+              if (user) {
+                setDoc(doc(db, 'users', user.uid, 'settings', 'stickyNotes'), { flashcardCascadePos: pos }, { merge: true }).catch(console.error);
+              }
+            }}
+            onUpdate={(u) => handleUpdateNote(note.id, u)}
             onFocus={() => bringToFront(note.id)}
           />
         ))}
@@ -481,22 +540,23 @@ export default function StickyNotesManager() {
             <div className={`p-6 flex-1 bg-gray-50 dark:bg-gray-900 ${isDraggingFromSidebar ? 'overflow-visible' : 'overflow-y-auto'}`}>
               <div className="flex justify-between items-center mb-4">
                 <button
-                  onClick={handleToggleCascade}
-                  className={`px-4 py-2 rounded-lg font-bold text-sm transition-all shadow-sm flex items-center gap-2 ${isCascadeMode ? 'bg-indigo-600 text-white' : 'bg-white text-indigo-600 border border-indigo-200 hover:bg-indigo-50 dark:bg-gray-800 dark:border-indigo-900 dark:hover:bg-gray-700'}`}
+                  onClick={() => handleToggleCascade()}
+                  className={`px-4 py-2 rounded-lg font-bold text-sm transition-all shadow-sm flex items-center gap-2 ${(sidebarTab === 'flashcards' ? isFlashcardCascadeMode : isCascadeMode) ? 'bg-indigo-600 text-white' : 'bg-white text-indigo-600 border border-indigo-200 hover:bg-indigo-50 dark:bg-gray-800 dark:border-indigo-900 dark:hover:bg-gray-700'}`}
                 >
-                  <Layers className="w-4 h-4" />
-                  {isCascadeMode ? 'Modo Cascata Ativo' : 'Modo Cascata'}
+                  <Layers size={18} />
+                  {(sidebarTab === 'flashcards' ? isFlashcardCascadeMode : isCascadeMode) ? 'Modo Cascata Ativo' : 'Modo Cascata'}
                 </button>
                 <button
                   onClick={() => {
-                     const archivedNotes = notes.filter(n => n.isArchived);
+                     const isFlashcardTab = sidebarTab === 'flashcards';
+                     const archivedNotes = notes.filter(n => n.isArchived && (isFlashcardTab ? n.isFlashcard : !n.isFlashcard));
                      const recent = archivedNotes.slice(-3);
                      recent.forEach(n => handleUpdateNote(n.id, { isArchived: false, isMinimized: false }));
-                     if (!isCascadeMode) handleToggleCascade();
+                     if (!(isFlashcardTab ? isFlashcardCascadeMode : isCascadeMode)) handleToggleCascade();
                      setIsArchiveOpen(false); // fechar sidebar após abrir
                   }}
                   className="px-4 py-2 rounded-lg font-bold text-sm bg-yellow-500 text-yellow-950 hover:bg-yellow-400 transition-all shadow-sm flex items-center gap-2"
-                  title="Reabrir últimos post-its fechados em modo cascata"
+                  title={sidebarTab === 'flashcards' ? "Reabrir últimos flashcards fechados em modo cascata" : "Reabrir últimos post-its fechados em modo cascata"}
                 >
                   <History className="w-4 h-4" /> Reabrir Últimos
                 </button>
@@ -616,13 +676,14 @@ function SidebarNoteItem({
   note: Note;
   onUpdate: (u: Partial<Note>) => void;
   onDelete: () => void;
-  onDragStart: () => void;
+  onDragStart: (e: any) => void;
   onDragEnd: () => void;
 }) {
   const nodeRef = useRef<HTMLDivElement>(null);
-  // const { awardPoints } = useReward();
-
   const [title, setTitle] = useState(note.title || '');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState(note.content || '');
+  const [editBackContent, setEditBackContent] = useState(note.backContent || '');
 
   // Debounce sidebar title update
   useEffect(() => {
@@ -634,11 +695,16 @@ function SidebarNoteItem({
     return () => clearTimeout(timeoutId);
   }, [title]);
 
+  const handleSaveEdit = () => {
+    onUpdate({ content: editContent, backContent: editBackContent });
+    setIsEditing(false);
+  };
+
   return (
     <Draggable
       nodeRef={nodeRef}
       position={{x: 0, y: 0}}
-      cancel="button, input"
+      cancel="button, input, textarea"
       onStart={onDragStart}
       onStop={(e, data) => {
         onDragEnd();
@@ -665,30 +731,70 @@ function SidebarNoteItem({
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder={note.isFlashcard ? "Flashcard sem título" : "Sem título"}
-          className="w-full bg-transparent outline-none font-bold text-gray-800 mb-1 placeholder-black/30 font-sans"
+          className="w-full bg-transparent outline-none font-bold text-gray-800 mb-2 placeholder-black/30 font-sans"
           onPointerDown={(e) => e.stopPropagation()} // Prevent drag when typing
           onTouchStart={(e) => e.stopPropagation()}
         />
-        {note.content ? (
-          <div 
-            className="text-sm text-gray-800 line-clamp-4 min-h-[60px] font-sans"
-            dangerouslySetInnerHTML={{ __html: note.content }}
-          />
+        
+        {isEditing ? (
+          <div className="flex flex-col gap-2" onPointerDown={e => e.stopPropagation()}>
+            <div>
+              <label className="text-xs font-bold opacity-60">FRENTE:</label>
+              <textarea 
+                value={editContent} 
+                onChange={e => setEditContent(e.target.value)} 
+                className="w-full bg-white/50 rounded p-2 text-sm outline-none resize-none h-20 font-sans"
+              />
+            </div>
+            {note.isFlashcard && (
+              <div>
+                <label className="text-xs font-bold text-indigo-800 opacity-60">VERSO:</label>
+                <textarea 
+                  value={editBackContent} 
+                  onChange={e => setEditBackContent(e.target.value)} 
+                  className="w-full bg-indigo-50/50 rounded p-2 text-sm outline-none resize-none h-20 font-sans border border-indigo-100"
+                />
+              </div>
+            )}
+            <div className="flex gap-2 justify-end mt-1">
+              <button onClick={() => setIsEditing(false)} className="text-xs px-2 py-1 bg-gray-200 rounded">Cancelar</button>
+              <button onClick={handleSaveEdit} className="text-xs px-2 py-1 bg-green-500 text-white rounded font-bold">Salvar</button>
+            </div>
+          </div>
         ) : (
-          <p className="text-sm text-gray-800 line-clamp-4 min-h-[60px] font-sans italic opacity-50">
-            {note.isFlashcard ? 'Flashcard vazio' : 'Nota vazia'}
-          </p>
+          <div onDoubleClick={() => setIsEditing(true)}>
+            {note.content ? (
+              <div 
+                className="text-sm text-gray-800 line-clamp-4 min-h-[40px] font-sans"
+                dangerouslySetInnerHTML={{ __html: note.content }}
+              />
+            ) : (
+              <p className="text-sm text-gray-800 line-clamp-4 min-h-[40px] font-sans italic opacity-50">
+                {note.isFlashcard ? 'Flashcard vazio' : 'Nota vazia'}
+              </p>
+            )}
+          </div>
         )}
+
         <div className="flex gap-2 mt-4 justify-between border-t border-black/10 pt-2 items-center">
-          <button 
-            onPointerDown={(e) => {
-              e.stopPropagation();
-            }} 
-            onClick={onDelete} 
-            className="text-xs font-bold text-red-600 hover:text-red-800 bg-red-50 px-2 py-1 rounded"
-          >
-            Excluir
-          </button>
+          <div className="flex gap-2">
+            <button 
+              onPointerDown={(e) => e.stopPropagation()} 
+              onClick={onDelete} 
+              className="text-xs font-bold text-red-600 hover:text-red-800 bg-red-50 px-2 py-1 rounded"
+            >
+              Excluir
+            </button>
+            {!isEditing && (
+              <button 
+                onPointerDown={(e) => e.stopPropagation()} 
+                onClick={() => setIsEditing(true)} 
+                className="text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 px-2 py-1 rounded"
+              >
+                Editar
+              </button>
+            )}
+          </div>
           
           <div onPointerDown={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()}>
             {note.isArchived ? (
@@ -707,10 +813,292 @@ function SidebarNoteItem({
           </div>
         </div>
         {note.isArchived && (
-          <div className="absolute top-0 right-0 left-0 h-4 bg-black/5 rounded-t-lg hidden md:flex items-center justify-center opacity-50">
+          <div className="absolute top-0 right-0 left-0 h-4 bg-black/5 rounded-t-lg hidden md:flex items-center justify-center opacity-50 pointer-events-none">
             <span className="text-[10px] text-gray-600 font-bold uppercase tracking-wider">Arraste para fixar</span>
           </div>
         )}
+      </div>
+    </Draggable>
+  );
+}
+
+function FlashcardItem({ 
+  note, 
+  isCascadeMode,
+  cascadePos,
+  cascadeSize,
+  onCascadeResize,
+  onCascadeStop,
+  onUpdate,
+  onFocus
+}: { 
+  note: Note; 
+  isCascadeMode: boolean;
+  cascadePos?: {x: number, y: number};
+  cascadeSize?: {w: number, h: number};
+  onCascadeResize?: (size: {w: number, h: number}) => void;
+  onCascadeStop?: (pos: {x: number, y: number}) => void;
+  onUpdate: (u: Partial<Note>) => void;
+  onFocus: () => void;
+}) {
+  const [flipped, setFlipped] = useState(false);
+  const nodeRef = useRef<HTMLDivElement>(null);
+  
+  const [size, setSize] = useState({ w: note.w || 250, h: note.h || 300 });
+  const isResizing = useRef(false);
+  
+  const [showPalette, setShowPalette] = useState(false);
+  const [savedColors, setSavedColors] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem('sticky_saved_colors') || '[]'); } catch { return []; }
+  });
+
+  const handleSaveCustomColor = (color: string) => {
+    setSavedColors(prev => {
+      const next = Array.from(new Set([color, ...prev])).slice(0, 6);
+      localStorage.setItem('sticky_saved_colors', JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const handleEyedropper = async () => {
+    if ('EyeDropper' in window) {
+      try {
+        const eyeDropper = new (window as any).EyeDropper();
+        const result = await eyeDropper.open();
+        onUpdate({ color: result.sRGBHex });
+        handleSaveCustomColor(result.sRGBHex);
+        setShowPalette(false);
+      } catch (err) {
+        // user canceled
+      }
+    } else {
+      alert('O seu navegador não suporta a ferramenta de conta-gotas.');
+    }
+  };
+
+  const resizeRef = useRef<{ startX: number; startY: number; startW: number; startH: number } | null>(null);
+
+  const onResizeStart = (e: React.PointerEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const el = e.currentTarget as HTMLElement;
+    el.setPointerCapture(e.pointerId);
+    const currentW = isCascadeMode && cascadeSize ? cascadeSize.w : size.w;
+    const currentH = isCascadeMode && cascadeSize ? cascadeSize.h : size.h;
+
+    resizeRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      startW: currentW,
+      startH: currentH,
+    };
+    
+    // Disable iframe pointer events globally during resize
+    const iframes = document.querySelectorAll('iframe');
+    iframes.forEach(iframe => {
+      iframe.style.pointerEvents = 'none';
+    });
+  };
+
+  const onResizeMove = (e: React.PointerEvent) => {
+    if (!resizeRef.current || !nodeRef.current) return;
+    e.preventDefault();
+    
+    const scale = nodeRef.current.getBoundingClientRect().width / (nodeRef.current.offsetWidth || 1);
+    
+    const dx = (e.clientX - resizeRef.current.startX) / scale;
+    const dy = (e.clientY - resizeRef.current.startY) / scale;
+    
+    const newW = Math.max(180, resizeRef.current.startW + dx);
+    const newH = Math.max(180, resizeRef.current.startH + dy);
+    
+    if (isCascadeMode && onCascadeResize) {
+      onCascadeResize({ w: newW, h: newH });
+    } else {
+      setSize({ w: newW, h: newH });
+    }
+  };
+
+  const onResizeEnd = (e: React.PointerEvent) => {
+    resizeRef.current = null;
+    (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    
+    // Restore iframe pointer events
+    const iframes = document.querySelectorAll('iframe');
+    iframes.forEach(iframe => {
+      iframe.style.pointerEvents = 'auto';
+    });
+
+    if (!isCascadeMode) {
+      onUpdate({ w: size.w, h: size.h });
+      localStorage.setItem('last_flashcard_size', JSON.stringify({ w: size.w, h: size.h }));
+    } else if (cascadeSize) {
+      localStorage.setItem('last_flashcard_size', JSON.stringify({ w: cascadeSize.w, h: cascadeSize.h }));
+    }
+  };
+
+  const baseColor = note.color || '#6366f1'; // indigo-500
+  const backColor = darkenColor(baseColor, 30);
+
+  return (
+    <Draggable
+      nodeRef={nodeRef}
+      handle=".drag-handle"
+      defaultPosition={isCascadeMode && cascadePos ? cascadePos : { x: note.x || 0, y: note.y || 0 }}
+      onDrag={(_e, data) => {
+        if (isCascadeMode) {
+          const elements = document.querySelectorAll('.flashcard-cascade-item');
+          elements.forEach(el => {
+            if (el !== nodeRef.current) {
+              (el as HTMLElement).style.transform = `translate(${data.x}px, ${data.y}px)`;
+            }
+          });
+        }
+      }}
+      onStop={(_e, data) => {
+        if (isCascadeMode) {
+          onCascadeStop?.({x: data.x, y: data.y});
+        } else {
+          onUpdate({ x: data.x, y: data.y });
+          localStorage.setItem('last_flashcard_pos', JSON.stringify({ x: data.x, y: data.y }));
+        }
+      }}
+      onStart={onFocus}
+      bounds="parent"
+      cancel="button,.flip-content,.palette-popover"
+    >
+      <div 
+        ref={nodeRef}
+        className={`absolute perspective-1000 pointer-events-auto ${isCascadeMode ? 'flashcard-cascade-item' : ''}`}
+        style={{ 
+          width: isCascadeMode && cascadeSize ? `${cascadeSize.w}px` : `${size.w}px`,
+          height: isCascadeMode && cascadeSize ? `${cascadeSize.h}px` : `${size.h}px`,
+          zIndex: note.zIndex || 100 
+        }}
+        onMouseDown={onFocus}
+      >
+        <div className={`relative w-full h-full transition-transform duration-500 transform-style-3d ${flipped ? 'rotate-y-180' : ''}`}>
+          
+          {/* FRENTE */}
+          <div className="absolute w-full h-full backface-hidden rounded-xl shadow-xl flex flex-col text-white" style={{ backgroundColor: baseColor }}>
+            <div className="drag-handle h-8 bg-black/10 flex items-center justify-between px-2 cursor-grab active:cursor-grabbing rounded-t-xl" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center gap-2">
+                <GripHorizontal className="w-4 h-4 text-white/50" />
+                {note.noteNumber && <span className="text-xs font-semibold text-white/50">#{note.noteNumber}</span>}
+              </div>
+              <div className="flex gap-1">
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setShowPalette(!showPalette); }}
+                  className="p-1 hover:bg-black/20 rounded"
+                  title="Mudar Cor"
+                >
+                  <Palette className="w-3.5 h-3.5 text-white/80 pointer-events-none" />
+                </button>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); onUpdate({ isArchived: true }); }}
+                  className="p-1 hover:bg-black/20 rounded"
+                  title="Fechar"
+                >
+                  <X className="w-4 h-4 text-white/80 pointer-events-none" />
+                </button>
+              </div>
+            </div>
+            
+            {showPalette && (
+              <div className="palette-popover flex flex-col gap-2 p-2 bg-white/95 backdrop-blur border-b border-black/10 text-black">
+                <div className="flex gap-1 justify-center items-center">
+                  {COLORS.map(c => (
+                    <button
+                      key={c}
+                      onClick={(e) => { e.stopPropagation(); onUpdate({ color: c }); setShowPalette(false); }}
+                      className={`w-6 h-6 rounded-full shadow-inner border-2 ${note.color === c ? 'border-gray-800' : 'border-transparent'}`}
+                      style={{ backgroundColor: c }}
+                      title="Cor predefinida"
+                    />
+                  ))}
+                </div>
+                {savedColors.length > 0 && (
+                  <div className="flex gap-1 justify-center items-center flex-wrap pt-1 border-t border-gray-200">
+                    {savedColors.map(c => (
+                      <button
+                        key={c}
+                        onClick={(e) => { e.stopPropagation(); onUpdate({ color: c }); setShowPalette(false); }}
+                        className={`w-5 h-5 rounded-full shadow-inner border border-black/20 ${note.color === c ? 'ring-2 ring-indigo-500' : ''}`}
+                        style={{ backgroundColor: c }}
+                      />
+                    ))}
+                  </div>
+                )}
+                <div className="flex gap-1 justify-center items-center pt-2 border-t border-gray-200">
+                  <button onClick={handleEyedropper} className="w-7 h-7 rounded-full shadow-sm border border-gray-300 bg-gray-50 flex items-center justify-center hover:bg-gray-200">
+                    <Pipette className="w-3.5 h-3.5 text-gray-700" />
+                  </button>
+                  <label className="w-7 h-7 rounded-full shadow-inner border-2 border-transparent bg-gradient-to-tr from-red-500 via-green-500 to-blue-500 cursor-pointer flex items-center justify-center">
+                    <input type="color" value={note.color || '#6366f1'} onChange={(e) => onUpdate({ color: e.target.value })} onBlur={(e) => handleSaveCustomColor(e.target.value)} className="opacity-0 absolute w-0 h-0" />
+                    <PlusCircle className="w-4 h-4 text-white drop-shadow-md" />
+                  </label>
+                </div>
+                <div className="flex gap-1 justify-center items-center pt-2 border-t border-gray-200">
+                  <button onClick={(e) => { e.stopPropagation(); onUpdate({ color: getRandomHexColor('pastel') }); }} className="text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-gray-200 bg-[#fdfbf7] hover:bg-white text-gray-600">Pastel</button>
+                  <button onClick={(e) => { e.stopPropagation(); onUpdate({ color: getRandomHexColor('vibrant') }); }} className="px-3 py-1.5 text-xs font-bold rounded-md text-white shadow-sm hover:opacity-90" style={{ background: 'linear-gradient(135deg, #ff4081 0%, #ff9100 100%)' }}>Vibrante</button>
+                  <button onClick={(e) => { e.stopPropagation(); onUpdate({ color: getRandomHexColor('neon') }); }} className="px-3 py-1.5 text-xs font-black rounded-md text-[#ccff00] bg-slate-900 shadow-sm border border-slate-700" style={{ textShadow: '0 0 5px #ccff00, 0 0 10px #ccff00' }}>Neon</button>
+                </div>
+              </div>
+            )}
+
+            <div 
+              className="flip-content flex-grow flex items-center justify-center p-6 cursor-pointer overflow-auto text-center"
+              onClick={(e) => { e.stopPropagation(); setFlipped(true); }}
+            >
+              <div className="font-bold whitespace-pre-wrap">{note.content || "Frente do flashcard"}</div>
+            </div>
+            <div
+              onPointerDown={onResizeStart}
+              onPointerMove={onResizeMove}
+              onPointerUp={onResizeEnd}
+              onPointerCancel={onResizeEnd}
+              className="absolute bottom-0 right-0 w-10 h-10 cursor-se-resize touch-none flex items-end justify-end"
+              style={{ zIndex: 10 }}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" className="mr-1 mb-1 opacity-40 text-white">
+                <line x1="14" y1="2" x2="2" y2="14" stroke="currentColor" strokeWidth="1.5" />
+                <line x1="14" y1="7" x2="7" y2="14" stroke="currentColor" strokeWidth="1.5" />
+                <line x1="14" y1="12" x2="12" y2="14" stroke="currentColor" strokeWidth="1.5" />
+              </svg>
+            </div>
+          </div>
+
+          {/* VERSO */}
+          <div className="absolute w-full h-full backface-hidden rounded-xl shadow-xl flex flex-col text-white rotate-y-180" style={{ backgroundColor: backColor }}>
+            <div className="drag-handle h-8 bg-black/10 flex items-center justify-between px-2 cursor-grab active:cursor-grabbing rounded-t-xl" onClick={(e) => e.stopPropagation()}>
+               <div className="flex items-center gap-2">
+                 <GripHorizontal className="w-4 h-4 text-white/50" />
+               </div>
+            </div>
+            <div 
+              className="flip-content flex-grow flex items-center justify-center p-6 cursor-pointer overflow-auto text-center"
+              onClick={(e) => { e.stopPropagation(); setFlipped(false); }}
+            >
+              <div className="font-bold whitespace-pre-wrap">{note.backContent || "Verso do flashcard"}</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Global Resize Handle (Never Flips) */}
+        <div
+          onPointerDown={onResizeStart}
+          onPointerMove={onResizeMove}
+          onPointerUp={onResizeEnd}
+          onPointerCancel={onResizeEnd}
+          className="absolute bottom-0 right-0 w-10 h-10 cursor-se-resize touch-none flex items-end justify-end"
+          style={{ zIndex: 20 }}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" className="mr-1 mb-1 opacity-50 text-white mix-blend-overlay pointer-events-none">
+            <line x1="14" y1="2" x2="2" y2="14" stroke="currentColor" strokeWidth="1.5" />
+            <line x1="14" y1="7" x2="7" y2="14" stroke="currentColor" strokeWidth="1.5" />
+            <line x1="14" y1="12" x2="12" y2="14" stroke="currentColor" strokeWidth="1.5" />
+          </svg>
+        </div>
       </div>
     </Draggable>
   );
@@ -785,6 +1173,15 @@ function StickyNoteItem({
   // Local state for debouncing typing and dragging
   const [title, setTitle] = useState(note.title || '');
   const [content, setContent] = useState(note.content || '');
+  
+  const editableRef = useRef<HTMLDivElement>(null);
+
+  // Set initial content once
+  useEffect(() => {
+    if (editableRef.current && !editableRef.current.innerHTML && note.content) {
+      editableRef.current.innerHTML = note.content;
+    }
+  }, [note.content]);
 
   // Debounce saving content
   useEffect(() => {
@@ -805,19 +1202,26 @@ function StickyNoteItem({
     e.stopPropagation();
     const el = e.currentTarget as HTMLElement;
     el.setPointerCapture(e.pointerId);
+    const currentW = isCascadeMode && cascadeSize ? cascadeSize.w : size.w;
+    const currentH = isCascadeMode && cascadeSize ? cascadeSize.h : size.h;
+
     resizeRef.current = {
       startX: e.clientX,
       startY: e.clientY,
-      startW: size.w,
-      startH: size.h,
+      startW: currentW,
+      startH: currentH,
     };
   };
 
   const onResizeMove = (e: React.PointerEvent) => {
-    if (!resizeRef.current) return;
+    if (!resizeRef.current || !nodeRef.current) return;
     e.preventDefault();
-    const dx = e.clientX - resizeRef.current.startX;
-    const dy = e.clientY - resizeRef.current.startY;
+    
+    const scale = nodeRef.current.getBoundingClientRect().width / (nodeRef.current.offsetWidth || 1);
+    
+    const dx = (e.clientX - resizeRef.current.startX) / scale;
+    const dy = (e.clientY - resizeRef.current.startY) / scale;
+    
     const newW = Math.max(180, resizeRef.current.startW + dx);
     const newH = Math.max(180, resizeRef.current.startH + dy);
     
@@ -1161,11 +1565,12 @@ function StickyNoteItem({
 
         {/* Editable Content */}
         <div
+          ref={editableRef}
           contentEditable
           suppressContentEditableWarning
           data-placeholder="Escreva algo..."
           className="note-editable w-full flex-grow p-3 text-gray-800 font-medium"
-          style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}
+          style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif", outline: 'none' }}
           onInput={(e) => {
             const html = (e.target as HTMLDivElement).innerHTML;
             setContent(html);
@@ -1173,7 +1578,6 @@ function StickyNoteItem({
           onFocus={onFocus}
           onPointerDown={(e) => e.stopPropagation()}
           onTouchStart={(e) => e.stopPropagation()}
-          dangerouslySetInnerHTML={{ __html: content }}
         />
 
         {/* Custom Resize Handle - large touch target */}
@@ -1282,252 +1686,11 @@ function RichTextToolbar() {
       <button onClick={() => exec('italic')} title="Itálico (Ctrl+I)"><i>I</i></button>
       <button onClick={() => exec('underline')} title="Sublinhado (Ctrl+U)"><u>U</u></button>
       <button onClick={() => exec('strikeThrough')} title="Tachado"><s>S</s></button>
+      <div className="w-[1px] h-4 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+      <button onClick={() => exec('justifyLeft')} title="Alinhar à Esquerda"><AlignLeft size={14} /></button>
+      <button onClick={() => exec('justifyCenter')} title="Centralizar"><AlignCenter size={14} /></button>
     </div>
   );
 }
 
-// FlashcardItem Component
-function FlashcardItem({
-  note,
-  isCascadeMode,
-  cascadePos,
-  cascadeSize,
-  onCascadeResize,
-  onCascadeStop,
-  onUpdate,
-  onFocus
-}: {
-  note: Note;
-  isCascadeMode: boolean;
-  cascadePos?: {x: number, y: number};
-  cascadeSize?: {w: number, h: number};
-  onCascadeResize?: (size: {w: number, h: number}) => void;
-  onCascadeStop?: (pos: {x: number, y: number}) => void;
-  onUpdate: (u: Partial<Note>) => void;
-  onFocus: () => void;
-}) {
-  const nodeRef = useRef<HTMLDivElement>(null);
-  const [isFlipped, setIsFlipped] = useState(false);
-  const [showPalette, setShowPalette] = useState(false);
-  const [title, setTitle] = useState(note.title || '');
-  const [content, setContent] = useState(note.content || '');
-  const [backContent, setBackContent] = useState(note.backContent || '');
-  const [size, setSize] = useState({ w: note.w || 256, h: note.h || 280 });
-  const resizeRef = useRef<{ startX: number; startY: number; startW: number; startH: number } | null>(null);
 
-  // Debounce saves
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      const updates: Partial<Note> = {};
-      if (content !== note.content) updates.content = content;
-      if (backContent !== note.backContent) updates.backContent = backContent;
-      if (title !== note.title) updates.title = title;
-      if (Object.keys(updates).length > 0) onUpdate(updates);
-    }, 1000);
-    return () => clearTimeout(timeoutId);
-  }, [content, backContent, title]);
-
-  const onResizeStart = (e: React.PointerEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-    resizeRef.current = { startX: e.clientX, startY: e.clientY, startW: size.w, startH: size.h };
-  };
-
-  const onResizeMove = (e: React.PointerEvent) => {
-    if (!resizeRef.current) return;
-    e.preventDefault();
-    const dx = e.clientX - resizeRef.current.startX;
-    const dy = e.clientY - resizeRef.current.startY;
-    const newW = Math.max(180, resizeRef.current.startW + dx);
-    const newH = Math.max(200, resizeRef.current.startH + dy);
-    if (isCascadeMode && onCascadeResize) onCascadeResize({ w: newW, h: newH });
-    else setSize({ w: newW, h: newH });
-  };
-
-  const onResizeEnd = (e: React.PointerEvent) => {
-    resizeRef.current = null;
-    (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
-    if (!isCascadeMode) {
-      onUpdate({ w: size.w, h: size.h });
-      localStorage.setItem('last_note_size', JSON.stringify(size));
-    }
-  };
-
-  const backColor = darkenColor(note.color || '#fef08a', 25);
-  const currentW = isCascadeMode && cascadeSize ? cascadeSize.w : size.w;
-  const currentH = isCascadeMode && cascadeSize ? cascadeSize.h : size.h;
-
-  return (
-    <Draggable
-      nodeRef={nodeRef}
-      handle=".drag-handle"
-      defaultPosition={isCascadeMode && cascadePos ? cascadePos : { x: note.x || 0, y: note.y || 0 }}
-      onStop={(_e, data) => {
-        if (isCascadeMode) onCascadeStop?.({ x: data.x, y: data.y });
-        else {
-          onUpdate({ x: data.x, y: data.y });
-          localStorage.setItem('last_note_pos', JSON.stringify({ x: data.x, y: data.y }));
-        }
-      }}
-      onStart={() => onFocus()}
-      bounds="parent"
-      cancel="button"
-    >
-      <div
-        ref={nodeRef}
-        className="sticky-note absolute rounded-lg shadow-xl pointer-events-auto border-t-4 flashcard-container group transition-shadow hover:shadow-2xl"
-        style={{
-          width: `${currentW}px`,
-          height: `${currentH}px`,
-          minWidth: '180px',
-          minHeight: '200px',
-          borderColor: darkenColor(note.color || '#fef08a', 20),
-          zIndex: note.zIndex || 100
-        }}
-        onClick={onFocus}
-      >
-        <div className={`flashcard-inner ${isFlipped ? 'flipped' : ''}`}>
-          {/* FRONT */}
-          <div className="flashcard-front rounded-lg overflow-hidden" style={{ backgroundColor: note.color || '#fef08a' }}>
-            {/* Header */}
-            <div className="drag-handle h-8 bg-black/5 flex items-center justify-between px-2 cursor-grab active:cursor-grabbing">
-              <div className="flex items-center gap-2">
-                <GripHorizontal className="w-4 h-4 text-black/30" />
-                <span className="text-[10px] font-bold text-indigo-600/60">FLASHCARD</span>
-                {note.noteNumber && <span className="text-xs font-semibold text-black/30">#{note.noteNumber}</span>}
-              </div>
-              <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                <button
-                  onClick={(e) => { e.stopPropagation(); setIsFlipped(true); }}
-                  className="p-1 hover:bg-black/10 rounded transition-colors text-indigo-600"
-                  title="Virar para o verso"
-                >
-                  <RotateCcw className="w-3.5 h-3.5 pointer-events-none" />
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); setShowPalette(!showPalette); }}
-                  className="p-1 hover:bg-black/10 rounded"
-                  title="Mudar Cor"
-                >
-                  <Palette className="w-3.5 h-3.5 text-gray-700 pointer-events-none" />
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); onUpdate({ isArchived: true }); }}
-                  className="p-2 -mr-1 hover:bg-black/10 rounded"
-                  title="Fechar"
-                >
-                  <X className="w-4 h-4 text-gray-700 pointer-events-none" />
-                </button>
-              </div>
-            </div>
-
-            {/* Color Palette */}
-            {showPalette && (
-              <div className="flex gap-1 p-2 bg-white/80 backdrop-blur border-b border-black/10 justify-center flex-wrap">
-                {COLORS.map(c => (
-                  <button key={c} onClick={(e) => { e.stopPropagation(); onUpdate({ color: c }); setShowPalette(false); }}
-                    className={`w-6 h-6 rounded-full shadow-inner border-2 ${note.color === c ? 'border-gray-800' : 'border-transparent'}`}
-                    style={{ backgroundColor: c }}
-                  />
-                ))}
-                <button onClick={(e) => { e.stopPropagation(); onUpdate({ color: getRandomHexColor('pastel') }); }}
-                  className="text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-gray-200 bg-white hover:bg-gray-50 text-gray-600"
-                >Pastel</button>
-              </div>
-            )}
-
-            {/* Title */}
-            <div className="bg-black/5 border-b border-black/10">
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                onFocus={onFocus}
-                onPointerDown={(e) => e.stopPropagation()}
-                onTouchStart={(e) => e.stopPropagation()}
-                placeholder="Pergunta / Frente..."
-                className="w-full px-3 py-1 bg-transparent outline-none font-bold text-gray-800 placeholder-black/40 text-sm font-sans"
-              />
-            </div>
-
-            <RichTextToolbar />
-
-            {/* Front Content */}
-            <div
-              contentEditable
-              suppressContentEditableWarning
-              data-placeholder="Escreva a pergunta..."
-              className="note-editable w-full flex-grow p-3 text-gray-800 font-medium overflow-y-auto"
-              style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}
-              onInput={(e) => setContent((e.target as HTMLDivElement).innerHTML)}
-              onFocus={onFocus}
-              onPointerDown={(e) => e.stopPropagation()}
-              onTouchStart={(e) => e.stopPropagation()}
-              dangerouslySetInnerHTML={{ __html: content }}
-            />
-          </div>
-
-          {/* BACK */}
-          <div className="flashcard-back rounded-lg overflow-hidden" style={{ backgroundColor: backColor }}>
-            {/* Header */}
-            <div className="drag-handle h-8 bg-black/5 flex items-center justify-between px-2 cursor-grab active:cursor-grabbing">
-              <div className="flex items-center gap-2">
-                <GripHorizontal className="w-4 h-4 text-black/30" />
-                <span className="text-[10px] font-bold text-indigo-600/60">VERSO</span>
-                {note.noteNumber && <span className="text-xs font-semibold text-black/30">#{note.noteNumber}</span>}
-              </div>
-              <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                <button
-                  onClick={(e) => { e.stopPropagation(); setIsFlipped(false); }}
-                  className="p-1 hover:bg-black/10 rounded transition-colors text-indigo-600"
-                  title="Virar para a frente"
-                >
-                  <RotateCcw className="w-3.5 h-3.5 pointer-events-none" />
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); onUpdate({ isArchived: true }); }}
-                  className="p-2 -mr-1 hover:bg-black/10 rounded"
-                  title="Fechar"
-                >
-                  <X className="w-4 h-4 text-gray-700 pointer-events-none" />
-                </button>
-              </div>
-            </div>
-
-            <RichTextToolbar />
-
-            {/* Back Content */}
-            <div
-              contentEditable
-              suppressContentEditableWarning
-              data-placeholder="Escreva a resposta..."
-              className="note-editable w-full flex-grow p-3 text-gray-800 font-medium overflow-y-auto"
-              style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif" }}
-              onInput={(e) => setBackContent((e.target as HTMLDivElement).innerHTML)}
-              onFocus={onFocus}
-              onPointerDown={(e) => e.stopPropagation()}
-              onTouchStart={(e) => e.stopPropagation()}
-              dangerouslySetInnerHTML={{ __html: backContent }}
-            />
-          </div>
-        </div>
-
-        {/* Resize Handle */}
-        <div
-          onPointerDown={onResizeStart}
-          onPointerMove={onResizeMove}
-          onPointerUp={onResizeEnd}
-          onPointerCancel={onResizeEnd}
-          className="absolute bottom-0 right-0 w-10 h-10 cursor-se-resize touch-none flex items-end justify-end z-50"
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" className="mr-1 mb-1 opacity-40">
-            <line x1="14" y1="2" x2="2" y2="14" stroke="currentColor" strokeWidth="1.5" />
-            <line x1="14" y1="7" x2="7" y2="14" stroke="currentColor" strokeWidth="1.5" />
-            <line x1="14" y1="12" x2="12" y2="14" stroke="currentColor" strokeWidth="1.5" />
-          </svg>
-        </div>
-      </div>
-    </Draggable>
-  );
-}

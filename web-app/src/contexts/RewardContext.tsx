@@ -6,6 +6,9 @@ import { useAuth } from './AuthContext';
 export interface StickerInstance {
   instanceId: string;
   stickerId: string;
+  isUsed?: boolean;
+  route?: string;
+  customUrl?: string;
 }
 
 interface RewardContextType {
@@ -13,8 +16,11 @@ interface RewardContextType {
   unlockedStickers: StickerInstance[];
   awardPoints: (amount: number, reason: string) => void;
   spendPoints: (amount: number, reason: string) => Promise<boolean>;
-  addStickerToInventory: (stickerId: string) => Promise<void>;
-  removeStickerFromInventory: (instanceId: string) => Promise<void>;
+  addStickerToInventory: (stickerId: string, customUrl?: string) => Promise<void>;
+  markStickerAsUsed: (instanceId: string, route: string) => Promise<void>;
+  markStickerAsUnused: (instanceId: string) => Promise<void>;
+  activeStamper: { instanceId: string; stickerId: string; customUrl?: string } | null;
+  setActiveStamper: (stamper: { instanceId: string; stickerId: string; customUrl?: string } | null) => void;
   floatingPoints: { id: string; amount: number }[];
 }
 
@@ -24,7 +30,10 @@ const RewardContext = createContext<RewardContextType>({
   awardPoints: () => {},
   spendPoints: async () => false,
   addStickerToInventory: async () => {},
-  removeStickerFromInventory: async () => {},
+  markStickerAsUsed: async () => {},
+  markStickerAsUnused: async () => {},
+  activeStamper: null,
+  setActiveStamper: () => {},
   floatingPoints: [],
 });
 
@@ -42,6 +51,7 @@ const ACTION_COOLDOWNS: Record<string, number> = {
 export const RewardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
   const [effortPoints, setEffortPoints] = useState<number>(0);
+  const [activeStamper, setActiveStamper] = useState<{ instanceId: string; stickerId: string; customUrl?: string } | null>(null);
   const [floatingPoints, setFloatingPoints] = useState<{ id: string; amount: number }[]>([]);
   const [lastActionTimes, setLastActionTimes] = useState<Record<string, number>>({});
 
@@ -61,8 +71,7 @@ export const RewardProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setEffortPoints(data.effortPoints || 0);
         setUnlockedStickers(data.unlockedStickers || []);
       } else {
-        // Document doesn't exist, create it
-        setDoc(docRef, { effortPoints: 0, unlockedStickers: [] }, { merge: true });
+        // Se não existe, assumimos 0 localmente, mas não gravamos 0 no banco para evitar zerar por engano
         setEffortPoints(0);
         setUnlockedStickers([]);
       }
@@ -129,7 +138,7 @@ export const RewardProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, [user]);
 
-  const addStickerToInventory = useCallback(async (stickerId: string) => {
+  const addStickerToInventory = useCallback(async (stickerId: string, customUrl?: string) => {
     if (!user) return;
     try {
       const docRef = doc(db, 'users', user.uid, 'settings', 'rewards');
@@ -137,8 +146,10 @@ export const RewardProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const currentStickers = snap.exists() ? (snap.data().unlockedStickers || []) : [];
       
       const newInstance: StickerInstance = {
-        instanceId: Math.random().toString(36).substring(2) + Date.now().toString(36),
-        stickerId
+        instanceId: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+        stickerId,
+        customUrl,
+        isUsed: false
       };
       
       await setDoc(docRef, { 
@@ -149,7 +160,7 @@ export const RewardProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }
   }, [user]);
 
-  const removeStickerFromInventory = useCallback(async (instanceId: string) => {
+  const markStickerAsUsed = useCallback(async (instanceId: string, route: string) => {
     if (!user) return;
     try {
       const docRef = doc(db, 'users', user.uid, 'settings', 'rewards');
@@ -157,18 +168,44 @@ export const RewardProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (!snap.exists()) return;
       
       const currentStickers: StickerInstance[] = snap.data().unlockedStickers || [];
-      const updatedStickers = currentStickers.filter(s => s.instanceId !== instanceId);
+      const updatedStickers = currentStickers.map(s => 
+        s.instanceId === instanceId ? { ...s, isUsed: true, route } : s
+      );
       
-      await setDoc(docRef, { 
-        unlockedStickers: updatedStickers
-      }, { merge: true });
+      await setDoc(docRef, { unlockedStickers: updatedStickers }, { merge: true });
     } catch (e) {
-      console.error("Erro ao remover sticker do inventário:", e);
+      console.error("Erro ao marcar sticker como usado:", e);
+    }
+  }, [user]);
+
+  const markStickerAsUnused = useCallback(async (instanceId: string) => {
+    if (!user) return;
+    try {
+      const docRef = doc(db, 'users', user.uid, 'settings', 'rewards');
+      const snap = await getDoc(docRef);
+      if (!snap.exists()) return;
+      
+      const currentStickers: StickerInstance[] = snap.data().unlockedStickers || [];
+      
+      // Emit event so the responsible component (Whiteboard, Postit, Decorator) removes it from its UI and DB
+      window.dispatchEvent(new CustomEvent('remove-sticker', { detail: { instanceId } }));
+
+      const updatedStickers = currentStickers.map(s => {
+        if (s.instanceId === instanceId) {
+          const { route, ...rest } = s;
+          return { ...rest, isUsed: false };
+        }
+        return s;
+      });
+      
+      await setDoc(docRef, { unlockedStickers: updatedStickers }, { merge: true });
+    } catch (e) {
+      console.error("Erro ao desmarcar sticker:", e);
     }
   }, [user]);
 
   return (
-    <RewardContext.Provider value={{ effortPoints, unlockedStickers, awardPoints, spendPoints, addStickerToInventory, removeStickerFromInventory, floatingPoints }}>
+    <RewardContext.Provider value={{ effortPoints, unlockedStickers, awardPoints, spendPoints, addStickerToInventory, markStickerAsUsed, markStickerAsUnused, activeStamper, setActiveStamper, floatingPoints }}>
       {children}
     </RewardContext.Provider>
   );

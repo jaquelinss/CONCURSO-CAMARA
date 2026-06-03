@@ -21,6 +21,7 @@ import TextSelectionPopover from './components/TextSelectionPopover';
 import KnowledgeBaseManager from './components/KnowledgeBaseManager';
 import WhiteboardOverlay from './components/WhiteboardOverlay';
 import PdfAnnotatorOverlay from './components/PdfAnnotatorOverlay';
+import StamperOverlay from './components/StamperOverlay';
 import SiteDecorator from './components/SiteDecorator';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import React, { useState } from 'react';
@@ -56,13 +57,14 @@ export default function App() {
           <KnowledgeBaseProvider>
             <CustomSubjectsProvider>
               <Router>
-                <div className="min-h-screen font-sans transition-colors duration-200 overflow-x-hidden">
+                <div className="relative min-h-screen font-sans transition-colors duration-200 overflow-x-hidden">
                   <AppRoutes />
                 
                   <SiteDecorator />
                   <ReportButton isHidden={!showTools} />
                   <StickyNotesManager />
                   <FloatingYouTubePlayer />
+                  <StamperOverlay />
                   <TodayStudyButton isHidden={!showTools} />
                   <AITeacherChat isHidden={!showTools} />
                   <TextSelectionPopover />
