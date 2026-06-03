@@ -4,7 +4,7 @@ import { collection, query, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serve
 import { useAuth } from '../contexts/AuthContext';
 import { useReward } from '../contexts/RewardContext';
 import Draggable from 'react-draggable';
-import { Palette, X, GripHorizontal, Tag, PlusCircle, Layers, Eye, EyeOff, Pipette, ChevronRight, ChevronUp, ChevronDown, History, RotateCcw, AlignLeft, AlignCenter } from 'lucide-react';
+import { Palette, X, GripHorizontal, Tag, PlusCircle, Layers, Eye, EyeOff, Pipette, ChevronRight, ChevronUp, ChevronDown, History, AlignLeft, AlignCenter } from 'lucide-react';
 import { generateNoteTag } from '../lib/gemini';
 
 interface Note {
@@ -850,7 +850,6 @@ function FlashcardItem({
   const nodeRef = useRef<HTMLDivElement>(null);
   
   const [size, setSize] = useState({ w: note.w || 250, h: note.h || 300 });
-  const isResizing = useRef(false);
   
   const [showPalette, setShowPalette] = useState(false);
   const [savedColors, setSavedColors] = useState<string[]>(() => {

@@ -68,7 +68,7 @@ import type { Notebook } from '../types/notebook';
 
 export default function WhiteboardOverlay() {
   const { user } = useAuth();
-  const { activeStamper, setActiveStamper, markStickerAsUsed } = useReward();
+  const { activeStamper } = useReward();
   const [active, setActive] = useState(false);
   
   // Notebooks

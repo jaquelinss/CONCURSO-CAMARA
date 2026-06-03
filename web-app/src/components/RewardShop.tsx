@@ -26,9 +26,9 @@ const DEFAULT_STICKERS = [
 
 export interface GlobalSticker {
   id: string;
-  url: string;
+  url?: string;
   price: number;
-  type?: 'pack';
+  type?: 'sticker' | 'pack';
   name?: string;
   promoPricePerItem?: number;
   items?: { id: string; url: string }[];
@@ -38,7 +38,7 @@ export interface GlobalSticker {
 }
 
 export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
-  const { effortPoints, spendPoints, addStickerToInventory, addMultipleStickersToInventory, unlockedStickers, markStickerAsUnused, setActiveStamper } = useReward();
+  const { effortPoints, spendPoints, addStickerToInventory, addMultipleStickersToInventory, unlockedStickers, setActiveStamper } = useReward();
   const { user, isAdmin } = useAuth();
   const [activeTab, setActiveTab] = useState<'shop' | 'inventory' | 'admin'>('shop');
   const [buying, setBuying] = useState<string | null>(null);
@@ -52,10 +52,10 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
   const [adminPrompt, setAdminPrompt] = useState('');
   const [adminPreview, setAdminPreview] = useState<string | null>(null);
   const [adminPreviewBlob, setAdminPreviewBlob] = useState<Blob | null>(null);
-  const [adminGenerating, setAdminGenerating] = useState(false);
+  const [adminGenerating] = useState(false);
   const [adminUploading, setAdminUploading] = useState(false);
-  const [adminImgLoading, setAdminImgLoading] = useState(false);
-  const [adminImgError, setAdminImgError] = useState(false);
+  const [, setAdminImgLoading] = useState(false);
+  const [, setAdminImgError] = useState(false);
   const adminFileRef = useRef<HTMLInputElement>(null);
 
   // Admin Pack Grouping & Editing
@@ -164,7 +164,7 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
         const packs = dynamicStickers.filter(s => s.type === 'pack');
         packs.forEach(pack => {
            if (pack.itemIds && pack.itemIds.length > 0) {
-               pack.items = pack.itemIds.map(id => {
+               pack.items = pack.itemIds.map((id: string) => {
                    const itemDoc = dynamicStickers.find(s => s.id === id);
                    return itemDoc ? { id, url: itemDoc.url } : null;
                }).filter(Boolean) as {id: string, url: string}[];
@@ -182,7 +182,7 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
         setGlobalShop(finalShop);
         
         // --- DEBUG LOG ---
-        console.log("FINAL GLOBAL SHOP:", finalShop.map(s => ({id: s.id, url: s.url, packId: s.packId})));
+        console.log("FINAL GLOBAL SHOP:", finalShop.map(s => ({id: s.id, url: s.url, packId: (s as any).packId})));
         // -----------------
       } catch(e) {
         console.error("Error loading global shop:", e);
@@ -616,7 +616,7 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
                       </div>
                       <button 
                         disabled={!canAfford || buying === sticker.id}
-                        onClick={() => handleBuy(sticker)}
+                        onClick={() => handleBuy({ id: sticker.id, url: sticker.url || '', price: sticker.price })}
                         className={`w-full py-2 rounded-lg font-medium transition-colors ${
                           buying === sticker.id ? 'bg-gray-200 text-gray-500'
                           : canAfford ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'
@@ -844,7 +844,7 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
                                 if (isSelected) {
                                   setAdminSelectedStickers(prev => prev.filter(item => item.id !== sticker.id));
                                 } else {
-                                  setAdminSelectedStickers(prev => [...prev, { id: sticker.id, url: sticker.url }]);
+                                  setAdminSelectedStickers(prev => [...prev, { id: sticker.id, url: sticker.url || '' }]);
                                 }
                               }}
                               className={`relative border-2 rounded-lg p-2 flex items-center justify-center cursor-pointer transition-colors ${isSelected ? 'border-purple-600 bg-purple-50' : 'border-transparent bg-white hover:border-purple-300'} ${(adminMode === 'edit_pack' && !adminEditingPackId) ? 'opacity-50 cursor-not-allowed' : ''}`}

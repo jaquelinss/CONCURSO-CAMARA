@@ -13,6 +13,7 @@ import { jsPDF } from 'jspdf';
 import { db } from '../lib/firebase';
 import { collection, doc, setDoc, getDocs, getDoc, deleteDoc, query, orderBy, where, onSnapshot } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import Draggable from 'react-draggable';
 import ReadingLaser from './ReadingLaser';

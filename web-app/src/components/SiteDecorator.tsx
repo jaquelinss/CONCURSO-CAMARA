@@ -34,7 +34,7 @@ const STICKERS_DEFS: Record<string, string> = {
 export default function SiteDecorator() {
   const { user } = useAuth();
   const location = useLocation();
-  const { markStickerAsUsed, activeStamper, setActiveStamper } = useReward();
+  const { activeStamper } = useReward();
   const [stickers, setStickers] = useState<PlacedSticker[]>([]);
 
   // Per-route document ID
