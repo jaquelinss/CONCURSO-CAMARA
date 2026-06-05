@@ -135,7 +135,7 @@ export default function SiteDecorator() {
   };
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-[10]">
+    <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-[10]">
       {stickers.map(sticker => (
         <DraggableSticker 
           key={sticker.id}
@@ -176,11 +176,18 @@ function DraggableSticker({
       nodeRef={nodeRef}
       position={{ x: sticker.x, y: sticker.y }}
       disabled={sticker.isLocked}
+      onStart={(e) => {
+        // Prevent browser scroll on mobile while dragging
+        if (e.type === 'touchstart') {
+          e.preventDefault();
+        }
+      }}
       onStop={(_, data) => onUpdate({ x: data.x, y: data.y })}
     >
       <div 
         ref={nodeRef} 
         className="absolute inline-block pointer-events-auto"
+        style={{ touchAction: sticker.isLocked ? 'auto' : 'none' }}
         onContextMenu={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -189,7 +196,7 @@ function DraggableSticker({
       >
         <StickerImage 
           src={url}
-          className={`w-32 h-32 object-contain drop-shadow-md transition-opacity ${sticker.isLocked ? 'opacity-90' : 'opacity-100 cursor-move'}`}
+          className={`w-20 h-20 md:w-32 md:h-32 object-contain drop-shadow-md transition-opacity ${sticker.isLocked ? 'opacity-90' : 'opacity-100 cursor-move'}`}
         />
         
         {/* Right-click context menu */}
