@@ -175,13 +175,19 @@ export default function QuestionsDatabase() {
     }
   };
 
-  // Toggle topic accordion
+  // Toggle topic accordion AND select topic to show all its questions
   const toggleTopic = (subject: string, topic: string) => {
     const key = `${subject}::${topic}`;
     setExpandedTopics(prev => ({
       ...prev,
       [key]: !prev[key]
     }));
+    // Select this topic to show all questions under it
+    setSelectedSubject(subject);
+    setSelectedTopic(topic);
+    setSelectedSubtopic('__TOPIC__');
+    setUserAnswers({});
+    setCheckedAnswers({});
   };
 
   // Select a subtopic
@@ -287,6 +293,12 @@ export default function QuestionsDatabase() {
     // "__ALL__" or "Ver todas" shows ALL questions for the subject
     if (selectedSubtopic === '__ALL__' || selectedSubtopic === 'Ver todas') {
       list = [...subjectQuestions];
+    } else if (selectedSubtopic === '__TOPIC__' && selectedTopic) {
+      // Show all questions under the selected main topic
+      list = subjectQuestions.filter(q => {
+        if (!q.topics || !Array.isArray(q.topics) || q.topics.length < 1) return false;
+        return q.topics[0].toLowerCase() === selectedTopic.toLowerCase();
+      });
     } else {
       list = subjectQuestions.filter(q => {
         if (!q.topics || !Array.isArray(q.topics)) return false;
@@ -339,7 +351,7 @@ export default function QuestionsDatabase() {
     };
 
     return { baseQuestions: diffFilteredList, stats: calculatedStats };
-  }, [selectedSubtopic, subjectQuestions, selectedDifficulties, checkedAnswers, userAnswers]);
+  }, [selectedSubtopic, selectedTopic, subjectQuestions, selectedDifficulties, checkedAnswers, userAnswers]);
 
   const displayQuestions = useMemo(() => {
     return baseQuestions.filter(q => {
@@ -596,12 +608,18 @@ export default function QuestionsDatabase() {
               <div className="flex flex-wrap items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/40 p-2.5 rounded-xl border border-gray-200/50 dark:border-gray-800/40">
                 <GraduationCap className="w-4 h-4 text-indigo-500" />
                 <span className="font-semibold text-gray-700 dark:text-gray-300">{selectedSubject}</span>
-                {selectedSubtopic !== '__ALL__' && (
+                {selectedSubtopic !== '__ALL__' && selectedSubtopic !== '__TOPIC__' && (
                   <>
                     <ChevronRight className="w-3 h-3" />
                     <span>{selectedTopic}</span>
                     <ChevronRight className="w-3 h-3" />
                     <span className="text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50 dark:bg-indigo-950/30 px-2 py-0.5 rounded-lg border border-indigo-100 dark:border-indigo-900/20">{selectedSubtopic}</span>
+                  </>
+                )}
+                {selectedSubtopic === '__TOPIC__' && selectedTopic && (
+                  <>
+                    <ChevronRight className="w-3 h-3" />
+                    <span className="text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50 dark:bg-indigo-950/30 px-2 py-0.5 rounded-lg border border-indigo-100 dark:border-indigo-900/20">{selectedTopic} — Todas ({displayQuestions.length})</span>
                   </>
                 )}
                 {selectedSubtopic === '__ALL__' && (
