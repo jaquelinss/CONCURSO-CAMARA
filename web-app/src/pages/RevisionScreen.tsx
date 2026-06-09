@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Navigation from '../components/Navigation';
 import { useAuth } from '../contexts/AuthContext';
+import { useReward } from '../contexts/RewardContext';
 import { db } from '../lib/firebase';
 import { collection, query, getDocs, orderBy, doc, getDoc, setDoc, deleteDoc, Timestamp, limit } from 'firebase/firestore';
 import { Calendar, Clock, BookOpen, CheckCircle, AlertCircle, PlusCircle, Brain, ChevronLeft, RefreshCw, Sparkles, Play, Trash2, Pencil, X, Search, Loader2 } from 'lucide-react';
@@ -50,6 +51,7 @@ const REV_TAB_KEY = 'revision_tab';
 
 export default function RevisionScreen() {
   const { user } = useAuth();
+  const { awardPoints } = useReward();
   const [revisions, setRevisions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -209,6 +211,10 @@ export default function RevisionScreen() {
       reviewCount: (rev.reviewCount || 0) + 1,
       completedItems: { lessonIds: [], quizIds: [], flashcardIds: [] },
     }, { merge: true });
+    
+    // Dar pontos por completar a revisão
+    awardPoints(15, 'complete_revision');
+    
     fetchRevisions();
   };
 

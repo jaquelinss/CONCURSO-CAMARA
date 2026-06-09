@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { topicsBySubject } from '../lib/constants';
 import { useAuth } from '../contexts/AuthContext';
+import { useReward } from '../contexts/RewardContext';
 import { useCustomSubjects } from '../contexts/CustomSubjectsContext';
 import { db } from '../lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -66,6 +67,7 @@ interface QuestionMock {
 }
 
 export default function QuestionsDatabase() {
+  const { awardPoints } = useReward();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState<'Todos' | 'Concurso' | 'ENEM' | 'Geral'>('Todos');
   
@@ -378,6 +380,8 @@ export default function QuestionsDatabase() {
       ...prev,
       [questionId]: true
     }));
+    // Award points for answering a question in the bank
+    awardPoints(2, 'answer_question_db');
   };
 
   return (
