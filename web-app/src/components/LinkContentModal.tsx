@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { db } from '../lib/firebase';
 import { collection, query, getDocs, orderBy, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
-import { X, BookOpen, CheckCircle, Brain, ArrowRight, Search, Check } from 'lucide-react';
+import { X, BookOpen, CheckCircle, Brain, ArrowRight, Search, Check, PlusCircle } from 'lucide-react';
 
 interface LinkContentModalProps {
   user: any;
@@ -18,6 +18,7 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
   const [linking, setLinking] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState('');
+  const [showAllSubjects, setShowAllSubjects] = useState(false);
 
   const typeLabels: Record<string, { label: string, collection: string, icon: any, color: string, plural: string }> = {
     lesson: { label: 'Aula Explicativa', collection: 'lessons', icon: <BookOpen className="w-5 h-5" />, color: 'blue', plural: 'aulas' },
@@ -39,9 +40,8 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
         const snap = await getDocs(q);
         const allItems = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         
-        // Filtrar pelo mesmo subject da revisão
-        const filtered = allItems.filter((item: any) => item.subject === revision.subject);
-        setItems(filtered);
+        // Mantém todos os itens no state, filtraremos no render
+        setItems(allItems);
 
         // Pré-selecionar os que já estão vinculados
         const existingIds = revision.contentLinks?.[linkKey] || [];
@@ -91,6 +91,17 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
     }
   };
 
+  const filteredItems = items.filter(item => {
+    if (!showAllSubjects && item.subject !== revision.subject) return false;
+    if (!searchTerm.trim()) return true;
+    const term = searchTerm.toLowerCase();
+    const title = type === 'lesson' 
+      ? (item.data?.titulo || `${item.subject} - ${item.topic}`)
+      : `${item.subject} - ${item.topic}`;
+    const comment = item.userComment || '';
+    return title.toLowerCase().includes(term) || comment.toLowerCase().includes(term) || (item.topic || '').toLowerCase().includes(term);
+  });
+
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[85vh] flex flex-col overflow-hidden">
@@ -129,7 +140,7 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
                 Nenhum(a) {config.label.toLowerCase()} encontrado(a)
               </h3>
               <p className="text-gray-500 dark:text-gray-400 text-sm mb-6 max-w-xs mx-auto">
-                Você ainda não tem {config.label.toLowerCase()} salvo(a) para <strong>{revision.subject}</strong>. 
+                Você ainda não tem {config.label.toLowerCase()} salvo(a). 
                 Vá na tela inicial, gere e salve, depois volte aqui para vincular.
               </p>
               <Link 
@@ -148,9 +159,22 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
           ) : (
             <div className="space-y-3">
               <p className="text-xs text-gray-400 uppercase font-bold tracking-wider mb-2">
-                {items.length} item(ns) disponível(eis) · {selectedIds.size} selecionado(s)
+                {filteredItems.length} item(ns) disponível(eis) · {selectedIds.size} selecionado(s)
               </p>
-              <div className="mb-3">
+              <div className="flex flex-col gap-3 mb-4">
+                <Link 
+                  to="/dashboard"
+                  state={{
+                    subject: revision.subject,
+                    topic: revision.topic,
+                    model: type === 'lesson' ? 'Aula Explicativa' : type === 'flashcard' ? 'Flashcards' : 'Quiz (Múltipla Escolha)'
+                  }}
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-xl font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors border border-indigo-200 dark:border-indigo-800"
+                >
+                  <PlusCircle className="w-4 h-4" />
+                  Gerar Novo(a) {config.label}
+                </Link>
+
                 <input
                   type="text"
                   value={searchTerm}
@@ -158,16 +182,18 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
                   placeholder="Buscar por nome, tópico ou comentário..."
                   className="w-full text-sm p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                 />
+
+                <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 cursor-pointer w-max">
+                  <input 
+                    type="checkbox" 
+                    checked={showAllSubjects} 
+                    onChange={(e) => setShowAllSubjects(e.target.checked)} 
+                    className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                  />
+                  Mostrar de outras matérias também
+                </label>
               </div>
-              {items.filter(item => {
-                if (!searchTerm.trim()) return true;
-                const term = searchTerm.toLowerCase();
-                const title = type === 'lesson' 
-                  ? (item.data?.titulo || `${item.subject} - ${item.topic}`)
-                  : `${item.subject} - ${item.topic}`;
-                const comment = item.userComment || '';
-                return title.toLowerCase().includes(term) || comment.toLowerCase().includes(term) || (item.topic || '').toLowerCase().includes(term);
-              }).map(item => {
+              {filteredItems.map(item => {
                 const isSelected = selectedIds.has(item.id);
                 return (
                   <button
