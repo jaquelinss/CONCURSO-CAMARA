@@ -261,7 +261,7 @@ export default function QuestionsDatabase() {
         };
         const fileName = `native-${normalizeString(selectedSubject)}.json`;
         
-        const response = await fetch(`/data/questions/${fileName}`);
+        const response = await fetch(`/data/questions/${fileName}?v=2`);
         if (!response.ok) {
           throw new Error('File not found');
         }
