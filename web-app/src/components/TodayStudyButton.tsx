@@ -71,7 +71,7 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
     let overdue: any[] = [];
     plan.schedule.forEach((day: any) => {
       if (day.date < todayStr) {
-        day.blocks.forEach((b: any, index: number) => {
+        (day.blocks || []).forEach((b: any, index: number) => {
           if (b.status !== 'completed') {
             overdue.push({ ...b, originalDate: day.date, blockIndex: index });
           }
