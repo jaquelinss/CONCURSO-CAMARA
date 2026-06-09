@@ -1,15 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
 import { collection, getDocs, query, orderBy, limit, doc, getDoc, updateDoc } from 'firebase/firestore';
-import { BookOpen, X, CheckCircle, ChevronLeft, ChevronRight, CirclePlay } from 'lucide-react';
-import { format, addDays, subDays, isToday } from 'date-fns';
+import { BookOpen, X, CheckCircle, ChevronLeft, ChevronRight, CirclePlay, AlertCircle } from 'lucide-react';
+import { format, addDays, subDays, isToday, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useLocation } from 'react-router-dom';
 
 export default function TodayStudyButton({ isHidden = false }: { isHidden?: boolean }) {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
+  const [showOverdue, setShowOverdue] = useState(false);
   const [planId, setPlanId] = useState<string | null>(null);
   const [planTitle, setPlanTitle] = useState('');
   const [hasPlan, setHasPlan] = useState(false);
@@ -65,7 +66,22 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
   const todayPendingBlocks = todayBlocks.filter((b: any) => b.status !== 'completed');
   const todayAllDone = todayBlocks.length > 0 && todayPendingBlocks.length === 0;
 
-  const handleToggleComplete = async (idx: number, currentStatus: string) => {
+  const overdueBlocks = useMemo(() => {
+    if (!plan?.schedule) return [];
+    let overdue: any[] = [];
+    plan.schedule.forEach((day: any) => {
+      if (day.date < todayStr) {
+        day.blocks.forEach((b: any, index: number) => {
+          if (b.status !== 'completed') {
+            overdue.push({ ...b, originalDate: day.date, blockIndex: index });
+          }
+        });
+      }
+    });
+    return overdue;
+  }, [plan, todayStr]);
+
+  const handleToggleComplete = async (targetDate: string, idx: number, currentStatus: string) => {
     if (!user || !planId) return;
     try {
       const planRef = doc(db, 'users', user.uid, 'studyPlans', planId);
@@ -75,7 +91,7 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
       const planData = planSnap.data();
       
       const newSchedule = planData.schedule.map((day: any) => {
-        if (day.date === currentStr) {
+        if (day.date === targetDate) {
           return {
             ...day,
             blocks: day.blocks.map((b: any, index: number) => 
@@ -142,78 +158,154 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto p-3 space-y-2">
-            {currentBlocks.length === 0 ? (
+          <div className="flex-1 overflow-y-auto p-3 space-y-4">
+            {currentBlocks.length === 0 && (!showOverdue || overdueBlocks.length === 0) ? (
               <div className="text-center py-6 text-gray-500 dark:text-gray-400">
                 <BookOpen className="w-8 h-8 mx-auto mb-2 opacity-50" />
                 <p className="text-sm">Nenhum estudo agendado para esta data</p>
               </div>
             ) : (
               <>
-                {allDone && (
-                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-xl text-center">
-                    <p className="text-sm font-bold text-green-700 dark:text-green-400">✅ Tudo concluído!</p>
+                {/* Current Date Blocks */}
+                {currentBlocks.length > 0 && (
+                  <div className="space-y-2">
+                    {allDone && (
+                      <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-xl text-center">
+                        <p className="text-sm font-bold text-green-700 dark:text-green-400">✅ Tudo concluído!</p>
+                      </div>
+                    )}
+                    {currentBlocks.map((block: any, idx: number) => (
+                      <div
+                        key={block.id || idx}
+                        className={`p-3 rounded-xl border transition-all ${
+                          block.status === 'completed'
+                            ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                            : 'bg-gray-50 dark:bg-gray-700/50 border-gray-100 dark:border-gray-600'
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <button 
+                            onClick={() => handleToggleComplete(currentStr, idx, block.status)}
+                            className="mt-0.5 hover:scale-110 transition-transform focus:outline-none"
+                            title={block.status === 'completed' ? 'Marcar como pendente' : 'Marcar como concluído'}
+                          >
+                            {block.status === 'completed' ? (
+                              <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                            ) : (
+                              <div className="w-5 h-5 rounded-full border-2 border-indigo-400 dark:border-indigo-500 hover:border-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors"></div>
+                            )}
+                          </button>
+                          <div className="min-w-0 flex-1">
+                            <p className={`text-sm font-semibold truncate transition-colors ${block.status === 'completed' ? 'line-through text-gray-400' : 'text-gray-900 dark:text-white'}`}>
+                              {block.subject}
+                            </p>
+                            <p className={`text-xs ${block.status === 'completed' ? 'text-gray-400' : 'text-gray-500 dark:text-gray-400'}`}>
+                              {block.topic} • {block.hours}h
+                            </p>
+                            {/* Múltiplos vídeos */}
+                            {((block.youtubeUrls && block.youtubeUrls.length > 0) || block.youtubeUrl) && (
+                              <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                {(block.youtubeUrls || (block.youtubeUrl ? [block.youtubeUrl] : [])).map((url: string, i: number) => (
+                                  <button
+                                    key={i}
+                                    onClick={() => {
+                                      window.dispatchEvent(new CustomEvent('play-youtube-video', {
+                                        detail: { url, topic: block.topic, subject: block.subject }
+                                      }));
+                                    }}
+                                    className="flex items-center gap-1 text-[10px] bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 px-1.5 py-0.5 rounded hover:bg-red-100 dark:hover:bg-red-900/40 font-bold transition-colors"
+                                  >
+                                    <CirclePlay className="w-3 h-3" />
+                                    Vídeo {i + 1}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
-                {currentBlocks.map((block: any, idx: number) => (
-                  <div
-                    key={block.id || idx}
-                    className={`p-3 rounded-xl border transition-all ${
-                      block.status === 'completed'
-                        ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                        : 'bg-gray-50 dark:bg-gray-700/50 border-gray-100 dark:border-gray-600'
-                    }`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <button 
-                        onClick={() => handleToggleComplete(idx, block.status)}
-                        className="mt-0.5 hover:scale-110 transition-transform focus:outline-none"
-                        title={block.status === 'completed' ? 'Marcar como pendente' : 'Marcar como concluído'}
-                      >
-                        {block.status === 'completed' ? (
-                          <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                        ) : (
-                          <div className="w-5 h-5 rounded-full border-2 border-indigo-400 dark:border-indigo-500 hover:border-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors"></div>
-                        )}
-                      </button>
-                      <div className="min-w-0 flex-1">
-                        <p className={`text-sm font-semibold truncate transition-colors ${block.status === 'completed' ? 'line-through text-gray-400' : 'text-gray-900 dark:text-white'}`}>
-                          {block.subject}
-                        </p>
-                        <p className={`text-xs ${block.status === 'completed' ? 'text-gray-400' : 'text-gray-500 dark:text-gray-400'}`}>
-                          {block.topic} • {block.hours}h
-                        </p>
-                        {/* Múltiplos vídeos */}
-                        {((block.youtubeUrls && block.youtubeUrls.length > 0) || block.youtubeUrl) && (
-                          <div className="flex flex-wrap gap-1.5 mt-1.5">
-                            {(block.youtubeUrls || (block.youtubeUrl ? [block.youtubeUrl] : [])).map((url: string, i: number) => (
-                              <button
-                                key={i}
-                                onClick={() => {
-                                  window.dispatchEvent(new CustomEvent('play-youtube-video', {
-                                    detail: { url, topic: block.topic, subject: block.subject }
-                                  }));
-                                }}
-                                className="flex items-center gap-1 text-[10px] bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 px-1.5 py-0.5 rounded hover:bg-red-100 dark:hover:bg-red-900/40 font-bold transition-colors"
-                              >
-                                <CirclePlay className="w-3 h-3" />
-                                Vídeo {i + 1}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
+
+                {/* Overdue Blocks */}
+                {showOverdue && overdueBlocks.length > 0 && (
+                  <div className="space-y-2 mt-4 pt-4 border-t border-red-100 dark:border-red-900/30">
+                    <div className="flex items-center gap-2 mb-2">
+                      <AlertCircle className="w-4 h-4 text-red-500" />
+                      <span className="text-xs font-bold text-red-500 uppercase tracking-wider">Atrasadas</span>
                     </div>
+                    {overdueBlocks.map((block: any, idx: number) => (
+                      <div
+                        key={`overdue-${idx}`}
+                        className="p-3 rounded-xl border bg-red-50/50 dark:bg-red-900/10 border-red-100 dark:border-red-900/50 transition-all"
+                      >
+                        <div className="flex items-start gap-3">
+                          <button 
+                            onClick={() => handleToggleComplete(block.originalDate, block.blockIndex, block.status)}
+                            className="mt-0.5 hover:scale-110 transition-transform focus:outline-none"
+                            title="Marcar como concluído"
+                          >
+                            <div className="w-5 h-5 rounded-full border-2 border-red-400 dark:border-red-500 hover:border-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"></div>
+                          </button>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-semibold truncate transition-colors text-gray-900 dark:text-white">
+                              {block.subject}
+                            </p>
+                            <p className="text-xs text-red-500 dark:text-red-400 font-medium">
+                              {format(parseISO(block.originalDate), "dd 'de' MMM", { locale: ptBR })}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                              {block.topic} • {block.hours}h
+                            </p>
+                            {((block.youtubeUrls && block.youtubeUrls.length > 0) || block.youtubeUrl) && (
+                              <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                {(block.youtubeUrls || (block.youtubeUrl ? [block.youtubeUrl] : [])).map((url: string, i: number) => (
+                                  <button
+                                    key={i}
+                                    onClick={() => {
+                                      window.dispatchEvent(new CustomEvent('play-youtube-video', {
+                                        detail: { url, topic: block.topic, subject: block.subject }
+                                      }));
+                                    }}
+                                    className="flex items-center gap-1 text-[10px] bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 px-1.5 py-0.5 rounded hover:bg-red-200 dark:hover:bg-red-900/60 font-bold transition-colors"
+                                  >
+                                    <CirclePlay className="w-3 h-3" />
+                                    Vídeo {i + 1}
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
               </>
             )}
           </div>
 
           {/* Footer */}
-          <div className="p-3 border-t border-gray-100 dark:border-gray-700 text-center">
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              {completedCount}/{currentBlocks.length} blocos concluídos
+          <div className="p-3 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
+            {overdueBlocks.length > 0 ? (
+              <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <input 
+                  type="checkbox" 
+                  checked={showOverdue}
+                  onChange={(e) => setShowOverdue(e.target.checked)}
+                  className="rounded border-gray-300 text-indigo-500 focus:ring-indigo-500 bg-gray-50 dark:bg-gray-700 dark:border-gray-600 w-3.5 h-3.5"
+                />
+                Mostrar Atrasadas ({overdueBlocks.length})
+              </label>
+            ) : (
+              <div className="text-xs font-medium text-green-600 dark:text-green-500 flex items-center gap-1">
+                <CheckCircle className="w-3.5 h-3.5" />
+                Nenhuma pendência
+              </div>
+            )}
+            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
+              {completedCount}/{currentBlocks.length} concluídos hoje
             </p>
           </div>
         </div>
