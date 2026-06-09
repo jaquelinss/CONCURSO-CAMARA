@@ -260,8 +260,7 @@ export default function QuestionsDatabase() {
           return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, '-');
         };
         const fileName = `native-${normalizeString(selectedSubject)}.json`;
-        
-        const response = await fetch(`/data/questions/${fileName}?v=2`);
+        const response = await fetch(`/data/questions/${fileName}?v=3`);
         if (!response.ok) {
           throw new Error('File not found');
         }
@@ -464,18 +463,29 @@ export default function QuestionsDatabase() {
                 const topics: Record<string, string[]> = {};
                 
                 if (selectedSubject === subject && subjectQuestions.length > 0) {
-                  // Build from real question topics
-                  const topicSet = new Set<string>();
+                  // Group subtopics by their main topic
+                  const topicMap = new Map<string, Set<string>>();
+                  
                   subjectQuestions.forEach(q => {
-                    if (q.topics && Array.isArray(q.topics)) {
-                      q.topics.forEach((t: string) => topicSet.add(t));
+                    if (q.topics && Array.isArray(q.topics) && q.topics.length >= 1) {
+                      const mainTopic = q.topics[0];
+                      const subTopic = q.topics.length > 1 ? q.topics[1] : null;
+                      
+                      if (!topicMap.has(mainTopic)) {
+                        topicMap.set(mainTopic, new Set());
+                      }
+                      if (subTopic && subTopic !== mainTopic) {
+                        topicMap.get(mainTopic)!.add(subTopic);
+                      }
                     }
                   });
-                  // Group topics under a single "Tópicos" header for simplicity
-                  const sortedTopics = Array.from(topicSet).sort();
-                  if (sortedTopics.length > 0) {
-                    topics['Tópicos Disponíveis'] = sortedTopics;
-                  }
+                  
+                  // Convert Map to sorted Object
+                  Array.from(topicMap.keys()).sort().forEach(mainTopic => {
+                    const subTopics = Array.from(topicMap.get(mainTopic)!).sort();
+                    // If no subtopics, we can put an empty array, or the mainTopic itself
+                    topics[mainTopic] = subTopics.length > 0 ? subTopics : [mainTopic];
+                  });
                 } else {
                   // For non-selected subjects, use static topics from constants (if any)
                   const regularTopics = topicsBySubject[subject] || {};
