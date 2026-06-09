@@ -48,9 +48,6 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
     return () => window.removeEventListener('study-plan-updated', handler);
   }, [user]);
 
-  // Don't show on login page or if no plan
-  if (location.pathname === '/login' || !hasPlan) return null;
-
   const currentStr = format(currentDate, 'yyyy-MM-dd');
   const currentSchedule = plan?.schedule?.find((d: any) => d.date === currentStr);
   const currentBlocks = currentSchedule?.blocks || [];
@@ -80,6 +77,9 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
     });
     return overdue;
   }, [plan, todayStr]);
+
+  // Don't show on login page or if no plan
+  if (location.pathname === '/login' || !hasPlan) return null;
 
   const handleToggleComplete = async (targetDate: string, idx: number, currentStatus: string) => {
     if (!user || !planId) return;
