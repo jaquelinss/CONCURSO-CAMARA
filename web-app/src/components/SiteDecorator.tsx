@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useReward } from '../contexts/RewardContext';
 import Draggable from 'react-draggable';
 import { StickerImage } from './StickerImage';
-import { Unlock, Trash2 } from 'lucide-react';
+import { Unlock, Trash2, Plus, Minus } from 'lucide-react';
 
 interface PlacedSticker {
   id: string;
@@ -15,6 +15,7 @@ interface PlacedSticker {
   x: number;
   y: number;
   isLocked: boolean;
+  scale?: number;
 }
 
 const STICKERS_DEFS: Record<string, string> = {
@@ -160,6 +161,11 @@ function DraggableSticker({
   const nodeRef = useRef<HTMLDivElement>(null);
   const [showMenu, setShowMenu] = useState(false);
   const url = sticker.customUrl || STICKERS_DEFS[sticker.stickerId];
+  const currentScale = sticker.scale || 1;
+
+  const handleScale = (delta: number) => {
+    onUpdate({ scale: Math.max(0.5, Math.min(3, currentScale + delta)) });
+  };
   
   // Close menu when clicking anywhere else
   useEffect(() => {
@@ -197,6 +203,7 @@ function DraggableSticker({
         <StickerImage 
           src={url}
           className={`w-20 h-20 md:w-32 md:h-32 object-contain drop-shadow-md transition-opacity ${sticker.isLocked ? 'opacity-90' : 'opacity-100 cursor-move'}`}
+          style={{ transform: `scale(${currentScale})`, transformOrigin: 'center' }}
         />
         
         {/* Right-click context menu */}
@@ -222,6 +229,24 @@ function DraggableSticker({
                 <Unlock className="w-3.5 h-3.5" />
                 Destravar
               </button>
+            )}
+            {!sticker.isLocked && (
+              <>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); handleScale(0.2); }}
+                  className="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-100 rounded-lg text-gray-700 text-xs font-medium transition-colors whitespace-nowrap"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Aumentar
+                </button>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); handleScale(-0.2); }}
+                  className="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-100 rounded-lg text-gray-700 text-xs font-medium transition-colors whitespace-nowrap"
+                >
+                  <Minus className="w-3.5 h-3.5" />
+                  Diminuir
+                </button>
+              </>
             )}
             <button 
               onClick={(e) => { e.stopPropagation(); onRemove(); setShowMenu(false); }}
