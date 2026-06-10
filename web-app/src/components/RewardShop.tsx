@@ -138,6 +138,16 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
     }
   };
 
+  const loadImageElement = (url: string): Promise<HTMLImageElement> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('Erro ao processar a imagem.'));
+      img.src = url;
+    });
+  };
+
   useEffect(() => {
     // Load global shop items
     const loadGlobalShop = async () => {
@@ -274,8 +284,7 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
     const blobUrl = URL.createObjectURL(file);
     setAdminPreview(blobUrl);
     setAdminPreviewBlob(file);
-    setAdminImgLoading(false);
-    setAdminImgError(false);
+    setAdminGenerationError(null);
   };
 
 
@@ -287,15 +296,19 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
     try {
       let finalBase64: string;
       
-      if (adminPreviewBlob) {
+      if (adminPreviewBlob && adminPreviewBlob instanceof File) {
         // File upload - resize and use directly
         const resizedBlob = await resizeImageFile(adminPreviewBlob as File);
         finalBase64 = await blobToBase64(resizedBlob);
-      } else {
-        // AI-generated - load and process (transparent background)
-        const img = await loadImageElement(adminPreview);
+      } else if (adminPreviewBlob) {
+        // AI-generated (we have the blob) - load and process (transparent background)
+        const objectUrl = URL.createObjectURL(adminPreviewBlob);
+        const img = await loadImageElement(objectUrl);
         const processedBlob = await processImageBlob(img);
         finalBase64 = await blobToBase64(processedBlob);
+        URL.revokeObjectURL(objectUrl);
+      } else {
+        throw new Error("No image blob found.");
       }
       
       const newId = `global_ai_${Date.now()}`;
