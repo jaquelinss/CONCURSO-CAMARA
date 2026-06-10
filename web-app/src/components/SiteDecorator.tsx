@@ -1,9 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useLocation } from 'react-router-dom';
 import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { useReward } from '../contexts/RewardContext';
+import { useGlobalSplitScreen } from '../hooks/useGlobalSplitScreen';
 import Draggable from 'react-draggable';
 import { StickerImage } from './StickerImage';
 import { Unlock, Trash2, Plus, Minus } from 'lucide-react';
@@ -36,14 +38,21 @@ export default function SiteDecorator() {
   const { user } = useAuth();
   const location = useLocation();
   const { activeStamper } = useReward();
+  const { splitMode, splitWidth, splitSide } = useGlobalSplitScreen();
+  
   const [stickers, setStickers] = useState<PlacedSticker[]>([]);
+  const [splitStickers, setSplitStickers] = useState<PlacedSticker[]>([]);
 
   // Per-route document ID
   const docId = `decorations_${location.pathname.replace(/[^a-zA-Z0-9]/g, '_') || 'root'}`;
+  const splitDocId = 'decorations_global_split_workspace';
 
   // Keep a ref to always have the latest stickers (avoids stale closure)
   const stickersRef = useRef<PlacedSticker[]>(stickers);
+  const splitStickersRef = useRef<PlacedSticker[]>(splitStickers);
+  
   useEffect(() => { stickersRef.current = stickers; }, [stickers]);
+  useEffect(() => { splitStickersRef.current = splitStickers; }, [splitStickers]);
 
   // Also keep docId in a ref so the click handler always uses the current one
   const docIdRef = useRef(docId);
@@ -65,6 +74,22 @@ export default function SiteDecorator() {
     return unsubscribe;
   }, [user, docId]);
 
+  // Fetch stickers for split workspace
+  useEffect(() => {
+    if (!user) return;
+    const docRef = doc(db, 'users', user.uid, 'settings', splitDocId);
+    
+    const unsubscribe = onSnapshot(docRef, (snap) => {
+      if (snap.exists()) {
+        setSplitStickers(snap.data().stickers || []);
+      } else {
+        setSplitStickers([]);
+      }
+    });
+
+    return unsubscribe;
+  }, [user, splitDocId]);
+
   // Handle global click to place stamper
   useEffect(() => {
     if (!activeStamper || !user) return;
@@ -74,11 +99,29 @@ export default function SiteDecorator() {
       const target = e.target as HTMLElement;
       if (target.closest('button, a, input, textarea, select, [role="dialog"], [role="menu"], .modal, .reward-shop, .whiteboard-toolbar, .whiteboard-sidebar, .palette-popover')) return;
 
+      let isInSplitSpace = false;
+      let localX = e.clientX;
+      let localY = e.clientY;
+
+      if (splitMode) {
+        const boundaryX = splitSide === 'right' 
+          ? window.innerWidth * ((100 - splitWidth) / 100)
+          : window.innerWidth * (splitWidth / 100);
+
+        if (splitSide === 'right' && e.clientX >= boundaryX) {
+          isInSplitSpace = true;
+          localX = e.clientX - boundaryX;
+        } else if (splitSide === 'left' && e.clientX <= boundaryX) {
+          isInSplitSpace = true;
+          localX = e.clientX;
+        }
+      }
+
       const newSticker: PlacedSticker = {
         id: `decor_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
         stickerId: activeStamper.stickerId,
-        x: e.clientX - 64,
-        y: e.clientY - 64,
+        x: localX - 64, // Center the sticker
+        y: localY - 64, // Center the sticker
         isLocked: false
       };
       
@@ -86,17 +129,23 @@ export default function SiteDecorator() {
         newSticker.customUrl = activeStamper.customUrl;
       }
 
-      const currentDocId = docIdRef.current;
-      const newStickers = [...stickersRef.current, newSticker];
-      setStickers(newStickers);
-      
-      const docRef = doc(db, 'users', user.uid, 'settings', currentDocId);
-      await setDoc(docRef, { stickers: newStickers }, { merge: true });
+      if (isInSplitSpace) {
+        const newStickers = [...splitStickersRef.current, newSticker];
+        setSplitStickers(newStickers);
+        const docRef = doc(db, 'users', user.uid, 'settings', splitDocId);
+        await setDoc(docRef, { stickers: newStickers }, { merge: true });
+      } else {
+        const currentDocId = docIdRef.current;
+        const newStickers = [...stickersRef.current, newSticker];
+        setStickers(newStickers);
+        const docRef = doc(db, 'users', user.uid, 'settings', currentDocId);
+        await setDoc(docRef, { stickers: newStickers }, { merge: true });
+      }
     };
 
     window.addEventListener('click', handleGlobalClick);
     return () => window.removeEventListener('click', handleGlobalClick);
-  }, [user, activeStamper]);
+  }, [user, activeStamper, splitMode, splitWidth, splitSide]);
 
   // Handle remove sticker via global event
   useEffect(() => {
@@ -135,17 +184,58 @@ export default function SiteDecorator() {
     await setDoc(docRef, { stickers: newStickers }, { merge: true });
   };
 
-  return (
-    <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-[10]">
-      {stickers.map(sticker => (
-        <DraggableSticker 
-          key={sticker.id}
-          sticker={sticker}
-          onUpdate={(updates) => updateSticker(sticker.id, updates)}
-          onRemove={() => removeSticker(sticker.id)}
-        />
-      ))}
-    </div>
+  // Split Workspace Handlers
+  const updateSplitSticker = async (id: string, updates: Partial<PlacedSticker>) => {
+    if (!user) return;
+    const updated = splitStickersRef.current.map(s => s.id === id ? { ...s, ...updates } : s);
+    setSplitStickers(updated);
+    const docRef = doc(db, 'users', user.uid, 'settings', splitDocId);
+    await setDoc(docRef, { stickers: updated }, { merge: true });
+  };
+
+  const removeSplitSticker = async (id: string) => {
+    if (!user) return;
+    const newStickers = splitStickersRef.current.filter(s => s.id !== id);
+    setSplitStickers(newStickers);
+    const docRef = doc(db, 'users', user.uid, 'settings', splitDocId);
+    await setDoc(docRef, { stickers: newStickers }, { merge: true });
+  };
+
+  return createPortal(
+    <>
+      {/* Main Route Stickers */}
+      <div className="fixed inset-0 w-screen h-screen pointer-events-none z-[50]">
+        {stickers.map(sticker => (
+          <DraggableSticker 
+            key={sticker.id}
+            sticker={sticker}
+            onUpdate={(updates) => updateSticker(sticker.id, updates)}
+            onRemove={() => removeSticker(sticker.id)}
+          />
+        ))}
+      </div>
+
+      {/* Split Workspace Stickers */}
+      {splitMode && (
+        <div 
+          className="fixed top-0 bottom-0 pointer-events-none z-[50]"
+          style={{ 
+            width: `${splitWidth}%`, 
+            [splitSide === 'right' ? 'right' : 'left']: 0 
+          }}
+        >
+          {splitStickers.map(sticker => (
+            <DraggableSticker 
+              key={sticker.id}
+              sticker={sticker}
+              onUpdate={(updates) => updateSplitSticker(sticker.id, updates)}
+              onRemove={() => removeSplitSticker(sticker.id)}
+            />
+          ))}
+        </div>
+      )}
+    </>,
+    document.body
   );
 }
 

@@ -1,28 +1,33 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef } from 'react';
+import { useGlobalSplitScreen } from '../hooks/useGlobalSplitScreen';
 
 export default function GlobalSplitScreenManager() {
-  const [splitMode, setSplitMode] = useState<boolean>(() => {
-    return localStorage.getItem('global_split_active') === 'true';
-  });
-  const [splitWidth, setSplitWidth] = useState<number>(() => {
-    return Number(localStorage.getItem('global_split_width')) || 50;
-  });
-  const [splitSide, setSplitSide] = useState<'right' | 'left'>(() => {
-    return (localStorage.getItem('global_split_side') as 'right' | 'left') || 'right';
-  });
+  const { splitMode, splitWidth, splitSide } = useGlobalSplitScreen();
   const splitDragging = useRef(false);
 
   useEffect(() => {
     const handleToggle = () => {
-      setSplitMode(prev => {
-        const next = !prev;
-        localStorage.setItem('global_split_active', String(next));
-        window.dispatchEvent(new Event('global-split-changed'));
-        return next;
-      });
+      const current = localStorage.getItem('global_split_active') === 'true';
+      const next = !current;
+      localStorage.setItem('global_split_active', String(next));
+      window.dispatchEvent(new Event('global-split-changed'));
     };
     window.addEventListener('toggle-global-split', handleToggle);
     return () => window.removeEventListener('toggle-global-split', handleToggle);
+  }, []);
+
+  // Auto-disable split mode on mobile
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768 && localStorage.getItem('global_split_active') === 'true') {
+        localStorage.setItem('global_split_active', 'false');
+        window.dispatchEvent(new Event('global-split-changed'));
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    // Call once on mount to handle initial small screens
+    handleResize();
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   useEffect(() => {
@@ -79,7 +84,8 @@ export default function GlobalSplitScreenManager() {
              newWidth = (e.clientX / window.innerWidth) * 100;
           }
           if (newWidth > 20 && newWidth < 80) {
-            setSplitWidth(newWidth);
+            localStorage.setItem('global_split_width', newWidth.toString());
+            window.dispatchEvent(new Event('global-split-changed'));
             document.body.style.transition = 'none';
           }
         }}
@@ -116,7 +122,6 @@ export default function GlobalSplitScreenManager() {
             onClick={(e) => {
               e.stopPropagation();
               const newSide = splitSide === 'right' ? 'left' : 'right';
-              setSplitSide(newSide);
               localStorage.setItem('global_split_side', newSide);
               window.dispatchEvent(new Event('global-split-changed'));
             }}
