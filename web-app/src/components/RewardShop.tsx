@@ -52,10 +52,9 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
   const [adminPrompt, setAdminPrompt] = useState('');
   const [adminPreview, setAdminPreview] = useState<string | null>(null);
   const [adminPreviewBlob, setAdminPreviewBlob] = useState<Blob | null>(null);
-  const [adminGenerating] = useState(false);
+  const [adminGenerating, setAdminGenerating] = useState(false);
   const [adminUploading, setAdminUploading] = useState(false);
-  const [, setAdminImgLoading] = useState(false);
-  const [, setAdminImgError] = useState(false);
+  const [adminGenerationError, setAdminGenerationError] = useState<string | null>(null);
   const adminFileRef = useRef<HTMLInputElement>(null);
 
   // Admin Pack Grouping & Editing
@@ -129,14 +128,14 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
   };
 
   // Load image via <img> element (handles redirects/CORS better than fetch)
-  const loadImageElement = (url: string): Promise<HTMLImageElement> => {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => resolve(img);
-      img.onerror = () => reject(new Error('A IA não conseguiu gerar a imagem. Tente novamente em alguns segundos.'));
-      img.src = url;
-    });
+  const generateAiImageBlob = async (url: string): Promise<Blob> => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('Falha na resposta da rede');
+      return await response.blob();
+    } catch (e) {
+      throw new Error('A IA não conseguiu gerar a imagem. Tente novamente em alguns segundos.');
+    }
   };
 
   useEffect(() => {
@@ -220,11 +219,9 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
         const randomTheme = themes[Math.floor(Math.random() * themes.length)];
         const prompt = `A colorful cute sticker of ${randomTheme}, die-cut, white border, vector art style, flat colors, white background`;
         const seed = Math.floor(Math.random() * 1000000);
-        // Using flux model explicitely if that's what was meant
-        const aiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?seed=${seed}&width=256&height=256&nologo=true&model=flux`;
+        const aiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?seed=${seed}&width=256&height=256&model=flux`;
 
-        const img = await loadImageElement(aiUrl);
-        const blob = await processImageBlob(img);
+        const blob = await generateAiImageBlob(aiUrl);
         
         const storageRef = ref(storage, `users/${user.uid}/stickers/ai_sticker_${Date.now()}_${i}.png`);
         await uploadBytes(storageRef, blob);
@@ -247,16 +244,26 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
   };
 
   // Admin: Generate AI preview
-  const handleGenerateAdminPreview = () => {
+  const handleGenerateAdminPreview = async () => {
     if (!adminPrompt) return;
     const prompt = `A colorful cute sticker of ${adminPrompt}, die-cut, white border, vector art style, flat colors, white background`;
     const seed = Math.floor(Math.random() * 1000000);
-    const aiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?seed=${seed}&width=256&height=256&nologo=true&model=flux`;
+    const aiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?seed=${seed}&width=256&height=256&model=flux`;
     
     setAdminPreview(aiUrl);
     setAdminPreviewBlob(null);
-    setAdminImgLoading(true);
-    setAdminImgError(false);
+    setAdminGenerationError(null);
+    setAdminGenerating(true);
+    
+    try {
+      const blob = await generateAiImageBlob(aiUrl);
+      setAdminPreviewBlob(blob);
+    } catch (error) {
+      console.error(error);
+      setAdminGenerationError('Erro ao gerar. Tente outro prompt ou aguarde uns segundos.');
+    } finally {
+      setAdminGenerating(false);
+    }
   };
 
   // Admin: Handle file upload
@@ -772,11 +779,11 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
                     </button>
                   </div>
 
-                  {adminPreview && (
+                  {adminPreviewBlob && (
                     <div className="flex flex-col items-center gap-4 bg-gray-50 p-6 rounded-xl border border-gray-200">
-                      <span className="text-sm font-semibold text-gray-500">Preview (Com Fundo Removido Automaticamente):</span>
+                      <span className="text-sm font-semibold text-gray-500">Preview:</span>
                       <div className="w-32 h-32 bg-yellow-200 flex items-center justify-center rounded-lg shadow-inner overflow-hidden p-2">
-                        <img src={adminPreview} alt="Preview" className="max-w-full max-h-full drop-shadow-md" />
+                        <img src={URL.createObjectURL(adminPreviewBlob)} alt="Preview" className="max-w-full max-h-full drop-shadow-md" />
                       </div>
                       <button 
                         onClick={handleAddAdminStickerToShop}
@@ -786,6 +793,11 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
                         <UploadCloud className="w-5 h-5" /> 
                         {adminUploading ? 'Enviando para a Loja...' : 'Adicionar à Lojinha (150 EP)'}
                       </button>
+                    </div>
+                  )}
+                  {adminGenerationError && (
+                    <div className="text-red-500 text-sm font-semibold text-center mt-4">
+                      {adminGenerationError}
                     </div>
                   )}
                 </>
