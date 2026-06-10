@@ -13,6 +13,7 @@ import { getRevisionSuggestions, calculateNextStep } from '../lib/revision.servi
 import { suggestVideoSearches } from '../lib/gemini';
 import StudyPlanWizard from '../components/StudyPlanWizard';
 import StudyPlanView from '../components/StudyPlanView';
+import { useReward } from '../contexts/RewardContext';
 
 function Youtube({ className }: { className?: string }) {
   return (
@@ -50,6 +51,7 @@ const REV_TAB_KEY = 'revision_tab';
 
 export default function RevisionScreen() {
   const { user } = useAuth();
+  const { awardPoints } = useReward();
   const [revisions, setRevisions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -210,6 +212,7 @@ export default function RevisionScreen() {
       completedItems: { lessonIds: [], quizIds: [], flashcardIds: [] },
     }, { merge: true });
     
+    awardPoints(15, 'complete_revision');
     fetchRevisions();
   };
 
