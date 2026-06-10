@@ -299,7 +299,12 @@ function DraggableSticker({
         {/* Right-click context menu */}
         {showMenu && (
           <div 
-            className="absolute -top-2 -right-2 bg-white/95 backdrop-blur-md shadow-lg border border-gray-200 rounded-xl p-1.5 flex flex-col gap-1 pointer-events-auto z-50 animate-in fade-in"
+            className="absolute bg-white/95 backdrop-blur-md shadow-xl border border-gray-200 rounded-xl p-1.5 flex flex-col gap-1 pointer-events-auto z-50 animate-in fade-in"
+            style={{ 
+              top: `calc(100% + ${(currentScale - 1) * 50}% + 12px)`, 
+              left: '50%', 
+              transform: 'translateX(-50%)' 
+            }}
             onClick={(e) => e.stopPropagation()}
           >
             {!sticker.isLocked && (
