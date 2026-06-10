@@ -7,6 +7,9 @@ export default function GlobalSplitScreenManager() {
   const [splitWidth, setSplitWidth] = useState<number>(() => {
     return Number(localStorage.getItem('global_split_width')) || 50;
   });
+  const [splitSide, setSplitSide] = useState<'right' | 'left'>(() => {
+    return (localStorage.getItem('global_split_side') as 'right' | 'left') || 'right';
+  });
   const splitDragging = useRef(false);
 
   useEffect(() => {
@@ -24,32 +27,41 @@ export default function GlobalSplitScreenManager() {
 
   useEffect(() => {
     if (splitMode) {
-      document.body.style.transition = 'padding-right 0.3s ease';
-      document.body.style.paddingRight = `${splitWidth}%`;
+      document.body.style.transition = 'padding-right 0.3s ease, padding-left 0.3s ease';
+      if (splitSide === 'right') {
+        document.body.style.paddingRight = `${splitWidth}%`;
+        document.body.style.paddingLeft = '0px';
+      } else {
+        document.body.style.paddingLeft = `${splitWidth}%`;
+        document.body.style.paddingRight = '0px';
+      }
     } else {
       document.body.style.paddingRight = '0px';
+      document.body.style.paddingLeft = '0px';
     }
 
     return () => {
-      // Don't clean up on unmount necessarily unless we really want to,
-      // but since this is global, we can clean up if it unmounts.
       document.body.style.paddingRight = '0px';
+      document.body.style.paddingLeft = '0px';
     };
-  }, [splitMode, splitWidth]);
+  }, [splitMode, splitWidth, splitSide]);
 
   if (!splitMode) return null;
 
   return (
     <>
       <div 
-        className="fixed top-16 right-0 bottom-0 z-[40] pointer-events-none"
-        style={{ width: `${splitWidth}%` }}
+        className={`fixed top-16 bottom-0 z-[40] pointer-events-none`}
+        style={{ width: `${splitWidth}%`, [splitSide === 'right' ? 'right' : 'left']: 0 }}
       />
       {/* Draggable split divider */}
       <div 
-        className="fixed top-16 bottom-0 w-2 cursor-col-resize hover:bg-indigo-500/50 active:bg-indigo-600 transition-colors z-[100]"
-        style={{ right: `calc(${splitWidth}% - 4px)` }}
+        className="fixed top-16 bottom-0 w-4 cursor-col-resize hover:bg-indigo-500/20 active:bg-indigo-500/30 transition-colors z-[100] flex items-center justify-center group"
+        style={{ [splitSide === 'right' ? 'right' : 'left']: `calc(${splitWidth}% - 8px)` }}
         onPointerDown={(e) => {
+          // Only start drag if we didn't click a button inside the divider
+          if ((e.target as HTMLElement).closest('button')) return;
+          
           e.currentTarget.setPointerCapture(e.pointerId);
           splitDragging.current = true;
           // Disable iframe pointer events globally during resize
@@ -60,18 +72,24 @@ export default function GlobalSplitScreenManager() {
         }}
         onPointerMove={(e) => {
           if (!splitDragging.current) return;
-          const newWidth = ((window.innerWidth - e.clientX) / window.innerWidth) * 100;
+          let newWidth;
+          if (splitSide === 'right') {
+             newWidth = ((window.innerWidth - e.clientX) / window.innerWidth) * 100;
+          } else {
+             newWidth = (e.clientX / window.innerWidth) * 100;
+          }
           if (newWidth > 20 && newWidth < 80) {
             setSplitWidth(newWidth);
             document.body.style.transition = 'none';
           }
         }}
         onPointerUp={(e) => {
+          if (!splitDragging.current) return;
           splitDragging.current = false;
           e.currentTarget.releasePointerCapture(e.pointerId);
           localStorage.setItem('global_split_width', splitWidth.toString());
           window.dispatchEvent(new Event('global-split-changed'));
-          document.body.style.transition = 'padding-right 0.3s ease';
+          document.body.style.transition = 'padding-right 0.3s ease, padding-left 0.3s ease';
           // Restore iframe pointer events
           const iframes = document.querySelectorAll('iframe');
           iframes.forEach(iframe => {
@@ -83,14 +101,33 @@ export default function GlobalSplitScreenManager() {
           e.currentTarget.releasePointerCapture(e.pointerId);
           localStorage.setItem('global_split_width', splitWidth.toString());
           window.dispatchEvent(new Event('global-split-changed'));
-          document.body.style.transition = 'padding-right 0.3s ease';
+          document.body.style.transition = 'padding-right 0.3s ease, padding-left 0.3s ease';
           // Restore iframe pointer events
           const iframes = document.querySelectorAll('iframe');
           iframes.forEach(iframe => {
             iframe.style.pointerEvents = 'auto';
           });
         }}
-      />
+      >
+        {/* Visible Handle with Swap Button */}
+        <div className="flex flex-col gap-2 opacity-50 group-hover:opacity-100 transition-opacity items-center">
+          <div className="w-1.5 h-12 bg-indigo-400 rounded-full shadow-sm" />
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              const newSide = splitSide === 'right' ? 'left' : 'right';
+              setSplitSide(newSide);
+              localStorage.setItem('global_split_side', newSide);
+              window.dispatchEvent(new Event('global-split-changed'));
+            }}
+            className="w-8 h-8 rounded-full bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700 flex items-center justify-center text-indigo-500 hover:text-indigo-600 hover:bg-gray-50 dark:hover:bg-gray-700 pointer-events-auto"
+            title={`Mudar para o lado ${splitSide === 'right' ? 'esquerdo' : 'direito'}`}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+          </button>
+          <div className="w-1.5 h-12 bg-indigo-400 rounded-full shadow-sm" />
+        </div>
+      </div>
     </>
   );
 }
