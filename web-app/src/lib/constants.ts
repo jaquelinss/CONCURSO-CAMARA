@@ -103,7 +103,7 @@ export const BANCAS_TOPICS: Record<string, Record<string, string[]>> = {
     'Português': ['Interpretação e Compreensão de Texto (25%)', 'Morfossemântica e Classes de Palavras (25%)', 'Sintaxe de Período Simples e Composto (20%)', 'Concordância, Regência e Crase (15%)', 'Pontuação e Reescrita de Frases (15%)'],
     'Raciocínio Lógico-Matemático': ['Lógica Proposicional e Equivalências (20%)'],
     'Matemática': ['Porcentagem e Regra de Três (35%)', 'Análise Combinatória e Probabilidade (10%)', 'Matemática Financeira (10%)', 'Equações, Funções e Geometria Básica (25%)'],
-    'Noções de Informática': ['Planilhas Eletrônicas (Excel e Calc) (20%)', 'Segurança da Informação e Malwares (15%)', 'Redes de Computadores e Internet (15%)', 'Sistemas Operacionais (Windows e Linux) (25%)', 'Editores de Texto (Word e Writer) (25%)'],
+    'Noções de Informática': ['Planilhas Eletrônicas (Excel e Calc) (20%)', 'Segurança da Informação e Malwares (15%)', 'Redes de Computadores e Internet (15%)', 'Sistemas Operacionais (Windows e Linux) (25%)', 'Editores de Texto (Word e Writer) (25%)', 'Hardware e Arquitetura de Computadores (10%)', 'Algoritmos e Lógica de Programação'],
     'Noções de Direito Constitucional': ['Direitos e Garantias Fundamentais (Art. 5º) (40%)', 'Administração Pública na CF (Art. 37-41) (25%)'],
     'Noções de Direito Administrativo': ['Administração Pública na CF (Art. 37-41) (25%)', 'Atos e Poderes Administrativos (15%)', 'Licitações e Contratos (Lei 14.133) (15%)', 'Improbidade Administrativa (5%)'],
     'Administração Pública': ['Evolução e Modelos de Gestão Pública (20%)'],

@@ -148,6 +148,7 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
                 state={{
                   subject: revision.subject,
                   topic: revision.topic,
+                  subTopic: revision.subtopic || revision.subTopic || 'Todos',
                   model: type === 'lesson' ? 'Aula Explicativa' : type === 'flashcard' ? 'Flashcards' : 'Quiz (Múltipla Escolha)'
                 }}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-colors shadow-lg"
@@ -167,6 +168,7 @@ export default function LinkContentModal({ user, revision, type, onClose, onLink
                   state={{
                     subject: revision.subject,
                     topic: revision.topic,
+                    subTopic: revision.subtopic || revision.subTopic || 'Todos',
                     model: type === 'lesson' ? 'Aula Explicativa' : type === 'flashcard' ? 'Flashcards' : 'Quiz (Múltipla Escolha)'
                   }}
                   className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-xl font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors border border-indigo-200 dark:border-indigo-800"

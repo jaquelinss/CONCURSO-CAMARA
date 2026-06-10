@@ -13,6 +13,7 @@ export default function PracticeQuiz({ questions, theme, onClose, quizTitle = "Q
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [score, setScore] = useState(0);
   const [showResults, setShowResults] = useState(false);
+  const [eliminatedAnswers, setEliminatedAnswers] = useState<Set<string>>(new Set());
 
   const currentQuestion = questions[currentIndex];
 
@@ -31,6 +32,7 @@ export default function PracticeQuiz({ questions, theme, onClose, quizTitle = "Q
       setCurrentIndex(currentIndex + 1);
       setSelectedAnswer(null);
       setIsCorrect(null);
+      setEliminatedAnswers(new Set());
     } else {
       setShowResults(true);
     }
@@ -40,6 +42,7 @@ export default function PracticeQuiz({ questions, theme, onClose, quizTitle = "Q
     setCurrentIndex(0);
     setSelectedAnswer(null);
     setIsCorrect(null);
+    setEliminatedAnswers(new Set());
     setScore(0);
     setShowResults(false);
   };
@@ -78,12 +81,23 @@ export default function PracticeQuiz({ questions, theme, onClose, quizTitle = "Q
             buttonClass = 'bg-green-500 text-white';
           }
 
+          const isEliminated = eliminatedAnswers.has(option);
+
           return (
             <button
               key={index}
               onClick={() => handleAnswer(option)}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                setEliminatedAnswers(prev => {
+                  const next = new Set(prev);
+                  if (next.has(option)) next.delete(option);
+                  else next.add(option);
+                  return next;
+                });
+              }}
               disabled={selectedAnswer !== null}
-              className={`w-full text-left p-3 rounded-lg transition-all duration-300 border-2 ${theme.border} ${buttonClass} disabled:cursor-not-allowed`}
+              className={`w-full text-left p-3 rounded-lg transition-all duration-300 border-2 ${theme.border} ${buttonClass} ${isEliminated && selectedAnswer === null ? 'line-through opacity-50' : ''} disabled:cursor-not-allowed`}
             >
               {option}
             </button>

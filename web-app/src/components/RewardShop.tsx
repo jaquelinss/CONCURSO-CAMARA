@@ -11,17 +11,17 @@ interface RewardShopProps {
 }
 
 const DEFAULT_STICKERS = [
-  { id: '1', url: '/stickers/1.png', price: 350 },
-  { id: '2', url: '/stickers/2.png', price: 350 },
-  { id: '3', url: '/stickers/3.png', price: 350 },
-  { id: '4', url: '/stickers/4.png', price: 350 },
-  { id: '5', url: '/stickers/5.png', price: 350 },
-  { id: '6', url: '/stickers/6.png', price: 350 },
-  { id: '7', url: '/stickers/7.png', price: 350 },
-  { id: '8', url: '/stickers/8.png', price: 350 },
-  { id: '9', url: '/stickers/9.png', price: 350 },
-  { id: '10', url: '/stickers/10.png', price: 350 },
-  { id: '11', url: '/stickers/11.png', price: 350 },
+  { id: '1', url: '/stickers/1.png', price: 150 },
+  { id: '2', url: '/stickers/2.png', price: 150 },
+  { id: '3', url: '/stickers/3.png', price: 150 },
+  { id: '4', url: '/stickers/4.png', price: 150 },
+  { id: '5', url: '/stickers/5.png', price: 150 },
+  { id: '6', url: '/stickers/6.png', price: 150 },
+  { id: '7', url: '/stickers/7.png', price: 150 },
+  { id: '8', url: '/stickers/8.png', price: 150 },
+  { id: '9', url: '/stickers/9.png', price: 150 },
+  { id: '10', url: '/stickers/10.png', price: 150 },
+  { id: '11', url: '/stickers/11.png', price: 150 },
 ];
 
 export interface GlobalSticker {
@@ -38,7 +38,7 @@ export interface GlobalSticker {
 }
 
 export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
-  const { effortPoints, spendPoints, addStickerToInventory, addMultipleStickersToInventory, unlockedStickers, setActiveStamper } = useReward();
+  const { effortPoints, spendPoints, awardPoints, addStickerToInventory, addMultipleStickersToInventory, unlockedStickers, setActiveStamper } = useReward();
   const { user, isAdmin } = useAuth();
   const [activeTab, setActiveTab] = useState<'shop' | 'inventory' | 'admin'>('shop');
   const [buying, setBuying] = useState<string | null>(null);
@@ -60,7 +60,7 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
 
   // Admin Pack Grouping & Editing
   const [adminPackName, setAdminPackName] = useState('');
-  const [adminPackPrice, setAdminPackPrice] = useState(300);
+  const [adminPackPrice, setAdminPackPrice] = useState(100);
   const [adminSelectedStickers, setAdminSelectedStickers] = useState<{id: string; url: string}[]>([]);
   const [adminEditingPackId, setAdminEditingPackId] = useState<string | null>(null);
 
@@ -149,7 +149,7 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
           return {
             id: d.id,
             url: d.data().url || defaultMatch?.url || '',
-            price: d.data().price || defaultMatch?.price || 350,
+            price: d.data().price || defaultMatch?.price || 150,
             type: d.data().type,
             name: d.data().name,
             promoPricePerItem: d.data().promoPricePerItem,
@@ -213,21 +213,29 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
     setUserGenerating(true);
     try {
       const themes = ['cute dog', 'cool neon cat', 'kawaii ghost', 'pixel art sword', 'magic potion', 'superhero frog', 'ninja turtle', 'unicorn'];
-      const randomTheme = themes[Math.floor(Math.random() * themes.length)];
-      const prompt = `A colorful cute sticker of ${randomTheme}, die-cut, white border, vector art style, flat colors, white background`;
-      const seed = Math.floor(Math.random() * 1000000);
-      const aiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?seed=${seed}&width=256&height=256&nologo=true`;
 
-      const success = await spendPoints(500, `gerar_sticker_ia_aleatorio`);
-      if (success) {
+      const generatedItems: {id: string, url: string}[] = [];
+      
+      for (let i = 0; i < 3; i++) {
+        const randomTheme = themes[Math.floor(Math.random() * themes.length)];
+        const prompt = `A colorful cute sticker of ${randomTheme}, die-cut, white border, vector art style, flat colors, white background`;
+        const seed = Math.floor(Math.random() * 1000000);
+        // Using flux model explicitely if that's what was meant
+        const aiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?seed=${seed}&width=256&height=256&nologo=true&model=flux`;
+
         const img = await loadImageElement(aiUrl);
         const blob = await processImageBlob(img);
         
-        const storageRef = ref(storage, `users/${user.uid}/stickers/ai_sticker_${Date.now()}.png`);
+        const storageRef = ref(storage, `users/${user.uid}/stickers/ai_sticker_${Date.now()}_${i}.png`);
         await uploadBytes(storageRef, blob);
         const downloadUrl = await getDownloadURL(storageRef);
         
-        await addStickerToInventory(`ai_${Date.now()}`, downloadUrl);
+        generatedItems.push({ id: `ai_${Date.now()}_${i}`, url: downloadUrl });
+      }
+      
+      const success = await spendPoints(500, `gerar_sticker_ia_aleatorio_pack`);
+      if (success) {
+        await addMultipleStickersToInventory(generatedItems);
         setActiveTab('inventory');
       }
     } catch (e: any) {
@@ -243,7 +251,7 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
     if (!adminPrompt) return;
     const prompt = `A colorful cute sticker of ${adminPrompt}, die-cut, white border, vector art style, flat colors, white background`;
     const seed = Math.floor(Math.random() * 1000000);
-    const aiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?seed=${seed}&width=256&height=256&nologo=true`;
+    const aiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?seed=${seed}&width=256&height=256&nologo=true&model=flux`;
     
     setAdminPreview(aiUrl);
     setAdminPreviewBlob(null);
@@ -287,10 +295,10 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
       
       await setDoc(doc(db, 'global_shop', newId), {
         url: finalBase64,
-        price: 350
+        price: 150
       });
       
-      setGlobalShop([{ id: newId, url: finalBase64, price: 350 }, ...globalShop]);
+      setGlobalShop([{ id: newId, url: finalBase64, price: 150 }, ...globalShop]);
       setAdminPreview(null);
       setAdminPreviewBlob(null);
       setAdminPrompt('');
@@ -538,7 +546,7 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
                     <Sparkles className="text-purple-600 w-5 h-5" /> 
                     Figurinha Surpresa IA
                   </h3>
-                  <p className="text-purple-700 text-sm mt-1 max-w-sm">Gere uma figurinha aleatória única usando Inteligência Artificial. Ela será 100% sua e guardada na sua conta!</p>
+                  <p className="text-purple-700 text-sm mt-1 max-w-sm">Gere um pacote surpresa com 3 figurinhas aleatórias únicas usando Inteligência Artificial. Elas serão 100% suas e guardadas na sua conta!</p>
                 </div>
                 <button
                   onClick={handleGenerateUserSticker}
@@ -642,7 +650,7 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
                     for (const pack of globalShop.filter(s => s.type === 'pack')) {
                       const found = pack.items?.find(i => i.id === instance.stickerId);
                       if (found) {
-                        stickerDef = { ...found, price: pack.promoPricePerItem || 350 };
+                        stickerDef = { ...found, price: pack.promoPricePerItem || 150 };
                         break;
                       }
                     }
@@ -707,6 +715,15 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
                   >
                     Editar Pacote
                   </button>
+                  <button 
+                    onClick={() => {
+                      awardPoints(500, "refund");
+                      alert("500 EP creditados na sua conta!");
+                    }}
+                    className="px-4 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-md text-sm font-bold transition-colors ml-2 border border-emerald-200"
+                  >
+                    + 500 EP (Devolver)
+                  </button>
                 </div>
               </div>
 
@@ -767,7 +784,7 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
                         className="mt-4 px-6 py-3 w-full bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-colors disabled:bg-emerald-300"
                       >
                         <UploadCloud className="w-5 h-5" /> 
-                        {adminUploading ? 'Enviando para a Loja...' : 'Adicionar à Lojinha (350 EP)'}
+                        {adminUploading ? 'Enviando para a Loja...' : 'Adicionar à Lojinha (150 EP)'}
                       </button>
                     </div>
                   )}
@@ -912,6 +929,11 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
                 <div>
                   <h3 className="font-bold text-purple-900 text-lg">Levar Pacote Completo</h3>
                   <p className="text-purple-700 text-sm">Compre todas as figurinhas de uma vez com um preço promocional especial!</p>
+                  {viewingPack.items && viewingPack.items.length * 150 > viewingPack.price && (
+                    <p className="text-green-600 text-sm font-bold mt-1">
+                      Economize {(viewingPack.items.length * 150) - viewingPack.price} EP em relação à compra individual!
+                    </p>
+                  )}
                 </div>
                 <button
                   disabled={effortPoints < viewingPack.price || buying === viewingPack.id}
@@ -935,12 +957,12 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
                 </button>
               </div>
 
-              <h4 className="font-bold text-gray-800 mb-4">Ou compre separadamente por 350 EP cada:</h4>
+              <h4 className="font-bold text-gray-800 mb-4">Ou compre separadamente por 150 EP cada:</h4>
               
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {viewingPack.items?.map(item => {
-                  const itemDef = { id: item.id, url: item.url, price: 350 };
-                  const canAfford = effortPoints >= 350;
+                  const itemDef = { id: item.id, url: item.url, price: 150 };
+                  const canAfford = effortPoints >= 150;
                   const isUnlocked = unlockedStickers.some(u => u.stickerId === item.id);
                   
                   return (
@@ -961,7 +983,7 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
                             : canAfford ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                           }`}
                         >
-                          {buying === item.id ? 'Comprando...' : '350 EP'}
+                          {buying === item.id ? 'Comprando...' : '150 EP'}
                         </button>
                       )}
                     </div>

@@ -268,9 +268,32 @@ export default function PdfAnnotatorOverlay() {
         return;
       }
 
-      // Download file from storage
-      const response = await fetch(savedDoc.fileUrl);
-      const arrayBuffer = await response.arrayBuffer();
+      let arrayBuffer: ArrayBuffer;
+      
+      try {
+        if (savedDoc.storagePath) {
+          const { data, error } = await supabase.storage.from('materials').download(savedDoc.storagePath);
+          if (error) throw error;
+          arrayBuffer = await data.arrayBuffer();
+        } else {
+          // Fallback for older docs without storagePath
+          const response = await fetch(savedDoc.fileUrl);
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+          arrayBuffer = await response.arrayBuffer();
+        }
+      } catch (err: any) {
+        console.error("Erro no download do arquivo:", err);
+        // Se for erro de CORS ou falha de rede no download direto, tenta usar o publicUrl como fallback
+        if (savedDoc.storagePath && savedDoc.fileUrl) {
+          console.log("Tentando fallback via fetch da publicUrl...");
+          const response = await fetch(savedDoc.fileUrl);
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+          arrayBuffer = await response.arrayBuffer();
+        } else {
+          throw err;
+        }
+      }
+
       setPdfFile(arrayBuffer);
 
       if (savedDoc.fileType === 'pdf') {
@@ -304,7 +327,7 @@ export default function PdfAnnotatorOverlay() {
           setTotalPages(1);
           setCurrentPage(1);
         });
-      } else if (savedDoc.fileType === 'docx') {
+      } else if (savedDoc.fileType === 'docx' || savedDoc.fileType === 'doc') {
         setFileType('docx');
         setPdfDoc(null);
         setEpubBook(null);

@@ -6,7 +6,7 @@ import { collection, addDoc, serverTimestamp, doc, getDoc, setDoc, Timestamp } f
 import { useAuth } from '../contexts/AuthContext';
 import { useReward } from '../contexts/RewardContext';
 import { generateContentFromGemini, correctEssayFromGemini } from '../lib/gemini';
-import { DownloadIcon, BanIcon, CheckCircleIcon, XCircleIcon, UploadCloud, FileText, Bot, Sparkles, AlertCircle, Flag, AlertTriangle } from 'lucide-react';
+import { DownloadIcon, BanIcon, CheckCircleIcon, XCircleIcon, UploadCloud, FileText, Bot, Sparkles, AlertCircle, Flag, AlertTriangle, Brain, CheckCircle, X } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import mammoth from 'mammoth';
@@ -1288,9 +1288,40 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
       const result = await response.json();
       setFlashcardDoubtResponse(result.candidates?.[0]?.content?.parts?.[0]?.text || "<p>Não foi possível obter uma resposta.</p>");
     } catch (error) {
-      setFlashcardDoubtResponse("<p>Ocorreu um erro ao processar sua dúvida.</p>");
+      setFlashcardDoubtResponse("<p>Erro ao processar sua dúvida.</p>");
     } finally {
       setIsAskingFlashcardDoubt(false);
+    }
+  };
+
+  const handleGenerateFlashcardSubQuestions = async () => {
+    if (!apiKey || !flashcardDoubtResponse) return;
+    setIsGeneratingSubQuestions(true);
+    setSubQuestionError(null);
+    setSubQuestions([]);
+
+    const prompt = `Com base no flashcard: (Frente: "${currentQ.frente}", Verso: "${currentQ.verso}"), na dúvida do aluno: "${flashcardDoubt}", e na resposta fornecida pela IA: "${flashcardDoubtResponse.replace(/<[^>]*>?/gm, '')}", gere ${subQuestionCount} questões de múltipla escolha com dificuldade '${subQuestionDifficulty}'. O objetivo é testar o entendimento do aluno sobre o tópico da dúvida. A resposta DEVE ser um array de objetos JSON, cada um com as chaves "pergunta", "opcoes" (um array de 4 strings), "correta" (a string exata da resposta correta) e "explicacao".`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseMimeType: "application/json" }
+        })
+      });
+      if (!response.ok) throw new Error("A API falhou.");
+      const result = await response.json();
+      const text = result.candidates[0].content.parts[0].text;
+      const jsonMatch = text.match(/\[.*\]|\{.*\}/s);
+      let parsedData = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(text);
+      setSubQuestions(parsedData);
+    } catch (error: any) {
+      setSubQuestionError(error.message);
+    } finally {
+      setIsGeneratingSubQuestions(false);
     }
   };
 
@@ -1424,6 +1455,99 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
                       {savingFlashcardDoubt ? 'Salvando...' : flashcardDoubtSaved ? '✓ Salvo em Meus Salvamentos!' : '💾 Salvar Explicação'}
                     </button>
                   </div>
+                </div>
+              )}
+              
+              {flashcardDoubtResponse && (
+                <div className="mt-6 border-t border-gray-200 dark:border-gray-700 pt-6 animate-fade-in">
+                  <div className="bg-white dark:bg-gray-800 p-5 rounded-xl border-2 border-indigo-100 dark:border-indigo-900 shadow-sm relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 dark:bg-indigo-900/20 rounded-bl-full -z-10"></div>
+                    
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-lg shrink-0">
+                        <Brain className="w-6 h-6" />
+                      </div>
+                      
+                      <div className="flex-grow">
+                        <h4 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1">Gere um Quiz sobre sua dúvida</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Teste seu entendimento gerando questões inéditas focadas na explicação acima.</p>
+                        
+                        <div className="flex flex-wrap items-center gap-3 mb-4">
+                          <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-900 p-1.5 rounded-lg border border-gray-200 dark:border-gray-700">
+                            <span className="text-xs font-semibold text-gray-500 pl-2">Quantidade:</span>
+                            <select 
+                              value={subQuestionCount} 
+                              onChange={(e) => setSubQuestionCount(Number(e.target.value))}
+                              className="text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md py-1 px-2 focus:ring-2 focus:ring-indigo-500"
+                            >
+                              <option value={1}>1 Questão</option>
+                              <option value={3}>3 Questões</option>
+                              <option value={5}>5 Questões</option>
+                            </select>
+                          </div>
+                          
+                          <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-900 p-1.5 rounded-lg border border-gray-200 dark:border-gray-700">
+                            <span className="text-xs font-semibold text-gray-500 pl-2">Dificuldade:</span>
+                            <select 
+                              value={subQuestionDifficulty} 
+                              onChange={(e) => setSubQuestionDifficulty(e.target.value)}
+                              className="text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md py-1 px-2 focus:ring-2 focus:ring-indigo-500"
+                            >
+                              <option value="Fácil">Fácil</option>
+                              <option value="Médio">Médio</option>
+                              <option value="Difícil">Difícil</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <button 
+                          onClick={handleGenerateFlashcardSubQuestions} 
+                          disabled={isGeneratingSubQuestions || !apiKey} 
+                          className="flex items-center gap-2 py-2.5 px-5 font-bold rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isGeneratingSubQuestions ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                              Gerando Quiz...
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="w-4 h-4" />
+                              Gerar Quiz de Fixação
+                            </>
+                          )}
+                        </button>
+                        
+                        {subQuestionError && (
+                          <div className="mt-3 text-red-500 text-sm bg-red-50 dark:bg-red-900/30 p-2 rounded-lg border border-red-200 dark:border-red-800">
+                            <strong>Erro:</strong> {subQuestionError}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* PracticeQuiz Component gets rendered below inside subQuestions array handler */}
+                  {subQuestions.length > 0 && (
+                    <div className="mt-6 border border-indigo-200 dark:border-indigo-800 rounded-xl overflow-hidden shadow-lg animate-slide-up relative">
+                      <div className="bg-indigo-50 dark:bg-indigo-900/30 p-3 flex justify-between items-center border-b border-indigo-100 dark:border-indigo-800">
+                        <h4 className="font-bold text-indigo-800 dark:text-indigo-300 flex items-center gap-2">
+                          <CheckCircle className="w-5 h-5 text-indigo-500" />
+                          Quiz da Dúvida
+                        </h4>
+                        <button onClick={() => setSubQuestions([])} className="text-gray-500 hover:bg-white dark:hover:bg-gray-800 p-1.5 rounded-lg transition-colors shadow-sm bg-white/50 dark:bg-black/20">
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <PracticeQuiz 
+                        key={flashcardDoubt} 
+                        questions={subQuestions} 
+                        theme={theme} 
+                        onClose={() => setSubQuestions([])} 
+                        quizTitle="Quiz de Fixação da Dúvida" 
+                      />
+                    </div>
+                  )}
                 </div>
               )}
             </div>

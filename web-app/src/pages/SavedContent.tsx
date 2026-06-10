@@ -296,7 +296,7 @@ export default function SavedContent() {
         subject: viewingContent.subject,
         topic: viewingContent.topic,
         difficulty: viewingContent.difficulty || 'Médio',
-        model: 'Questões',
+        model: viewingContent.model || 'Questões',
       };
       return (
         <div className="min-h-screen flex flex-col">

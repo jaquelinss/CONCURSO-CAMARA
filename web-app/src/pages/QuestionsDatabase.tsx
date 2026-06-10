@@ -24,7 +24,8 @@ import {
   Plus,
   Check,
   Pencil,
-  X
+  X,
+  ListPlus
 } from 'lucide-react';
 import { topicsBySubject } from '../lib/constants';
 import { useAuth } from '../contexts/AuthContext';
@@ -32,6 +33,8 @@ import { useReward } from '../contexts/RewardContext';
 import { useCustomSubjects } from '../contexts/CustomSubjectsContext';
 import { db } from '../lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+import QuestionTutorChat from '../components/QuestionTutorChat';
+import AddToListModal from '../components/AddToListModal';
 
 function Youtube({ className }: { className?: string }) {
   return (
@@ -91,6 +94,7 @@ export default function QuestionsDatabase() {
   // Quiz interactive state
   const [userAnswers, setUserAnswers] = useState<Record<string, number>>({});
   const [checkedAnswers, setCheckedAnswers] = useState<Record<string, boolean>>({});
+  const [addingToListQuestion, setAddingToListQuestion] = useState<any>(null);
 
   const { user, selectedBanca, saveBanca } = useAuth();
   const { getAllSubjectsByMode } = useCustomSubjects();
@@ -299,7 +303,19 @@ export default function QuestionsDatabase() {
       // Show all questions under the selected main topic
       list = subjectQuestions.filter(q => {
         if (!q.topics || !Array.isArray(q.topics) || q.topics.length < 1) return false;
-        return q.topics[0].toLowerCase() === selectedTopic.toLowerCase();
+        
+        let mainTopic = q.topics[0];
+        const mapping = selectedSubject ? topicsBySubject[selectedSubject] : undefined;
+        if (mapping) {
+          for (const [mTopic, sTopics] of Object.entries(mapping)) {
+            if ((sTopics as string[]).includes(mainTopic)) {
+              mainTopic = mTopic;
+              break;
+            }
+          }
+        }
+        
+        return mainTopic.toLowerCase() === selectedTopic.toLowerCase();
       });
     } else {
       list = subjectQuestions.filter(q => {
@@ -448,6 +464,14 @@ export default function QuestionsDatabase() {
                 </button>
               ))}
             </div>
+
+            <a 
+              href="/saved" 
+              className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-800/40 transition-colors text-xs font-bold"
+            >
+              <ListPlus className="w-4 h-4" />
+              Ver Minhas Listas Salvas
+            </a>
 
             {activeCategory === 'Concurso' && (
               <div className="flex flex-col mt-3">
@@ -832,6 +856,14 @@ export default function QuestionsDatabase() {
                                 {q.status === 'incorrect' && <>Erro Anterior</>}
                                 {q.status === 'unanswered' && <>Não Respondida</>}
                               </span>
+
+                              <button
+                                onClick={() => setAddingToListQuestion(q)}
+                                title="Adicionar a uma Lista"
+                                className="ml-2 text-gray-400 hover:text-indigo-500 transition-colors p-1 rounded hover:bg-indigo-50 dark:hover:bg-indigo-900/30"
+                              >
+                                <ListPlus className="w-4 h-4" />
+                              </button>
                             </div>
                           </div>
 
@@ -924,6 +956,16 @@ export default function QuestionsDatabase() {
                                       <p className="text-sm italic text-amber-800 dark:text-amber-200">"{q.leiSeca}"</p>
                                     </div>
                                   )}
+                                  <QuestionTutorChat 
+                                    question={{
+                                      pergunta: q.statement,
+                                      opcoes: q.options,
+                                      correta: q.options[q.correctAnswer],
+                                      explicacao: q.explanation
+                                    }}
+                                    subject={selectedSubject || 'Geral'}
+                                    topic={selectedTopic || 'Geral'}
+                                  />
                                 </div>
                               )}
                             </div>
@@ -989,6 +1031,15 @@ export default function QuestionsDatabase() {
           )}
         </main>
       </div>
+
+      {addingToListQuestion && (
+        <AddToListModal
+          question={addingToListQuestion}
+          subject={selectedSubject || 'Geral'}
+          topic={selectedTopic || 'Geral'}
+          onClose={() => setAddingToListQuestion(null)}
+        />
+      )}
     </div>
   );
 }
