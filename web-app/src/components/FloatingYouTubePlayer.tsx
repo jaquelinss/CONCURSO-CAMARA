@@ -41,8 +41,17 @@ export default function FloatingYouTubePlayer() {
   const [subject, setSubject] = useState('');
   
   const [isLocked, setIsLocked] = useState(false);
-  const [isLarge, setIsLarge] = useState(false);
+  const [isLarge, setIsLarge] = useState(() => localStorage.getItem('youtube_player_large') === 'true');
   const [isDragging, setIsDragging] = useState(false);
+  
+  const [position, setPosition] = useState<{x: number, y: number}>(() => {
+    try {
+      const saved = localStorage.getItem('youtube_player_pos');
+      return saved ? JSON.parse(saved) : { x: 0, y: 0 };
+    } catch {
+      return { x: 0, y: 0 };
+    }
+  });
 
   const nodeRef = useRef<HTMLDivElement>(null);
 
@@ -76,8 +85,13 @@ export default function FloatingYouTubePlayer() {
       nodeRef={nodeRef}
       handle=".player-drag-handle"
       disabled={isLocked}
+      defaultPosition={position}
       onStart={() => setIsDragging(true)}
-      onStop={() => setIsDragging(false)}
+      onStop={(e, data) => {
+        setIsDragging(false);
+        setPosition({ x: data.x, y: data.y });
+        localStorage.setItem('youtube_player_pos', JSON.stringify({ x: data.x, y: data.y }));
+      }}
       bounds="body"
     >
       <div
@@ -124,7 +138,11 @@ export default function FloatingYouTubePlayer() {
             {/* Standard/Large Size Toggle */}
             {!isLocked && (
               <button
-                onClick={() => setIsLarge(!isLarge)}
+                onClick={() => {
+                  const next = !isLarge;
+                  setIsLarge(next);
+                  localStorage.setItem('youtube_player_large', String(next));
+                }}
                 className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md text-gray-500 transition-colors"
                 title={isLarge ? "Tamanho padrão" : "Tamanho grande (Cinema)"}
               >

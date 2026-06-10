@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useReward } from '../contexts/RewardContext';
-import { LogOut, Menu, X, CalendarDays, FolderHeart, Sun, Moon, TrendingUp, Database, HelpCircle, Focus, Book, Home, BookOpen, Archive, Flame, Store } from 'lucide-react';
+import { LogOut, Menu, X, CalendarDays, FolderHeart, Sun, Moon, TrendingUp, Database, HelpCircle, Focus, Book, Home, BookOpen, Archive, Flame, Store, Columns } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import FocusPlayer from './FocusPlayer';
 import { RewardShop } from './RewardShop';
@@ -175,6 +175,14 @@ export default function Navigation() {
             </button>
 
             <button
+              onClick={() => window.dispatchEvent(new Event('toggle-global-split'))}
+              className="hidden sm:block p-2 rounded-lg text-teal-500 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-900/30 transition-colors"
+              title="Tela Dividida"
+            >
+              <Columns className="w-5 h-5" />
+            </button>
+
+            <button
               onClick={() => window.dispatchEvent(new Event('toggle-whiteboard-notebook'))}
               className="hidden sm:block p-2 rounded-lg text-purple-500 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors"
               title="Cadernos (Ctrl+Shift+C)"
@@ -324,6 +332,12 @@ export default function Navigation() {
               className="w-full flex items-center gap-3 pl-3 pr-4 py-3 border-l-4 border-transparent text-base font-medium text-blue-500 dark:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-700"
             >
               <BookOpen className="w-5 h-5" /> Leitor de PDF
+            </button>
+            <button
+              onClick={() => { setMobileMenuOpen(false); window.dispatchEvent(new Event('toggle-global-split')); }}
+              className="w-full flex items-center gap-3 pl-3 pr-4 py-3 border-l-4 border-transparent text-base font-medium text-teal-500 dark:text-teal-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              <Columns className="w-5 h-5" /> Tela Dividida
             </button>
             <button
               onClick={() => { setMobileMenuOpen(false); window.dispatchEvent(new Event('toggle-whiteboard-notebook')); }}

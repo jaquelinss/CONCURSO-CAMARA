@@ -92,26 +92,34 @@ export default function PdfAnnotatorOverlay() {
   const zoomOut = () => setZoom(z => Math.max(0.25, +(z - 0.25).toFixed(2)));
   const zoomReset = () => setZoom(1);
 
-  // Split-screen state
-  const [splitMode, setSplitMode] = useState(false);
-  const [splitWidth, setSplitWidth] = useState(50); // percentage of screen for the reader
-  const splitDragging = useRef(false);
+  // Split-screen state synced with global
+  const [splitMode, setSplitMode] = useState(() => localStorage.getItem('global_split_active') === 'true');
+  const [splitWidth, setSplitWidth] = useState(() => Number(localStorage.getItem('global_split_width')) || 50);
 
   useEffect(() => {
-    if (active && splitMode) {
-      document.body.style.transition = 'padding-right 0.3s ease';
-      document.body.style.paddingRight = `${splitWidth}%`;
-      document.body.style.overflowX = 'hidden';
-    } else {
-      document.body.style.paddingRight = '0px';
-      document.body.style.overflowX = '';
-    }
-    return () => {
-      document.body.style.paddingRight = '0px';
-      document.body.style.overflowX = '';
-      document.body.style.transition = '';
+    const handleStorageChange = () => {
+      setSplitMode(localStorage.getItem('global_split_active') === 'true');
+      setSplitWidth(Number(localStorage.getItem('global_split_width')) || 50);
     };
-  }, [active, splitMode, splitWidth]);
+    
+    // Custom event to sync immediately within the same window
+    window.addEventListener('global-split-changed', handleStorageChange);
+    // Storage event for cross-tab sync (and sometimes same tab depending on browser, but custom event is safer)
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also poll occasionally just in case
+    const interval = setInterval(handleStorageChange, 1000);
+
+    return () => {
+      window.removeEventListener('global-split-changed', handleStorageChange);
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
+
+  const toggleSplitMode = () => {
+    window.dispatchEvent(new Event('toggle-global-split'));
+  };
 
   // Library state
   const [showLibrary, setShowLibrary] = useState(false);
@@ -677,36 +685,13 @@ export default function PdfAnnotatorOverlay() {
 
   return (
     <>
-      <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".pdf,.epub,.doc,.docx" className="hidden" />
+<input type="file" ref={fileInputRef} onChange={handleFileUpload} accept=".pdf,.epub,.doc,.docx" className="hidden" />
 
       {active && createPortal(
         <div 
           className={`fixed bg-gray-900 flex flex-col ${splitMode ? 'top-16 right-0 bottom-0 z-[40]' : 'inset-0 z-[9999]'}`}
           style={splitMode ? { width: `${splitWidth}%` } : undefined}
         >
-          {/* Draggable split divider */}
-          {splitMode && (
-            <div
-              className="absolute top-0 left-0 w-2 h-full cursor-col-resize z-[10000] group hover:bg-indigo-500/30 transition-colors"
-              style={{ marginLeft: '-4px' }}
-              onPointerDown={(e) => {
-                e.preventDefault();
-                splitDragging.current = true;
-                (e.target as HTMLElement).setPointerCapture(e.pointerId);
-              }}
-              onPointerMove={(e) => {
-                if (!splitDragging.current) return;
-                const pct = ((window.innerWidth - e.clientX) / window.innerWidth) * 100;
-                setSplitWidth(Math.max(25, Math.min(75, pct)));
-              }}
-              onPointerUp={(e) => {
-                splitDragging.current = false;
-                (e.target as HTMLElement).releasePointerCapture(e.pointerId);
-              }}
-            >
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-12 bg-gray-500 rounded-full opacity-40 group-hover:opacity-100 group-hover:bg-indigo-500 transition-all" />
-            </div>
-          )}
           {/* Top Toolbar */}
           <div className="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4 flex-shrink-0 overflow-x-auto no-scrollbar gap-4">
             <div className="flex items-center gap-4 flex-shrink-0">
@@ -788,18 +773,15 @@ export default function PdfAnnotatorOverlay() {
               </button>
 
               {/* Split-screen toggle */}
-              <button 
-                onClick={() => setSplitMode(prev => !prev)} 
+              <button
+                onClick={toggleSplitMode}
                 className={`p-2 rounded-lg transition-colors flex items-center gap-2 flex-shrink-0 ${splitMode ? 'bg-red-100 text-red-600 font-bold border border-red-200' : 'text-gray-500 hover:text-indigo-600 hover:bg-gray-100'}`}
                 title={splitMode ? 'Sair da Tela Dividida' : 'Tela Dividida'}
               >
                 {splitMode ? (
-                  <>
-                    <X className="w-4 h-4" />
-                    <span className="text-xs">Sair da Divisão</span>
-                  </>
+                  <><Columns className="w-4 h-4" /> <span className="hidden sm:inline">Sair do Split</span></>
                 ) : (
-                  <PanelRightOpen className="w-4 h-4" />
+                  <Columns className="w-4 h-4" />
                 )}
               </button>
 

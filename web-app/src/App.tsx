@@ -23,6 +23,7 @@ import WhiteboardOverlay from './components/WhiteboardOverlay';
 import PdfAnnotatorOverlay from './components/PdfAnnotatorOverlay';
 import StamperOverlay from './components/StamperOverlay';
 import SiteDecorator from './components/SiteDecorator';
+import GlobalSplitScreenManager from './components/GlobalSplitScreenManager';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import React, { useState } from 'react';
 
@@ -61,6 +62,7 @@ export default function App() {
                   <AppRoutes />
                 
                   <SiteDecorator />
+                  <GlobalSplitScreenManager />
                   <ReportButton isHidden={!showTools} />
                   <StickyNotesManager />
                   <FloatingYouTubePlayer />
