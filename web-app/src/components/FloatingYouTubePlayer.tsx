@@ -87,7 +87,7 @@ export default function FloatingYouTubePlayer() {
       disabled={isLocked}
       defaultPosition={position}
       onStart={() => setIsDragging(true)}
-      onStop={(e, data) => {
+      onStop={(_, data) => {
         setIsDragging(false);
         setPosition({ x: data.x, y: data.y });
         localStorage.setItem('youtube_player_pos', JSON.stringify({ x: data.x, y: data.y }));

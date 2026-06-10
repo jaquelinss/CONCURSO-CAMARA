@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Eraser, X, Undo2, Redo2, ChevronLeft, ChevronRight, Download, PenTool, Highlighter, MousePointer2, BookOpen, File as FileIcon, Save, BookMarked, Trash2, FolderOpen, Loader2, ZoomIn, ZoomOut, RotateCcw, ChevronDown, PanelRightOpen } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Save, Eraser, Trash2, Columns, Undo2, Redo2, Download, PenTool, Highlighter, MousePointer2, BookOpen, File as FileIcon, BookMarked, FolderOpen, Loader2, ZoomIn, ZoomOut, RotateCcw, ChevronDown } from 'lucide-react';
 import { getStroke } from 'perfect-freehand';
 import * as pdfjsLib from 'pdfjs-dist';
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
