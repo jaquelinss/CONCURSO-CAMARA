@@ -1,6 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useReward } from '../contexts/RewardContext';
 import { db } from '../lib/firebase';

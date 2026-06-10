@@ -7,11 +7,10 @@ import { X, Check, Plus, Folder, ListPlus } from 'lucide-react';
 interface AddToListModalProps {
   question: any;
   subject: string;
-  topic: string;
   onClose: () => void;
 }
 
-export default function AddToListModal({ question, subject, topic, onClose }: AddToListModalProps) {
+export default function AddToListModal({ question, subject, onClose }: AddToListModalProps) {
   const { user } = useAuth();
   const [lists, setLists] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

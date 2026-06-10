@@ -1036,7 +1036,6 @@ export default function QuestionsDatabase() {
         <AddToListModal
           question={addingToListQuestion}
           subject={selectedSubject || 'Geral'}
-          topic={selectedTopic || 'Geral'}
           onClose={() => setAddingToListQuestion(null)}
         />
       )}
