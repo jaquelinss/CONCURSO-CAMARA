@@ -81,6 +81,20 @@ export default function StickyNotesManager() {
   const NO_TAG = '__no_tag__';
   const processingTagsRef = useRef<Set<string>>(new Set());
 
+  const [showTagsFilter, setShowTagsFilter] = useState(() => {
+    try {
+      const saved = localStorage.getItem('showTagsFilter');
+      return saved ? JSON.parse(saved) : true;
+    } catch {
+      return true;
+    }
+  });
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
+
+  useEffect(() => {
+    localStorage.setItem('showTagsFilter', JSON.stringify(showTagsFilter));
+  }, [showTagsFilter]);
+
   // Load preferences from firestore
   useEffect(() => {
     if (!user) return;
@@ -97,15 +111,24 @@ export default function StickyNotesManager() {
     }).catch(console.error);
   }, [user]);
 
-  // Get notes filtered by the current tab and tag selection
   const getFilteredNotes = () => {
     let filtered = sidebarTab === 'flashcards' 
       ? notes.filter(n => n.isFlashcard) 
       : notes.filter(n => !n.isFlashcard);
-    if (selectedTag === NO_TAG) return filtered.filter(n => !n.subjectTag);
-    if (selectedTag && selectedSubTag) return filtered.filter(n => n.subjectTag === selectedTag && n.subTag === selectedSubTag);
-    if (selectedTag) return filtered.filter(n => n.subjectTag === selectedTag);
-    return filtered;
+    if (selectedTag === NO_TAG) {
+      filtered = filtered.filter(n => !n.subjectTag);
+    } else if (selectedTag && selectedSubTag) {
+      filtered = filtered.filter(n => n.subjectTag === selectedTag && n.subTag === selectedSubTag);
+    } else if (selectedTag) {
+      filtered = filtered.filter(n => n.subjectTag === selectedTag);
+    }
+
+    return filtered.sort((a, b) => {
+      const timeA = a.createdAt?.toMillis?.() || 0;
+      const timeB = b.createdAt?.toMillis?.() || 0;
+      if (sortOrder === 'newest') return timeB - timeA;
+      return timeA - timeB;
+    });
   };
 
   // Batch show all (un-archive) filtered notes
@@ -567,8 +590,29 @@ export default function StickyNotesManager() {
                 </div>
               ) : (
                 <div className="flex flex-col gap-4">
+                  {/* Actions Header: Sort and Toggle Tags */}
+                  <div className="flex justify-between items-center mb-1 gap-2">
+                    <select
+                      value={sortOrder}
+                      onChange={(e) => setSortOrder(e.target.value as 'newest' | 'oldest')}
+                      className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md px-2 py-1 text-xs font-semibold text-gray-700 dark:text-gray-300 shadow-sm"
+                    >
+                      <option value="newest">Mais recentes</option>
+                      <option value="oldest">Mais antigos</option>
+                    </select>
+
+                    <button
+                      onClick={() => setShowTagsFilter(!showTagsFilter)}
+                      className="text-xs font-bold text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 flex items-center gap-1 transition-colors"
+                    >
+                      {showTagsFilter ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                      {showTagsFilter ? 'Ocultar Tags' : 'Mostrar Tags'}
+                    </button>
+                  </div>
+
                   {/* Tag Filter */}
-                  <div className="flex flex-wrap gap-2 mb-1">
+                  {showTagsFilter && (
+                    <div className="flex flex-wrap gap-2 mb-1">
                     <button
                       onClick={() => setSelectedTag(null)}
                       className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
@@ -626,7 +670,8 @@ export default function StickyNotesManager() {
                         )}
                       </div>
                     ))}
-                  </div>
+                    </div>
+                  )}
 
                   {/* Batch Show/Hide Buttons */}
                   <div className="flex gap-2 mb-2">
