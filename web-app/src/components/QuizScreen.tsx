@@ -1242,7 +1242,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     setSubQuestionError(null);
     setSubQuestions([]);
 
-    const prompt = `Com base no contexto da questão de quiz: "${currentQ.pergunta}", a explicação da resposta: "${currentQ.explicacao}", a dúvida do aluno: "${doubt}", e a resposta fornecida: "${doubtResponse.replace(/<[^>]*>?/gm, '')}", gere ${subQuestionCount} questões de múltipla escolha com dificuldade '${subQuestionDifficulty}'. O objetivo é testar o entendimento do aluno sobre o tópico da dúvida. A resposta DEVE ser um array de objetos JSON, cada um com as chaves "pergunta", "opcoes" (um array de 4 strings), "correta" (a string exata da resposta correta) e "explicacao".`;
+    const prompt = `Com base no contexto da questão de quiz: "${currentQ.pergunta}", a explicação da resposta: "${currentQ.explicacao}", a dúvida do aluno: "${doubt}", e a resposta fornecida: "${doubtResponse.replace(/<[^>]*>?/gm, '')}", gere ${subQuestionCount} questões de múltipla escolha com dificuldade '${subQuestionDifficulty}'. O objetivo é testar o entendimento do aluno sobre o tópico da dúvida. NÃO crie questões que dependam de formatação visual (palavras "sublinhadas" ou "negritadas"). A resposta DEVE ser um array de objetos JSON, cada um com as chaves "pergunta", "opcoes" (um array de 4 strings), "correta" (a string exata da resposta correta) e "explicacao".`;
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     try {
@@ -1300,7 +1300,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     setSubQuestionError(null);
     setSubQuestions([]);
 
-    const prompt = `Com base no flashcard: (Frente: "${currentQ.frente}", Verso: "${currentQ.verso}"), na dúvida do aluno: "${flashcardDoubt}", e na resposta fornecida pela IA: "${flashcardDoubtResponse.replace(/<[^>]*>?/gm, '')}", gere ${subQuestionCount} questões de múltipla escolha com dificuldade '${subQuestionDifficulty}'. O objetivo é testar o entendimento do aluno sobre o tópico da dúvida. A resposta DEVE ser um array de objetos JSON, cada um com as chaves "pergunta", "opcoes" (um array de 4 strings), "correta" (a string exata da resposta correta) e "explicacao".`;
+    const prompt = `Com base no flashcard: (Frente: "${currentQ.frente}", Verso: "${currentQ.verso}"), na dúvida do aluno: "${flashcardDoubt}", e na resposta fornecida pela IA: "${flashcardDoubtResponse.replace(/<[^>]*>?/gm, '')}", gere ${subQuestionCount} questões de múltipla escolha com dificuldade '${subQuestionDifficulty}'. O objetivo é testar o entendimento do aluno sobre o tópico da dúvida. NÃO crie questões que dependam de formatação visual (palavras "sublinhadas" ou "negritadas"). A resposta DEVE ser um array de objetos JSON, cada um com as chaves "pergunta", "opcoes" (um array de 4 strings), "correta" (a string exata da resposta correta) e "explicacao".`;
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     try {

@@ -586,7 +586,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
     setQuizError(null);
     setPracticeQuiz(null);
 
-    const prompt = `Gere 5 questões de múltipla escolha de dificuldade '${quizDifficulty}' sobre o tópico "${currentLesson.titulo}". A resposta DEVE ser um array de objetos JSON, cada um com as chaves "pergunta", "opcoes" (um array de 4 strings), "correta" (a string exata da resposta correta) e "explicacao".`;
+    const prompt = `Gere 5 questões de múltipla escolha de dificuldade '${quizDifficulty}' sobre o tópico "${currentLesson.titulo}". NÃO crie questões que dependam de formatação visual (palavras "sublinhadas" ou "negritadas"). Se precisar referenciar uma palavra, escreva-a explicitamente no enunciado. A resposta DEVE ser um array de objetos JSON, cada um com as chaves "pergunta", "opcoes" (um array de 4 strings), "correta" (a string exata da resposta correta) e "explicacao".`;
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     try {
@@ -647,7 +647,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
     setSubQuestionError(null);
     setSubQuestions([]);
 
-    const prompt = `Com base no contexto da seguinte dúvida de um aluno sobre a aula de "${currentLesson.titulo}": "${doubt}", e a resposta fornecida: "${doubtResponse.replace(/<[^>]*>?/gm, '')}", gere ${subQuestionCount} questões de múltipla escolha com dificuldade '${subQuestionDifficulty}'. A resposta DEVE ser um array de objetos JSON, cada um com as chaves "pergunta", "opcoes" (um array de 4 strings), "correta" (a string exata da resposta correta) e "explicacao".`;
+    const prompt = `Com base no contexto da seguinte dúvida de um aluno sobre a aula de "${currentLesson.titulo}": "${doubt}", e a resposta fornecida: "${doubtResponse.replace(/<[^>]*>?/gm, '')}", gere ${subQuestionCount} questões de múltipla escolha com dificuldade '${subQuestionDifficulty}'. NÃO crie questões que dependam de formatação visual (palavras "sublinhadas" ou "negritadas"). A resposta DEVE ser um array de objetos JSON, cada um com as chaves "pergunta", "opcoes" (um array de 4 strings), "correta" (a string exata da resposta correta) e "explicacao".`;
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     try {
