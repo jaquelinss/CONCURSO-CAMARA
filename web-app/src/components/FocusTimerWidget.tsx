@@ -200,7 +200,7 @@ export default function FocusTimerWidget() {
     >
       <div
         ref={nodeRef}
-        className={`fixed top-0 left-0 z-[9998] w-80 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border-2 overflow-hidden pointer-events-auto transition-shadow flex flex-col ${subject ? currentTheme.border : 'border-gray-200 dark:border-gray-700'}`}
+        className={`fixed top-0 left-0 z-[9998] w-80 min-w-[250px] min-h-[360px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border-2 resize overflow-hidden pointer-events-auto transition-shadow flex flex-col ${subject ? currentTheme.border : 'border-gray-200 dark:border-gray-700'}`}
       >
         {/* Header Draggable */}
         <div className="timer-drag-handle flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 cursor-grab active:cursor-grabbing select-none">
@@ -225,7 +225,7 @@ export default function FocusTimerWidget() {
         </div>
 
         {/* Corpo do Widget */}
-        <div className="p-4 flex flex-col items-center">
+        <div className="p-4 flex flex-col items-center flex-1 overflow-y-auto w-full">
           
           {/* Matéria Selecionada */}
           <div className="w-full mb-4">
