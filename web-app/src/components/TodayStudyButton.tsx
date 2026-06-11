@@ -2,13 +2,32 @@ import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
 import { collection, getDocs, query, orderBy, limit, doc, getDoc, updateDoc, onSnapshot, setDoc, Timestamp } from 'firebase/firestore';
-import { BookOpen, X, CheckCircle, ChevronLeft, ChevronRight, CirclePlay, AlertCircle, RefreshCw, Check, Youtube, PlusCircle, Search, Sparkles, Pencil, Loader2 } from 'lucide-react';
+import { BookOpen, X, CheckCircle, ChevronLeft, ChevronRight, CirclePlay, AlertCircle, RefreshCw, Check, PlusCircle, Search, Sparkles, Pencil, Loader2 } from 'lucide-react';
 import { format, addDays, subDays, isToday, parseISO, startOfDay, isBefore } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useLocation } from 'react-router-dom';
 import { getRevisionSuggestions, calculateNextStep } from '../lib/revision.service';
-import { suggestVideoSearches } from '../lib/ai.service';
+import { suggestVideoSearches } from '../lib/gemini';
 import { useReward } from '../contexts/RewardContext';
+
+function Youtube({ className }: { className?: string }) {
+  return (
+    <svg 
+      viewBox="0 0 24 24" 
+      width="24" 
+      height="24" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      fill="none" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className={className}
+    >
+      <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"></path>
+      <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"></polygon>
+    </svg>
+  );
+}
 
 function InlineVideoEditor({ 
   apiKey,
