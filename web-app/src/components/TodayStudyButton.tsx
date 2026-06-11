@@ -339,93 +339,108 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
                   </div>
                 )}
 
-                {/* Overdue Items */}
+                {/* Overdue Items Container */}
                 {showOverdue && (overdueBlocks.length > 0 || overdueRevisions.length > 0) && (
-                  <div className="space-y-2 mt-4 pt-4 border-t border-red-100 dark:border-red-900/30">
-                    <div className="flex items-center gap-2 mb-2">
-                      <AlertCircle className="w-4 h-4 text-red-500" />
-                      <span className="text-xs font-bold text-red-500 uppercase tracking-wider">Atrasadas</span>
-                    </div>
-                    {overdueBlocks.map((block: any, idx: number) => (
-                      <div
-                        key={`overdue-${idx}`}
-                        className="p-3 rounded-xl border bg-red-50/50 dark:bg-red-900/10 border-red-100 dark:border-red-900/50 transition-all"
-                      >
-                        <div className="flex items-start gap-3">
-                          <button 
-                            onClick={() => handleToggleComplete(block.originalDate, block.blockIndex, block.status)}
-                            className="mt-0.5 hover:scale-110 transition-transform focus:outline-none"
-                            title="Marcar como concluído"
+                  <div className="mt-4 pt-4 border-t border-red-100 dark:border-red-900/30 flex flex-col gap-4">
+                    
+                    {/* Aulas Atrasadas */}
+                    {overdueBlocks.length > 0 && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 mb-2">
+                          <AlertCircle className="w-4 h-4 text-red-500" />
+                          <span className="text-xs font-bold text-red-500 uppercase tracking-wider">Aulas Atrasadas</span>
+                        </div>
+                        {overdueBlocks.map((block: any, idx: number) => (
+                          <div
+                            key={`overdue-${idx}`}
+                            className="p-3 rounded-xl border bg-red-50/50 dark:bg-red-900/10 border-red-100 dark:border-red-900/50 transition-all"
                           >
-                            <div className="w-5 h-5 rounded-full border-2 border-red-400 dark:border-red-500 hover:border-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"></div>
-                          </button>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm font-semibold truncate transition-colors text-gray-900 dark:text-white">
-                              {block.subject}
-                            </p>
-                            <p className="text-xs text-red-500 dark:text-red-400 font-medium">
-                              {format(parseISO(block.originalDate), "dd 'de' MMM", { locale: ptBR })}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                              {block.topic} • {block.hours}h
-                            </p>
-                            {((block.youtubeUrls && block.youtubeUrls.length > 0) || block.youtubeUrl) && (
-                              <div className="flex flex-wrap gap-1.5 mt-1.5">
-                                {(block.youtubeUrls || (block.youtubeUrl ? [block.youtubeUrl] : [])).map((url: string, i: number) => (
-                                  <button
-                                    key={i}
-                                    onClick={() => {
-                                      window.dispatchEvent(new CustomEvent('play-youtube-video', {
-                                        detail: { url, topic: block.topic, subject: block.subject }
-                                      }));
-                                    }}
-                                    className="flex items-center gap-1 text-[10px] bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 px-1.5 py-0.5 rounded hover:bg-red-200 dark:hover:bg-red-900/60 font-bold transition-colors"
-                                  >
-                                    <CirclePlay className="w-3 h-3" />
-                                    Vídeo {i + 1}
-                                  </button>
-                                ))}
+                            <div className="flex items-start gap-3">
+                              <button 
+                                onClick={() => handleToggleComplete(block.originalDate, block.blockIndex, block.status)}
+                                className="mt-0.5 hover:scale-110 transition-transform focus:outline-none"
+                                title="Marcar como concluído"
+                              >
+                                <div className="w-5 h-5 rounded-full border-2 border-red-400 dark:border-red-500 hover:border-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"></div>
+                              </button>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-semibold truncate transition-colors text-gray-900 dark:text-white">
+                                  {block.subject}
+                                </p>
+                                <p className="text-xs text-red-500 dark:text-red-400 font-medium">
+                                  {format(parseISO(block.originalDate), "dd 'de' MMM", { locale: ptBR })}
+                                </p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                                  {block.topic} • {block.hours}h
+                                </p>
+                                {((block.youtubeUrls && block.youtubeUrls.length > 0) || block.youtubeUrl) && (
+                                  <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                    {(block.youtubeUrls || (block.youtubeUrl ? [block.youtubeUrl] : [])).map((url: string, i: number) => (
+                                      <button
+                                        key={i}
+                                        onClick={() => {
+                                          window.dispatchEvent(new CustomEvent('play-youtube-video', {
+                                            detail: { url, topic: block.topic, subject: block.subject }
+                                          }));
+                                        }}
+                                        className="flex items-center gap-1 text-[10px] bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 px-1.5 py-0.5 rounded hover:bg-red-200 dark:hover:bg-red-900/60 font-bold transition-colors"
+                                      >
+                                        <CirclePlay className="w-3 h-3" />
+                                        Vídeo {i + 1}
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
                               </div>
-                            )}
+                            </div>
                           </div>
-                        </div>
+                        ))}
                       </div>
-                    ))}
+                    )}
 
-                    {/* Render overdue revisions */}
-                    {overdueRevisions.map((rev: any) => (
-                      <div key={`overdue-rev-${rev.id}`} className="p-3 rounded-xl border transition-all bg-red-50/50 dark:bg-red-900/10 border-red-100 dark:border-red-900/50 relative overflow-hidden">
-                        {confirmingRevision === rev.id ? (
-                          <div className="absolute inset-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur flex items-center justify-between p-3 z-10 animate-in fade-in">
-                             <p className="text-xs font-bold text-gray-700 dark:text-gray-200">Reagendar revisão?</p>
-                             <div className="flex gap-2">
-                               <button onClick={() => setConfirmingRevision(null)} className="px-3 py-1.5 text-xs font-bold text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">Cancelar</button>
-                               <button onClick={() => handleRescheduleRevision(rev)} className="px-3 py-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg flex items-center gap-1"><Check className="w-3 h-3"/> Confirmar</button>
-                             </div>
-                          </div>
-                        ) : null}
-                        <div className="flex items-start gap-3">
-                          <button 
-                            onClick={() => setConfirmingRevision(rev.id)}
-                            className="mt-0.5 hover:scale-110 transition-transform focus:outline-none"
-                            title="Marcar revisão como concluída"
-                          >
-                            <div className="w-5 h-5 rounded-full border-2 border-red-400 dark:border-red-500 hover:border-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"></div>
-                          </button>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-sm font-semibold truncate text-gray-900 dark:text-white">
-                              {rev.subject}
-                            </p>
-                            <p className="text-xs text-red-500 dark:text-red-400 font-medium">
-                              {format(parseISO(rev.originalDate), "dd 'de' MMM", { locale: ptBR })} (Revisão)
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                              {rev.topic}
-                            </p>
-                          </div>
+                    {/* Revisões Atrasadas */}
+                    {overdueRevisions.length > 0 && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 mb-2">
+                          <RefreshCw className="w-4 h-4 text-orange-500" />
+                          <span className="text-xs font-bold text-orange-500 uppercase tracking-wider">Revisões Atrasadas</span>
                         </div>
+                        {overdueRevisions.map((rev: any) => (
+                          <div key={`overdue-rev-${rev.id}`} className="p-3 rounded-xl border transition-all bg-orange-50/50 dark:bg-orange-900/10 border-orange-200 dark:border-orange-900/50 relative overflow-hidden">
+                            {confirmingRevision === rev.id ? (
+                              <div className="absolute inset-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur flex items-center justify-between p-3 z-10 animate-in fade-in">
+                                 <p className="text-xs font-bold text-gray-700 dark:text-gray-200">Reagendar revisão?</p>
+                                 <div className="flex gap-2">
+                                   <button onClick={() => setConfirmingRevision(null)} className="px-3 py-1.5 text-xs font-bold text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">Cancelar</button>
+                                   <button onClick={() => handleRescheduleRevision(rev)} className="px-3 py-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg flex items-center gap-1"><Check className="w-3 h-3"/> Confirmar</button>
+                                 </div>
+                              </div>
+                            ) : null}
+                            <div className="flex items-start gap-3">
+                              <button 
+                                onClick={() => setConfirmingRevision(rev.id)}
+                                className="mt-0.5 hover:scale-110 transition-transform focus:outline-none"
+                                title="Marcar revisão como concluída"
+                              >
+                                <div className="w-5 h-5 rounded-full border-2 border-orange-400 dark:border-orange-500 hover:border-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/30 transition-colors"></div>
+                              </button>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-semibold truncate text-gray-900 dark:text-white">
+                                  {rev.subject}
+                                </p>
+                                <p className="text-xs text-orange-500 dark:text-orange-400 font-medium">
+                                  {format(parseISO(rev.originalDate), "dd 'de' MMM", { locale: ptBR })}
+                                </p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                                  {rev.topic}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    )}
+
                   </div>
                 )}
               </>
