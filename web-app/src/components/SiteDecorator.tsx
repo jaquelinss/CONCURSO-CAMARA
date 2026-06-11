@@ -100,8 +100,8 @@ export default function SiteDecorator() {
       if (target.closest('button, a, input, textarea, select, [role="dialog"], [role="menu"], .modal, .reward-shop, .whiteboard-toolbar, .whiteboard-sidebar, .palette-popover')) return;
 
       let isInSplitSpace = false;
-      let localX = e.clientX;
-      let localY = e.clientY;
+      let localX = e.pageX;
+      let localY = e.pageY;
 
       if (splitMode) {
         const boundaryX = splitSide === 'right' 
@@ -111,9 +111,11 @@ export default function SiteDecorator() {
         if (splitSide === 'right' && e.clientX >= boundaryX) {
           isInSplitSpace = true;
           localX = e.clientX - boundaryX;
+          localY = e.clientY;
         } else if (splitSide === 'left' && e.clientX <= boundaryX) {
           isInSplitSpace = true;
           localX = e.clientX;
+          localY = e.clientY;
         }
       }
 
@@ -204,7 +206,7 @@ export default function SiteDecorator() {
   return createPortal(
     <>
       {/* Main Route Stickers */}
-      <div className="fixed inset-0 w-screen h-screen pointer-events-none z-[50]">
+      <div className="absolute top-0 left-0 pointer-events-none z-[50]">
         {stickers.map(sticker => (
           <DraggableSticker 
             key={sticker.id}
