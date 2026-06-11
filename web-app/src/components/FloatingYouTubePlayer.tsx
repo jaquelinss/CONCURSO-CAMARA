@@ -27,16 +27,29 @@ function Youtube({ className }: { className?: string }) {
   );
 }
 
-function getYouTubeId(url: string): string | null {
-  if (!url) return null;
+function parseYouTubeUrl(url: string): { videoId: string | null, listId: string | null } {
+  if (!url) return { videoId: null, listId: null };
+  let videoId = null;
+  let listId = null;
+
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
   const match = url.match(regExp);
-  return match && match[2].length === 11 ? match[2] : null;
+  if (match && match[2].length === 11) {
+    videoId = match[2];
+  }
+
+  const listMatch = url.match(/[?&]list=([^#\&\?]+)/);
+  if (listMatch && listMatch[1]) {
+    listId = listMatch[1];
+  }
+
+  return { videoId, listId };
 }
 
 export default function FloatingYouTubePlayer() {
   const [isOpen, setIsOpen] = useState(false);
   const [videoId, setVideoId] = useState<string | null>(null);
+  const [listId, setListId] = useState<string | null>(null);
   const [topic, setTopic] = useState('');
   const [subject, setSubject] = useState('');
   
@@ -59,13 +72,14 @@ export default function FloatingYouTubePlayer() {
     const handlePlay = (e: Event) => {
       const customEvent = e as CustomEvent<PlayVideoEventDetail>;
       if (customEvent.detail && customEvent.detail.url) {
-        const id = getYouTubeId(customEvent.detail.url);
-        if (id) {
+        const { videoId: id, listId: lid } = parseYouTubeUrl(customEvent.detail.url);
+        if (id || lid) {
           setVideoId(id);
+          setListId(lid);
           setTopic(customEvent.detail.topic || 'Revisão');
           setSubject(customEvent.detail.subject || 'Vídeo Aula');
           setIsOpen(true);
-          setIsLocked(false); // Reset lock when opening a new video
+          setIsLocked(false);
         } else {
           alert('Link do YouTube inválido ou formato não suportado. Por favor, cole um link padrão, shorts ou compartilhado.');
         }
@@ -78,7 +92,7 @@ export default function FloatingYouTubePlayer() {
     };
   }, []);
 
-  if (!isOpen || !videoId) return null;
+  if (!isOpen || (!videoId && !listId)) return null;
 
   return (
     <Draggable
@@ -155,6 +169,7 @@ export default function FloatingYouTubePlayer() {
               onClick={() => {
                 setIsOpen(false);
                 setVideoId(null);
+                setListId(null);
               }}
               className="p-1 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-950/40 dark:hover:text-red-400 rounded-md text-gray-500 transition-colors"
               title="Fechar player"
@@ -172,7 +187,7 @@ export default function FloatingYouTubePlayer() {
           )}
 
           <iframe
-            src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
+            src={`https://www.youtube.com/embed/${videoId || 'videoseries'}?autoplay=1${listId ? `&list=${listId}` : ''}`}
             title={`${subject} - ${topic}`}
             className="w-full h-full border-0 absolute inset-0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

@@ -2,15 +2,138 @@ import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
 import { collection, getDocs, query, orderBy, limit, doc, getDoc, updateDoc, onSnapshot, setDoc, Timestamp } from 'firebase/firestore';
-import { BookOpen, X, CheckCircle, ChevronLeft, ChevronRight, CirclePlay, AlertCircle, RefreshCw, Check } from 'lucide-react';
+import { BookOpen, X, CheckCircle, ChevronLeft, ChevronRight, CirclePlay, AlertCircle, RefreshCw, Check, Youtube, PlusCircle, Search, Sparkles, Pencil, Loader2 } from 'lucide-react';
 import { format, addDays, subDays, isToday, parseISO, startOfDay, isBefore } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useLocation } from 'react-router-dom';
 import { getRevisionSuggestions, calculateNextStep } from '../lib/revision.service';
+import { suggestVideoSearches } from '../lib/ai.service';
 import { useReward } from '../contexts/RewardContext';
 
+function InlineVideoEditor({ 
+  apiKey,
+  subject,
+  topic,
+  onSave,
+  onCancel
+}: { 
+  apiKey: string,
+  subject: string,
+  topic: string,
+  onSave: (url: string) => Promise<void>,
+  onCancel: () => void
+}) {
+  const [videoUrl, setVideoUrl] = useState('');
+  const [loadingAi, setLoadingAi] = useState(false);
+  const [aiSuggestions, setAiSuggestions] = useState<any[]>([]);
+
+  const handleAiSearch = async () => {
+    setLoadingAi(true);
+    try {
+      const res = await suggestVideoSearches(subject, topic, apiKey || '');
+      setAiSuggestions(res.searches || []);
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao buscar sugestões');
+    } finally {
+      setLoadingAi(false);
+    }
+  };
+
+  return (
+    <div className="mt-2 flex flex-col gap-2 p-2 bg-gray-50 dark:bg-gray-800/80 rounded-lg border border-gray-200 dark:border-gray-700 w-full animate-in fade-in">
+      <div className="flex items-center gap-1.5">
+        <div className="relative flex-grow">
+          <Youtube className="w-3 h-3 text-red-500 absolute left-2 top-2" />
+          <input
+            type="text"
+            value={videoUrl}
+            onChange={(e) => setVideoUrl(e.target.value)}
+            placeholder="Link do vídeo ou playlist..."
+            className="w-full pl-6 pr-2 py-1 text-[11px] rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-1 focus:ring-indigo-500"
+            autoFocus
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && videoUrl.trim()) onSave(videoUrl.trim());
+              if (e.key === 'Escape') onCancel();
+            }}
+          />
+        </div>
+        <button onClick={() => onSave(videoUrl.trim())} disabled={!videoUrl.trim()} className="p-1 text-white bg-indigo-600 rounded hover:bg-indigo-700 disabled:opacity-50"><PlusCircle className="w-3 h-3"/></button>
+        <button onClick={handleAiSearch} disabled={loadingAi} className="p-1 text-indigo-600 bg-indigo-50 rounded border border-indigo-200 hover:bg-indigo-100 disabled:opacity-50">
+          {loadingAi ? <Loader2 className="w-3 h-3 animate-spin"/> : <Sparkles className="w-3 h-3"/>}
+        </button>
+        <button onClick={onCancel} className="p-1 text-gray-400 hover:bg-gray-200 rounded"><X className="w-3 h-3"/></button>
+      </div>
+      {aiSuggestions.length > 0 && (
+        <div className="space-y-1 mt-1 max-h-32 overflow-y-auto">
+          {aiSuggestions.map((sug: any, i: number) => (
+            <a key={i} href={`https://www.youtube.com/results?search_query=${encodeURIComponent(sug.query)}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between bg-white dark:bg-gray-700 p-1.5 rounded text-[10px] border border-gray-100 dark:border-gray-600 group hover:border-red-200 transition-colors">
+              <span className="truncate group-hover:text-red-500">"{sug.query}"</span>
+              <Search className="w-2.5 h-2.5 text-gray-400 group-hover:text-red-500 flex-shrink-0" />
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ItemVideoManager({ 
+  itemType, 
+  id, 
+  originalDate, 
+  blockIndex, 
+  subject, 
+  topic, 
+  urls, 
+  apiKey,
+  onSave,
+  onRemove
+}: any) {
+  const [editing, setEditing] = useState(false);
+  return (
+    <div className="mt-1.5 flex flex-col gap-1.5 w-full">
+      {urls.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5">
+          {urls.map((url: string, i: number) => (
+            <div key={i} className="flex items-center gap-0.5 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+              <button
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent('play-youtube-video', { detail: { url, topic, subject } }));
+                }}
+                className="flex items-center gap-1 text-[10px] text-red-600 dark:text-red-400 px-1.5 py-0.5 font-bold"
+                title={url}
+              >
+                <CirclePlay className="w-3 h-3" /> Vídeo {i + 1}
+              </button>
+              {editing && (
+                <button onClick={() => onRemove(url, itemType, id, originalDate, blockIndex)} className="p-0.5 text-red-400 hover:text-red-600 mr-1" title="Remover vídeo">
+                  <X className="w-2.5 h-2.5" />
+                </button>
+              )}
+            </div>
+          ))}
+          <button onClick={() => setEditing(!editing)} className="text-[10px] flex items-center gap-1 px-1.5 py-0.5 text-gray-500 bg-gray-50 dark:bg-gray-800/50 rounded border border-dashed border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
+            <Pencil className="w-2.5 h-2.5"/> {editing ? 'Fechar' : 'Editar'}
+          </button>
+        </div>
+      )}
+      
+      {urls.length === 0 && !editing && (
+        <button onClick={() => setEditing(true)} className="flex items-center gap-1 text-[10px] text-gray-400 hover:text-indigo-500 font-bold w-fit bg-gray-50 dark:bg-gray-800/50 px-1.5 py-0.5 rounded border border-dashed border-gray-200 dark:border-gray-700">
+          <Youtube className="w-3 h-3" /> + Vincular vídeo
+        </button>
+      )}
+
+      {editing && (
+        <InlineVideoEditor apiKey={apiKey} subject={subject} topic={topic} onSave={async (url) => { await onSave(url, itemType, id, originalDate, blockIndex); setEditing(false); }} onCancel={() => setEditing(false)} />
+      )}
+    </div>
+  );
+}
+
 export default function TodayStudyButton({ isHidden = false }: { isHidden?: boolean }) {
-  const { user } = useAuth();
+  const { user, apiKey } = useAuth();
   const { awardPoints } = useReward();
   const [open, setOpen] = useState(false);
   const [showOverdue, setShowOverdue] = useState(false);
@@ -157,6 +280,61 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
     }
   };
 
+  const handleSaveVideo = async (url: string, itemType: string, id: string, originalDate: string, blockIndex: number) => {
+    if (!user) return;
+    try {
+      if (itemType === 'revision') {
+        const revRef = doc(db, 'users', user.uid, 'revisions', id);
+        const rev = revisions.find(r => r.id === id);
+        if (!rev) return;
+        const currentUrls = rev.youtubeUrls || (rev.youtubeUrl ? [rev.youtubeUrl] : []);
+        if (!currentUrls.includes(url)) {
+          await setDoc(revRef, { youtubeUrls: [...currentUrls, url] }, { merge: true });
+        }
+      } else {
+        if (!planId || !plan) return;
+        const planRef = doc(db, 'users', user.uid, 'studyPlans', planId);
+        const newSchedule = [...plan.schedule];
+        const dayIndex = newSchedule.findIndex((d: any) => d.date === originalDate);
+        if (dayIndex === -1) return;
+        const block = newSchedule[dayIndex].blocks[blockIndex];
+        const currentUrls = block.youtubeUrls || (block.youtubeUrl ? [block.youtubeUrl] : []);
+        if (!currentUrls.includes(url)) {
+          block.youtubeUrls = [...currentUrls, url];
+          await updateDoc(planRef, { schedule: newSchedule });
+        }
+      }
+    } catch (err) {
+      console.error('Erro ao adicionar video', err);
+    }
+  };
+
+  const handleRemoveVideo = async (urlToRemove: string, itemType: string, id: string, originalDate: string, blockIndex: number) => {
+    if (!user) return;
+    if (!window.confirm('Remover vídeo?')) return;
+    try {
+      if (itemType === 'revision') {
+        const revRef = doc(db, 'users', user.uid, 'revisions', id);
+        const rev = revisions.find(r => r.id === id);
+        if (!rev) return;
+        const currentUrls = rev.youtubeUrls || (rev.youtubeUrl ? [rev.youtubeUrl] : []);
+        await setDoc(revRef, { youtubeUrls: currentUrls.filter((u: string) => u !== urlToRemove) }, { merge: true });
+      } else {
+        if (!planId || !plan) return;
+        const planRef = doc(db, 'users', user.uid, 'studyPlans', planId);
+        const newSchedule = [...plan.schedule];
+        const dayIndex = newSchedule.findIndex((d: any) => d.date === originalDate);
+        if (dayIndex === -1) return;
+        const block = newSchedule[dayIndex].blocks[blockIndex];
+        const currentUrls = block.youtubeUrls || (block.youtubeUrl ? [block.youtubeUrl] : []);
+        block.youtubeUrls = currentUrls.filter((u: string) => u !== urlToRemove);
+        await updateDoc(planRef, { schedule: newSchedule });
+      }
+    } catch (err) {
+      console.error('Erro ao remover video', err);
+    }
+  };
+
   const handleRescheduleRevision = async (rev: any) => {
     if (!user) return;
     try {
@@ -271,24 +449,18 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
                               {block.topic} • {block.hours}h
                             </p>
                             {/* Múltiplos vídeos */}
-                            {((block.youtubeUrls && block.youtubeUrls.length > 0) || block.youtubeUrl) && (
-                              <div className="flex flex-wrap gap-1.5 mt-1.5">
-                                {(block.youtubeUrls || (block.youtubeUrl ? [block.youtubeUrl] : [])).map((url: string, i: number) => (
-                                  <button
-                                    key={i}
-                                    onClick={() => {
-                                      window.dispatchEvent(new CustomEvent('play-youtube-video', {
-                                        detail: { url, topic: block.topic, subject: block.subject }
-                                      }));
-                                    }}
-                                    className="flex items-center gap-1 text-[10px] bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 px-1.5 py-0.5 rounded hover:bg-red-100 dark:hover:bg-red-900/40 font-bold transition-colors"
-                                  >
-                                    <CirclePlay className="w-3 h-3" />
-                                    Vídeo {i + 1}
-                                  </button>
-                                ))}
-                              </div>
-                            )}
+                            <ItemVideoManager
+                              itemType="block"
+                              id={block.id || `idx-${idx}`}
+                              originalDate={currentStr}
+                              blockIndex={idx}
+                              subject={block.subject}
+                              topic={block.topic}
+                              urls={block.youtubeUrls || (block.youtubeUrl ? [block.youtubeUrl] : [])}
+                              apiKey={apiKey}
+                              onSave={handleSaveVideo}
+                              onRemove={handleRemoveVideo}
+                            />
                           </div>
                         </div>
                       </div>
@@ -332,6 +504,18 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
                             <p className="text-xs text-gray-500 dark:text-gray-400">
                               {rev.topic}
                             </p>
+                            <ItemVideoManager
+                              itemType="revision"
+                              id={rev.id}
+                              originalDate={currentStr}
+                              blockIndex={0}
+                              subject={rev.subject}
+                              topic={rev.topic}
+                              urls={rev.youtubeUrls || (rev.youtubeUrl ? [rev.youtubeUrl] : [])}
+                              apiKey={apiKey}
+                              onSave={handleSaveVideo}
+                              onRemove={handleRemoveVideo}
+                            />
                           </div>
                         </div>
                       </div>
@@ -373,24 +557,18 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
                                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                                   {block.topic} • {block.hours}h
                                 </p>
-                                {((block.youtubeUrls && block.youtubeUrls.length > 0) || block.youtubeUrl) && (
-                                  <div className="flex flex-wrap gap-1.5 mt-1.5">
-                                    {(block.youtubeUrls || (block.youtubeUrl ? [block.youtubeUrl] : [])).map((url: string, i: number) => (
-                                      <button
-                                        key={i}
-                                        onClick={() => {
-                                          window.dispatchEvent(new CustomEvent('play-youtube-video', {
-                                            detail: { url, topic: block.topic, subject: block.subject }
-                                          }));
-                                        }}
-                                        className="flex items-center gap-1 text-[10px] bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 px-1.5 py-0.5 rounded hover:bg-red-200 dark:hover:bg-red-900/60 font-bold transition-colors"
-                                      >
-                                        <CirclePlay className="w-3 h-3" />
-                                        Vídeo {i + 1}
-                                      </button>
-                                    ))}
-                                  </div>
-                                )}
+                                <ItemVideoManager
+                                  itemType="block"
+                                  id={block.id || `overdue-${idx}`}
+                                  originalDate={block.originalDate}
+                                  blockIndex={block.blockIndex}
+                                  subject={block.subject}
+                                  topic={block.topic}
+                                  urls={block.youtubeUrls || (block.youtubeUrl ? [block.youtubeUrl] : [])}
+                                  apiKey={apiKey}
+                                  onSave={handleSaveVideo}
+                                  onRemove={handleRemoveVideo}
+                                />
                               </div>
                             </div>
                           </div>
@@ -434,6 +612,18 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
                                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                                   {rev.topic}
                                 </p>
+                                <ItemVideoManager
+                                  itemType="revision"
+                                  id={rev.id}
+                                  originalDate={rev.originalDate}
+                                  blockIndex={0}
+                                  subject={rev.subject}
+                                  topic={rev.topic}
+                                  urls={rev.youtubeUrls || (rev.youtubeUrl ? [rev.youtubeUrl] : [])}
+                                  apiKey={apiKey}
+                                  onSave={handleSaveVideo}
+                                  onRemove={handleRemoveVideo}
+                                />
                               </div>
                             </div>
                           </div>
