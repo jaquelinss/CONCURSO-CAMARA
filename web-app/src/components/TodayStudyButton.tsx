@@ -1,14 +1,17 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
-import { collection, getDocs, query, orderBy, limit, doc, getDoc, updateDoc } from 'firebase/firestore';
-import { BookOpen, X, CheckCircle, ChevronLeft, ChevronRight, CirclePlay, AlertCircle } from 'lucide-react';
-import { format, addDays, subDays, isToday, parseISO } from 'date-fns';
+import { collection, getDocs, query, orderBy, limit, doc, getDoc, updateDoc, onSnapshot, setDoc, Timestamp } from 'firebase/firestore';
+import { BookOpen, X, CheckCircle, ChevronLeft, ChevronRight, CirclePlay, AlertCircle, RefreshCw, Check } from 'lucide-react';
+import { format, addDays, subDays, isToday, parseISO, startOfDay, isBefore } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useLocation } from 'react-router-dom';
+import { getRevisionSuggestions, calculateNextStep } from '../lib/revision.service';
+import { useReward } from '../contexts/RewardContext';
 
 export default function TodayStudyButton({ isHidden = false }: { isHidden?: boolean }) {
   const { user } = useAuth();
+  const { awardPoints } = useReward();
   const [open, setOpen] = useState(false);
   const [showOverdue, setShowOverdue] = useState(false);
   const [planId, setPlanId] = useState<string | null>(null);
@@ -16,6 +19,8 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
   const [hasPlan, setHasPlan] = useState(false);
   const [plan, setPlan] = useState<any>(null);
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [revisions, setRevisions] = useState<any[]>([]);
+  const [confirmingRevision, setConfirmingRevision] = useState<string | null>(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -48,6 +53,16 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
     return () => window.removeEventListener('study-plan-updated', handler);
   }, [user]);
 
+  // Fetch Revisions
+  useEffect(() => {
+    if (!user) return;
+    const revRef = collection(db, 'users', user.uid, 'revisions');
+    const unsubscribe = onSnapshot(revRef, (snap) => {
+      setRevisions(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    });
+    return unsubscribe;
+  }, [user]);
+
   const currentStr = format(currentDate, 'yyyy-MM-dd');
   const currentSchedule = plan?.schedule?.find((d: any) => d.date === currentStr);
   const currentBlocks = currentSchedule?.blocks || [];
@@ -61,7 +76,38 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
   const todaySchedule = plan?.schedule?.find((d: any) => d.date === todayStr);
   const todayBlocks = todaySchedule?.blocks || [];
   const todayPendingBlocks = todayBlocks.filter((b: any) => b.status !== 'completed');
-  const todayAllDone = todayBlocks.length > 0 && todayPendingBlocks.length === 0;
+  
+  const todayStart = startOfDay(new Date());
+  
+  const currentRevisions = useMemo(() => {
+    return revisions.filter(r => {
+      if (r.status !== 'pending') return false;
+      const revDate = r.scheduledDate?.toDate();
+      if (!revDate) return false;
+      return format(revDate, 'yyyy-MM-dd') === currentStr;
+    });
+  }, [revisions, currentStr]);
+
+  const overdueRevisions = useMemo(() => {
+    return revisions.filter(r => {
+      if (r.status !== 'pending') return false;
+      const revDate = r.scheduledDate?.toDate();
+      if (!revDate) return false;
+      return isBefore(revDate, todayStart);
+    }).map(r => ({ ...r, originalDate: format(r.scheduledDate.toDate(), 'yyyy-MM-dd') }));
+  }, [revisions, todayStart]);
+
+  const todayPendingRevisions = useMemo(() => {
+    return revisions.filter(r => {
+      if (r.status !== 'pending') return false;
+      const revDate = r.scheduledDate?.toDate();
+      if (!revDate) return false;
+      return isBefore(revDate, todayStart) || isToday(revDate);
+    });
+  }, [revisions, todayStart]);
+
+  const totalPendingToday = todayPendingBlocks.length + todayPendingRevisions.length;
+  const todayAllDone = (todayBlocks.length > 0 || currentRevisions.length > 0) && totalPendingToday === 0;
 
   const overdueBlocks = useMemo(() => {
     if (!plan?.schedule) return [];
@@ -108,6 +154,28 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
       window.dispatchEvent(new Event('study-plan-updated'));
     } catch(err) {
       console.error('Erro ao atualizar bloco', err);
+    }
+  };
+
+  const handleRescheduleRevision = async (rev: any) => {
+    if (!user) return;
+    try {
+      const revisionRef = doc(db, 'users', user.uid, 'revisions', rev.id);
+      const currentStep = rev.cycleStep || 0;
+      const perf = rev.performance || 100;
+      const nextStep = calculateNextStep(perf, currentStep);
+      const nextDate = getRevisionSuggestions(perf, nextStep)[0].date;
+      await setDoc(revisionRef, {
+        cycleStep: nextStep,
+        scheduledDate: Timestamp.fromDate(nextDate),
+        reviewCount: (rev.reviewCount || 0) + 1,
+        completedItems: { lessonIds: [], quizIds: [], flashcardIds: [] },
+      }, { merge: true });
+      
+      awardPoints(15, 'complete_revision');
+      setConfirmingRevision(null);
+    } catch (err) {
+      console.error('Erro ao reagendar revisão', err);
     }
   };
 
@@ -159,7 +227,7 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto p-3 space-y-4">
-            {currentBlocks.length === 0 && (!showOverdue || overdueBlocks.length === 0) ? (
+            {currentBlocks.length === 0 && currentRevisions.length === 0 && (!showOverdue || (overdueBlocks.length === 0 && overdueRevisions.length === 0)) ? (
               <div className="text-center py-6 text-gray-500 dark:text-gray-400">
                 <BookOpen className="w-8 h-8 mx-auto mb-2 opacity-50" />
                 <p className="text-sm">Nenhum estudo agendado para esta data</p>
@@ -228,8 +296,51 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
                   </div>
                 )}
 
-                {/* Overdue Blocks */}
-                {showOverdue && overdueBlocks.length > 0 && (
+                {/* Current Date Revisions */}
+                {currentRevisions.length > 0 && (
+                  <div className="space-y-2 mt-4">
+                    <div className="flex items-center gap-2 mb-2">
+                       <RefreshCw className="w-4 h-4 text-indigo-500" />
+                       <span className="text-xs font-bold text-indigo-500 uppercase tracking-wider">Revisões de Hoje</span>
+                    </div>
+                    {currentRevisions.map((rev: any) => (
+                      <div
+                        key={rev.id}
+                        className="p-3 rounded-xl border transition-all bg-indigo-50/30 dark:bg-indigo-900/10 border-indigo-100 dark:border-indigo-800 relative overflow-hidden"
+                      >
+                        {confirmingRevision === rev.id ? (
+                          <div className="absolute inset-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur flex items-center justify-between p-3 z-10 animate-in fade-in">
+                             <p className="text-xs font-bold text-gray-700 dark:text-gray-200">Reagendar revisão?</p>
+                             <div className="flex gap-2">
+                               <button onClick={() => setConfirmingRevision(null)} className="px-3 py-1.5 text-xs font-bold text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">Cancelar</button>
+                               <button onClick={() => handleRescheduleRevision(rev)} className="px-3 py-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg flex items-center gap-1"><Check className="w-3 h-3"/> Confirmar</button>
+                             </div>
+                          </div>
+                        ) : null}
+                        <div className="flex items-start gap-3">
+                          <button 
+                            onClick={() => setConfirmingRevision(rev.id)}
+                            className="mt-0.5 hover:scale-110 transition-transform focus:outline-none"
+                            title="Marcar revisão como concluída"
+                          >
+                            <div className="w-5 h-5 rounded-full border-2 border-indigo-400 dark:border-indigo-500 hover:border-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors"></div>
+                          </button>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-semibold truncate text-gray-900 dark:text-white">
+                              {rev.subject}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              {rev.topic}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Overdue Items */}
+                {showOverdue && (overdueBlocks.length > 0 || overdueRevisions.length > 0) && (
                   <div className="space-y-2 mt-4 pt-4 border-t border-red-100 dark:border-red-900/30">
                     <div className="flex items-center gap-2 mb-2">
                       <AlertCircle className="w-4 h-4 text-red-500" />
@@ -280,6 +391,41 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
                         </div>
                       </div>
                     ))}
+
+                    {/* Render overdue revisions */}
+                    {overdueRevisions.map((rev: any) => (
+                      <div key={`overdue-rev-${rev.id}`} className="p-3 rounded-xl border transition-all bg-red-50/50 dark:bg-red-900/10 border-red-100 dark:border-red-900/50 relative overflow-hidden">
+                        {confirmingRevision === rev.id ? (
+                          <div className="absolute inset-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur flex items-center justify-between p-3 z-10 animate-in fade-in">
+                             <p className="text-xs font-bold text-gray-700 dark:text-gray-200">Reagendar revisão?</p>
+                             <div className="flex gap-2">
+                               <button onClick={() => setConfirmingRevision(null)} className="px-3 py-1.5 text-xs font-bold text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">Cancelar</button>
+                               <button onClick={() => handleRescheduleRevision(rev)} className="px-3 py-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg flex items-center gap-1"><Check className="w-3 h-3"/> Confirmar</button>
+                             </div>
+                          </div>
+                        ) : null}
+                        <div className="flex items-start gap-3">
+                          <button 
+                            onClick={() => setConfirmingRevision(rev.id)}
+                            className="mt-0.5 hover:scale-110 transition-transform focus:outline-none"
+                            title="Marcar revisão como concluída"
+                          >
+                            <div className="w-5 h-5 rounded-full border-2 border-red-400 dark:border-red-500 hover:border-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"></div>
+                          </button>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-semibold truncate text-gray-900 dark:text-white">
+                              {rev.subject}
+                            </p>
+                            <p className="text-xs text-red-500 dark:text-red-400 font-medium">
+                              {format(parseISO(rev.originalDate), "dd 'de' MMM", { locale: ptBR })} (Revisão)
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                              {rev.topic}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </>
@@ -287,26 +433,28 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
           </div>
 
           {/* Footer */}
-          <div className="p-3 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
-            {overdueBlocks.length > 0 ? (
-              <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                <input 
-                  type="checkbox" 
-                  checked={showOverdue}
-                  onChange={(e) => setShowOverdue(e.target.checked)}
-                  className="rounded border-gray-300 text-indigo-500 focus:ring-indigo-500 bg-gray-50 dark:bg-gray-700 dark:border-gray-600 w-3.5 h-3.5"
-                />
-                Mostrar Atrasadas ({overdueBlocks.length})
-              </label>
-            ) : (
-              <div className="text-xs font-medium text-green-600 dark:text-green-500 flex items-center gap-1">
-                <CheckCircle className="w-3.5 h-3.5" />
-                Nenhuma pendência
-              </div>
-            )}
-            <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
-              {completedCount}/{currentBlocks.length} concluídos hoje
-            </p>
+          <div className="p-3 border-t border-gray-100 dark:border-gray-700 flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              {(overdueBlocks.length > 0 || overdueRevisions.length > 0) ? (
+                <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                  <input 
+                    type="checkbox" 
+                    checked={showOverdue}
+                    onChange={(e) => setShowOverdue(e.target.checked)}
+                    className="rounded border-gray-300 text-indigo-500 focus:ring-indigo-500 bg-gray-50 dark:bg-gray-700 dark:border-gray-600 w-3.5 h-3.5"
+                  />
+                  Mostrar Atrasadas ({overdueBlocks.length + overdueRevisions.length})
+                </label>
+              ) : (
+                <div className="text-xs font-medium text-green-600 dark:text-green-500 flex items-center gap-1">
+                  <CheckCircle className="w-3.5 h-3.5" />
+                  Nenhuma pendência
+                </div>
+              )}
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                {completedCount}/{currentBlocks.length} estudos hoje
+              </p>
+            </div>
           </div>
         </div>
       )}

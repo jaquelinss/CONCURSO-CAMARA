@@ -460,6 +460,7 @@ function RevisionCard({ revision, onAction, onLink, onReschedule, onUpdate }: { 
   const [savingVideo, setSavingVideo] = useState(false);
   const [loadingAi, setLoadingAi] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState<any[]>([]);
+  const [confirmAction, setConfirmAction] = useState<{type: 'delete'|'removeVideo'|'conclude', data?: any} | null>(null);
 
   const urls = revision.youtubeUrls || (revision.youtubeUrl ? [revision.youtubeUrl] : []);
 
@@ -487,10 +488,8 @@ function RevisionCard({ revision, onAction, onLink, onReschedule, onUpdate }: { 
     }
   };
 
-  const handleRemoveVideo = async (e: React.MouseEvent, urlToRemove: string) => {
-    e.stopPropagation();
+  const handleRemoveVideo = async (urlToRemove: string) => {
     if (!user) return;
-    if (!window.confirm('Deseja realmente remover o vídeo desta revisão?')) return;
     try {
       const currentUrls = revision.youtubeUrls || (revision.youtubeUrl ? [revision.youtubeUrl] : []);
       const newUrls = currentUrls.filter((u: string) => u !== urlToRemove);
@@ -520,7 +519,6 @@ function RevisionCard({ revision, onAction, onLink, onReschedule, onUpdate }: { 
 
   const handleDelete = async () => {
     if (!user) return;
-    if (!window.confirm(`Deseja excluir a revisão de "${revision.subject} - ${revision.topic}"?`)) return;
     try {
       await deleteDoc(doc(db, 'users', user.uid, 'revisions', revision.id));
       onUpdate();
@@ -531,7 +529,31 @@ function RevisionCard({ revision, onAction, onLink, onReschedule, onUpdate }: { 
   };
 
   return (
-    <div className={`p-6 rounded-2xl shadow-sm border-2 transition-all hover:shadow-md bg-white dark:bg-gray-800 flex flex-col justify-between group ${isOverdue ? 'border-red-100 dark:border-red-900/50 bg-red-50/30 dark:bg-red-900/10' : 'border-gray-100 dark:border-gray-800'}`}>
+    <div className={`p-6 rounded-2xl shadow-sm border-2 transition-all hover:shadow-md bg-white dark:bg-gray-800 flex flex-col justify-between group relative overflow-hidden ${isOverdue ? 'border-red-100 dark:border-red-900/50 bg-red-50/30 dark:bg-red-900/10' : 'border-gray-100 dark:border-gray-800'}`}>
+      {confirmAction && (
+        <div className="absolute inset-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur flex flex-col items-center justify-center p-6 z-20 animate-in fade-in text-center">
+          <AlertCircle className={`w-8 h-8 mb-3 ${confirmAction.type === 'conclude' ? 'text-indigo-500' : 'text-red-500'}`} />
+          <p className="text-sm font-bold text-gray-800 dark:text-gray-100 mb-4">
+            {confirmAction.type === 'delete' && 'Tem certeza que deseja excluir esta revisão?'}
+            {confirmAction.type === 'removeVideo' && 'Deseja remover este vídeo da revisão?'}
+            {confirmAction.type === 'conclude' && 'Deseja concluir manualmente e reagendar para o futuro?'}
+          </p>
+          <div className="flex gap-3">
+            <button onClick={() => setConfirmAction(null)} className="px-4 py-2 text-sm font-bold text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors">Cancelar</button>
+            <button 
+              onClick={() => {
+                if (confirmAction.type === 'delete') handleDelete();
+                else if (confirmAction.type === 'removeVideo') handleRemoveVideo(confirmAction.data);
+                else if (confirmAction.type === 'conclude') onReschedule(revision);
+                setConfirmAction(null);
+              }} 
+              className={`px-4 py-2 text-sm font-bold text-white rounded-xl transition-colors ${confirmAction.type === 'conclude' ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-red-500 hover:bg-red-600'}`}
+            >
+              Confirmar
+            </button>
+          </div>
+        </div>
+      )}
       <div>
         <div className="flex justify-between items-start mb-4">
           <div>
@@ -545,7 +567,7 @@ function RevisionCard({ revision, onAction, onLink, onReschedule, onUpdate }: { 
             )}
           </div>
           <button
-            onClick={handleDelete}
+            onClick={() => setConfirmAction({ type: 'delete' })}
             className="p-1.5 text-gray-300 hover:text-red-500 dark:text-gray-600 dark:hover:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/20 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
             title="Excluir revisão"
           >
@@ -593,7 +615,7 @@ function RevisionCard({ revision, onAction, onLink, onReschedule, onUpdate }: { 
                   <div key={idx} className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700/50 p-2 rounded border border-gray-200 dark:border-gray-600">
                     <Play className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />
                     <span className="text-xs text-gray-600 dark:text-gray-300 truncate flex-grow" title={url}>{url}</span>
-                    <button onClick={(e) => handleRemoveVideo(e, url)} className="p-1 text-gray-400 hover:text-red-500 shrink-0">
+                    <button onClick={(e) => { e.stopPropagation(); setConfirmAction({ type: 'removeVideo', data: url }); }} className="p-1 text-gray-400 hover:text-red-500 shrink-0">
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -716,11 +738,7 @@ function RevisionCard({ revision, onAction, onLink, onReschedule, onUpdate }: { 
           </button>
         ) : (
           <button
-            onClick={() => {
-              if (window.confirm("Deseja marcar esta revisão como concluída manualmente?")) {
-                onReschedule(revision);
-              }
-            }}
+            onClick={() => setConfirmAction({ type: 'conclude' })}
             className="w-full py-2.5 bg-gray-100 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-900/30 dark:hover:text-emerald-400 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-95 border border-transparent hover:border-emerald-200 dark:hover:border-emerald-800 mt-2"
             title="Concluir revisão sem fazer os exercícios vinculados"
           >
