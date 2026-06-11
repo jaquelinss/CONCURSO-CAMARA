@@ -200,7 +200,7 @@ export default function FocusTimerWidget() {
     >
       <div
         ref={nodeRef}
-        className="fixed z-[9998] w-80 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border-2 overflow-hidden pointer-events-auto transition-shadow flex flex-col"
+        className="fixed top-0 left-0 z-[9998] w-80 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border-2 overflow-hidden pointer-events-auto transition-shadow flex flex-col"
         style={{ borderColor: subject ? currentTheme.color : '#e5e7eb' }}
       >
         {/* Header Draggable */}
