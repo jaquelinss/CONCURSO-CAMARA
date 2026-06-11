@@ -45,6 +45,20 @@ export default function FocusTimerWidget() {
   const [workMinutes, setWorkMinutes] = useState(25);
   const [breakMinutes, setBreakMinutes] = useState(5);
   const [showConfig, setShowConfig] = useState(false);
+  const [scale, setScale] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem('focus_timer_scale');
+      if (saved) return parseFloat(saved);
+      return 1;
+    } catch {
+      return 1;
+    }
+  });
+
+  const handleScaleChange = (newScale: number) => {
+    setScale(newScale);
+    localStorage.setItem('focus_timer_scale', newScale.toString());
+  };
 
   // Estado do Timer Interno
   const [secondsElapsed, setSecondsElapsed] = useState(0); // Para cronômetro
@@ -197,11 +211,16 @@ export default function FocusTimerWidget() {
         localStorage.setItem('focus_timer_pos', JSON.stringify({ x: data.x, y: data.y }));
       }}
       bounds="body"
+      scale={scale}
     >
       <div
         ref={nodeRef}
-        className={`fixed top-0 left-0 z-[9998] w-80 min-w-[250px] min-h-[360px] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border-2 resize overflow-hidden pointer-events-auto transition-shadow flex flex-col ${subject ? currentTheme.border : 'border-gray-200 dark:border-gray-700'}`}
+        className="fixed top-0 left-0 z-[9998] pointer-events-none"
       >
+        <div 
+          className={`w-80 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border-2 overflow-hidden transition-shadow flex flex-col pointer-events-auto ${subject ? currentTheme.border : 'border-gray-200 dark:border-gray-700'}`}
+          style={{ transform: `scale(${scale})`, transformOrigin: 'top left' }}
+        >
         {/* Header Draggable */}
         <div className="timer-drag-handle flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 cursor-grab active:cursor-grabbing select-none">
           <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
@@ -225,7 +244,7 @@ export default function FocusTimerWidget() {
         </div>
 
         {/* Corpo do Widget */}
-        <div className="p-4 flex flex-col items-center flex-1 overflow-y-auto w-full">
+        <div className="p-4 flex flex-col items-center">
           
           {/* Matéria Selecionada */}
           <div className="w-full mb-4">
@@ -245,6 +264,14 @@ export default function FocusTimerWidget() {
           {/* Configs Painel Oculto */}
           {showConfig && status === 'idle' && (
             <div className="w-full p-3 mb-4 bg-gray-50 dark:bg-gray-800 rounded-xl text-sm border border-gray-200 dark:border-gray-700">
+              <div className="flex justify-between items-center mb-3">
+                <span className="font-medium text-gray-700 dark:text-gray-300">Tamanho:</span>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => handleScaleChange(Math.max(0.6, scale - 0.1))} className="px-2 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded font-bold hover:bg-gray-300 dark:hover:bg-gray-600">-</button>
+                  <span className="w-10 text-center text-gray-700 dark:text-gray-300">{Math.round(scale * 100)}%</span>
+                  <button onClick={() => handleScaleChange(Math.min(1.5, scale + 0.1))} className="px-2 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded font-bold hover:bg-gray-300 dark:hover:bg-gray-600">+</button>
+                </div>
+              </div>
               <div className="flex justify-between items-center mb-3">
                 <span className="font-medium text-gray-700 dark:text-gray-300">Modo:</span>
                 <div className="flex gap-2">
@@ -322,6 +349,7 @@ export default function FocusTimerWidget() {
             </button>
           </div>
 
+        </div>
         </div>
       </div>
     </Draggable>
