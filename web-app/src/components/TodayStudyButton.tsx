@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
 import { collection, getDocs, query, orderBy, limit, doc, getDoc, updateDoc, onSnapshot, setDoc, Timestamp } from 'firebase/firestore';
-import { BookOpen, X, CheckCircle, ChevronLeft, ChevronRight, CirclePlay, AlertCircle, RefreshCw, Check, PlusCircle, Search, Sparkles, Pencil, Loader2 } from 'lucide-react';
+import { BookOpen, X, CheckCircle, ChevronLeft, ChevronRight, CirclePlay, AlertCircle, RefreshCw, Check, PlusCircle, Search, Sparkles, Pencil, Loader2, Play } from 'lucide-react';
 import { format, addDays, subDays, isToday, parseISO, startOfDay, isBefore } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useLocation } from 'react-router-dom';
@@ -467,6 +467,18 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
                             <p className={`text-xs ${block.status === 'completed' ? 'text-gray-400' : 'text-gray-500 dark:text-gray-400'}`}>
                               {block.topic} • {block.hours}h
                             </p>
+                            
+                            {/* Play Focus Timer */}
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.dispatchEvent(new CustomEvent('open-focus-timer', { detail: { subject: block.subject, topic: block.topic } }));
+                              }}
+                              className="mt-1 flex items-center gap-1 px-2 py-1 rounded bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors text-[10px] font-bold uppercase tracking-wider"
+                            >
+                              <Play className="w-3 h-3" /> Focar
+                            </button>
+
                             {/* Múltiplos vídeos */}
                             <ItemVideoManager
                               itemType="block"
@@ -523,6 +535,18 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
                             <p className="text-xs text-gray-500 dark:text-gray-400">
                               {rev.topic}
                             </p>
+
+                            {/* Play Focus Timer */}
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.dispatchEvent(new CustomEvent('open-focus-timer', { detail: { subject: rev.subject, topic: rev.topic } }));
+                              }}
+                              className="mt-1 flex items-center gap-1 px-2 py-1 rounded bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors text-[10px] font-bold uppercase tracking-wider"
+                            >
+                              <Play className="w-3 h-3" /> Focar
+                            </button>
+
                             <ItemVideoManager
                               itemType="revision"
                               id={rev.id}
@@ -576,6 +600,18 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
                                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                                   {block.topic} • {block.hours}h
                                 </p>
+                                
+                                {/* Play Focus Timer */}
+                                <button 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    window.dispatchEvent(new CustomEvent('open-focus-timer', { detail: { subject: block.subject, topic: block.topic } }));
+                                  }}
+                                  className="mt-1 flex items-center gap-1 px-2 py-1 rounded bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors text-[10px] font-bold uppercase tracking-wider"
+                                >
+                                  <Play className="w-3 h-3" /> Focar
+                                </button>
+                                
                                 <ItemVideoManager
                                   itemType="block"
                                   id={block.id || `overdue-${idx}`}
@@ -631,6 +667,18 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
                                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                                   {rev.topic}
                                 </p>
+
+                                {/* Play Focus Timer */}
+                                <button 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    window.dispatchEvent(new CustomEvent('open-focus-timer', { detail: { subject: rev.subject, topic: rev.topic } }));
+                                  }}
+                                  className="mt-1 flex items-center gap-1 px-2 py-1 rounded bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 hover:bg-orange-200 dark:hover:bg-orange-900/50 transition-colors text-[10px] font-bold uppercase tracking-wider"
+                                >
+                                  <Play className="w-3 h-3" /> Focar
+                                </button>
+                                
                                 <ItemVideoManager
                                   itemType="revision"
                                   id={rev.id}
