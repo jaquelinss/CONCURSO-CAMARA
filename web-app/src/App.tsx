@@ -4,6 +4,8 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { KnowledgeBaseProvider } from './contexts/KnowledgeBaseContext';
 import { CustomSubjectsProvider } from './contexts/CustomSubjectsContext';
 import { RewardProvider } from './contexts/RewardContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import React, { useState, Suspense, lazy } from 'react';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import SavedContent from './pages/SavedContent';
@@ -11,13 +13,14 @@ import ConfigScreen from './pages/ConfigScreen';
 import RevisionScreen from './pages/RevisionScreen';
 import StudyProgressScreen from './pages/StudyProgressScreen';
 import QuestionsDatabase from './pages/QuestionsDatabase';
-import StatisticsScreen from './pages/StatisticsScreen';
+
+const StatisticsScreen = lazy(() => import('./pages/StatisticsScreen'));
+
 import ReportButton from './components/ReportButton';
 import StickyNotesManager from './components/StickyNotesManager';
 import FloatingYouTubePlayer from './components/FloatingYouTubePlayer';
 import TodayStudyButton from './components/TodayStudyButton';
 import AITeacherChat from './components/AITeacherChat';
-import FocusTimerWidget from './components/FocusTimerWidget';
 import NavigationTutorial from './components/NavigationTutorial';
 import TextSelectionPopover from './components/TextSelectionPopover';
 import KnowledgeBaseManager from './components/KnowledgeBaseManager';
@@ -27,8 +30,6 @@ import StamperOverlay from './components/StamperOverlay';
 import SiteDecorator from './components/SiteDecorator';
 import GlobalSplitScreenManager from './components/GlobalSplitScreenManager';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
-import React, { useState } from 'react';
-
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   if (loading) return <div>Carregando...</div>;
@@ -44,7 +45,7 @@ function AppRoutes() {
       <Route path="/revisions" element={<PrivateRoute><RevisionScreen /></PrivateRoute>} />
       <Route path="/progress" element={<PrivateRoute><StudyProgressScreen /></PrivateRoute>} />
       <Route path="/questions" element={<PrivateRoute><QuestionsDatabase /></PrivateRoute>} />
-      <Route path="/statistics" element={<PrivateRoute><StatisticsScreen /></PrivateRoute>} />
+      <Route path="/statistics" element={<PrivateRoute><ErrorBoundary><Suspense fallback={null}><StatisticsScreen /></Suspense></ErrorBoundary></PrivateRoute>} />
       <Route path="/config" element={<PrivateRoute><ConfigScreen /></PrivateRoute>} />
       <Route path="*" element={<Navigate to="/dashboard" />} />
     </Routes>
@@ -69,7 +70,11 @@ export default function App() {
                   <ReportButton isHidden={!showTools} />
                   <StickyNotesManager />
                   <FloatingYouTubePlayer />
-                  <FocusTimerWidget />
+                  <ErrorBoundary fallback={null}>
+                    <Suspense fallback={null}>
+                      <FocusTimerWidget />
+                    </Suspense>
+                  </ErrorBoundary>
                   <StamperOverlay />
                   <TodayStudyButton isHidden={!showTools} />
                   <AITeacherChat isHidden={!showTools} />
