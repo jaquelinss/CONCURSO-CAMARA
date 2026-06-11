@@ -59,10 +59,19 @@ export default function FloatingYouTubePlayer() {
   
   const [position, setPosition] = useState<{x: number, y: number}>(() => {
     try {
-      const saved = localStorage.getItem('youtube_player_pos');
-      return saved ? JSON.parse(saved) : { x: 0, y: 0 };
+      const saved = localStorage.getItem('youtube_player_pos_v2');
+      if (saved) return JSON.parse(saved);
+      const isLarge = localStorage.getItem('youtube_player_large') === 'true';
+      const w = isLarge ? 720 : 380;
+      const h = isLarge ? 450 : 260;
+      const winW = typeof window !== 'undefined' ? window.innerWidth : 1024;
+      const winH = typeof window !== 'undefined' ? window.innerHeight : 768;
+      return { 
+        x: Math.max(24, winW - w - 24), 
+        y: Math.max(24, winH - h - 100) 
+      };
     } catch {
-      return { x: 0, y: 0 };
+      return { x: 24, y: 24 };
     }
   });
 
@@ -104,7 +113,7 @@ export default function FloatingYouTubePlayer() {
       onStop={(_, data) => {
         setIsDragging(false);
         setPosition({ x: data.x, y: data.y });
-        localStorage.setItem('youtube_player_pos', JSON.stringify({ x: data.x, y: data.y }));
+        localStorage.setItem('youtube_player_pos_v2', JSON.stringify({ x: data.x, y: data.y }));
       }}
       bounds="body"
     >
@@ -117,8 +126,8 @@ export default function FloatingYouTubePlayer() {
           minWidth: '280px',
           minHeight: '200px',
           resize: isLocked ? 'none' : 'both',
-          right: '24px',
-          bottom: '100px',
+          top: 0,
+          left: 0,
         }}
       >
         {/* Header (Drag handle & controls) */}
