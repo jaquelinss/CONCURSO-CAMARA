@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useReward } from '../contexts/RewardContext';
-import { LogOut, Menu, X, CalendarDays, FolderHeart, Sun, Moon, TrendingUp, Database, HelpCircle, Focus, Book, Home, BookOpen, Archive, Flame, Store, Columns } from 'lucide-react';
+import { LogOut, Menu, X, CalendarDays, FolderHeart, Sun, Moon, TrendingUp, Database, HelpCircle, Focus, Book, Home, BookOpen, Archive, Flame, Store, Columns, PieChart } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import FocusPlayer from './FocusPlayer';
 import { RewardShop } from './RewardShop';
@@ -68,6 +68,7 @@ export default function Navigation() {
     { to: '/saved', icon: FolderHeart, label: 'Meus Salvamentos' },
     { to: '/revisions', icon: CalendarDays, label: 'Cronograma' },
     { to: '/progress', icon: TrendingUp, label: 'Progresso' },
+    { to: '/statistics', icon: PieChart, label: 'Estatísticas' },
     { to: '/questions', icon: Database, label: 'Banco de Questões' },
   ];
 

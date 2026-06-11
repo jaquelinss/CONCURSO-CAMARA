@@ -497,7 +497,7 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
                     {currentRevisions.map((rev: any) => (
                       <div
                         key={rev.id}
-                        className="p-3 rounded-xl border transition-all bg-indigo-50/30 dark:bg-indigo-900/10 border-indigo-100 dark:border-indigo-800 relative overflow-hidden"
+                        className="group p-3 rounded-xl border transition-all bg-indigo-50/30 dark:bg-indigo-900/10 border-indigo-100 dark:border-indigo-800 relative overflow-hidden"
                       >
                         {confirmingRevision === rev.id ? (
                           <div className="absolute inset-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur flex items-center justify-between p-3 z-10 animate-in fade-in">
@@ -556,7 +556,7 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
                         {overdueBlocks.map((block: any, idx: number) => (
                           <div
                             key={`overdue-${idx}`}
-                            className="p-3 rounded-xl border bg-red-50/50 dark:bg-red-900/10 border-red-100 dark:border-red-900/50 transition-all"
+                            className="group p-3 rounded-xl border bg-red-50/50 dark:bg-red-900/10 border-red-100 dark:border-red-900/50 transition-all"
                           >
                             <div className="flex items-start gap-3">
                               <button 
@@ -603,7 +603,7 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
                           <span className="text-xs font-bold text-orange-500 uppercase tracking-wider">Revisões Atrasadas</span>
                         </div>
                         {overdueRevisions.map((rev: any) => (
-                          <div key={`overdue-rev-${rev.id}`} className="p-3 rounded-xl border transition-all bg-orange-50/50 dark:bg-orange-900/10 border-orange-200 dark:border-orange-900/50 relative overflow-hidden">
+                          <div key={`overdue-rev-${rev.id}`} className="group p-3 rounded-xl border transition-all bg-orange-50/50 dark:bg-orange-900/10 border-orange-200 dark:border-orange-900/50 relative overflow-hidden">
                             {confirmingRevision === rev.id ? (
                               <div className="absolute inset-0 bg-white/95 dark:bg-gray-800/95 backdrop-blur flex items-center justify-between p-3 z-10 animate-in fade-in">
                                  <p className="text-xs font-bold text-gray-700 dark:text-gray-200">Reagendar revisão?</p>

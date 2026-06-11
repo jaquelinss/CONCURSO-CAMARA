@@ -11,11 +11,13 @@ import ConfigScreen from './pages/ConfigScreen';
 import RevisionScreen from './pages/RevisionScreen';
 import StudyProgressScreen from './pages/StudyProgressScreen';
 import QuestionsDatabase from './pages/QuestionsDatabase';
+import StatisticsScreen from './pages/StatisticsScreen';
 import ReportButton from './components/ReportButton';
 import StickyNotesManager from './components/StickyNotesManager';
 import FloatingYouTubePlayer from './components/FloatingYouTubePlayer';
 import TodayStudyButton from './components/TodayStudyButton';
 import AITeacherChat from './components/AITeacherChat';
+import FocusTimerWidget from './components/FocusTimerWidget';
 import NavigationTutorial from './components/NavigationTutorial';
 import TextSelectionPopover from './components/TextSelectionPopover';
 import KnowledgeBaseManager from './components/KnowledgeBaseManager';
@@ -42,6 +44,7 @@ function AppRoutes() {
       <Route path="/revisions" element={<PrivateRoute><RevisionScreen /></PrivateRoute>} />
       <Route path="/progress" element={<PrivateRoute><StudyProgressScreen /></PrivateRoute>} />
       <Route path="/questions" element={<PrivateRoute><QuestionsDatabase /></PrivateRoute>} />
+      <Route path="/statistics" element={<PrivateRoute><StatisticsScreen /></PrivateRoute>} />
       <Route path="/config" element={<PrivateRoute><ConfigScreen /></PrivateRoute>} />
       <Route path="*" element={<Navigate to="/dashboard" />} />
     </Routes>
@@ -66,6 +69,7 @@ export default function App() {
                   <ReportButton isHidden={!showTools} />
                   <StickyNotesManager />
                   <FloatingYouTubePlayer />
+                  <FocusTimerWidget />
                   <StamperOverlay />
                   <TodayStudyButton isHidden={!showTools} />
                   <AITeacherChat isHidden={!showTools} />
