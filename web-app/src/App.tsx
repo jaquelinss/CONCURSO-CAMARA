@@ -15,6 +15,7 @@ import StudyProgressScreen from './pages/StudyProgressScreen';
 import QuestionsDatabase from './pages/QuestionsDatabase';
 
 const StatisticsScreen = lazy(() => import('./pages/StatisticsScreen'));
+const FocusTimerWidget = lazy(() => import('./components/FocusTimerWidget'));
 
 import ReportButton from './components/ReportButton';
 import StickyNotesManager from './components/StickyNotesManager';
