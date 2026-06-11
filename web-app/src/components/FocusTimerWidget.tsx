@@ -200,8 +200,7 @@ export default function FocusTimerWidget() {
     >
       <div
         ref={nodeRef}
-        className="fixed top-0 left-0 z-[9998] w-80 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border-2 overflow-hidden pointer-events-auto transition-shadow flex flex-col"
-        style={{ borderColor: subject ? currentTheme.color : '#e5e7eb' }}
+        className={`fixed top-0 left-0 z-[9998] w-80 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border-2 overflow-hidden pointer-events-auto transition-shadow flex flex-col ${subject ? currentTheme.border : 'border-gray-200 dark:border-gray-700'}`}
       >
         {/* Header Draggable */}
         <div className="timer-drag-handle flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700 cursor-grab active:cursor-grabbing select-none">
@@ -234,8 +233,7 @@ export default function FocusTimerWidget() {
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               disabled={status !== 'idle'}
-              className="w-full text-sm font-semibold p-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg outline-none cursor-pointer disabled:opacity-50"
-              style={{ color: subject ? currentTheme.color : 'inherit' }}
+              className={`w-full text-sm font-semibold p-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg outline-none cursor-pointer disabled:opacity-50 ${subject ? currentTheme.text : 'text-gray-900 dark:text-gray-100'}`}
             >
               <option value="">Selecione a Matéria...</option>
               {allSubjects.map(sub => (
@@ -288,19 +286,19 @@ export default function FocusTimerWidget() {
                 cy="80" 
                 r="76" 
                 fill="none" 
-                stroke={subject ? currentTheme.color : '#6366f1'} 
+                stroke="currentColor" 
                 strokeWidth="6" 
                 strokeLinecap="round"
                 strokeDasharray="477"
                 strokeDashoffset={mode === 'pomodoro' ? 477 - (477 * progressPercent) / 100 : 0}
-                className="transition-all duration-1000 ease-linear"
+                className={`transition-all duration-1000 ease-linear ${subject ? currentTheme.accent : 'text-indigo-500'}`}
               />
             </svg>
             <div className="flex flex-col items-center justify-center z-10 text-center">
               <div className="text-3xl font-black text-gray-800 dark:text-gray-100 tracking-tighter">
                 {mode === 'stopwatch' ? formatTime(secondsElapsed) : formatTime(secondsRemaining)}
               </div>
-              <div className="text-xs font-bold uppercase mt-1" style={{ color: subject ? currentTheme.color : '#6366f1' }}>
+              <div className={`text-xs font-bold uppercase mt-1 ${subject ? currentTheme.accent : 'text-indigo-500'}`}>
                 {status === 'break' ? 'PAUSA' : mode === 'pomodoro' ? 'FOCO' : 'ESTUDO'}
               </div>
             </div>
@@ -318,8 +316,7 @@ export default function FocusTimerWidget() {
             </button>
             <button 
               onClick={togglePlayPause}
-              className="w-16 h-16 rounded-full flex items-center justify-center text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
-              style={{ backgroundColor: subject ? currentTheme.color : '#6366f1' }}
+              className={`w-16 h-16 rounded-full flex items-center justify-center text-white shadow-lg transition-transform hover:scale-105 active:scale-95 ${subject ? currentTheme.button : 'bg-indigo-500 hover:bg-indigo-600'}`}
             >
               {status === 'running' ? <Pause className="w-8 h-8 fill-current" /> : <Play className="w-8 h-8 fill-current ml-1" />}
             </button>
