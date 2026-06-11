@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Draggable from 'react-draggable';
-import { Timer, Play, Pause, Square, Settings, X, GripHorizontal, ChevronDown, Check } from 'lucide-react';
+import { Play, Pause, Square, Settings, X, GripHorizontal } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useCustomSubjects } from '../contexts/CustomSubjectsContext';
 import { themes } from '../lib/constants';
@@ -19,7 +19,6 @@ export default function FocusTimerWidget() {
   const { user } = useAuth();
   const { customSubjects } = useCustomSubjects();
   const [isOpen, setIsOpen] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
   
   const [position, setPosition] = useState<{x: number, y: number}>(() => {
     try {
@@ -38,7 +37,7 @@ export default function FocusTimerWidget() {
   const [topic, setTopic] = useState<string>('');
   
   // Lista unificada de matérias
-  const allSubjects = Array.from(new Set([...Object.keys(themes), ...customSubjects])).sort();
+  const allSubjects = Array.from(new Set([...Object.keys(themes), ...customSubjects.map(s => s.id)])).sort();
 
   // Configurações do Timer
   const [mode, setMode] = useState<TimerMode>('pomodoro');
@@ -193,9 +192,7 @@ export default function FocusTimerWidget() {
       nodeRef={nodeRef}
       handle=".timer-drag-handle"
       defaultPosition={position}
-      onStart={() => setIsDragging(true)}
       onStop={(_, data) => {
-        setIsDragging(false);
         setPosition({ x: data.x, y: data.y });
         localStorage.setItem('focus_timer_pos', JSON.stringify({ x: data.x, y: data.y }));
       }}

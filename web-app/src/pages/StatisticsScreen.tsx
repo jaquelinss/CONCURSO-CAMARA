@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { Clock, TrendingUp, Calendar as CalendarIcon, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { getFocusSessions, FocusSession } from '../lib/focus.service';
+import { getFocusSessions } from '../lib/focus.service';
+import type { FocusSession } from '../lib/focus.service';
 import { themes, defaultTheme } from '../lib/constants';
 import { format, subDays, startOfWeek, endOfWeek, isWithinInterval, startOfDay } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 
 export default function StatisticsScreen() {
   const { user } = useAuth();
@@ -185,7 +185,7 @@ export default function StatisticsScreen() {
                     <Tooltip 
                       cursor={{ fill: 'rgba(99, 102, 241, 0.05)' }} 
                       contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: '#fff', color: '#111827' }} 
-                      formatter={(value: number) => [`${value}h`, 'Tempo']} 
+                      formatter={(value: any) => [`${value}h`, 'Tempo']} 
                     />
                     <Bar dataKey="hours" fill="#6366f1" radius={[4, 4, 0, 0]} maxBarSize={40} />
                   </BarChart>
@@ -216,7 +216,7 @@ export default function StatisticsScreen() {
                     ))}
                   </Pie>
                   <Tooltip 
-                    formatter={(value: number) => [`${value}h`, 'Tempo']} 
+                    formatter={(value: any) => [`${value}h`, 'Tempo']} 
                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: '#fff', color: '#111827' }} 
                   />
                   <Legend 
