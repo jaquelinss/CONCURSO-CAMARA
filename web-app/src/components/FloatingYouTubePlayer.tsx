@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import Draggable from 'react-draggable';
-import { Lock, Unlock, Maximize2, Minimize2, X, GripHorizontal } from 'lucide-react';
+import { Lock, Unlock, Maximize2, Minimize2, X, GripHorizontal, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface PlayVideoEventDetail {
   url: string;
@@ -54,6 +54,7 @@ export default function FloatingYouTubePlayer() {
   const [subject, setSubject] = useState('');
   
   const [isLocked, setIsLocked] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
   const [isLarge, setIsLarge] = useState(() => localStorage.getItem('youtube_player_large') === 'true');
   const [isDragging, setIsDragging] = useState(false);
   
@@ -121,11 +122,11 @@ export default function FloatingYouTubePlayer() {
         ref={nodeRef}
         className="fixed z-[9999] bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-2xl shadow-2xl border-2 border-indigo-500/30 flex flex-col overflow-hidden pointer-events-auto transition-shadow duration-200 hover:shadow-indigo-500/10 group"
         style={{
-          width: isLarge ? '720px' : '380px',
-          height: isLarge ? '450px' : '260px',
+          width: isMinimized ? '380px' : (isLarge ? '720px' : '380px'),
+          height: isMinimized ? 'auto' : (isLarge ? '450px' : '260px'),
           minWidth: '280px',
-          minHeight: '200px',
-          resize: isLocked ? 'none' : 'both',
+          minHeight: isMinimized ? 0 : '200px',
+          resize: (isLocked || isMinimized) ? 'none' : 'both',
           top: 0,
           left: 0,
         }}
@@ -158,8 +159,17 @@ export default function FloatingYouTubePlayer() {
               {isLocked ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
             </button>
 
+            {/* Minimize/Restore Toggle */}
+            <button
+              onClick={() => setIsMinimized(!isMinimized)}
+              className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md text-gray-500 transition-colors"
+              title={isMinimized ? 'Restaurar player' : 'Minimizar (mantém vídeo em pausa/reprodução)'}
+            >
+              {isMinimized ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronUp className="w-3.5 h-3.5" />}
+            </button>
+
             {/* Standard/Large Size Toggle */}
-            {!isLocked && (
+            {!isLocked && !isMinimized && (
               <button
                 onClick={() => {
                   const next = !isLarge;
@@ -188,8 +198,11 @@ export default function FloatingYouTubePlayer() {
           </div>
         </div>
 
-        {/* Video Display Area */}
-        <div className="relative flex-grow bg-black w-full h-full overflow-hidden">
+        {/* Video Display Area — iframe is NEVER unmounted to preserve position */}
+        <div
+          className="relative flex-grow bg-black w-full overflow-hidden"
+          style={{ height: isMinimized ? 0 : undefined, pointerEvents: isMinimized ? 'none' : undefined }}
+        >
           {/* Iframe shield overlay while dragging to prevent drag capture */}
           {isDragging && (
             <div className="absolute inset-0 bg-transparent z-50 cursor-grabbing" />
