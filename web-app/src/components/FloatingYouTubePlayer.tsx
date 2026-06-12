@@ -116,7 +116,6 @@ export default function FloatingYouTubePlayer() {
         setPosition({ x: data.x, y: data.y });
         localStorage.setItem('youtube_player_pos_v2', JSON.stringify({ x: data.x, y: data.y }));
       }}
-      bounds="body"
     >
       <div
         ref={nodeRef}
