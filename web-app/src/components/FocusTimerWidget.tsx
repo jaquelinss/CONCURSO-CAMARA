@@ -230,7 +230,6 @@ export default function FocusTimerWidget() {
         setPosition({ x: data.x, y: data.y });
         localStorage.setItem('focus_timer_pos', JSON.stringify({ x: data.x, y: data.y }));
       }}
-      bounds="body"
     >
       <div
         ref={nodeRef}
