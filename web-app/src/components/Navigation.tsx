@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useReward } from '../contexts/RewardContext';
-import { LogOut, Menu, X, CalendarDays, FolderHeart, Sun, Moon, TrendingUp, Database, HelpCircle, Focus, Book, Home, BookOpen, Archive, Flame, Store, Columns, PieChart } from 'lucide-react';
+import { LogOut, Menu, X, CalendarDays, FolderHeart, Sun, Moon, TrendingUp, Database, HelpCircle, Focus, Book, Home, BookOpen, Archive, Flame, Store, Columns, PieChart, Timer } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import FocusPlayer from './FocusPlayer';
 import { RewardShop } from './RewardShop';
@@ -184,6 +184,17 @@ export default function Navigation() {
             </button>
 
             <button
+              onClick={() => {
+                const lastSubject = localStorage.getItem('focus_timer_last_subject') || '';
+                window.dispatchEvent(new CustomEvent('open-focus-timer', { detail: { subject: lastSubject } }));
+              }}
+              className="hidden sm:block p-2 rounded-lg text-orange-500 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/30 transition-colors"
+              title="Cronômetro de Foco"
+            >
+              <Timer className="w-5 h-5" />
+            </button>
+
+            <button
               onClick={() => window.dispatchEvent(new Event('toggle-whiteboard-notebook'))}
               className="hidden sm:block p-2 rounded-lg text-purple-500 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors"
               title="Cadernos (Ctrl+Shift+C)"
@@ -339,6 +350,16 @@ export default function Navigation() {
               className="w-full flex items-center gap-3 pl-3 pr-4 py-3 border-l-4 border-transparent text-base font-medium text-teal-500 dark:text-teal-400 hover:bg-gray-50 dark:hover:bg-gray-700"
             >
               <Columns className="w-5 h-5" /> Tela Dividida
+            </button>
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                const lastSubject = localStorage.getItem('focus_timer_last_subject') || '';
+                window.dispatchEvent(new CustomEvent('open-focus-timer', { detail: { subject: lastSubject } }));
+              }}
+              className="w-full flex items-center gap-3 pl-3 pr-4 py-3 border-l-4 border-transparent text-base font-medium text-orange-500 dark:text-orange-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              <Timer className="w-5 h-5" /> Cronômetro de Foco
             </button>
             <button
               onClick={() => { setMobileMenuOpen(false); window.dispatchEvent(new Event('toggle-whiteboard-notebook')); }}

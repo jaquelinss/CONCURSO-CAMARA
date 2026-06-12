@@ -282,7 +282,10 @@ export default function FocusTimerWidget() {
           <div className="w-full mb-3">
             <select
               value={subject}
-              onChange={(e) => setSubject(e.target.value)}
+              onChange={(e) => {
+                setSubject(e.target.value);
+                if (e.target.value) localStorage.setItem('focus_timer_last_subject', e.target.value);
+              }}
               disabled={status !== 'idle'}
               className={`w-full text-sm font-semibold p-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg outline-none cursor-pointer disabled:opacity-50 ${
                 subject ? currentTheme.text : 'text-gray-900 dark:text-gray-100'
