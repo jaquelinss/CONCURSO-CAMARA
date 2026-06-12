@@ -15,11 +15,11 @@ import StudyProgressScreen from './pages/StudyProgressScreen';
 import QuestionsDatabase from './pages/QuestionsDatabase';
 
 const StatisticsScreen = lazy(() => import('./pages/StatisticsScreen'));
-const FocusTimerWidget = lazy(() => import('./components/FocusTimerWidget'));
 
 import ReportButton from './components/ReportButton';
 import StickyNotesManager from './components/StickyNotesManager';
 import FloatingYouTubePlayer from './components/FloatingYouTubePlayer';
+import FocusTimerWidget from './components/FocusTimerWidget';
 import TodayStudyButton from './components/TodayStudyButton';
 import AITeacherChat from './components/AITeacherChat';
 import NavigationTutorial from './components/NavigationTutorial';
@@ -71,11 +71,7 @@ export default function App() {
                   <ReportButton isHidden={!showTools} />
                   <StickyNotesManager />
                   <FloatingYouTubePlayer />
-                  <ErrorBoundary fallback={null}>
-                    <Suspense fallback={null}>
-                      <FocusTimerWidget />
-                    </Suspense>
-                  </ErrorBoundary>
+                  <FocusTimerWidget />
                   <StamperOverlay />
                   <TodayStudyButton isHidden={!showTools} />
                   <AITeacherChat isHidden={!showTools} />
