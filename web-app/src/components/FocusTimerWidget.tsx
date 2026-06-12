@@ -61,6 +61,7 @@ export default function FocusTimerWidget() {
   const [currentSessionSeconds, setCurrentSessionSeconds] = useState(0);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const autoSaveRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const handleOpenTimer = (e: Event) => {
@@ -74,6 +75,20 @@ export default function FocusTimerWidget() {
     window.addEventListener('open-focus-timer', handleOpenTimer);
     return () => window.removeEventListener('open-focus-timer', handleOpenTimer);
   }, [status]);
+
+  // Auto-save a cada 5 minutos enquanto rodando
+  useEffect(() => {
+    if (status === 'running') {
+      autoSaveRef.current = setInterval(async () => {
+        if (currentSessionSeconds >= 60) {
+          await finishAndSaveSession();
+        }
+      }, 5 * 60 * 1000);
+    } else {
+      if (autoSaveRef.current) clearInterval(autoSaveRef.current);
+    }
+    return () => { if (autoSaveRef.current) clearInterval(autoSaveRef.current); };
+  }, [status, currentSessionSeconds]);
 
   useEffect(() => {
     if (status === 'idle' && mode === 'pomodoro') {
@@ -153,7 +168,8 @@ export default function FocusTimerWidget() {
   };
 
   const finishAndSaveSession = async () => {
-    if (!user || !subject || currentSessionSeconds < 10) {
+    if (!user || !subject || currentSessionSeconds < 60) {
+      // Não salva se for menos de 1 minuto
       setCurrentSessionSeconds(0);
       return;
     }
@@ -165,6 +181,17 @@ export default function FocusTimerWidget() {
       date: today,
     });
     setCurrentSessionSeconds(0);
+  };
+
+  const handleClose = async () => {
+    // Salva o tempo acumulado ao fechar se >= 60 segundos
+    if (currentSessionSeconds >= 60) {
+      await finishAndSaveSession();
+    } else {
+      setCurrentSessionSeconds(0);
+    }
+    if (status === 'running' || status === 'paused') setStatus('idle');
+    setIsOpen(false);
   };
 
   const formatTime = (totalSeconds: number) => {
@@ -241,7 +268,7 @@ export default function FocusTimerWidget() {
               <Settings className="w-3.5 h-3.5" />
             </button>
             <button
-              onClick={() => setIsOpen(false)}
+              onClick={handleClose}
               className="p-1 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 transition-colors"
             >
               <X className="w-3.5 h-3.5" />
