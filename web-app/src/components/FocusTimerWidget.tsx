@@ -19,6 +19,7 @@ export default function FocusTimerWidget() {
   const { user } = useAuth();
   const { customSubjects } = useCustomSubjects();
   const [isOpen, setIsOpen] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
 
   const [position, setPosition] = useState<{ x: number; y: number }>(() => {
     try {
@@ -221,7 +222,7 @@ export default function FocusTimerWidget() {
   const r = 76;
   const circ = 2 * Math.PI * r;
 
-  return (
+  const renderFullWidget = () => (
     <Draggable
       nodeRef={nodeRef}
       handle=".timer-drag-handle"
@@ -263,12 +264,21 @@ export default function FocusTimerWidget() {
             <button
               onClick={() => setShowConfig(!showConfig)}
               className="p-1 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 transition-colors"
+              title="Configurações"
             >
               <Settings className="w-3.5 h-3.5" />
             </button>
             <button
+              onClick={() => setIsMinimized(true)}
+              className="p-1 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 transition-colors"
+              title="Minimizar"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+            </button>
+            <button
               onClick={handleClose}
               className="p-1 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 transition-colors"
+              title="Fechar"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -428,5 +438,78 @@ export default function FocusTimerWidget() {
         </div>
       </div>
     </Draggable>
+  );
+
+  return (
+    <>
+      {!isMinimized ? renderFullWidget() : (
+        <Draggable
+          nodeRef={nodeRef}
+          handle=".timer-mini-drag-handle"
+          defaultPosition={position}
+          onStop={(_, data) => {
+            setPosition({ x: data.x, y: data.y });
+            localStorage.setItem('focus_timer_pos', JSON.stringify({ x: data.x, y: data.y }));
+          }}
+        >
+          <div
+            ref={nodeRef}
+            className={`fixed top-0 left-0 z-[9998] bg-white dark:bg-gray-900 rounded-full shadow-xl border overflow-hidden pointer-events-auto flex items-center p-1.5 gap-2 ${
+              subject ? currentTheme.border : 'border-gray-200 dark:border-gray-700'
+            }`}
+          >
+            <div className="timer-mini-drag-handle cursor-grab active:cursor-grabbing p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+              <GripHorizontal className="w-4 h-4" />
+            </div>
+            
+            <div className="flex items-center gap-2 px-2 font-mono font-bold text-lg dark:text-gray-100">
+              <span className={status === 'break' ? 'text-indigo-500' : subject ? currentTheme.text : 'text-gray-900 dark:text-gray-100'}>
+                {mode === 'stopwatch' ? formatTime(secondsElapsed) : formatTime(secondsRemaining)}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1 border-l border-gray-200 dark:border-gray-700 pl-2">
+              <button
+                onClick={togglePlayPause}
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-white transition-transform hover:scale-105 active:scale-95 ${
+                  subject ? currentTheme.button : 'bg-indigo-500 hover:bg-indigo-600'
+                }`}
+              >
+                {status === 'running' ? (
+                  <Pause className="w-4 h-4 fill-current" />
+                ) : (
+                  <Play className="w-4 h-4 fill-current ml-0.5" />
+                )}
+              </button>
+              <button
+                onClick={stopTimer}
+                disabled={status === 'idle'}
+                className="w-8 h-8 rounded-full flex items-center justify-center bg-red-100 text-red-500 hover:bg-red-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                title="Parar"
+              >
+                <Square className="w-3 h-3 fill-current" />
+              </button>
+            </div>
+
+            <div className="flex items-center gap-1 border-l border-gray-200 dark:border-gray-700 pl-2 pr-1">
+              <button
+                onClick={() => setIsMinimized(false)}
+                className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 transition-colors"
+                title="Maximizar"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+              </button>
+              <button
+                onClick={handleClose}
+                className="p-1.5 rounded-full hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/30 text-gray-500 transition-colors"
+                title="Fechar"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </Draggable>
+      )}
+    </>
   );
 }
