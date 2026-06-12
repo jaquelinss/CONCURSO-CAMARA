@@ -147,7 +147,7 @@ export default function FocusTimerWidget() {
     }
   };
 
-  const togglePlayPause = () => {
+  const togglePlayPause = async () => {
     if (!subject) {
       alert('Por favor, selecione uma matéria primeiro!');
       return;
@@ -156,6 +156,9 @@ export default function FocusTimerWidget() {
       setStatus('running');
     } else if (status === 'running') {
       setStatus('paused');
+      if (currentSessionSeconds >= 60) {
+        await finishAndSaveSession();
+      }
     }
   };
 
