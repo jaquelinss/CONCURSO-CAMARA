@@ -3,6 +3,7 @@ import Draggable from 'react-draggable';
 import { Play, Pause, Square, Settings, X, GripHorizontal, Minus, Plus } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useCustomSubjects } from '../contexts/CustomSubjectsContext';
+import { useReward } from '../contexts/RewardContext';
 import { themes } from '../lib/constants';
 import { saveFocusSession } from '../lib/focus.service';
 import { format } from 'date-fns';
@@ -18,6 +19,7 @@ export interface FocusTimerEventDetail {
 export default function FocusTimerWidget() {
   const { user } = useAuth();
   const { customSubjects } = useCustomSubjects();
+  const { awardFocusPoints } = useReward();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
 
@@ -184,6 +186,10 @@ export default function FocusTimerWidget() {
       durationSeconds: currentSessionSeconds,
       date: today,
     });
+    
+    // Conceder pontos de foco acumulados
+    awardFocusPoints(currentSessionSeconds);
+    
     setCurrentSessionSeconds(0);
   };
 

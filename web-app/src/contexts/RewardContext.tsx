@@ -15,6 +15,7 @@ interface RewardContextType {
   effortPoints: number;
   unlockedStickers: StickerInstance[];
   awardPoints: (amount: number, reason: string) => void;
+  awardFocusPoints: (seconds: number) => void;
   spendPoints: (amount: number, reason: string) => Promise<boolean>;
   addStickerToInventory: (stickerId: string, customUrl?: string) => Promise<void>;
   addMultipleStickersToInventory: (stickers: { id: string, url: string }[]) => Promise<void>;
@@ -29,6 +30,7 @@ const RewardContext = createContext<RewardContextType>({
   effortPoints: 0,
   unlockedStickers: [],
   awardPoints: () => {},
+  awardFocusPoints: () => {},
   spendPoints: async () => false,
   addStickerToInventory: async () => {},
   addMultipleStickersToInventory: async () => {},
@@ -116,6 +118,41 @@ export const RewardProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }).catch(e => console.error("Erro ao dar pontos:", e));
 
   }, [user, lastActionTimes]);
+
+  const awardFocusPoints = useCallback((seconds: number) => {
+    if (!user) return;
+    const docRef = doc(db, 'users', user.uid, 'settings', 'rewards');
+    getDoc(docRef).then(snap => {
+      const data = snap.exists() ? snap.data() : {};
+      const currentPoints = data.effortPoints || 0;
+      const unrewarded = (data.unrewardedFocusSeconds || 0) + seconds;
+      
+      const chunksOf10Min = Math.floor(unrewarded / 600);
+      const newUnrewarded = unrewarded % 600;
+      
+      if (chunksOf10Min > 0) {
+        const pointsToAward = chunksOf10Min * 15;
+        
+        // Dispara animação
+        const animId = Math.random().toString(36).substring(7);
+        setFloatingPoints(prev => [...prev, { id: animId, amount: pointsToAward }]);
+        setTimeout(() => {
+          setFloatingPoints(prev => prev.filter(p => p.id !== animId));
+        }, 2500);
+
+        setDoc(docRef, { 
+          effortPoints: currentPoints + pointsToAward,
+          unrewardedFocusSeconds: newUnrewarded,
+          lastEarnedAt: serverTimestamp() 
+        }, { merge: true });
+      } else {
+        setDoc(docRef, {
+          unrewardedFocusSeconds: newUnrewarded
+        }, { merge: true });
+      }
+    }).catch(e => console.error("Erro ao dar pontos de foco:", e));
+  }, [user]);
+
   const spendPoints = useCallback(async (amount: number, reason: string): Promise<boolean> => {
     if (!user) return false;
     try {
@@ -230,7 +267,7 @@ export const RewardProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, [user]);
 
   return (
-    <RewardContext.Provider value={{ effortPoints, unlockedStickers, awardPoints, spendPoints, addStickerToInventory, addMultipleStickersToInventory, markStickerAsUsed, markStickerAsUnused, activeStamper, setActiveStamper, floatingPoints }}>
+    <RewardContext.Provider value={{ effortPoints, unlockedStickers, awardPoints, awardFocusPoints, spendPoints, addStickerToInventory, addMultipleStickersToInventory, markStickerAsUsed, markStickerAsUnused, activeStamper, setActiveStamper, floatingPoints }}>
       {children}
     </RewardContext.Provider>
   );
