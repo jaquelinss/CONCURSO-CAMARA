@@ -6,6 +6,7 @@ import { getFocusSessions } from '../lib/focus.service';
 import type { FocusSession } from '../lib/focus.service';
 import { themes, defaultTheme } from '../lib/constants';
 import { format, subDays, startOfWeek, endOfWeek, isWithinInterval, startOfDay } from 'date-fns';
+import Navigation from '../components/Navigation';
 
 export default function StatisticsScreen() {
   const { user } = useAuth();
@@ -108,7 +109,9 @@ export default function StatisticsScreen() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      <Navigation />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -233,6 +236,7 @@ export default function StatisticsScreen() {
             )}
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
