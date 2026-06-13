@@ -1,13 +1,42 @@
 import { useEffect, useState, useMemo } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Clock, TrendingUp, Calendar as CalendarIcon, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getFocusSessions } from '../lib/focus.service';
 import type { FocusSession } from '../lib/focus.service';
-import { themes, defaultTheme } from '../lib/constants';
 import { format, startOfWeek, endOfWeek, isWithinInterval, startOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import Navigation from '../components/Navigation';
+
+const SUBJECT_COLORS: Record<string, string> = {
+  'Matemática': '#3b82f6',
+  'Português': '#eab308',
+  'Biologia': '#22c55e',
+  'Física': '#f43f5e',
+  'Química': '#06b6d4',
+  'História': '#f97316',
+  'Geografia': '#14b8a6',
+  'Filosofia': '#6366f1',
+  'Sociologia': '#a855f7',
+  'Inglês': '#ef4444',
+  'Espanhol': '#84cc16',
+  'Redação': '#6b7280',
+  'Medicina': '#0d9488',
+  'Artes': '#e11d48',
+  'Atualidades': '#c026d3',
+  'Constituição Federal': '#f59e0b',
+  'Tecnologia e Sociedade': '#0ea5e9',
+  'Interpretação Textual': '#10b981',
+  'Raciocínio Lógico-Matemático': '#2563eb',
+  'Noções de Informática': '#0284c7',
+  'Lei Orgânica de Caruaru': '#d97706',
+  'Legislação Específica': '#b45309',
+  'Administração Pública': '#059669',
+  'Noções de Arquivologia': '#ea580c',
+  'Noções de Direito Constitucional': '#d97706',
+  'Noções de Direito Administrativo': '#10b981',
+};
+const FALLBACK_COLORS = ['#6366f1','#ec4899','#f97316','#22c55e','#3b82f6','#a855f7','#14b8a6','#eab308'];
 
 export default function StatisticsScreen() {
   const { user } = useAuth();
@@ -62,13 +91,14 @@ export default function StatisticsScreen() {
   const chartDataBySubject = useMemo(() => {
     const map = new Map<string, number>();
     filteredSessions.forEach(s => {
-      map.set(s.subject, (map.get(s.subject) || 0) + s.durationSeconds);
+      if (s.subject) map.set(s.subject, (map.get(s.subject) || 0) + s.durationSeconds);
     });
     
-    return Array.from(map.entries()).map(([subject, seconds]) => ({
+    return Array.from(map.entries()).map(([subject, seconds], i) => ({
       name: subject,
-      value: Number((seconds / 3600).toFixed(2)), // em horas
-      color: themes[subject]?.color || defaultTheme.color
+      value: Number((seconds / 3600).toFixed(2)),
+      minutes: Math.round(seconds / 60),
+      color: SUBJECT_COLORS[subject] || FALLBACK_COLORS[i % FALLBACK_COLORS.length]
     })).sort((a, b) => b.value - a.value);
   }, [filteredSessions]);
 
@@ -211,32 +241,36 @@ export default function StatisticsScreen() {
           <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Distribuição por projeto</h3>
           <div className="h-72 w-full flex items-center justify-center">
             {chartDataBySubject.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={chartDataBySubject}
-                    innerRadius={80}
-                    outerRadius={110}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {chartDataBySubject.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    formatter={(value: any) => [`${value}h`, 'Tempo']} 
-                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: '#fff', color: '#111827' }} 
-                  />
-                  <Legend 
-                    layout="vertical" 
-                    verticalAlign="middle" 
-                    align="right" 
-                    iconType="circle"
-                    wrapperStyle={{ fontSize: '12px', color: '#6b7280' }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+              <div className="flex w-full h-full gap-4">
+                <ResponsiveContainer width="60%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={chartDataBySubject}
+                      innerRadius={60}
+                      outerRadius={100}
+                      paddingAngle={3}
+                      dataKey="value"
+                    >
+                      {chartDataBySubject.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(_value: any, _name: any, props: any) => [`${props.payload.minutes}min`, props.payload.name]}
+                      contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: '#fff', color: '#111827' }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="flex-1 flex flex-col justify-center gap-2 overflow-y-auto pr-1">
+                  {chartDataBySubject.map((item, i) => (
+                    <div key={i} className="flex items-center gap-2 text-sm">
+                      <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
+                      <span className="text-gray-700 dark:text-gray-300 truncate flex-1">{item.name}</span>
+                      <span className="font-semibold text-gray-900 dark:text-white shrink-0">{item.minutes}min</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             ) : (
               <div className="h-full flex items-center justify-center text-gray-400">Nenhum dado neste período.</div>
             )}
