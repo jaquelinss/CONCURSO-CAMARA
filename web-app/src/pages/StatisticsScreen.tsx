@@ -4,7 +4,7 @@ import { Clock, TrendingUp, Calendar as CalendarIcon, CheckCircle2 } from 'lucid
 import { useAuth } from '../contexts/AuthContext';
 import { getFocusSessions } from '../lib/focus.service';
 import type { FocusSession } from '../lib/focus.service';
-import { format, startOfWeek, endOfWeek, isWithinInterval, startOfDay } from 'date-fns';
+import { format, startOfWeek, endOfWeek, isWithinInterval, startOfDay, addDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import Navigation from '../components/Navigation';
 
@@ -108,10 +108,10 @@ export default function StatisticsScreen() {
     const daysMap = new Map<string, number>();
     
     if (period === 'semana') {
-      // Usar a semana real (domingo a sábado) igual ao filtro
+      // Usar a semana real (domingo a sábado) com addDays para evitar problemas de timezone
       const weekStart = startOfWeek(new Date(), { weekStartsOn: 0 });
       for (let i = 0; i < 7; i++) {
-        const d = format(new Date(weekStart.getTime() + i * 24 * 60 * 60 * 1000), 'yyyy-MM-dd');
+        const d = format(addDays(weekStart, i), 'yyyy-MM-dd');
         daysMap.set(d, 0);
       }
     } else {
@@ -241,32 +241,36 @@ export default function StatisticsScreen() {
           <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Distribuição por projeto</h3>
           <div className="h-72 w-full flex items-center justify-center">
             {chartDataBySubject.length > 0 ? (
-              <div className="flex w-full h-full gap-4">
-                <ResponsiveContainer width="60%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={chartDataBySubject}
-                      innerRadius={60}
-                      outerRadius={100}
-                      paddingAngle={3}
-                      dataKey="value"
-                    >
-                      {chartDataBySubject.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      formatter={(_value: any, _name: any, props: any) => [`${props.payload.minutes}min`, props.payload.name]}
-                      contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: '#fff', color: '#111827' }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="flex-1 flex flex-col justify-center gap-2 overflow-y-auto pr-1">
+              <div className="grid w-full h-full" style={{ gridTemplateColumns: '1fr 160px' }}>
+                <div style={{ width: '100%', height: '100%' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={chartDataBySubject}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={55}
+                        outerRadius={95}
+                        paddingAngle={3}
+                        dataKey="value"
+                      >
+                        {chartDataBySubject.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        formatter={(_value: any, _name: any, props: any) => [`${props.payload.minutes}min`, props.payload.name]}
+                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', backgroundColor: '#fff', color: '#111827' }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="flex flex-col justify-center gap-2 overflow-y-auto pl-2">
                   {chartDataBySubject.map((item, i) => (
                     <div key={i} className="flex items-center gap-2 text-sm">
                       <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
-                      <span className="text-gray-700 dark:text-gray-300 truncate flex-1">{item.name}</span>
-                      <span className="font-semibold text-gray-900 dark:text-white shrink-0">{item.minutes}min</span>
+                      <span className="text-gray-700 dark:text-gray-300 truncate flex-1 text-xs">{item.name}</span>
+                      <span className="font-semibold text-gray-900 dark:text-white shrink-0 text-xs">{item.minutes}min</span>
                     </div>
                   ))}
                 </div>
