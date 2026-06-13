@@ -5,7 +5,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { getFocusSessions } from '../lib/focus.service';
 import type { FocusSession } from '../lib/focus.service';
 import { themes, defaultTheme } from '../lib/constants';
-import { format, subDays, startOfWeek, endOfWeek, isWithinInterval, startOfDay } from 'date-fns';
+import { format, startOfWeek, endOfWeek, isWithinInterval, startOfDay } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import Navigation from '../components/Navigation';
 
 export default function StatisticsScreen() {
@@ -76,13 +77,18 @@ export default function StatisticsScreen() {
     
     const daysMap = new Map<string, number>();
     
-    // Preparar chaves dos últimos 7 dias se for semana, ou usar as datas existentes
     if (period === 'semana') {
-      const today = new Date();
-      for (let i = 6; i >= 0; i--) {
-        const d = format(subDays(today, i), 'yyyy-MM-dd');
+      // Usar a semana real (domingo a sábado) igual ao filtro
+      const weekStart = startOfWeek(new Date(), { weekStartsOn: 0 });
+      for (let i = 0; i < 7; i++) {
+        const d = format(new Date(weekStart.getTime() + i * 24 * 60 * 60 * 1000), 'yyyy-MM-dd');
         daysMap.set(d, 0);
       }
+    } else {
+      // Geral: inicializa com as datas que existem nas sessões
+      filteredSessions.forEach(s => {
+        if (!daysMap.has(s.date)) daysMap.set(s.date, 0);
+      });
     }
 
     filteredSessions.forEach(s => {
@@ -91,7 +97,7 @@ export default function StatisticsScreen() {
 
     return Array.from(daysMap.entries())
       .map(([date, seconds]) => ({
-        date: format(new Date(date + 'T00:00:00'), 'dd/MM'),
+        date: format(new Date(date + 'T00:00:00'), "EEE dd/MM", { locale: ptBR }).replace(/^(\w)/, c => c.toUpperCase()),
         rawDate: date,
         hours: Number((seconds / 3600).toFixed(2))
       }))
