@@ -105,6 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setHasSeenWelcome(true);
     } catch (error) {
       console.error("Error updating welcome status:", error);
+      setHasSeenWelcome(true); // Failsafe para evitar loop de boas-vindas
     }
   };
 

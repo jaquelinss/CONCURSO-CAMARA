@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useReward } from '../contexts/RewardContext';
 import { useAuth } from '../contexts/AuthContext';
 import { db, storage } from '../lib/firebase';
-import { collection, doc, setDoc, getDocs } from 'firebase/firestore';
+import { collection, doc, setDoc, getDocs, updateDoc, deleteField, deleteDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Sparkles, Wand2, UploadCloud } from 'lucide-react';
 
@@ -384,7 +384,6 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
       const removedItems = oldItems.filter(old => !newItems.some(n => n.id === old.id));
       const addedItems = newItems.filter(n => !oldItems.some(old => old.id === n.id));
 
-      const { updateDoc, deleteField } = await import('firebase/firestore');
 
       // For removed items, remove their packId
       for (const item of removedItems) {
@@ -466,7 +465,6 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
       if (!originalPack) return;
 
       const itemsInPack = originalPack.items || [];
-      const { updateDoc, deleteField, deleteDoc } = await import('firebase/firestore');
 
       // Remove packId from all items in this pack
       for (const item of itemsInPack) {
