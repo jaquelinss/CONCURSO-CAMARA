@@ -180,7 +180,7 @@ export default function FocusTimerWidget() {
       return;
     }
     const today = format(new Date(), 'yyyy-MM-dd');
-    await saveFocusSession(user.uid, {
+    await saveFocusSession(user!.uid, {
       subject,
       topic,
       durationSeconds: currentSessionSeconds,
