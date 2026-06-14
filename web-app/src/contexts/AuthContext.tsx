@@ -99,13 +99,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const markWelcomeAsSeen = async () => {
     if (!user) return;
+    
+    // Atualiza o estado local IMEDIATAMENTE para fechar o modal
+    setHasSeenWelcome(true);
+
     try {
       const docRef = doc(db, 'users', user.uid, 'settings', 'config');
-      await setDoc(docRef, { hasSeenWelcome: true }, { merge: true });
-      setHasSeenWelcome(true);
-    } catch (error) {
+      // Fire and forget, don't wait for it if it hangs
+      setDoc(docRef, { hasSeenWelcome: true }, { merge: true }).catch(err => {
+        console.error("Error background saving welcome status:", err);
+        alert("Erro no Firebase (fundo): " + err.message);
+      });
+    } catch (error: any) {
       console.error("Error updating welcome status:", error);
-      setHasSeenWelcome(true); // Failsafe para evitar loop de boas-vindas
+      alert("Erro ao pular boas vindas: " + error?.message);
     }
   };
 
