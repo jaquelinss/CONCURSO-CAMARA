@@ -97,7 +97,7 @@ REGRAS ABSOLUTAS E INVIOLÁVEIS PARA AS QUESTÕES:
 4. Para distratores (alternativas erradas), use erros CLAROS e VERIFICÁVEIS: dados incorretos, conceitos trocados, definições invertidas, exceções apresentadas como regra, informações inventadas, etc.
 5. Verifique a lógica da questão: se pedir a alternativa CORRETA, as outras 3 precisam estar absolutamente ERRADAS. Se pedir a INCORRETA, as outras 3 precisam estar CERTAS.
 6. Não inclua as letras "A)", "B)", "C)", "D)" no texto das opções, apenas o conteúdo da resposta.
-7. A "explicacao" deve justificar a resposta E APONTAR ESPECIFICAMENTE o erro de cada alternativa incorreta.
+7. A "explicacao" deve justificar a resposta E APONTAR ESPECIFICAMENTE o erro de cada alternativa incorreta. NUNCA referencie as alternativas por posição (ex: "a primeira alternativa", "a letra A"), referencie sempre pelo conteúdo da opção, pois a ordem será embaralhada.
 8. NÃO crie questões que dependam de formatação visual (palavras "sublinhadas", "negritadas" ou "destacadas") nas alternativas. Como o sistema não suporta formatação rica nas opções de resposta, se precisar referenciar uma palavra, escreva-a EXPLICITAMENTE no enunciado (Ex: "Na frase X, a palavra 'Y' exerce a função de..."). NUNCA use a expressão "o termo sublinhado".
 ${(settings.leiSecaEnabled !== false && isLawSubject(settings.subject)) ? '9. Como este é um assunto de legislação, inclua também a chave "lei_seca" contendo o trecho exato (literal) da lei, artigo, parágrafo ou inciso que fundamenta a resposta correta.' : ''}
 

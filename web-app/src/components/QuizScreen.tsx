@@ -306,7 +306,19 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
       if (settings.subject === 'Redação' && settings.model === 'Enem') {
         setQuestions([result]);
       } else {
-        setQuestions(result.conteudo);
+        const processedContent = result.conteudo.map((q: any) => {
+          if (q.opcoes && Array.isArray(q.opcoes)) {
+            // Fisher-Yates shuffle
+            const shuffledOptions = [...q.opcoes];
+            for (let i = shuffledOptions.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [shuffledOptions[i], shuffledOptions[j]] = [shuffledOptions[j], shuffledOptions[i]];
+            }
+            return { ...q, opcoes: shuffledOptions };
+          }
+          return q;
+        });
+        setQuestions(processedContent);
       }
     } catch (err: any) {
       setError("Falha ao gerar conteúdo: " + err.message);
