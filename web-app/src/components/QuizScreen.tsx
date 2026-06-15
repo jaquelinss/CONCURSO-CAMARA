@@ -1596,7 +1596,8 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
                       disabled={selectedAnswer !== null}
                       className={`w-full text-left p-4 rounded-lg transition-all duration-300 border-2 ${theme.border} ${btnClass} disabled:cursor-not-allowed ${isEliminated ? 'line-through opacity-60' : ''}`}
                     >
-                      {option}
+                      <span className="font-bold mr-2">{String.fromCharCode(65 + idx)})</span>
+                      <span>{option}</span>
                     </button>
                     {selectedAnswer === null && (
                       <button
