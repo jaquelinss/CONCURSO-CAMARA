@@ -94,10 +94,54 @@ export default function FocusTimerWidget() {
   }, [status, currentSessionSeconds]);
 
   useEffect(() => {
-    if (status === 'idle' && mode === 'pomodoro') {
+    if (status === 'idle') {
       setSecondsRemaining(workMinutes * 60);
+      setSecondsElapsed(0);
     }
   }, [workMinutes, mode, status]);
+
+  // Recuperação de sessão em caso de fechamento acidental da aba
+  useEffect(() => {
+    if (user) {
+      const recoverSession = async () => {
+        const backupStr = localStorage.getItem('wb_focus_timer_backup');
+        if (backupStr) {
+          try {
+            const backup = JSON.parse(backupStr);
+            if (backup.userId === user.uid && backup.durationSeconds >= 60) {
+              await saveFocusSession(backup.userId, {
+                subject: backup.subject,
+                topic: backup.topic,
+                durationSeconds: backup.durationSeconds,
+                date: backup.date
+              });
+              awardFocusPoints(backup.durationSeconds);
+            }
+          } catch (e) {
+            console.error("Erro ao recuperar sessão de foco:", e);
+          } finally {
+            localStorage.removeItem('wb_focus_timer_backup');
+          }
+        }
+      };
+      recoverSession();
+    }
+  }, [user, awardFocusPoints]);
+
+  // Backup periódico a cada segundo
+  useEffect(() => {
+    if (user && subject && currentSessionSeconds >= 60) {
+      localStorage.setItem('wb_focus_timer_backup', JSON.stringify({
+        userId: user.uid,
+        subject,
+        topic,
+        durationSeconds: currentSessionSeconds,
+        date: format(new Date(), 'yyyy-MM-dd')
+      }));
+    } else if (currentSessionSeconds === 0) {
+      localStorage.removeItem('wb_focus_timer_backup');
+    }
+  }, [currentSessionSeconds, subject, topic, user]);
 
   useEffect(() => {
     if (status === 'running' || status === 'break') {
@@ -175,22 +219,36 @@ export default function FocusTimerWidget() {
 
   const finishAndSaveSession = async () => {
     if (!user || !subject || currentSessionSeconds < 60) {
-      // Não salva se for menos de 1 minuto
       setCurrentSessionSeconds(0);
+      localStorage.removeItem('wb_focus_timer_backup');
       return;
     }
     const today = format(new Date(), 'yyyy-MM-dd');
-    await saveFocusSession(user!.uid, {
-      subject,
-      topic,
-      durationSeconds: currentSessionSeconds,
-      date: today,
-    });
+    const secondsToSave = currentSessionSeconds;
     
-    // Conceder pontos de foco acumulados
-    awardFocusPoints(currentSessionSeconds);
-    
+    // Zera imediatamente a interface
     setCurrentSessionSeconds(0);
+
+    try {
+      await saveFocusSession(user.uid, {
+        subject,
+        topic,
+        durationSeconds: secondsToSave,
+        date: today,
+      });
+      awardFocusPoints(secondsToSave);
+      localStorage.removeItem('wb_focus_timer_backup');
+    } catch (e) {
+      console.error("Erro ao salvar, mantendo backup:", e);
+      // Se falhar a conexão, mantém o backup para recuperar depois
+      localStorage.setItem('wb_focus_timer_backup', JSON.stringify({
+        userId: user.uid,
+        subject,
+        topic,
+        durationSeconds: secondsToSave,
+        date: today
+      }));
+    }
   };
 
   const handleClose = async () => {
