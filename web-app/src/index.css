@@ -286,6 +286,25 @@ code {
   word-wrap: break-word;
   overflow-wrap: break-word;
   min-height: 80px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--note-scroll-thumb, rgba(0,0,0,0.2)) transparent;
+}
+
+.note-editable::-webkit-scrollbar {
+  width: 6px;
+}
+
+.note-editable::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.note-editable::-webkit-scrollbar-thumb {
+  background-color: var(--note-scroll-thumb, rgba(0,0,0,0.2));
+  border-radius: 3px;
+}
+
+.note-editable::-webkit-scrollbar-thumb:hover {
+  background-color: var(--note-scroll-thumb-hover, rgba(0,0,0,0.35));
 }
 
 .note-editable:empty::before {

@@ -1636,7 +1636,12 @@ function StickyNoteItem({
           suppressContentEditableWarning
           data-placeholder="Escreva algo..."
           className="note-editable w-full flex-grow p-3 text-gray-800 font-medium overflow-y-auto"
-          style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif", outline: 'none' }}
+          style={{
+            fontFamily: "'Comic Sans MS', cursive, sans-serif",
+            outline: 'none',
+            '--note-scroll-thumb': darkenColor(note.color || '#fef08a', 40),
+            '--note-scroll-thumb-hover': darkenColor(note.color || '#fef08a', 70),
+          } as React.CSSProperties}
           onInput={(e) => {
             const html = (e.target as HTMLDivElement).innerHTML;
             setContent(html);
