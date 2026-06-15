@@ -1635,7 +1635,7 @@ function StickyNoteItem({
           contentEditable
           suppressContentEditableWarning
           data-placeholder="Escreva algo..."
-          className="note-editable w-full flex-grow p-3 text-gray-800 font-medium"
+          className="note-editable w-full flex-grow p-3 text-gray-800 font-medium overflow-y-auto"
           style={{ fontFamily: "'Comic Sans MS', cursive, sans-serif", outline: 'none' }}
           onInput={(e) => {
             const html = (e.target as HTMLDivElement).innerHTML;
