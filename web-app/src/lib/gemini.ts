@@ -150,9 +150,15 @@ export const generateContentFromGemini = async (settings: any, apiKey: string, m
 
     const genAI = new GoogleGenerativeAI(apiKey);
     
+    // Check if the subject is related to Lei Orgânica
+    const subjectStr = String(settings.subject || '').toLowerCase();
+    const topicStr = String(settings.topic || '').toLowerCase();
+    const specificTopicStr = String(settings.specificTopic || '').toLowerCase();
+    const isLeiOrganica = subjectStr.includes('orgânica') || topicStr.includes('orgânica') || specificTopicStr.includes('orgânica') || subjectStr.includes('organica') || topicStr.includes('organica') || specificTopicStr.includes('organica');
+
     // Load Lei Orgânica text if the subject requires it
     let leiOrganicaText = '';
-    if (settings.subject === 'Lei Orgânica de Caruaru') {
+    if (isLeiOrganica || subjectStr === 'lei orgânica de caruaru') {
       leiOrganicaText = await fetchLeiOrganicaText();
     }
     
@@ -246,9 +252,14 @@ Seja rigoroso e detalhista como um corretor oficial do ENEM.`;
 function buildPrompt(settings: any, leiOrganicaText?: string): string {
     const basePrompt = generatePrompt(settings);
     
+    const subjectStr = String(settings.subject || '').toLowerCase();
+    const topicStr = String(settings.topic || '').toLowerCase();
+    const specificTopicStr = String(settings.specificTopic || '').toLowerCase();
+    const isLeiOrganica = subjectStr.includes('orgânica') || topicStr.includes('orgânica') || specificTopicStr.includes('orgânica') || subjectStr.includes('organica') || topicStr.includes('organica') || specificTopicStr.includes('organica');
+
     // If we have the actual Lei Orgânica text, inject it directly into the prompt
-    if (settings.subject === 'Lei Orgânica de Caruaru' && leiOrganicaText) {
-        const leiInstruction = `\n\nFONTE OFICIAL OBRIGATÓRIA — LEI ORGÂNICA DO MUNICÍPIO DE CARUARU (compilada até Dezembro de 2024):\nO texto abaixo é o texto OFICIAL e INTEGRAL da Lei Orgânica do Município de Caruaru. Você DEVE usar EXCLUSIVAMENTE este texto como base para criar questões, aulas e explicações.\n\nREGRAS ABSOLUTAS:\n1. NÃO invente artigos, incisos, parágrafos ou alíneas que NÃO existam neste texto.\n2. NÃO use informações de leis orgânicas de OUTROS municípios.\n3. NÃO "aluciante" conteúdo — se um artigo/inciso não estiver no texto abaixo, ele NÃO EXISTE na Lei Orgânica de Caruaru.\n4. Ao citar um artigo na explicação ou na "lei_seca", transcreva o texto EXATO conforme aparece abaixo.\n5. Verifique CADA artigo citado nas questões e explicações contra o texto abaixo antes de retornar.\n\n--- INÍCIO DO TEXTO OFICIAL DA LEI ORGÂNICA DE CARUARU ---\n${leiOrganicaText}\n--- FIM DO TEXTO OFICIAL DA LEI ORGÂNICA DE CARUARU ---\n`;
+    if (isLeiOrganica && leiOrganicaText) {
+        const leiInstruction = `\n\nFONTE OFICIAL OBRIGATÓRIA — LEI ORGÂNICA DO MUNICÍPIO DE CARUARU (compilada até Dezembro de 2024):\nO texto abaixo é o texto OFICIAL e INTEGRAL da Lei Orgânica do Município de Caruaru. Você DEVE usar EXCLUSIVAMENTE este texto como base para criar questões, aulas e explicações, pois o usuário está estudando para o concurso de Caruaru-PE. Se o usuário pedir questões sobre "Lei Orgânica Municipal", é ESTA lei que ele quer.\n\nREGRAS ABSOLUTAS:\n1. NÃO invente artigos, incisos, parágrafos ou alíneas que NÃO existam neste texto.\n2. NÃO use informações de leis orgânicas de OUTROS municípios (como São Paulo, Rio, etc).\n3. NÃO "aluciante" conteúdo — se um artigo/inciso não estiver no texto abaixo, ele NÃO EXISTE na Lei Orgânica de Caruaru.\n4. Ao citar um artigo na explicação ou na "lei_seca", transcreva o texto EXATO conforme aparece abaixo.\n5. Verifique CADA artigo citado nas questões e explicações contra o texto abaixo antes de retornar.\n\n--- INÍCIO DO TEXTO OFICIAL DA LEI ORGÂNICA DE CARUARU ---\n${leiOrganicaText}\n--- FIM DO TEXTO OFICIAL DA LEI ORGÂNICA DE CARUARU ---\n`;
         return leiInstruction + '\n' + basePrompt;
     }
     

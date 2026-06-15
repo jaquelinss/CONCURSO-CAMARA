@@ -37,14 +37,17 @@ export default function QuestionTutorChat({ question, subject, topic }: Question
     
     // Load Lei Orgânica text if subject matches
     let leiOrganicaContext = '';
-    if (subject === 'Lei Orgânica de Caruaru') {
+    const subjectStr = String(subject || '').toLowerCase();
+    const isLeiOrganica = subjectStr.includes('orgânica') || subjectStr.includes('organica');
+
+    if (isLeiOrganica || subject === 'Lei Orgânica de Caruaru') {
       const leiText = await fetchLeiOrganicaText();
       if (leiText) {
         leiOrganicaContext = `\n\nFONTE OFICIAL OBRIGATÓRIA — LEI ORGÂNICA DO MUNICÍPIO DE CARUARU (compilada até Dezembro de 2024):\nO texto abaixo é o texto OFICIAL da Lei Orgânica do Município de Caruaru. Use EXCLUSIVAMENTE este texto como base para responder. NÃO invente artigos ou incisos que não existam neste texto. Se o aluno questionar a veracidade de um artigo citado na questão, verifique no texto abaixo se ele realmente existe.\n\n--- INÍCIO DO TEXTO OFICIAL ---\n${leiText}\n--- FIM DO TEXTO OFICIAL ---\n`;
       }
     }
     
-    const doubtPrompt = `Você é um professor extremamente rigoroso e preciso. Com base na seguinte questão: "${question.pergunta}", nas alternativas: "${formatOpcoes(question.opcoes)}", na resposta correta: "${question.correta}" e na sua explicação: "${question.explicacao}", responda a seguinte dúvida do aluno: "${doubt}". ${leiOrganicaContext}\n\nREGRAS RÍGIDAS:\n1. NUNCA invente ou alucine regras de gramática, ortografia, matemática ou leis. Siga ESTRITAMENTE as normas oficiais.\n2. Se a dúvida do aluno apontar um erro real na questão original, reconheça o erro com honestidade intelectual.${subject === 'Lei Orgânica de Caruaru' ? '\n3. Se o aluno questionar um artigo ou inciso citado na questão, verifique no TEXTO OFICIAL DA LEI fornecido acima se ele realmente existe. Se NÃO existir, reconheça que a questão contém um erro e indique o conteúdo real do artigo conforme o texto oficial.' : ''}\n4. Formate sua resposta usando HTML para melhor legibilidade (<p>, <strong>, <ul>, <li>). Não inclua <html>, <head>, ou <body>.`;
+    const doubtPrompt = `Você é um professor extremamente rigoroso e preciso. Com base na seguinte questão: "${question.pergunta}", nas alternativas: "${formatOpcoes(question.opcoes)}", na resposta correta: "${question.correta}" e na sua explicação: "${question.explicacao}", responda a seguinte dúvida do aluno: "${doubt}". ${leiOrganicaContext}\n\nREGRAS RÍGIDAS:\n1. NUNCA invente ou alucine regras de gramática, ortografia, matemática ou leis. Siga ESTRITAMENTE as normas oficiais.\n2. Se a dúvida do aluno apontar um erro real na questão original, reconheça o erro com honestidade intelectual.${isLeiOrganica ? '\n3. Se o aluno questionar um artigo ou inciso citado na questão, verifique no TEXTO OFICIAL DA LEI fornecido acima se ele realmente existe. Se NÃO existir, reconheça que a questão contém um erro e indique o conteúdo real do artigo conforme o texto oficial.' : ''}\n4. Formate sua resposta usando HTML para melhor legibilidade (<p>, <strong>, <ul>, <li>). Não inclua <html>, <head>, ou <body>.`;
     
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
