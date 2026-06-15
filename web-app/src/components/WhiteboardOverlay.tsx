@@ -278,7 +278,16 @@ export default function WhiteboardOverlay() {
   });
   const resizeRef = useRef<{ startX: number; startY: number; startW: number; startH: number } | null>(null);
 
-  const savedPos = (() => { try { return JSON.parse(localStorage.getItem('wb_pos') || 'null'); } catch { return null; } })();
+  const savedPos = (() => {
+    try {
+      const p = JSON.parse(localStorage.getItem('wb_pos') || 'null');
+      if (p) return p;
+    } catch {}
+    // Default: center on screen
+    const w = savedSize?.w || Math.min(600, window.innerWidth - 40);
+    const h = savedSize?.h || Math.min(800, window.innerHeight - 100);
+    return { x: Math.max(0, Math.round((window.innerWidth - w) / 2)), y: Math.max(0, Math.round((window.innerHeight - h) / 2)) };
+  })();
 
   // Carregar/Salvar Settings do Firestore
   useEffect(() => {
@@ -1263,7 +1272,7 @@ export default function WhiteboardOverlay() {
 
   // Modo Caderninho Flutuante
   return createPortal(
-    <div className="fixed inset-0 z-[9998] pointer-events-none flex items-center justify-center">
+    <div className="fixed inset-0 z-[9998] pointer-events-none">
       <Draggable 
         nodeRef={containerRef} 
         handle=".whiteboard-drag-handle" 

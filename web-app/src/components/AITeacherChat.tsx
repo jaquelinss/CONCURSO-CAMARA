@@ -740,7 +740,7 @@ Diretrizes:
       </button>
 
       {isOpen && (
-        <div className="fixed right-4 bottom-[5.5rem] z-[1000] w-[380px] max-w-[calc(100vw-2rem)] h-[550px] max-h-[80vh] bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden flex flex-col transition-all duration-300 animate-in fade-in slide-in-from-bottom-6 zoom-in-95 origin-bottom-right">
+        <div className="fixed right-4 bottom-[5.5rem] z-[10004] w-[380px] max-w-[calc(100vw-2rem)] h-[550px] max-h-[80vh] bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden flex flex-col transition-all duration-300 animate-in fade-in slide-in-from-bottom-6 zoom-in-95 origin-bottom-right">
           
           <div className="p-4 border-b border-gray-200/50 dark:border-gray-800 bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-700 text-white flex flex-col gap-2.5">
             <div className="flex items-center justify-between">
