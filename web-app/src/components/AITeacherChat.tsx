@@ -5,7 +5,7 @@ import { db } from '../lib/firebase';
 import { collection, query, getDocs, orderBy, doc, setDoc, addDoc, deleteDoc } from 'firebase/firestore';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { useReward } from '../contexts/RewardContext';
-import { formatTextToPostIt } from '../lib/gemini';
+import { formatTextToPostIt, fetchLeiOrganicaText } from '../lib/gemini';
 import {
   GraduationCap,
   Send,
@@ -513,6 +513,14 @@ Diretrizes:
 
       if (contextData) {
         systemPrompt += `\n\nATENÇÃO: O ALUNO FORNECEU OS SEGUINTES MATERIAIS DE ESTUDO COMO BASE DE CONHECIMENTO.\nUse ESSES materiais como a principal fonte da verdade para responder. Se a resposta estiver no material, cite-a. Se a pergunta for sobre um assunto que não está no material, responda com seu conhecimento geral, mas sempre dando prioridade ao material fornecido:\n\n${contextData}`;
+      }
+
+      // Load Lei Orgânica text if the teacher subject is Lei Orgânica de Caruaru
+      if (activeTeacher.subject === 'Lei Orgânica de Caruaru') {
+        const leiText = await fetchLeiOrganicaText();
+        if (leiText) {
+          systemPrompt += `\n\nFONTE OFICIAL OBRIGATÓRIA — LEI ORGÂNICA DO MUNICÍPIO DE CARUARU (compilada até Dezembro de 2024):\nO texto abaixo é o texto OFICIAL e INTEGRAL da Lei Orgânica do Município de Caruaru. Use EXCLUSIVAMENTE este texto como base para responder dúvidas sobre a lei. NÃO invente artigos, incisos ou parágrafos que não existam neste texto. Se o aluno perguntar sobre um artigo específico, transcreva o texto EXATO conforme aparece abaixo.\n\n--- INÍCIO DO TEXTO OFICIAL ---\n${leiText}\n--- FIM DO TEXTO OFICIAL ---`;
+        }
       }
 
       const model = genAI.getGenerativeModel({

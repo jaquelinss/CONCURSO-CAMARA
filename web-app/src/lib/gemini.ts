@@ -1,6 +1,26 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { ENEM_AREAS, isLawSubject, subjectsGeral } from './constants';
 
+// Cache for the Lei Orgânica de Caruaru text to avoid re-fetching
+let leiOrganicaCache: string | null = null;
+
+/**
+ * Fetches and caches the full text of Lei Orgânica de Caruaru.
+ * The text is loaded from a local file extracted from the official PDF compiled through December 2024.
+ */
+export async function fetchLeiOrganicaText(): Promise<string> {
+  if (leiOrganicaCache) return leiOrganicaCache;
+  try {
+    const response = await fetch('/data/lei_organica_caruaru.txt?v=1');
+    if (!response.ok) throw new Error('Failed to load Lei Orgânica text');
+    leiOrganicaCache = await response.text();
+    return leiOrganicaCache;
+  } catch (err) {
+    console.error('Erro ao carregar texto da Lei Orgânica de Caruaru:', err);
+    return '';
+  }
+}
+
 /**
  * Sanitiza uma string JSON mal formatada (com backslashes literais, como LaTeX ou caminhos) antes de fazer o parse.
  * Tenta um parse direto primeiro, e só escapa os backslashes se o primeiro falhar.
@@ -129,11 +149,19 @@ export const generateContentFromGemini = async (settings: any, apiKey: string, m
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const prompt = buildPrompt(settings);
+    
+    // Load Lei Orgânica text if the subject requires it
+    let leiOrganicaText = '';
+    if (settings.subject === 'Lei Orgânica de Caruaru') {
+      leiOrganicaText = await fetchLeiOrganicaText();
+    }
+    
+    const prompt = buildPrompt(settings, leiOrganicaText);
 
-    const needsSearch = settings.subject?.toLowerCase().includes('legislação') 
+    const needsSearch = (settings.subject?.toLowerCase().includes('legislação') 
         || settings.subject?.toLowerCase().includes('lei')
-        || settings.subject?.toLowerCase().includes('orgânica');
+        || settings.subject?.toLowerCase().includes('orgânica'))
+        && !leiOrganicaText; // Don't use Google Search if we already have the official text
 
     if (needsSearch) {
         try {
@@ -215,10 +243,16 @@ Seja rigoroso e detalhista como um corretor oficial do ENEM.`;
     return safeJsonParse(responseText);
 };
 
-function buildPrompt(settings: any): string {
+function buildPrompt(settings: any, leiOrganicaText?: string): string {
     const basePrompt = generatePrompt(settings);
     
-    // Instrução extra para legislação
+    // If we have the actual Lei Orgânica text, inject it directly into the prompt
+    if (settings.subject === 'Lei Orgânica de Caruaru' && leiOrganicaText) {
+        const leiInstruction = `\n\nFONTE OFICIAL OBRIGATÓRIA — LEI ORGÂNICA DO MUNICÍPIO DE CARUARU (compilada até Dezembro de 2024):\nO texto abaixo é o texto OFICIAL e INTEGRAL da Lei Orgânica do Município de Caruaru. Você DEVE usar EXCLUSIVAMENTE este texto como base para criar questões, aulas e explicações.\n\nREGRAS ABSOLUTAS:\n1. NÃO invente artigos, incisos, parágrafos ou alíneas que NÃO existam neste texto.\n2. NÃO use informações de leis orgânicas de OUTROS municípios.\n3. NÃO "aluciante" conteúdo — se um artigo/inciso não estiver no texto abaixo, ele NÃO EXISTE na Lei Orgânica de Caruaru.\n4. Ao citar um artigo na explicação ou na "lei_seca", transcreva o texto EXATO conforme aparece abaixo.\n5. Verifique CADA artigo citado nas questões e explicações contra o texto abaixo antes de retornar.\n\n--- INÍCIO DO TEXTO OFICIAL DA LEI ORGÂNICA DE CARUARU ---\n${leiOrganicaText}\n--- FIM DO TEXTO OFICIAL DA LEI ORGÂNICA DE CARUARU ---\n`;
+        return leiInstruction + '\n' + basePrompt;
+    }
+    
+    // Instrução extra para legislação genérica (quando não temos o texto oficial)
     const needsSearch = settings.subject?.toLowerCase().includes('legislação') 
         || settings.subject?.toLowerCase().includes('lei')
         || settings.subject?.toLowerCase().includes('orgânica');
