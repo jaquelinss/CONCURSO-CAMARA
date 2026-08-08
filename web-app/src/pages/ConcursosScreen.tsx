@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { concursosData } from '../lib/concursosData';
+import Navigation from '../components/Navigation';
 import {
   Calendar,
   Building,
@@ -47,8 +48,10 @@ const ConcursosScreen: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 text-slate-800 p-4 md:p-8 font-sans">
-      <div className="max-w-6xl mx-auto space-y-8">
+    <div className="min-h-screen flex flex-col relative bg-gradient-to-br from-slate-50 to-slate-100 text-slate-800 font-sans">
+      <Navigation />
+      <div className="p-4 md:p-8 flex-grow">
+        <div className="max-w-6xl mx-auto space-y-8">
         
         {/* Header / Title */}
         <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
@@ -280,6 +283,7 @@ const ConcursosScreen: React.FC = () => {
 
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
