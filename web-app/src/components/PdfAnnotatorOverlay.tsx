@@ -3,7 +3,10 @@ import { createPortal } from 'react-dom';
 import { X, ChevronLeft, ChevronRight, Save, Eraser, Trash2, Columns, Undo2, Redo2, Download, PenTool, Highlighter, MousePointer2, BookOpen, File as FileIcon, BookMarked, FolderOpen, Loader2, ZoomIn, ZoomOut, RotateCcw, ChevronDown } from 'lucide-react';
 import { getStroke } from 'perfect-freehand';
 import * as pdfjsLib from 'pdfjs-dist';
-import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
+
+// Use unpkg for the worker to avoid Vite build issues with the worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+
 import { PDFDocument } from 'pdf-lib';
 import { saveAs } from 'file-saver';
 import ePub from 'epubjs';
@@ -18,9 +21,6 @@ import { supabase } from '../lib/supabase';
 import Draggable from 'react-draggable';
 import ReadingLaser from './ReadingLaser';
 import DrawingSidebar from './DrawingSidebar';
-
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
-
 interface StrokePoint { x: number; y: number; pressure: number; }
 interface Stroke { points: StrokePoint[]; color: string; width: number; type: 'pen' | 'highlighter' | 'eraser' | 'sticker'; isSticker?: boolean; stickerNumber?: number; }
 interface SavedDocument {
@@ -344,9 +344,9 @@ export default function PdfAnnotatorOverlay() {
         setTotalPages(1);
         setCurrentPage(1);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Erro ao abrir documento salvo:', err);
-      alert('Erro ao abrir o documento. Tente novamente.');
+      alert(`Erro ao abrir o documento. Tente novamente.\nDetalhe: ${err.message || String(err)}`);
       setActive(false);
     } finally {
       setLoading(false);

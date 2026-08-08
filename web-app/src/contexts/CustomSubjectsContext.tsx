@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { db } from '../lib/firebase';
 import { collection, onSnapshot, query } from 'firebase/firestore';
 import { useAuth } from './AuthContext';
-import { getSubjectsByMode } from '../lib/constants';
+import { getSubjectsByMode, type StudyMode } from '../lib/constants';
 
 interface CustomSubject {
   id: string; // The subject name
@@ -11,7 +11,7 @@ interface CustomSubject {
 
 interface CustomSubjectsContextType {
   customSubjects: CustomSubject[];
-  getAllSubjectsByMode: (mode: 'Geral' | 'ENEM' | 'Concurso') => string[];
+  getAllSubjectsByMode: (mode: StudyMode) => string[];
 }
 
 const CustomSubjectsContext = createContext<CustomSubjectsContextType>({
@@ -59,7 +59,7 @@ export const CustomSubjectsProvider: React.FC<{ children: React.ReactNode }> = (
     'Lingua Portuguesa': 'Português',
   };
 
-  const getAllSubjectsByMode = (mode: 'Geral' | 'ENEM' | 'Concurso'): string[] => {
+  const getAllSubjectsByMode = (mode: StudyMode): string[] => {
     const staticSubjects = getSubjectsByMode(mode);
     const userCustomSubjectsForMode = customSubjects
       .filter(s => s.mode === mode)

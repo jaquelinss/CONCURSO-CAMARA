@@ -3,7 +3,7 @@ import Navigation from '../components/Navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
 import { doc, getDoc, setDoc, serverTimestamp, collection, getDocs, query, where } from 'firebase/firestore';
-import { getSubjectsByMode, topicsBySubject, themes, defaultTheme } from '../lib/constants';
+import { getSubjectsByMode, topicsBySubject, themes, defaultTheme, type StudyMode } from '../lib/constants';
 import { ChevronDown, ChevronUp, Plus, Trash2, CheckCircle2, Circle } from 'lucide-react';
 
 interface ChecklistItem {
@@ -16,7 +16,7 @@ interface ChecklistItem {
 
 export default function StudyProgressScreen() {
   const { user, selectedBanca, saveBanca } = useAuth();
-  const [mode, setMode] = useState<'Geral' | 'ENEM' | 'Concurso'>('Concurso');
+  const [mode, setMode] = useState<StudyMode>('Concurso');
   const [subject, setSubject] = useState<string>('');
   
   const [items, setItems] = useState<ChecklistItem[]>([]);
@@ -322,12 +322,14 @@ Certifique-se de que a ordem dos tópicos seja a melhor ordem lógica de aprendi
                 className="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 outline-none"
               >
                 <option value="Concurso">Concurso</option>
+                <option value="Auditor Fiscal">Auditor Fiscal</option>
+                <option value="Assistente UFPE">Assistente UFPE</option>
                 <option value="ENEM">ENEM</option>
                 <option value="Geral">Geral</option>
               </select>
             </div>
             
-            {mode === 'Concurso' && (
+            {(mode === 'Concurso' || mode === 'Auditor Fiscal' || mode === 'Assistente UFPE') && (
               <div className="flex-1">
                 <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Banca</label>
                 <select

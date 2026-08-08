@@ -15,6 +15,7 @@ import StudyProgressScreen from './pages/StudyProgressScreen';
 import QuestionsDatabase from './pages/QuestionsDatabase';
 
 const StatisticsScreen = lazy(() => import('./pages/StatisticsScreen'));
+const ConcursosScreen = lazy(() => import('./pages/ConcursosScreen'));
 
 import ReportButton from './components/ReportButton';
 import StickyNotesManager from './components/StickyNotesManager';
@@ -47,6 +48,7 @@ function AppRoutes() {
       <Route path="/progress" element={<PrivateRoute><StudyProgressScreen /></PrivateRoute>} />
       <Route path="/questions" element={<PrivateRoute><QuestionsDatabase /></PrivateRoute>} />
       <Route path="/statistics" element={<PrivateRoute><ErrorBoundary><Suspense fallback={null}><StatisticsScreen /></Suspense></ErrorBoundary></PrivateRoute>} />
+      <Route path="/concursos" element={<PrivateRoute><ErrorBoundary><Suspense fallback={null}><ConcursosScreen /></Suspense></ErrorBoundary></PrivateRoute>} />
       <Route path="/config" element={<PrivateRoute><ConfigScreen /></PrivateRoute>} />
       <Route path="*" element={<Navigate to="/dashboard" />} />
     </Routes>

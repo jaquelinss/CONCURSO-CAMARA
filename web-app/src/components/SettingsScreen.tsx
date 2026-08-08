@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect, useState } from 'react';
-import { getModelsByMode, themes, defaultTheme, difficulties, lessonLevels, topicsBySubject, isLawSubject } from '../lib/constants';
+import { getModelsByMode, themes, defaultTheme, difficulties, lessonLevels, topicsBySubject, isLawSubject, type StudyMode } from '../lib/constants';
 import { useAuth } from '../contexts/AuthContext';
 import { useCustomSubjects } from '../contexts/CustomSubjectsContext';
 import { db } from '../lib/firebase';
@@ -122,7 +122,7 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
         : [];
 
   const handleModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newMode = e.target.value as 'Geral' | 'ENEM' | 'Concurso';
+    const newMode = e.target.value as StudyMode;
     const newSubjects = getAllSubjectsByMode(newMode);
     const newModels = newSubjects[0] === 'Redação'
       ? ['Enem', 'Corrigir Redação Pronta', 'Flashcard']
@@ -174,7 +174,7 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
       
       <div className={`space-y-6 ${theme.bg} p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800`}>
         <div className="flex justify-center mb-4 space-x-2 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm">
-          {['Concurso', 'ENEM', 'Geral'].map((m) => (
+          {['Concurso', 'Auditor Fiscal', 'Assistente UFPE', 'ENEM', 'Geral'].map((m) => (
             <button
               key={m}
               onClick={() => handleModeChange({ target: { value: m } } as any)}
@@ -185,7 +185,7 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
           ))}
         </div>
 
-        {settings.mode === 'Concurso' && (
+        {(settings.mode === 'Concurso' || settings.mode === 'Auditor Fiscal' || settings.mode === 'Assistente UFPE') && (
           <div className="flex justify-center mb-6 space-x-2 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-sm">
             {['IBAM', 'CESPE', 'FGV', 'CESGRANRIO'].map((b) => (
               <button

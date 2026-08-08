@@ -24,7 +24,7 @@ import {
   Database,
   CheckCircle2
 } from 'lucide-react';
-import { subjectsConcurso, subjectsEnem, subjectsGeral } from '../lib/constants';
+import { subjectsConcurso, subjectsEnem, subjectsGeral, subjectsAuditorFiscal, subjectsAssistenteUFPE } from '../lib/constants';
 import { useKnowledgeBase } from '../contexts/KnowledgeBaseContext';
 
 interface ChatMessage {
@@ -355,7 +355,7 @@ export default function AITeacherChat({ isHidden = false }: { isHidden?: boolean
     return [
       'Geral',
       ...Array.from(
-        new Set([...subjectsConcurso, ...subjectsEnem, ...subjectsGeral, ...customSubjects.map(s => s.id)])
+        new Set([...subjectsConcurso, ...subjectsAuditorFiscal, ...subjectsAssistenteUFPE, ...subjectsEnem, ...subjectsGeral, ...customSubjects.map(s => s.id)])
       ).filter(s => s !== 'Geral').sort((a, b) => a.localeCompare(b, 'pt-BR'))
     ];
   }, [customSubjects]);

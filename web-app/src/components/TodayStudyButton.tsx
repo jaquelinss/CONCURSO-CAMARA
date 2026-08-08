@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
-import { collection, getDocs, query, orderBy, limit, doc, getDoc, updateDoc, onSnapshot, setDoc, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, doc, getDoc, updateDoc, onSnapshot, setDoc, Timestamp } from 'firebase/firestore';
 import { BookOpen, X, CheckCircle, ChevronLeft, ChevronRight, CirclePlay, AlertCircle, RefreshCw, Check, PlusCircle, Search, Sparkles, Pencil, Loader2, Play } from 'lucide-react';
 import { format, addDays, subDays, isToday, parseISO, startOfDay, isBefore } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -160,6 +160,7 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
   const [planTitle, setPlanTitle] = useState('');
   const [hasPlan, setHasPlan] = useState(false);
   const [plan, setPlan] = useState<any>(null);
+  const [allPlans, setAllPlans] = useState<any[]>([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [revisions, setRevisions] = useState<any[]>([]);
   const [confirmingRevision, setConfirmingRevision] = useState<string | null>(null);
@@ -170,18 +171,21 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
       if (!user) return;
       try {
         const plansRef = collection(db, 'users', user.uid, 'studyPlans');
-        const q = query(plansRef, orderBy('createdAt', 'desc'), limit(1));
+        const q = query(plansRef, orderBy('createdAt', 'desc'));
         const snap = await getDocs(q);
         if (snap.empty) {
           setHasPlan(false);
+          setAllPlans([]);
           return;
         }
 
-        const planData = { id: snap.docs[0].id, ...snap.docs[0].data() } as any;
+        const plans = snap.docs.map(d => ({ id: d.id, ...d.data() })) as any[];
+        setAllPlans(plans);
+        const firstPlan = plans[0];
         setHasPlan(true);
-        setPlanId(planData.id);
-        setPlanTitle(planData.title || 'Plano de Estudos');
-        setPlan(planData);
+        setPlanId(firstPlan.id);
+        setPlanTitle(firstPlan.title || 'Plano de Estudos');
+        setPlan(firstPlan);
       } catch (err) {
         console.error('Erro ao buscar plano:', err);
       }
@@ -213,12 +217,22 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
   const completedCount = currentBlocks.filter((b: any) => b.status === 'completed').length;
   const allDone = currentBlocks.length > 0 && pendingBlocks.length === 0;
 
-  // Use today's blocks for the badge on the floating button
+  // Use today's blocks for the badge on the floating button – aggregate across ALL plans
   const todayStr = format(new Date(), 'yyyy-MM-dd');
   const todaySchedule = plan?.schedule?.find((d: any) => d.date === todayStr);
   const todayBlocks = todaySchedule?.blocks || [];
-  const todayPendingBlocks = todayBlocks.filter((b: any) => b.status !== 'completed');
-  
+
+  const allPlansTodayPending = useMemo(() => {
+    let count = 0;
+    for (const p of allPlans) {
+      const daySchedule = (p.schedule || []).find((d: any) => d.date === todayStr);
+      if (daySchedule) {
+        count += (daySchedule.blocks || []).filter((b: any) => b.status !== 'completed').length;
+      }
+    }
+    return count;
+  }, [allPlans, todayStr]);
+
   const todayStart = startOfDay(new Date());
   
   const currentRevisions = useMemo(() => {
@@ -248,7 +262,7 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
     });
   }, [revisions, todayStart]);
 
-  const totalPendingToday = todayPendingBlocks.length + todayPendingRevisions.length;
+  const totalPendingToday = allPlansTodayPending + todayPendingRevisions.length;
   const todayAllDone = (todayBlocks.length > 0 || currentRevisions.length > 0) && totalPendingToday === 0;
 
   const overdueBlocks = useMemo(() => {
@@ -391,9 +405,9 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
         title="Estudos de hoje"
       >
         <BookOpen className="w-6 h-6 text-white" />
-        {todayPendingBlocks.length > 0 && (
+        {allPlansTodayPending > 0 && (
           <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-            {todayPendingBlocks.length}
+            {allPlansTodayPending}
           </span>
         )}
       </button>

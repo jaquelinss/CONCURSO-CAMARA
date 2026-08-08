@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Navigation from '../components/Navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
-import { collection, query, getDocs, orderBy, doc, getDoc, setDoc, deleteDoc, Timestamp, limit } from 'firebase/firestore';
+import { collection, query, getDocs, orderBy, doc, getDoc, setDoc, deleteDoc, Timestamp } from 'firebase/firestore';
 import { Calendar, Clock, BookOpen, CheckCircle, AlertCircle, PlusCircle, Brain, ChevronLeft, RefreshCw, Sparkles, Play, Trash2, Pencil, X, Search, Loader2 } from 'lucide-react';
 import { format, isBefore, isToday, startOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -14,6 +14,7 @@ import { suggestVideoSearches } from '../lib/gemini';
 import StudyPlanWizard from '../components/StudyPlanWizard';
 import StudyPlanView from '../components/StudyPlanView';
 import { useReward } from '../contexts/RewardContext';
+import { MAX_STUDY_PLANS } from '../lib/constants';
 
 function Youtube({ className }: { className?: string }) {
   return (
@@ -72,7 +73,8 @@ export default function RevisionScreen() {
 
   // Study Plan
   const [activeTab, setActiveTab] = useState<'revisions' | 'studyPlan'>(savedTab);
-  const [studyPlan, setStudyPlan] = useState<any>(null);
+  const [studyPlans, setStudyPlans] = useState<any[]>([]);
+  const [activePlanId, setActivePlanId] = useState<string | null>(null);
   const [loadingPlan, setLoadingPlan] = useState(true);
   const [showWizard, setShowWizard] = useState(false);
 
@@ -114,12 +116,15 @@ export default function RevisionScreen() {
     setLoadingPlan(true);
     try {
       const plansRef = collection(db, 'users', user.uid, 'studyPlans');
-      const q = query(plansRef, orderBy('createdAt', 'desc'), limit(1));
+      const q = query(plansRef, orderBy('createdAt', 'desc'));
       const snap = await getDocs(q);
-      if (!snap.empty) {
-        setStudyPlan({ id: snap.docs[0].id, ...snap.docs[0].data() });
-      } else {
-        setStudyPlan(null);
+      const plans = snap.docs.map(d => ({ id: d.id, ...d.data() })) as any[];
+      setStudyPlans(plans);
+      // Auto-select first plan if nothing is selected or the selected plan was deleted
+      if (plans.length > 0 && (!activePlanId || !plans.find(p => p.id === activePlanId))) {
+        setActivePlanId(plans[0].id);
+      } else if (plans.length === 0) {
+        setActivePlanId(null);
       }
     } catch (err) {
       console.error('Erro ao buscar plano:', err);
@@ -286,17 +291,76 @@ export default function RevisionScreen() {
               <div className="flex justify-center py-20">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
               </div>
-            ) : studyPlan ? (
+            ) : studyPlans.length > 0 ? (
               <div>
-                <div className="flex justify-end mb-4">
-                  <button
-                    onClick={() => setShowWizard(true)}
-                    className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl text-sm font-bold hover:from-indigo-600 hover:to-purple-700 transition-all shadow-md flex items-center gap-2"
-                  >
-                    <PlusCircle className="w-4 h-4" /> Novo Plano
-                  </button>
+                {/* Plan Selector */}
+                <div className="mb-6 overflow-x-auto pb-2 -mx-1 px-1">
+                  <div className="flex gap-3 items-stretch min-w-0">
+                    {studyPlans.slice(0, MAX_STUDY_PLANS).map((p) => {
+                      const totalBlocks = (p.schedule || []).reduce((sum: number, day: any) => sum + (day.blocks?.length || 0), 0);
+                      const completedBlocks = (p.schedule || []).reduce((sum: number, day: any) => sum + (day.blocks || []).filter((b: any) => b.status === 'completed').length, 0);
+                      const progress = totalBlocks > 0 ? Math.round((completedBlocks / totalBlocks) * 100) : 0;
+                      const examDate = p.examDate ? (typeof p.examDate === 'string' ? p.examDate : p.examDate?.toDate?.()?.toISOString?.()?.slice(0, 10)) : null;
+                      const isActive = p.id === activePlanId;
+                      return (
+                        <button
+                          key={p.id}
+                          onClick={() => setActivePlanId(p.id)}
+                          className={`flex-shrink-0 w-48 p-3 rounded-xl border-2 text-left transition-all hover:shadow-md ${
+                            isActive
+                              ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 shadow-md ring-2 ring-indigo-200 dark:ring-indigo-800'
+                              : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-indigo-300 dark:hover:border-indigo-600'
+                          }`}
+                        >
+                          <p className={`text-sm font-bold truncate ${
+                            isActive ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-800 dark:text-gray-200'
+                          }`}>
+                            {p.title || 'Plano de Estudos'}
+                          </p>
+                          <div className="mt-2 flex items-center gap-2">
+                            <div className="flex-1 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                              <div
+                                className={`h-full rounded-full transition-all ${
+                                  progress === 100 ? 'bg-green-500' : 'bg-indigo-500'
+                                }`}
+                                style={{ width: `${progress}%` }}
+                              />
+                            </div>
+                            <span className={`text-[10px] font-bold ${
+                              progress === 100 ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'
+                            }`}>
+                              {progress}%
+                            </span>
+                          </div>
+                          {examDate && (
+                            <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1.5 flex items-center gap-1">
+                              <Calendar className="w-3 h-3" />
+                              {examDate}
+                            </p>
+                          )}
+                        </button>
+                      );
+                    })}
+                    {studyPlans.length < MAX_STUDY_PLANS && (
+                      <button
+                        onClick={() => setShowWizard(true)}
+                        className="flex-shrink-0 w-48 p-3 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50 hover:border-indigo-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 transition-all flex flex-col items-center justify-center gap-2 text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+                      >
+                        <PlusCircle className="w-6 h-6" />
+                        <span className="text-xs font-bold">Novo Plano</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <StudyPlanView plan={studyPlan} onUpdate={() => { fetchStudyPlan(); window.dispatchEvent(new Event('study-plan-updated')); }} />
+
+                {/* Active Plan View */}
+                {(() => {
+                  const activePlan = studyPlans.find(p => p.id === activePlanId);
+                  if (!activePlan) return null;
+                  return (
+                    <StudyPlanView plan={activePlan} onUpdate={() => { fetchStudyPlan(); window.dispatchEvent(new Event('study-plan-updated')); }} />
+                  );
+                })()}
               </div>
             ) : (
               <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-3xl shadow-sm border-2 border-dashed border-gray-200 dark:border-gray-700">

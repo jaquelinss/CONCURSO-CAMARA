@@ -1,9 +1,10 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { db, storage } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { extractTopicsFromDoc, generateStudyPlan } from '../lib/gemini';
 import { useCustomSubjects } from '../contexts/CustomSubjectsContext';
+import { EXAM_DATES, getSubjectsByMode } from '../lib/constants';
 import { Upload, FileText, ListChecks, Sparkles, ChevronRight, ChevronLeft, X, Plus, Trash2, Database, Loader2, CheckCircle2 } from 'lucide-react';
 import { useKnowledgeBase } from '../contexts/KnowledgeBaseContext';
 import { ref, getDownloadURL } from 'firebase/storage';
@@ -32,7 +33,17 @@ export default function StudyPlanWizard({ onPlanCreated, onClose }: StudyPlanWiz
   const [sourceType, setSourceType] = useState<'file' | 'manual' | 'cloud' | null>(null);
   const [subjects, setSubjects] = useState<{ name: string; topics: string[] }[]>([]);
   const { getAllSubjectsByMode } = useCustomSubjects();
-  const allAvailableSubjects = getAllSubjectsByMode('Concurso');
+  const [planMode, setPlanMode] = useState<'Concurso' | 'Auditor Fiscal' | 'Assistente UFPE' | 'Combinado'>('Concurso');
+  const [combinedModes, setCombinedModes] = useState<Set<string>>(new Set(['Auditor Fiscal', 'Assistente UFPE']));
+
+  const allAvailableSubjects = useMemo(() => {
+    if (planMode === 'Combinado') {
+      const merged = new Set<string>();
+      combinedModes.forEach(m => getSubjectsByMode(m as any).forEach(s => merged.add(s)));
+      return Array.from(merged);
+    }
+    return getAllSubjectsByMode(planMode as any);
+  }, [planMode, combinedModes, getAllSubjectsByMode]);
   
   // Cloud mode
   const { materials } = useKnowledgeBase();
@@ -51,7 +62,8 @@ export default function StudyPlanWizard({ onPlanCreated, onClose }: StudyPlanWiz
   const [title, setTitle] = useState('');
   const [hoursPerDay, setHoursPerDay] = useState(4);
   const [studyDays, setStudyDays] = useState<string[]>(['seg', 'ter', 'qua', 'qui', 'sex']);
-  const [examDate, setExamDate] = useState('');
+  const [examDate, setExamDate] = useState(EXAM_DATES['Auditor Fiscal'] || '');
+
 
   // Step 3 — Generation
   const [generating, setGenerating] = useState(false);
@@ -170,12 +182,27 @@ export default function StudyPlanWizard({ onPlanCreated, onClose }: StudyPlanWiz
       const today = new Date();
       const startDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
+      let subjectExamDates: Record<string, string> | undefined = undefined;
+      if (planMode === 'Combinado') {
+        subjectExamDates = {};
+        combinedModes.forEach(mode => {
+          const m = mode as keyof typeof EXAM_DATES;
+          const date = EXAM_DATES[m];
+          if (date) {
+            getSubjectsByMode(m as any).forEach(s => {
+              if (subjectExamDates) subjectExamDates[s] = date;
+            });
+          }
+        });
+      }
+
       const result = await generateStudyPlan({
         subjects,
         hoursPerDay,
         studyDays,
         examDate,
         startDate,
+        subjectExamDates,
       }, apiKey);
 
       if (!result.schedule || result.schedule.length === 0) {
@@ -203,6 +230,8 @@ export default function StudyPlanWizard({ onPlanCreated, onClose }: StudyPlanWiz
         subjects,
         schedule,
         sourceType: sourceType || 'manual',
+        planMode,
+        ...(planMode === 'Combinado' ? { combinedModes: Array.from(combinedModes) } : {}),
         createdAt: serverTimestamp(),
       });
 
@@ -247,6 +276,62 @@ export default function StudyPlanWizard({ onPlanCreated, onClose }: StudyPlanWiz
           {step === 1 && (
             <div className="space-y-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">De onde vêm as matérias?</h3>
+              
+              {/* Mode selector */}
+              <div className="space-y-2">
+                <div className="flex flex-wrap gap-2 bg-gray-100 dark:bg-gray-800 p-1.5 rounded-xl">
+                  {(['Concurso', 'Auditor Fiscal', 'Assistente UFPE', 'Combinado'] as const).map(m => (
+                    <button
+                      key={m}
+                      onClick={() => {
+                        setPlanMode(m);
+                        setSubjects([]);
+                        if (m !== 'Combinado') {
+                          const ed = EXAM_DATES[m as keyof typeof EXAM_DATES];
+                          if (ed) setExamDate(ed);
+                        }
+                      }}
+                      className={`flex-1 min-w-[120px] py-2.5 px-3 rounded-lg font-medium text-sm transition-all ${planMode === m ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
+                    >
+                      {m === 'Concurso' ? '🏛️ Câmara' : m === 'Auditor Fiscal' ? '📊 Auditor' : m === 'Assistente UFPE' ? '🎓 UFPE' : '🔗 Combinado'}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Combined mode: select which concursos to merge */}
+                {planMode === 'Combinado' && (
+                  <div className="bg-indigo-50 dark:bg-indigo-900/20 rounded-xl p-4 space-y-3">
+                    <p className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">🔗 Selecione os concursos para combinar:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {(['Concurso', 'Auditor Fiscal', 'Assistente UFPE'] as const).map(m => {
+                        const isSelected = combinedModes.has(m);
+                        return (
+                          <button
+                            key={m}
+                            onClick={() => {
+                              const next = new Set(combinedModes);
+                              if (isSelected && next.size > 1) next.delete(m);
+                              else next.add(m);
+                              setCombinedModes(next);
+                              setSubjects([]);
+                            }}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all border-2 ${
+                              isSelected
+                                ? 'border-indigo-500 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300'
+                                : 'border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:border-gray-400'
+                            }`}
+                          >
+                            {isSelected ? '✅ ' : ''}{m === 'Concurso' ? 'Câmara' : m === 'Auditor Fiscal' ? 'Auditor Fiscal' : 'Assist. UFPE'}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      📌 Matérias comuns serão estudadas uma única vez
+                    </p>
+                  </div>
+                )}
+              </div>
 
               {/* Source selection */}
               {!sourceType && (
@@ -461,7 +546,7 @@ export default function StudyPlanWizard({ onPlanCreated, onClose }: StudyPlanWiz
                   type="text"
                   value={title}
                   onChange={e => setTitle(e.target.value)}
-                  placeholder="Ex: Concurso Câmara 2026"
+                  placeholder={planMode === 'Auditor Fiscal' ? "Ex: Auditor Fiscal Caruaru 2026" : planMode === 'Assistente UFPE' ? "Ex: Assistente UFPE 2027" : planMode === 'Combinado' ? "Ex: Plano Combinado 2026" : "Ex: Concurso Câmara 2026"}
                   className="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
                 />
               </div>

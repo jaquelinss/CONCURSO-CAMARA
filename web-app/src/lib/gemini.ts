@@ -325,11 +325,38 @@ export async function generateStudyPlan(config: {
     studyDays: string[];
     examDate: string;
     startDate: string;
+    subjectExamDates?: Record<string, string>;
 }, apiKey: string, modelName: string = 'gemini-2.5-flash') {
     const genAI = new GoogleGenerativeAI(apiKey);
     const dayNames: Record<string, string> = { dom: 'Domingo', seg: 'Segunda', ter: 'Terça', qua: 'Quarta', qui: 'Quinta', sex: 'Sexta', sab: 'Sábado' };
     const daysStr = config.studyDays.map(d => dayNames[d] || d).join(', ');
     const subjectsStr = config.subjects.map(s => `- ${s.name}: ${s.topics.join(', ')}`).join('\n');
+
+    let weightingRules = '';
+    if (config.subjectExamDates && Object.keys(config.subjectExamDates).length > 0) {
+      const dateGroups: Record<string, string[]> = {};
+      for (const [subject, date] of Object.entries(config.subjectExamDates)) {
+        if (!dateGroups[date]) dateGroups[date] = [];
+        dateGroups[date].push(subject);
+      }
+      const sortedDates = Object.keys(dateGroups).sort();
+      const dateInfo = sortedDates.map((date, i) => {
+        const subjects = dateGroups[date].join(', ');
+        const label = i === 0 ? 'PROVA MAIS PRÓXIMA' : 'PROVA MAIS DISTANTE';
+        return `  - ${label} (${date}): ${subjects}`;
+      }).join('\n');
+      weightingRules = `
+PONDERAÇÃO POR DATA DE PROVA (REGRA CRUCIAL):
+As matérias pertencem a concursos com datas de prova diferentes:
+${dateInfo}
+
+OBRIGATÓRIO:
+- Aloque 60-70% das horas de estudo para matérias da PROVA MAIS PRÓXIMA.
+- Aloque 30-40% das horas para matérias da PROVA MAIS DISTANTE.
+- Após a data da prova mais próxima, foque 100% nas matérias restantes.
+- Matérias compartilhadas entre concursos devem ter prioridade alta o tempo todo.
+`;
+    }
 
     const prompt = `Você é um planejador educacional especialista. Crie um cronograma de estudos diário detalhado com base nas seguintes informações:
 
@@ -340,7 +367,7 @@ CONFIGURAÇÕES:
 - Horas de estudo por dia: ${config.hoursPerDay}h
 - Dias de estudo na semana: ${daysStr}
 - Data de início: ${config.startDate}
-- Data da prova: ${config.examDate}
+- Data da prova final: ${config.examDate}
 
 REGRAS:
 1. Distribua os tópicos de forma lógica e progressiva (do básico ao avançado).
@@ -350,7 +377,7 @@ REGRAS:
 5. Gere APENAS dias que caiam nos dias da semana selecionados.
 6. Tópicos mais densos podem se repetir em dias diferentes.
 7. Distribua o conteúdo de forma que tudo seja coberto antes da data da prova.
-
+${weightingRules}
 A resposta DEVE ser estritamente um objeto JSON com o formato:
 {
   "schedule": [

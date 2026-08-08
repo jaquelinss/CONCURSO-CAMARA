@@ -15,7 +15,9 @@ export const subjectsGeral = [
   'Matemática', 'Redação',
   'Medicina', 'Português', 'Interpretação Textual', 'Biologia', 'Inglês', 'Espanhol', 'Geografia', 'História', 'Sociologia', 'Filosofia', 'Literatura', 'Química', 'Física', 'Artes',
   'Atualidades', 'Constituição Federal', 'Tecnologia e Sociedade',
-  'Raciocínio Lógico-Matemático', 'Noções de Informática', 'Lei Orgânica de Caruaru', 'Legislação Específica', 'Administração Pública', 'Noções de Arquivologia', 'Noções de Direito Constitucional', 'Noções de Direito Administrativo'
+  'Raciocínio Lógico-Matemático', 'Noções de Informática', 'Lei Orgânica de Caruaru', 'Legislação Específica', 'Administração Pública', 'Noções de Arquivologia', 'Noções de Direito Constitucional', 'Noções de Direito Administrativo',
+  'Sistema Tributário Brasileiro', 'Noções de Contabilidade Aplicada ao Setor Público',
+  'Legislação Aplicada ao Servidor Federal', 'Conhecimentos Específicos - Assistente Administrativo'
 ];
 
 export const subjectsEnem = [
@@ -29,12 +31,24 @@ export const subjectsConcurso = [
   'Português', 'Raciocínio Lógico-Matemático', 'Matemática', 'Noções de Informática', 'Lei Orgânica de Caruaru', 'Legislação Específica', 'Administração Pública', 'Noções de Arquivologia', 'Noções de Direito Constitucional', 'Noções de Direito Administrativo'
 ];
 
+export const subjectsAuditorFiscal = [
+  'Sistema Tributário Brasileiro', 'Noções de Contabilidade Aplicada ao Setor Público',
+  'Noções de Direito Administrativo', 'Noções de Direito Constitucional'
+];
+
+export const subjectsAssistenteUFPE = [
+  'Português', 'Raciocínio Lógico-Matemático',
+  'Legislação Aplicada ao Servidor Federal', 'Conhecimentos Específicos - Assistente Administrativo'
+];
+
 export const LAW_SUBJECTS = [
   'Constituição Federal',
   'Lei Orgânica de Caruaru',
   'Legislação Específica',
   'Noções de Direito Constitucional',
-  'Noções de Direito Administrativo'
+  'Noções de Direito Administrativo',
+  'Sistema Tributário Brasileiro',
+  'Legislação Aplicada ao Servidor Federal'
 ];
 
 export const isLawSubject = (subject: string): boolean => {
@@ -113,14 +127,27 @@ export const BANCAS_TOPICS: Record<string, Record<string, string[]>> = {
   }
 };
 
-export const getSubjectsByMode = (mode: 'Geral' | 'ENEM' | 'Concurso') => {
+export type StudyMode = 'Geral' | 'ENEM' | 'Concurso' | 'Auditor Fiscal' | 'Assistente UFPE';
+
+export const EXAM_DATES: Partial<Record<StudyMode, string>> = {
+  'Auditor Fiscal': '2026-11-29',
+  'Assistente UFPE': '2027-01-17',
+};
+
+export const MAX_STUDY_PLANS = 6;
+
+export const getSubjectsByMode = (mode: StudyMode) => {
   if (mode === 'ENEM') return subjectsEnem;
   if (mode === 'Concurso') return subjectsConcurso;
+  if (mode === 'Auditor Fiscal') return subjectsAuditorFiscal;
+  if (mode === 'Assistente UFPE') return subjectsAssistenteUFPE;
   return subjectsGeral;
 }
 
-export const getModelsByMode = (mode: 'Geral' | 'ENEM' | 'Concurso') => {
+export const getModelsByMode = (mode: StudyMode) => {
   if (mode === 'Concurso') return ['Técnica', 'Ibam', 'Cespe', 'FGV', 'Flashcard', 'Aula Explicativa'];
+  if (mode === 'Auditor Fiscal') return ['Técnica', 'FGV', 'Cespe', 'Flashcard', 'Aula Explicativa'];
+  if (mode === 'Assistente UFPE') return ['Técnica', 'Cespe', 'FGV', 'Flashcard', 'Aula Explicativa'];
   if (mode === 'ENEM') return ['Enem', 'Técnica', 'Fuvest', 'Fanema', 'Flashcard', 'Aula Explicativa'];
   return ['Técnica', 'Enem', 'Ibam', 'Cespe', 'FGV', 'Flashcard', 'Aula Explicativa'];
 }
@@ -157,6 +184,10 @@ export const themes: Record<string, any> = {
   'Noções de Direito Constitucional': { bg: 'bg-amber-50 dark:bg-amber-900/20', text: 'text-amber-900 dark:text-amber-100', accent: 'text-amber-600 dark:text-amber-400', border: 'border-amber-300 dark:border-amber-700/50', ring: 'ring-amber-400 dark:ring-amber-500/50', button: 'bg-amber-500 hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700 text-white', option: 'bg-white dark:bg-gray-800 hover:bg-amber-100 dark:hover:bg-amber-900/40', cardFront: 'bg-amber-100 dark:bg-amber-900/40', cardBack: 'bg-amber-200 dark:bg-amber-800/40' },
   'Noções de Direito Administrativo': { bg: 'bg-emerald-50 dark:bg-emerald-900/20', text: 'text-emerald-900 dark:text-emerald-100', accent: 'text-emerald-600 dark:text-emerald-400', border: 'border-emerald-300 dark:border-emerald-700/50', ring: 'ring-emerald-400 dark:ring-emerald-500/50', button: 'bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white', option: 'bg-white dark:bg-gray-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/40', cardFront: 'bg-emerald-100 dark:bg-emerald-900/40', cardBack: 'bg-emerald-200 dark:bg-emerald-800/40' },
   'Lei Orgânica de Caruaru': { bg: 'bg-amber-50 dark:bg-amber-900/20', text: 'text-amber-900 dark:text-amber-100', accent: 'text-amber-600 dark:text-amber-400', border: 'border-amber-300 dark:border-amber-700/50', ring: 'ring-amber-400 dark:ring-amber-500/50', button: 'bg-amber-500 hover:bg-amber-600 dark:bg-amber-600 dark:hover:bg-amber-700 text-white', option: 'bg-white dark:bg-gray-800 hover:bg-amber-100 dark:hover:bg-amber-900/40', cardFront: 'bg-amber-100 dark:bg-amber-900/40', cardBack: 'bg-amber-200 dark:bg-amber-800/40' },
+  'Sistema Tributário Brasileiro': { bg: 'bg-violet-50 dark:bg-violet-900/20', text: 'text-violet-900 dark:text-violet-100', accent: 'text-violet-600 dark:text-violet-400', border: 'border-violet-300 dark:border-violet-700/50', ring: 'ring-violet-400 dark:ring-violet-500/50', button: 'bg-violet-500 hover:bg-violet-600 dark:bg-violet-600 dark:hover:bg-violet-700 text-white', option: 'bg-white dark:bg-gray-800 hover:bg-violet-100 dark:hover:bg-violet-900/40', cardFront: 'bg-violet-100 dark:bg-violet-900/40', cardBack: 'bg-violet-200 dark:bg-violet-800/40' },
+  'Noções de Contabilidade Aplicada ao Setor Público': { bg: 'bg-slate-50 dark:bg-slate-900/20', text: 'text-slate-900 dark:text-slate-100', accent: 'text-slate-600 dark:text-slate-400', border: 'border-slate-300 dark:border-slate-700/50', ring: 'ring-slate-400 dark:ring-slate-500/50', button: 'bg-slate-500 hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-700 text-white', option: 'bg-white dark:bg-gray-800 hover:bg-slate-100 dark:hover:bg-slate-900/40', cardFront: 'bg-slate-100 dark:bg-slate-900/40', cardBack: 'bg-slate-200 dark:bg-slate-800/40' },
+  'Legislação Aplicada ao Servidor Federal': { bg: 'bg-teal-50 dark:bg-teal-900/20', text: 'text-teal-900 dark:text-teal-100', accent: 'text-teal-600 dark:text-teal-400', border: 'border-teal-300 dark:border-teal-700/50', ring: 'ring-teal-400 dark:ring-teal-500/50', button: 'bg-teal-500 hover:bg-teal-600 dark:bg-teal-600 dark:hover:bg-teal-700 text-white', option: 'bg-white dark:bg-gray-800 hover:bg-teal-100 dark:hover:bg-teal-900/40', cardFront: 'bg-teal-100 dark:bg-teal-900/40', cardBack: 'bg-teal-200 dark:bg-teal-800/40' },
+  'Conhecimentos Específicos - Assistente Administrativo': { bg: 'bg-lime-50 dark:bg-lime-900/20', text: 'text-lime-900 dark:text-lime-100', accent: 'text-lime-600 dark:text-lime-400', border: 'border-lime-300 dark:border-lime-700/50', ring: 'ring-lime-400 dark:ring-lime-500/50', button: 'bg-lime-500 hover:bg-lime-600 dark:bg-lime-600 dark:hover:bg-lime-700 text-white', option: 'bg-white dark:bg-gray-800 hover:bg-lime-100 dark:hover:bg-lime-900/40', cardFront: 'bg-lime-100 dark:bg-lime-900/40', cardBack: 'bg-lime-200 dark:bg-lime-800/40' },
   'Artes': { bg: 'bg-rose-50 dark:bg-rose-900/20', text: 'text-rose-900 dark:text-rose-100', accent: 'text-rose-600 dark:text-rose-400', border: 'border-rose-300 dark:border-rose-700/50', ring: 'ring-rose-400 dark:ring-rose-500/50', button: 'bg-rose-500 hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-700 text-white', option: 'bg-white dark:bg-gray-800 hover:bg-rose-100 dark:hover:bg-rose-900/40', cardFront: 'bg-rose-100 dark:bg-rose-900/40', cardBack: 'bg-rose-200 dark:bg-rose-800/40' },
 };
 
@@ -212,6 +243,36 @@ export const topicsBySubject: Record<string, any> = {
     'Responsabilidade e Controle': ['Responsabilidade Civil do Estado', 'Lei de Improbidade Administrativa (Lei 8.429/92)']
   },
 
+  // --- Matérias de Auditor Fiscal ---
+  'Sistema Tributário Brasileiro': {
+    'Princípios e Normas Tributárias': ['Sistema Tributário na CF/88', 'Princípios Constitucionais Tributários', 'Limitações ao Poder de Tributar', 'Normas Orçamentárias (PPA, LDO, LOA)', 'Lei nº 4.320/64 (Normas de Direito Financeiro)'],
+    'Tributos e Legislação': ['CTN – Tributos e Espécies', 'Normas Gerais de Direito Tributário', 'Vigência, Aplicação, Interpretação e Integração'],
+    'Obrigação e Crédito Tributário': ['Fato Gerador, Sujeito Ativo e Passivo', 'Solidariedade, Capacidade e Domicílio', 'Responsabilidade Tributária', 'Lançamento Tributário', 'Suspensão, Extinção e Exclusão do Crédito', 'Renúncia Fiscal, Garantias e Privilégios'],
+    'Administração e Fiscalização': ['Fiscalização Tributária e Dívida Ativa', 'Código Tributário Municipal', 'Processo Administrativo Fiscal', 'Crimes contra a Ordem Tributária (Lei 8.137/90)', 'Auditoria Tributária (Técnicas e Procedimentos)', 'Plano Anual de Fiscalização', 'Notificação e Intimação Fiscalizatória', 'Fiscalização Eletrônica e Digital (NF-e, SPED)', 'LRF e Legislação Complementar'],
+  },
+  'Noções de Contabilidade Aplicada ao Setor Público': {
+    'Sistema e Variações': ['Sistema Contábil e Subsistemas', 'Variações Patrimoniais (Qualitativas e Quantitativas)'],
+    'Receita, Despesa e Plano de Contas': ['Receita e Despesa Orçamentária', 'Restos a Pagar e Despesas de Exercícios Anteriores', 'Suprimentos de Fundos', 'PCASP (Conceito, Estrutura e Composição)'],
+    'Escrituração e Demonstrações': ['Escrituração dos Fatos da Administração Pública', 'Balanço Orçamentário, Financeiro e Patrimonial', 'DVP e DFC (Conceito, Estrutura e Análise)'],
+  },
+
+  // --- Matérias de Assistente UFPE ---
+  'Legislação Aplicada ao Servidor Federal': {
+    'Regime Jurídico (Lei 8.112/90)': ['Provimento e Vacância', 'Direitos e Vantagens', 'Regime Disciplinar', 'Processo Administrativo Disciplinar'],
+    'Processo Administrativo (Lei 9.784/99)': ['Princípios do Processo Administrativo', 'Direitos e Deveres dos Administrados', 'Instrução, Decisão e Recursos'],
+    'Carreira (Lei 11.091/2005 - PCCTAE)': ['Estrutura do Plano de Carreira', 'Desenvolvimento na Carreira', 'Incentivo à Qualificação'],
+    'Ética e Improbidade': ['Código de Ética (Decreto 1.171/94)', 'Improbidade Administrativa (Lei 8.429/92)', 'CF/88 Arts. 37 a 41 (Administração Pública)'],
+    'UFPE e Segurança do Trabalho': ['Estatuto da UFPE', 'Regimento Geral da UFPE', 'PNSST (Decreto 7.602/2011)', 'SIPAC – Módulo Administrativo'],
+  },
+  'Conhecimentos Específicos - Assistente Administrativo': {
+    'Funções e Gestão Administrativa': ['Planejamento e Estrutura Organizacional', 'Racionalização do Trabalho', 'Indicadores de Excelência', 'Gestão da Qualidade', 'Gestão de Serviços'],
+    'Gestão de Pessoas e Comunicação': ['Comunicação Interpessoal (Barreiras e Uso Construtivo)', 'Comunicação Formal e Informal', 'Avaliação de Desempenho', 'Trabalho em Equipe, Motivação e Liderança', 'Gerenciamento de Conflitos', 'Gestão por Competências (Decreto 9.991/2019)'],
+    'Administração de Materiais e Patrimônio': ['Organização da Área de Materiais', 'Logística de Armazenagem', 'Transporte e Distribuição'],
+    'Administração Pública e Servidor': ['Princípios da Administração Pública', 'Atos e Poderes Administrativos', 'Agente Público (Conceito e Função)', 'Atendimento ao Cidadão', 'Lei 8.112/90 (Regime Jurídico)'],
+    'Contabilidade, Orçamento e Redação': ['Noções de Contabilidade Geral', 'Noções de Contabilidade Pública', 'Matemática Financeira', 'Gestão Orçamentária', 'Redação Oficial e Correspondência'],
+    'Ética e Acesso à Informação': ['Ética na Administração Pública', 'Lei 12.527/2011 (Lei de Acesso à Informação)'],
+  },
+
   // --- Matérias do ENEM / Geral ---
   'Medicina': {
     'Saúde Coletiva e SUS': ['Princípios e Diretrizes do SUS', 'Legislação (Lei 8.080/90, Lei 8.142/90)', 'Redes de Atenção à Saúde (RAS)', 'Atenção Primária à Saúde da Saúde (APS)', 'Vigilância em Saúde (Epidemiológica, Sanitária, Ambiental)', 'Políticas Nacionais de Saúde'],
@@ -245,7 +306,12 @@ export const topicsBySubject: Record<string, any> = {
     'Semântica': ['Sinonímia e Antonímia', 'Homonímia e Paronímia', 'Polissemia e Ambiguidade', 'Denotação e Conotação'],
     'Interpretação e Estrutura (Concurso)': ['Compreensão de textos literários', 'Mecanismos de coesão textual'],
     'Gramática e Sintaxe (Concurso)': ['Classes gramaticais', 'Flexão', 'Concordância nominal e verbal', 'Regência', 'Colocação pronominal'],
-    'Regras Oficiais e Estilo (Concurso)': ['Ortografia', 'Acentuação', 'Crase', 'Figuras de linguagem']
+    'Regras Oficiais e Estilo (Concurso)': ['Ortografia', 'Acentuação', 'Crase', 'Figuras de linguagem'],
+    'Esfera Pública/Oficial (UFPE)': ['Leitura de textos legais e oficiais', 'Léxico institucional e formalidade', 'Impessoalização (apassivação, sujeito indefinido)', 'Coesão referencial e articuladores argumentativos', 'Elementos multissemióticos (tabelas, logomarcas)'],
+    'Esfera Jornalística/Publicitária (UFPE)': ['Inferência de informações implícitas e opinativas', 'Fato vs. opinião e força de argumentos', 'Fake news, pós-verdade e bolhas de filtragem', 'Polissemia, ironia e duplo sentido na publicidade', 'Discurso direto, indireto livre e aspas'],
+    'Esfera Científica/Acadêmica (UFPE)': ['Hierarquização de informações em divulgação científica', 'Interpretação de infográficos e dados estatísticos', 'Intertextualidade teórica e citações normatizadas', 'Progressão temática (nominalização, catafóricos)', 'Metalinguagem (glossários e notas de rodapé)'],
+    'Esfera Literária (UFPE)': ['Foco narrativo, saltos temporais e espacialidade', 'Paródia, pastiche, sátira e autorreferência', 'Figuras de linguagem/pensamento (oximoros, paradoxos)', 'Variação linguística histórica e geográfica', 'Licença poética (aliteração, métrica)'],
+    'Esfera da Vida Cotidiana (UFPE)': ['Interações digitais e textos híbridos', 'Argumentação em recomendações, reclamações e fóruns', 'Modalização (gradação de certezas/hipóteses)', 'Nominalizações e termos abstratos', 'Sinais de pontuação não convencionais (caixa alta, reticências)'],
   },
   'Interpretação Textual': {
     'Fundamentos da Interpretação': ['Leitura Atenta (Scanning e Skimming)', 'Identificação da Ideia Central', 'Localização de Informações Explícitas', 'Inferência e Pressuposição'],

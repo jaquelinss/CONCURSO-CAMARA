@@ -72,7 +72,7 @@ interface QuestionMock {
 export default function QuestionsDatabase() {
   const { awardPoints } = useReward();
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeCategory, setActiveCategory] = useState<'Todos' | 'Concurso' | 'ENEM' | 'Geral'>('Todos');
+  const [activeCategory, setActiveCategory] = useState<'Todos' | 'Concurso' | 'Auditor Fiscal' | 'Assistente UFPE' | 'ENEM' | 'Geral'>('Todos');
   
   // Sidebar accordion states
   const [expandedSubjects, setExpandedSubjects] = useState<Record<string, boolean>>({
@@ -225,12 +225,18 @@ export default function QuestionsDatabase() {
     let list: string[] = [];
     if (activeCategory === 'Todos') {
       list = Array.from(new Set([
-        ...getAllSubjectsByMode('Concurso'), 
+        ...getAllSubjectsByMode('Concurso'),
+        ...getAllSubjectsByMode('Auditor Fiscal'),
+        ...getAllSubjectsByMode('Assistente UFPE'),
         ...getAllSubjectsByMode('ENEM'), 
         ...getAllSubjectsByMode('Geral')
       ]));
     } else if (activeCategory === 'Concurso') {
       list = getAllSubjectsByMode('Concurso');
+    } else if (activeCategory === 'Auditor Fiscal') {
+      list = getAllSubjectsByMode('Auditor Fiscal');
+    } else if (activeCategory === 'Assistente UFPE') {
+      list = getAllSubjectsByMode('Assistente UFPE');
     } else if (activeCategory === 'ENEM') {
       list = getAllSubjectsByMode('ENEM');
     } else {
@@ -450,7 +456,7 @@ export default function QuestionsDatabase() {
 
             {/* Category Quick Pills */}
             <div className="flex flex-wrap gap-1 bg-gray-100 dark:bg-gray-900/60 p-1 rounded-xl">
-              {(['Todos', 'Concurso', 'ENEM', 'Geral'] as const).map(cat => (
+              {(['Todos', 'Concurso', 'Auditor Fiscal', 'Assistente UFPE', 'ENEM', 'Geral'] as const).map(cat => (
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
