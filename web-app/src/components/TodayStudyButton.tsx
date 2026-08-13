@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
-import { collection, getDocs, query, orderBy, doc, getDoc, updateDoc, onSnapshot, setDoc, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, doc, getDoc, updateDoc, onSnapshot, setDoc, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { BookOpen, X, CheckCircle, ChevronLeft, ChevronRight, CirclePlay, AlertCircle, RefreshCw, Check, PlusCircle, Search, Sparkles, Pencil, Loader2, Play } from 'lucide-react';
 import { format, addDays, subDays, isToday, parseISO, startOfDay, isBefore } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -292,6 +292,11 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
       if (!planSnap.exists()) return;
       
       const planData = planSnap.data();
+      const newStatus = currentStatus === 'completed' ? 'pending' : 'completed';
+
+      // Get block data before modifying
+      const targetDay = planData.schedule.find((day: any) => day.date === targetDate);
+      const block = targetDay?.blocks?.[idx];
       
       const newSchedule = planData.schedule.map((day: any) => {
         if (day.date === targetDate) {
@@ -299,7 +304,11 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
             ...day,
             blocks: day.blocks.map((b: any, index: number) => 
               index === idx 
-                ? { ...b, status: currentStatus === 'completed' ? 'pending' : 'completed' } 
+                ? {
+                    ...b,
+                    status: newStatus,
+                    ...(newStatus === 'completed' && !b.revisionCreated ? { revisionCreated: true } : {}),
+                  }
                 : b
             )
           };
@@ -308,6 +317,32 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
       });
       
       await updateDoc(planRef, { schedule: newSchedule });
+
+      // Auto-create revision when marking as completed
+      if (newStatus === 'completed' && block && !block.revisionCreated) {
+        try {
+          const nextDate = getRevisionSuggestions(100, 0)[0].date;
+          await addDoc(collection(db, 'users', user.uid, 'revisions'), {
+            subject: block.subject,
+            topic: block.topic,
+            scheduledDate: Timestamp.fromDate(nextDate),
+            status: 'pending',
+            cycleStep: 0,
+            reviewCount: 0,
+            contentLinks: {
+              lessonIds: block.linkedLessonIds || [],
+              quizIds: block.linkedQuizIds || [],
+              flashcardIds: block.linkedFlashcardIds || [],
+            },
+            completedItems: { lessonIds: [], quizIds: [], flashcardIds: [] },
+            youtubeUrls: block.youtubeUrls || [],
+            updatedAt: serverTimestamp(),
+          });
+        } catch (revErr) {
+          console.error('Erro ao criar revisão automática', revErr);
+        }
+      }
+
       window.dispatchEvent(new Event('study-plan-updated'));
     } catch(err) {
       console.error('Erro ao atualizar bloco', err);
