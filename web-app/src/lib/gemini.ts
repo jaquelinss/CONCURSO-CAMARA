@@ -326,6 +326,7 @@ export async function generateStudyPlan(config: {
     examDate: string;
     startDate: string;
     subjectExamDates?: Record<string, string>;
+    customInstructions?: string;
 }, apiKey: string, modelName: string = 'gemini-2.5-flash') {
     const genAI = new GoogleGenerativeAI(apiKey);
     const dayNames: Record<string, string> = { dom: 'Domingo', seg: 'Segunda', ter: 'Terça', qua: 'Quarta', qui: 'Quinta', sex: 'Sexta', sab: 'Sábado' };
@@ -358,6 +359,14 @@ OBRIGATÓRIO:
 `;
     }
 
+    let customRules = '';
+    if (config.customInstructions) {
+      customRules = `
+INSTRUÇÕES PERSONALIZADAS DO USUÁRIO (PRIORIDADE ALTA — siga rigorosamente):
+${config.customInstructions}
+`;
+    }
+
     const prompt = `Você é um planejador educacional especialista. Crie um cronograma de estudos diário detalhado com base nas seguintes informações:
 
 MATÉRIAS E TÓPICOS:
@@ -377,7 +386,7 @@ REGRAS:
 5. Gere APENAS dias que caiam nos dias da semana selecionados.
 6. Tópicos mais densos podem se repetir em dias diferentes.
 7. Distribua o conteúdo de forma que tudo seja coberto antes da data da prova.
-${weightingRules}
+${weightingRules}${customRules}
 A resposta DEVE ser estritamente um objeto JSON com o formato:
 {
   "schedule": [

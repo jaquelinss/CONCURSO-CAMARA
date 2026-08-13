@@ -5,7 +5,7 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { extractTopicsFromDoc, generateStudyPlan } from '../lib/gemini';
 import { useCustomSubjects } from '../contexts/CustomSubjectsContext';
 import { EXAM_DATES, getSubjectsByMode } from '../lib/constants';
-import { Upload, FileText, ListChecks, Sparkles, ChevronRight, ChevronLeft, X, Plus, Trash2, Database, Loader2, CheckCircle2 } from 'lucide-react';
+import { Upload, FileText, ListChecks, Sparkles, ChevronRight, ChevronLeft, X, Plus, Trash2, Database, Loader2, CheckCircle2, MessageSquareText } from 'lucide-react';
 import { useKnowledgeBase } from '../contexts/KnowledgeBaseContext';
 import { ref, getDownloadURL } from 'firebase/storage';
 import mammoth from 'mammoth';
@@ -63,6 +63,7 @@ export default function StudyPlanWizard({ onPlanCreated, onClose }: StudyPlanWiz
   const [hoursPerDay, setHoursPerDay] = useState(4);
   const [studyDays, setStudyDays] = useState<string[]>(['seg', 'ter', 'qua', 'qui', 'sex']);
   const [examDate, setExamDate] = useState(EXAM_DATES['Auditor Fiscal'] || '');
+  const [customInstructions, setCustomInstructions] = useState('');
 
 
   // Step 3 — Generation
@@ -203,6 +204,7 @@ export default function StudyPlanWizard({ onPlanCreated, onClose }: StudyPlanWiz
         examDate,
         startDate,
         subjectExamDates,
+        customInstructions: customInstructions.trim() || undefined,
       }, apiKey);
 
       if (!result.schedule || result.schedule.length === 0) {
@@ -598,6 +600,24 @@ export default function StudyPlanWizard({ onPlanCreated, onClose }: StudyPlanWiz
                   className="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
                 />
               </div>
+
+              {/* Custom AI Instructions */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 flex items-center gap-2">
+                  <MessageSquareText className="w-4 h-4 text-purple-500" />
+                  Instruções para a IA <span className="text-xs font-normal text-gray-400">(opcional)</span>
+                </label>
+                <textarea
+                  value={customInstructions}
+                  onChange={e => setCustomInstructions(e.target.value)}
+                  placeholder={`Ex: Dê mais peso para Direito Constitucional e Português pois têm mais questões na prova. Mas não negligencie nenhuma matéria, preciso de no mínimo 50% de acerto em cada.`}
+                  rows={3}
+                  className="w-full p-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm resize-none placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                />
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1.5">
+                  💡 Diga à IA suas prioridades, pesos das matérias, pontos fracos, ou qualquer regra especial para o seu plano.
+                </p>
+              </div>
             </div>
           )}
 
@@ -617,6 +637,14 @@ export default function StudyPlanWizard({ onPlanCreated, onClose }: StudyPlanWiz
                 <p><strong>📋 Plano:</strong> {title}</p>
                 <p><strong>📅 Data da prova:</strong> {new Date(examDate + 'T12:00').toLocaleDateString('pt-BR')}</p>
                 <p><strong>📚 Matérias:</strong> {subjects.map(s => s.name).join(', ')}</p>
+                {customInstructions.trim() && (
+                  <div className="mt-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl border border-purple-200 dark:border-purple-800">
+                    <p className="text-xs font-semibold text-purple-700 dark:text-purple-300 flex items-center gap-1.5 mb-1">
+                      <MessageSquareText className="w-3.5 h-3.5" /> Instruções personalizadas:
+                    </p>
+                    <p className="text-xs text-purple-600 dark:text-purple-400 whitespace-pre-wrap">{customInstructions.trim()}</p>
+                  </div>
+                )}
               </div>
 
               {genError && <p className="text-sm text-red-500 bg-red-50 dark:bg-red-900/30 p-3 rounded-lg">{genError}</p>}
