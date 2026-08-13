@@ -9,6 +9,7 @@ import { useLocation } from 'react-router-dom';
 import { getRevisionSuggestions, calculateNextStep } from '../lib/revision.service';
 import { suggestVideoSearches } from '../lib/gemini';
 import { useReward } from '../contexts/RewardContext';
+import InlineContentGenerator from './InlineContentGenerator';
 
 function Youtube({ className }: { className?: string }) {
   return (
@@ -152,7 +153,7 @@ function ItemVideoManager({
 }
 
 export default function TodayStudyButton({ isHidden = false }: { isHidden?: boolean }) {
-  const { user, apiKey } = useAuth();
+  const { user, apiKey, selectedBanca } = useAuth();
   const { awardPoints } = useReward();
   const [open, setOpen] = useState(false);
   const [showOverdue, setShowOverdue] = useState(false);
@@ -506,6 +507,21 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
                               onSave={handleSaveVideo}
                               onRemove={handleRemoveVideo}
                             />
+
+                            {/* Gerar Conteúdo (Aula + Questões + Flashcards) */}
+                            <InlineContentGenerator
+                              subject={block.subject}
+                              topic={block.topic}
+                              apiKey={apiKey}
+                              user={user}
+                              planId={planId}
+                              plan={plan}
+                              originalDate={currentStr}
+                              blockIndex={idx}
+                              selectedBanca={selectedBanca}
+                              itemType="block"
+                              block={block}
+                            />
                           </div>
                         </div>
                       </div>
@@ -573,6 +589,21 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
                               onSave={handleSaveVideo}
                               onRemove={handleRemoveVideo}
                             />
+
+                            <InlineContentGenerator
+                              subject={rev.subject}
+                              topic={rev.topic}
+                              apiKey={apiKey}
+                              user={user}
+                              planId={planId}
+                              plan={plan}
+                              originalDate={currentStr}
+                              blockIndex={0}
+                              selectedBanca={selectedBanca}
+                              itemType="revision"
+                              itemId={rev.id}
+                              block={rev}
+                            />
                           </div>
                         </div>
                       </div>
@@ -637,6 +668,20 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
                                   apiKey={apiKey}
                                   onSave={handleSaveVideo}
                                   onRemove={handleRemoveVideo}
+                                />
+
+                                <InlineContentGenerator
+                                  subject={block.subject}
+                                  topic={block.topic}
+                                  apiKey={apiKey}
+                                  user={user}
+                                  planId={planId}
+                                  plan={plan}
+                                  originalDate={block.originalDate}
+                                  blockIndex={block.blockIndex}
+                                  selectedBanca={selectedBanca}
+                                  itemType="block"
+                                  block={block}
                                 />
                               </div>
                             </div>
@@ -704,6 +749,21 @@ export default function TodayStudyButton({ isHidden = false }: { isHidden?: bool
                                   apiKey={apiKey}
                                   onSave={handleSaveVideo}
                                   onRemove={handleRemoveVideo}
+                                />
+
+                                <InlineContentGenerator
+                                  subject={rev.subject}
+                                  topic={rev.topic}
+                                  apiKey={apiKey}
+                                  user={user}
+                                  planId={planId}
+                                  plan={plan}
+                                  originalDate={rev.originalDate}
+                                  blockIndex={0}
+                                  selectedBanca={selectedBanca}
+                                  itemType="revision"
+                                  itemId={rev.id}
+                                  block={rev}
                                 />
                               </div>
                             </div>
