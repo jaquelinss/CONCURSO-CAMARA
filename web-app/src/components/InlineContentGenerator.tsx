@@ -20,7 +20,7 @@ interface InlineContentGeneratorProps {
 }
 
 export default function InlineContentGenerator({
-  subject, topic, apiKey, user, planId, plan,
+  subject, topic, apiKey, user, planId,
   originalDate, blockIndex, selectedBanca,
   itemType, itemId, block,
 }: InlineContentGeneratorProps) {
