@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp, doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { generateContentFromGemini } from '../lib/gemini';
@@ -45,6 +46,21 @@ export default function InlineContentGenerator({
     ? (block.contentLinks?.flashcardIds || [])
     : (block.linkedFlashcardIds || []);
   const hasContent = existingLessons.length > 0 || existingQuizzes.length > 0 || existingFlashcards.length > 0;
+  const navigate = useNavigate();
+
+  const handleOpenContent = async (contentId: string, type: 'lesson' | 'quiz' | 'flashcard') => {
+    if (!user) return;
+    try {
+      const collectionName = type === 'lesson' ? 'lessons' : type === 'quiz' ? 'quizzes' : 'flashcards';
+      const contentRef = doc(db, 'users', user.uid, collectionName, contentId);
+      const snap = await getDoc(contentRef);
+      if (!snap.exists()) return;
+      const data = { id: snap.id, ...snap.data() };
+      navigate('/saved', { state: { autoOpen: data, autoOpenType: type } });
+    } catch (err) {
+      console.error('Erro ao abrir conteúdo:', err);
+    }
+  };
 
   const handleGenerate = async () => {
     if (!user || !apiKey) return;
@@ -168,19 +184,31 @@ export default function InlineContentGenerator({
     return (
       <div className="mt-1.5 flex flex-wrap items-center gap-1">
         {existingLessons.length > 0 && (
-          <span className="text-[10px] px-1.5 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded font-bold">
+          <button
+            onClick={() => handleOpenContent(existingLessons[existingLessons.length - 1], 'lesson')}
+            className="text-[10px] px-1.5 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded font-bold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors cursor-pointer"
+            title="Abrir aula salva"
+          >
             📘 {existingLessons.length} Aula{existingLessons.length > 1 ? 's' : ''}
-          </span>
+          </button>
         )}
         {existingQuizzes.length > 0 && (
-          <span className="text-[10px] px-1.5 py-0.5 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded font-bold">
+          <button
+            onClick={() => handleOpenContent(existingQuizzes[existingQuizzes.length - 1], 'quiz')}
+            className="text-[10px] px-1.5 py-0.5 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded font-bold hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors cursor-pointer"
+            title="Abrir questões salvas"
+          >
             📝 {existingQuizzes.length} Quiz{existingQuizzes.length > 1 ? 'zes' : ''}
-          </span>
+          </button>
         )}
         {existingFlashcards.length > 0 && (
-          <span className="text-[10px] px-1.5 py-0.5 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded font-bold">
+          <button
+            onClick={() => handleOpenContent(existingFlashcards[existingFlashcards.length - 1], 'flashcard')}
+            className="text-[10px] px-1.5 py-0.5 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded font-bold hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-colors cursor-pointer"
+            title="Abrir flashcards salvos"
+          >
             🧠 {existingFlashcards.length} Flash{existingFlashcards.length > 1 ? 'cards' : 'card'}
-          </span>
+          </button>
         )}
         <button
           onClick={() => { setMode('options'); setShowCustom(false); }}

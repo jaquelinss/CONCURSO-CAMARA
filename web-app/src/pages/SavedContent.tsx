@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../lib/firebase';
@@ -194,6 +195,18 @@ export default function SavedContent() {
 
     fetchSavedContent();
   }, [user]);
+
+  // Auto-open content when navigated from InlineContentGenerator badges
+  const location = useLocation();
+  useEffect(() => {
+    const state = location.state as { autoOpen?: any; autoOpenType?: 'lesson' | 'quiz' | 'flashcard' } | null;
+    if (state?.autoOpen && state?.autoOpenType) {
+      setViewingContent(state.autoOpen);
+      setViewingType(state.autoOpenType);
+      // Clear the state so it doesn't re-open on re-render
+      window.history.replaceState({}, '');
+    }
+  }, [location.state]);
 
   const createFolder = async () => {
     if (!user || !newFolderName.trim()) return;
