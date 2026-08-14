@@ -16,7 +16,6 @@ import QuestionsDatabase from './pages/QuestionsDatabase';
 
 const StatisticsScreen = lazy(() => import('./pages/StatisticsScreen'));
 const ConcursosScreen = lazy(() => import('./pages/ConcursosScreen'));
-const DigitalNotebook = lazy(() => import('./components/DigitalNotebook'));
 
 import ReportButton from './components/ReportButton';
 import StickyNotesManager from './components/StickyNotesManager';
@@ -32,6 +31,7 @@ import PdfAnnotatorOverlay from './components/PdfAnnotatorOverlay';
 import StamperOverlay from './components/StamperOverlay';
 import SiteDecorator from './components/SiteDecorator';
 import GlobalSplitScreenManager from './components/GlobalSplitScreenManager';
+import DigitalNotebook from './components/DigitalNotebook';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -82,7 +82,7 @@ export default function App() {
                   <KnowledgeBaseManager />
                   <WhiteboardOverlay />
                   <PdfAnnotatorOverlay />
-                  <Suspense fallback={null}><DigitalNotebook /></Suspense>
+                  <DigitalNotebook />
 
                   {/* Toggle Tools Button */}
                   <button
