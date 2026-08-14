@@ -127,7 +127,11 @@ export default function DigitalNotebook() {
 
   // ─── Listen for toggle event ───────────────────────────────────
   useEffect(() => {
-    const handleToggle = () => setActive(prev => !prev);
+    console.log('[DigitalNotebook] mounted, listening for toggle-digital-notebook');
+    const handleToggle = () => {
+      console.log('[DigitalNotebook] toggle event received!');
+      setActive(prev => !prev);
+    };
     window.addEventListener('toggle-digital-notebook', handleToggle);
     return () => window.removeEventListener('toggle-digital-notebook', handleToggle);
   }, []);
@@ -368,7 +372,7 @@ export default function DigitalNotebook() {
       <div
         ref={nodeRef}
         className="fixed z-[9997] flex flex-col rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-900"
-        style={{ width: isMinimized ? 320 : windowSize.w, height: isMinimized ? 52 : windowSize.h }}
+        style={{ top: 0, left: 0, width: isMinimized ? 320 : windowSize.w, height: isMinimized ? 52 : windowSize.h }}
       >
         {/* ─── Header ────────────────────────────────────── */}
         <div className="dn-drag-handle flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-rose-500 to-pink-600 text-white cursor-move select-none flex-shrink-0">
