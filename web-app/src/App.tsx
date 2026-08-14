@@ -16,6 +16,7 @@ import QuestionsDatabase from './pages/QuestionsDatabase';
 
 const StatisticsScreen = lazy(() => import('./pages/StatisticsScreen'));
 const ConcursosScreen = lazy(() => import('./pages/ConcursosScreen'));
+const DigitalNotebook = lazy(() => import('./components/DigitalNotebook'));
 
 import ReportButton from './components/ReportButton';
 import StickyNotesManager from './components/StickyNotesManager';
@@ -81,6 +82,7 @@ export default function App() {
                   <KnowledgeBaseManager />
                   <WhiteboardOverlay />
                   <PdfAnnotatorOverlay />
+                  <Suspense fallback={null}><DigitalNotebook /></Suspense>
 
                   {/* Toggle Tools Button */}
                   <button

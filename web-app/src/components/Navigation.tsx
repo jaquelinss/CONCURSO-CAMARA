@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useReward } from '../contexts/RewardContext';
-import { LogOut, Menu, X, CalendarDays, FolderHeart, Sun, Moon, TrendingUp, Database, HelpCircle, Focus, Book, Home, BookOpen, Archive, Flame, Store, Columns, PieChart, Timer, Trophy } from 'lucide-react';
+import { LogOut, Menu, X, CalendarDays, FolderHeart, Sun, Moon, TrendingUp, Database, HelpCircle, Focus, Book, Home, BookOpen, Archive, Flame, Store, Columns, PieChart, Timer, Trophy, NotebookPen } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import FocusPlayer from './FocusPlayer';
 import { RewardShop } from './RewardShop';
@@ -57,6 +57,10 @@ export default function Navigation() {
         e.preventDefault();
         // Easter egg para restaurar pontos perdidos com um bônus
         awardPoints(500, 'restore_bug');
+      }
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') {
+        e.preventDefault();
+        window.dispatchEvent(new Event('toggle-digital-notebook'));
       }
     };
     window.addEventListener('keydown', handleGlobalKeyDown);
@@ -201,6 +205,14 @@ export default function Navigation() {
               title="Cadernos (Ctrl+Shift+C)"
             >
               <Book className="w-5 h-5" />
+            </button>
+
+            <button
+              onClick={() => window.dispatchEvent(new Event('toggle-digital-notebook'))}
+              className="hidden sm:block p-2 rounded-lg text-rose-500 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 transition-colors"
+              title="Caderno de Anotações (Ctrl+Shift+A)"
+            >
+              <NotebookPen className="w-5 h-5" />
             </button>
 
             {/* Separador */}
