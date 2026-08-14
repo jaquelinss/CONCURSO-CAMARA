@@ -96,13 +96,10 @@ export default function Navigation() {
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
                 <span className="text-white font-bold text-sm">E</span>
               </div>
-              <span className="text-base font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent hidden xl:block group-hover:opacity-80 transition-opacity">
+              <span className="text-base font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent hidden 3xl:block group-hover:opacity-80 transition-opacity">
                 EduGenius
               </span>
             </Link>
-
-            {/* Separador vertical desktop */}
-            <div className="hidden sm:block w-px h-6 bg-gray-200 dark:bg-gray-700 flex-shrink-0" />
 
             {/* Nav Links - desktop */}
             <div className="hidden sm:flex items-center gap-1">
