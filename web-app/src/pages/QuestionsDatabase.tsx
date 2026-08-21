@@ -732,6 +732,58 @@ export default function QuestionsDatabase() {
                 </div>
               </div>
 
+              {/* External Questions Search Section */}
+              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/10 border border-blue-100 dark:border-blue-900/20 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950/60 flex items-center justify-center flex-shrink-0 text-blue-600 dark:text-blue-400">
+                    <Search className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-gray-800 dark:text-gray-200">Buscar Questões na Internet</h4>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
+                      Encontre questões de provas anteriores{selectedBanca ? ` da banca ${selectedBanca}` : ''} sobre <strong>{selectedSubtopic && selectedSubtopic !== '__ALL__' && selectedSubtopic !== '__TOPIC__' ? selectedSubtopic : selectedSubject}</strong> em sites especializados.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 self-end sm:self-auto flex-wrap">
+                  {(() => {
+                    const assunto = selectedSubtopic && selectedSubtopic !== '__ALL__' && selectedSubtopic !== '__TOPIC__' ? selectedSubtopic : selectedSubject || '';
+                    const banca = selectedBanca || '';
+                    const queryPCI = encodeURIComponent(`${assunto} ${banca}`.trim());
+                    const queryGoogle = encodeURIComponent(`questões ${banca} ${assunto} concurso`.trim());
+                    const queryQC = encodeURIComponent(`${assunto}`.trim());
+                    return (
+                      <>
+                        <a
+                          href={`https://www.pciconcursos.com.br/provas/?s=${queryPCI}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 transition-all shadow-sm"
+                        >
+                          <Search className="w-3.5 h-3.5" /> PCI Concursos
+                        </a>
+                        <a
+                          href={`https://www.qconcursos.com/questoes-de-concursos/questoes?q=${queryQC}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 transition-all shadow-sm"
+                        >
+                          <Search className="w-3.5 h-3.5" /> QConcursos
+                        </a>
+                        <a
+                          href={`https://www.google.com/search?q=${queryGoogle}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-3 py-2 bg-white dark:bg-gray-900 border border-blue-200 dark:border-blue-900/30 text-blue-600 dark:text-blue-400 font-bold text-xs rounded-xl hover:bg-blue-50 dark:hover:bg-blue-950/20 transition-all flex items-center gap-1.5"
+                        >
+                          <Search className="w-3.5 h-3.5" /> Google
+                        </a>
+                      </>
+                    );
+                  })()}
+                </div>
+              </div>
 
               {/* FILTERS PANEL */}
               <div className="bg-gray-50 dark:bg-gray-900/30 border border-gray-100 dark:border-gray-700/60 rounded-2xl p-4 space-y-4">
