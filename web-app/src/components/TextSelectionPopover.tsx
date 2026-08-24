@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
-import { FileEdit, Loader2 } from 'lucide-react';
+import { FileEdit, Layers, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useKnowledgeBase } from '../contexts/KnowledgeBaseContext';
-import { formatTextToPostIt } from '../lib/gemini';
+import { formatTextToPostIt, formatTextToFlashcard } from '../lib/gemini';
 
 export default function TextSelectionPopover() {
   const [position, setPosition] = useState<{ x: number, y: number } | null>(null);
   const [selectedText, setSelectedText] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingPostIt, setIsLoadingPostIt] = useState(false);
+  const [isLoadingFlashcard, setIsLoadingFlashcard] = useState(false);
   const { apiKey } = useAuth();
   const { getContextText } = useKnowledgeBase();
+
+  const isLoading = isLoadingPostIt || isLoadingFlashcard;
 
   useEffect(() => {
     const handleSelectionChange = () => {
@@ -72,7 +75,7 @@ export default function TextSelectionPopover() {
 
     if (!selectedText) return;
 
-    setIsLoading(true);
+    setIsLoadingPostIt(true);
     try {
       const contextText = await getContextText();
       const contextPromptSuffix = contextText ? `\n\nATENÇÃO: O ALUNO FORNECEU MATERIAIS DE ESTUDO DE BASE. Priorize usá-los para embasar sua resposta:\n${contextText}` : '';
@@ -91,7 +94,38 @@ export default function TextSelectionPopover() {
       console.error("Erro ao gerar post-it:", error);
       alert("Ocorreu um erro ao gerar o post-it. Verifique sua chave da API.");
     } finally {
-      setIsLoading(false);
+      setIsLoadingPostIt(false);
+    }
+  };
+
+  const handleCreateFlashcard = async () => {
+    if (!apiKey) {
+      alert("Por favor, configure sua chave da API do Gemini nas Configurações.");
+      return;
+    }
+
+    if (!selectedText) return;
+
+    setIsLoadingFlashcard(true);
+    try {
+      const contextText = await getContextText();
+      const contextPromptSuffix = contextText ? `\n\nATENÇÃO: O ALUNO FORNECEU MATERIAIS DE ESTUDO DE BASE. Priorize usá-los para embasar sua resposta:\n${contextText}` : '';
+      
+      const { title, content, backContent } = await formatTextToFlashcard(selectedText, apiKey, contextPromptSuffix);
+      
+      const event = new CustomEvent('add-flashcard', {
+        detail: { title, content, backContent }
+      });
+      window.dispatchEvent(event);
+      
+      // Clear selection
+      window.getSelection()?.removeAllRanges();
+      setPosition(null);
+    } catch (error) {
+      console.error("Erro ao gerar flashcard:", error);
+      alert("Ocorreu um erro ao gerar o flashcard. Verifique sua chave da API.");
+    } finally {
+      setIsLoadingFlashcard(false);
     }
   };
 
@@ -99,7 +133,7 @@ export default function TextSelectionPopover() {
 
   return (
     <div 
-      className="fixed z-[10010] transform -translate-x-1/2 animate-fade-in"
+      className="fixed z-[10010] transform -translate-x-1/2 animate-fade-in flex gap-2"
       style={{ left: position.x, top: position.y }}
     >
       <button
@@ -108,17 +142,26 @@ export default function TextSelectionPopover() {
         disabled={isLoading}
         className="flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-yellow-950 font-bold py-1.5 px-3 rounded-full shadow-lg border border-yellow-300 transition-all hover:scale-105"
       >
-        {isLoading ? (
-          <>
-            <Loader2 className="w-4 h-4 animate-spin" />
-            <span>Gerando...</span>
-          </>
+        {isLoadingPostIt ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
         ) : (
-          <>
-            <FileEdit className="w-4 h-4" />
-            <span>Criar Post-it</span>
-          </>
+          <FileEdit className="w-4 h-4" />
         )}
+        <span>Gerar Post-it</span>
+      </button>
+
+      <button
+        onClick={handleCreateFlashcard}
+        onTouchEnd={(e) => { e.preventDefault(); handleCreateFlashcard(); }}
+        disabled={isLoading}
+        className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-bold py-1.5 px-3 rounded-full shadow-lg border border-indigo-400 transition-all hover:scale-105"
+      >
+        {isLoadingFlashcard ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : (
+          <Layers className="w-4 h-4" />
+        )}
+        <span>Gerar Flashcard</span>
       </button>
     </div>
   );

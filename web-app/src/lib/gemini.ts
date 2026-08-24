@@ -401,6 +401,54 @@ A resposta DEVE ser estritamente um objeto JSON com o formato:
     return await callGemini(genAI, prompt, false, modelName);
 }
 
+export const formatTextToFlashcard = async (text: string, apiKey: string, contextPromptSuffix: string = ''): Promise<{ title: string; content: string; backContent: string }> => {
+    if (!apiKey) throw new Error("Chave de API não configurada.");
+    const genAI = new GoogleGenerativeAI(apiKey);
+    
+    const prompt = `${contextPromptSuffix ? `Instrução do Sistema: Você é um assistente focado em criar flashcards para estudo ativo. ${contextPromptSuffix}\n\n` : ''}A partir do seguinte texto, crie um ÚNICO Flashcard (estilo frente e verso) que resuma o ponto principal de forma testável:
+"${text}"
+
+Regras:
+1. O objetivo do flashcard é testar o conhecimento do aluno.
+2. A "FRENTE" deve conter uma pergunta clara, um gatilho mental, ou um conceito a ser definido.
+3. O "VERSO" deve conter a resposta direta e concisa.
+4. Forneça um título super curto (1-3 palavras) que resuma o assunto do flashcard.
+
+A resposta DEVE ser estritamente um objeto JSON com o formato:
+{
+  "title": "Assunto Curto",
+  "front": "Pergunta ou Gatilho (Frente)",
+  "back": "Resposta ou Definição (Verso)"
+}
+
+NÃO retorne formatação markdown \`\`\`json. Apenas o JSON válido.`;
+    
+    const modelConfig: any = {
+        model: 'gemini-2.5-flash',
+        generationConfig: {
+            temperature: 0.3,
+            responseMimeType: 'application/json'
+        }
+    };
+
+    const model = genAI.getGenerativeModel(modelConfig);
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const jsonStr = response.text();
+    
+    try {
+        const parsed = safeJsonParse(jsonStr);
+        return {
+            title: parsed.title || 'Flashcard',
+            content: parsed.front || 'Frente',
+            backContent: parsed.back || 'Verso'
+        };
+    } catch (e) {
+        console.error("Falha ao parsear JSON do flashcard:", e);
+        return { title: 'Flashcard', content: 'Frente...', backContent: 'Verso...' };
+    }
+};
+
 export const formatTextToPostIt = async (text: string, apiKey: string, contextPromptSuffix: string = ''): Promise<{ title: string; content: string }> => {
     if (!apiKey) throw new Error("Chave de API não configurada.");
     const genAI = new GoogleGenerativeAI(apiKey);
