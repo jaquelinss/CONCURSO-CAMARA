@@ -5,11 +5,13 @@ import { useAuth } from '../contexts/AuthContext';
 import { Search, Layers, Play, Trash2, Clock } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import FlashcardStudy from './FlashcardStudy';
 
 export default function FlashcardsView() {
   const { user } = useAuth();
   const [decks, setDecks] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeStudyDeck, setActiveStudyDeck] = useState<any | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -97,7 +99,7 @@ export default function FlashcardsView() {
                   <Trash2 className="w-4 h-4" />
                 </button>
                 <button 
-                  onClick={() => alert('Modo estudo em breve (FlashcardStudy)')}
+                  onClick={() => setActiveStudyDeck(deck)}
                   className="flex-1 py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-lg transition-colors flex items-center justify-center gap-1.5"
                 >
                   <Play className="w-4 h-4" /> Estudar
@@ -107,6 +109,13 @@ export default function FlashcardsView() {
           ))
         )}
       </div>
+
+      {activeStudyDeck && (
+        <FlashcardStudy 
+          deck={activeStudyDeck} 
+          onClose={() => setActiveStudyDeck(null)} 
+        />
+      )}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { X, Check, Palette, Trash2, Bold, Italic, Underline, List } from 'lucide-react';
+import { X, Check, Palette, Trash2, Bold, Italic, Underline, List, Repeat } from 'lucide-react';
 import { updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
@@ -23,27 +23,35 @@ export default function NoteEditor({ note, onClose }: NoteEditorProps) {
   const [title, setTitle] = useState(note.title || '');
   const [subjectTag, setSubjectTag] = useState(note.subjectTag || '');
   const [content] = useState(note.content || '');
+  const [backContent] = useState(note.backContent || '');
+  const [isFlashcard, setIsFlashcard] = useState(!!note.isFlashcard);
   const [color, setColor] = useState(note.color || '#fef08a');
   const [saving, setSaving] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
   
   const contentRef = useRef<HTMLDivElement>(null);
+  const backContentRef = useRef<HTMLDivElement>(null);
 
   // Focus effect
   useEffect(() => {
-    if (contentRef.current && !content) {
+    if (contentRef.current && !content && !isFlipped) {
       contentRef.current.focus();
     }
-  }, []);
+  }, [isFlipped]);
 
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
     try {
       const htmlContent = contentRef.current?.innerHTML || content;
+      const htmlBackContent = isFlashcard ? (backContentRef.current?.innerHTML || backContent) : '';
+      
       await updateDoc(doc(db, 'users', user.uid, 'notes', note.id), {
         title,
         subjectTag,
         content: htmlContent,
+        backContent: htmlBackContent,
+        isFlashcard,
         color
       });
       onClose();
@@ -130,20 +138,67 @@ export default function NoteEditor({ note, onClose }: NoteEditorProps) {
             />
           </div>
           
-          <div className="flex items-center gap-1 mb-1 p-1 bg-white/30 rounded-lg w-fit">
-            <button onClick={() => execCommand('bold')} className="p-1.5 hover:bg-white/50 rounded" title="Negrito"><Bold className="w-4 h-4 text-black/70"/></button>
-            <button onClick={() => execCommand('italic')} className="p-1.5 hover:bg-white/50 rounded" title="Itálico"><Italic className="w-4 h-4 text-black/70"/></button>
-            <button onClick={() => execCommand('underline')} className="p-1.5 hover:bg-white/50 rounded" title="Sublinhado"><Underline className="w-4 h-4 text-black/70"/></button>
-            <button onClick={() => execCommand('insertUnorderedList')} className="p-1.5 hover:bg-white/50 rounded" title="Lista"><List className="w-4 h-4 text-black/70"/></button>
+          <div className="flex items-center justify-between mb-1 p-1 bg-white/30 rounded-lg">
+            <div className="flex items-center gap-1">
+              <button onClick={() => execCommand('bold')} className="p-1.5 hover:bg-white/50 rounded" title="Negrito"><Bold className="w-4 h-4 text-black/70"/></button>
+              <button onClick={() => execCommand('italic')} className="p-1.5 hover:bg-white/50 rounded" title="Itálico"><Italic className="w-4 h-4 text-black/70"/></button>
+              <button onClick={() => execCommand('underline')} className="p-1.5 hover:bg-white/50 rounded" title="Sublinhado"><Underline className="w-4 h-4 text-black/70"/></button>
+              <button onClick={() => execCommand('insertUnorderedList')} className="p-1.5 hover:bg-white/50 rounded" title="Lista"><List className="w-4 h-4 text-black/70"/></button>
+            </div>
+            <label className="flex items-center gap-2 text-xs font-bold text-black/60 cursor-pointer pr-2">
+              <input 
+                type="checkbox" 
+                checked={isFlashcard}
+                onChange={(e) => setIsFlashcard(e.target.checked)}
+                className="rounded border-black/30 text-indigo-600 focus:ring-indigo-500"
+              />
+              Modo Flashcard
+            </label>
           </div>
 
-          <div
-            ref={contentRef}
-            contentEditable
-            suppressContentEditableWarning
-            className="w-full flex-1 min-h-[150px] outline-none text-gray-900 prose prose-sm max-w-none"
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(note.content || '') }}
-          />
+          <div className="flex-1 relative perspective-1000 min-h-[200px]">
+            <div 
+              className="w-full h-full transition-transform duration-500 preserve-3d relative"
+              style={{ transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)' }}
+            >
+              {/* Frente */}
+              <div className="absolute inset-0 backface-hidden flex flex-col">
+                {isFlashcard && <div className="text-xs font-bold text-black/50 mb-2">FRENTE:</div>}
+                <div
+                  ref={contentRef}
+                  contentEditable
+                  suppressContentEditableWarning
+                  className="w-full flex-1 outline-none text-gray-900 prose prose-sm max-w-none overflow-y-auto"
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(note.content || '') }}
+                />
+              </div>
+
+              {/* Verso */}
+              <div 
+                className="absolute inset-0 backface-hidden flex flex-col"
+                style={{ transform: 'rotateY(180deg)' }}
+              >
+                {isFlashcard && <div className="text-xs font-bold text-indigo-900/50 mb-2">VERSO:</div>}
+                <div
+                  ref={backContentRef}
+                  contentEditable
+                  suppressContentEditableWarning
+                  className="w-full flex-1 outline-none text-gray-900 prose prose-sm max-w-none overflow-y-auto"
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(note.backContent || '') }}
+                />
+              </div>
+            </div>
+          </div>
+          
+          {isFlashcard && (
+            <button 
+              onClick={() => setIsFlipped(!isFlipped)}
+              className="self-center flex items-center gap-2 px-4 py-2 mt-2 bg-indigo-100 text-indigo-700 hover:bg-indigo-200 rounded-full text-sm font-bold transition-colors"
+            >
+              <Repeat className="w-4 h-4" />
+              {isFlipped ? 'Ver Frente' : 'Ver Verso'}
+            </button>
+          )}
         </div>
 
         <div className="p-4 border-t border-black/10 flex justify-between items-center bg-white/20 backdrop-blur-md">
