@@ -4,12 +4,14 @@ import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
 import { Plus, Edit2, Archive, Trash2, Search, FileText } from 'lucide-react';
 import DOMPurify from 'dompurify';
+import NoteEditor from './NoteEditor';
 
 export default function PostItsView() {
   const { user } = useAuth();
   const [notes, setNotes] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterArchived, setFilterArchived] = useState(false);
+  const [editingNote, setEditingNote] = useState<any | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -84,7 +86,8 @@ export default function PostItsView() {
       createdAt: new Date(), // Local temp until server syncs
       isArchived: false,
     };
-    await addDoc(collection(db, 'users', user.uid, 'notes'), newNote);
+    const docRef = await addDoc(collection(db, 'users', user.uid, 'notes'), newNote);
+    setEditingNote({ id: docRef.id, ...newNote });
   };
 
   return (
@@ -130,26 +133,28 @@ export default function PostItsView() {
             return (
               <div 
                 key={note.id} 
-                className="rounded-lg shadow-sm border border-black/5 overflow-hidden flex flex-col transform transition-transform hover:scale-105 active:scale-95"
+                className="rounded-lg shadow-sm border border-black/5 overflow-hidden flex flex-col transform transition-transform hover:scale-105 active:scale-95 cursor-pointer"
                 style={{ backgroundColor: note.color || '#fef08a' }}
+                onClick={() => setEditingNote(note)}
               >
                 <div 
                   className="px-2 py-1.5 flex justify-between items-center"
                   style={{ backgroundColor: topBarColor, color: textColor }}
+                  onClick={(e) => e.stopPropagation()}
                 >
                   <span className="text-[10px] font-bold truncate pr-2">
                     {note.title || (note.subjectTag ? `${note.subjectTag}` : 'Nota')}
                   </span>
                   <div className="flex items-center gap-1">
                     <button 
-                      onClick={() => toggleArchive(note.id, note.isArchived)} 
+                      onClick={(e) => { e.stopPropagation(); toggleArchive(note.id, note.isArchived); }} 
                       className="p-1 hover:bg-black/10 rounded"
                       title={note.isArchived ? "Desarquivar" : "Arquivar"}
                     >
                       <Archive className="w-3 h-3" />
                     </button>
                     <button 
-                      onClick={() => deleteNote(note.id)} 
+                      onClick={(e) => { e.stopPropagation(); deleteNote(note.id); }} 
                       className="p-1 hover:bg-black/10 rounded"
                       title="Excluir"
                     >
@@ -183,7 +188,7 @@ export default function PostItsView() {
                      </span>
                    )}
                    <button 
-                     onClick={() => alert('Edição completa em breve (usará NoteEditor)')}
+                     onClick={(e) => { e.stopPropagation(); setEditingNote(note); }}
                      className="ml-auto flex items-center justify-center p-1 rounded-full hover:bg-black/10"
                      style={{ color: textColor }}
                    >
@@ -195,6 +200,13 @@ export default function PostItsView() {
           })
         )}
       </div>
+
+      {editingNote && (
+        <NoteEditor 
+          note={editingNote} 
+          onClose={() => setEditingNote(null)} 
+        />
+      )}
     </div>
   );
 }
