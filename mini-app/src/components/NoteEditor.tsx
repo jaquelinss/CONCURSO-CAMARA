@@ -18,6 +18,30 @@ const COLORS = [
   '#e9d5ff', // Roxo
 ];
 
+function getRandomHexColor(type: 'pastel' | 'vibrant' | 'neon'): string {
+  let r, g, b;
+  if (type === 'pastel') {
+    r = Math.floor((Math.random() * 127) + 127);
+    g = Math.floor((Math.random() * 127) + 127);
+    b = Math.floor((Math.random() * 127) + 127);
+  } else if (type === 'vibrant') {
+    r = Math.floor(Math.random() * 256);
+    g = Math.floor(Math.random() * 256);
+    b = Math.floor(Math.random() * 256);
+    const max = Math.max(r, g, b);
+    if (max === r) r = 255;
+    else if (max === g) g = 255;
+    else b = 255;
+  } else {
+    // Neon
+    const colors = [
+      '#ff00ff', '#00ffff', '#00ff00', '#ffff00', '#ff00aa', '#00ffaa'
+    ];
+    return colors[Math.floor(Math.random() * colors.length)];
+  }
+  return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
+}
+
 export default function NoteEditor({ note, onClose }: NoteEditorProps) {
   const { user } = useAuth();
   const [title, setTitle] = useState(note.title || '');
@@ -202,33 +226,76 @@ export default function NoteEditor({ note, onClose }: NoteEditorProps) {
         </div>
 
         <div className="p-4 border-t border-black/10 flex justify-between items-center bg-white/20 backdrop-blur-md">
-          <div className="flex gap-2 items-center">
-            <Palette className="w-5 h-5 text-black/50" />
-            <div className="flex gap-1.5">
-              {COLORS.map((c) => (
-                <button
-                  key={c}
-                  onClick={() => setColor(c)}
-                  className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${
-                    color === c ? 'border-black/50 shadow-sm' : 'border-transparent'
-                  }`}
-                  style={{ backgroundColor: c }}
-                  title={c}
+          <div className="flex flex-col gap-2">
+            <div className="flex gap-2 items-center">
+              <Palette className="w-5 h-5 text-black/50" />
+              <div className="flex gap-1.5">
+                {COLORS.map((c) => (
+                  <button
+                    key={c}
+                    onClick={() => setColor(c)}
+                    className={`w-6 h-6 rounded-full border-2 transition-transform hover:scale-110 ${
+                      color === c ? 'border-black/50 shadow-sm' : 'border-transparent'
+                    }`}
+                    style={{ backgroundColor: c }}
+                    title={c}
+                  />
+                ))}
+                <input 
+                  type="color" 
+                  value={color} 
+                  onChange={(e) => setColor(e.target.value)}
+                  className="w-6 h-6 p-0 border-0 rounded-full cursor-pointer overflow-hidden"
+                  title="Cor Personalizada"
                 />
-              ))}
-              <input 
-                type="color" 
-                value={color} 
-                onChange={(e) => setColor(e.target.value)}
-                className="w-6 h-6 p-0 border-0 rounded-full cursor-pointer overflow-hidden"
-              />
+                {'EyeDropper' in window && (
+                  <button
+                    onClick={async () => {
+                      try {
+                        const eyeDropper = new (window as any).EyeDropper();
+                        const result = await eyeDropper.open();
+                        setColor(result.sRGBHex);
+                      } catch (e) {
+                        console.error('EyeDropper cancelado');
+                      }
+                    }}
+                    className="w-6 h-6 rounded-full border border-black/20 bg-white/50 flex items-center justify-center hover:bg-white transition-colors"
+                    title="Conta-gotas"
+                  >
+                    <span role="img" aria-label="conta-gotas" className="text-[10px]">💉</span>
+                  </button>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex gap-2 items-center pl-7">
+              <button 
+                onClick={() => setColor(getRandomHexColor('pastel'))}
+                className="text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-black/10 bg-white/80 hover:bg-white text-gray-600 transition-colors"
+              >
+                Pastel
+              </button>
+              <button 
+                onClick={() => setColor(getRandomHexColor('vibrant'))}
+                className="px-2 py-1 text-[10px] font-bold rounded shadow-sm text-white hover:opacity-90 transition-opacity"
+                style={{ background: 'linear-gradient(135deg, #ff4081 0%, #ff9100 100%)' }}
+              >
+                Vibrante
+              </button>
+              <button 
+                onClick={() => setColor(getRandomHexColor('neon'))}
+                className="px-2 py-1 text-[10px] font-black rounded shadow-sm text-[#ccff00] bg-slate-900 border border-slate-700 transition-colors"
+                style={{ textShadow: '0 0 5px #ccff00' }}
+              >
+                Neon
+              </button>
             </div>
           </div>
           
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-4 py-2 bg-black/80 hover:bg-black text-white rounded-lg font-medium flex items-center gap-2 transition-colors disabled:opacity-50"
+            className="px-4 py-2 bg-black/80 hover:bg-black text-white rounded-lg font-medium flex items-center gap-2 transition-colors disabled:opacity-50 h-fit self-end"
           >
             <Check className="w-4 h-4" />
             {saving ? 'Salvando...' : 'Salvar'}
