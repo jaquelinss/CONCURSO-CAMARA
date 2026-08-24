@@ -328,7 +328,7 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
         return;
       }
 
-      const newSchedule = [...schedule];
+      const newSchedule = JSON.parse(JSON.stringify(schedule));
       
       // Mantém no dia original, mas marcado como reagendado
       newSchedule[dayIdx] = {
@@ -368,7 +368,7 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
     if (!user) return;
     setUpdating(blockId);
     try {
-      const newSchedule = [...schedule];
+      const newSchedule = JSON.parse(JSON.stringify(schedule));
       
       // Volta o bloco original para pending e remove rescheduledTo
       const origDayIdx = newSchedule.findIndex((d: any) => d.date === dayDate);
@@ -417,7 +417,7 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
         return;
       }
 
-      const newSchedule = [...schedule];
+      const newSchedule = JSON.parse(JSON.stringify(schedule));
       let hasChanges = false;
       
       const pendingBlocks = newSchedule[dayIdx].blocks.filter((b: any) => b.status === 'pending');
