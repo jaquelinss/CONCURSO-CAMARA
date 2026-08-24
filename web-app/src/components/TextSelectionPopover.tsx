@@ -99,7 +99,7 @@ export default function TextSelectionPopover() {
 
   return (
     <div 
-      className="fixed z-[10000] transform -translate-x-1/2 animate-fade-in"
+      className="fixed z-[10010] transform -translate-x-1/2 animate-fade-in"
       style={{ left: position.x, top: position.y }}
     >
       <button
