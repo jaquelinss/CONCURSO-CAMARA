@@ -1340,14 +1340,14 @@ function StickyNoteItem({
     >
       <div 
         ref={nodeRef}
-        className={`sticky-note absolute rounded-lg shadow-md overflow-hidden pointer-events-auto border-t-8 border-l border-r border-b border-black/10 flex flex-col group transition-shadow hover:shadow-lg ${isCascadeMode ? 'cascade-mode-item' : ''}`}
+        className={`sticky-note absolute rounded-lg shadow-md overflow-hidden pointer-events-auto border-t-8 border-l-0 border-r-0 border-b-0 flex flex-col group transition-shadow hover:shadow-lg ${isCascadeMode ? 'cascade-mode-item' : ''}`}
         style={{ 
           width: isCascadeMode && cascadeSize ? `${cascadeSize.w}px` : `${size.w}px`,
           height: note.isMinimized ? '32px' : (isCascadeMode && cascadeSize ? `${cascadeSize.h}px` : `${size.h}px`),
           minWidth: '180px',
           minHeight: note.isMinimized ? '32px' : '180px',
           backgroundColor: note.color || '#fef08a', 
-          borderColor: darkenColor(note.color || '#fef08a', 20),
+          borderTopColor: darkenColor(note.color || '#fef08a', 20),
           zIndex: note.zIndex || 100 
         }}
         onClick={isCascadeMode ? undefined : onFocus}
