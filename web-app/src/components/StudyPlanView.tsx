@@ -55,12 +55,27 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
     try {
       const todayStr = format(new Date(), 'yyyy-MM-dd');
 
-      // 1. Collect all pending blocks (overdue + future pending, excluding rescheduled)
+      // 1. Collect ALL completed blocks (from any day) to preserve them
+      const completedBlocks: { date: string; block: any }[] = [];
+      const completedTopics = new Set<string>(); // track completed subject|||topic pairs
+      schedule.forEach((day: any) => {
+        day.blocks?.forEach((b: any) => {
+          if (b.status === 'completed') {
+            completedBlocks.push({ date: day.date, block: { ...b } });
+            completedTopics.add(`${b.subject}|||${b.topic}`);
+          }
+        });
+      });
+
+      // 2. Collect ONLY pending blocks whose topic was NOT already completed elsewhere
       const pendingBlocks: any[] = [];
       schedule.forEach((day: any) => {
         day.blocks?.forEach((b: any) => {
           if (b.status === 'pending') {
-            pendingBlocks.push({ ...b, fromDate: day.date });
+            const key = `${b.subject}|||${b.topic}`;
+            if (!completedTopics.has(key)) {
+              pendingBlocks.push({ ...b, fromDate: day.date });
+            }
           }
         });
       });
@@ -71,7 +86,7 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
         return;
       }
 
-      // 2. Extract unique subjects with their pending topics
+      // 3. Extract unique subjects with their PENDING-ONLY topics
       const subjectMap: Record<string, Set<string>> = {};
       pendingBlocks.forEach(b => {
         if (!subjectMap[b.subject]) subjectMap[b.subject] = new Set();
@@ -83,7 +98,7 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
         topics: Array.from(topics),
       }));
 
-      // 3. Build a map of linked content to preserve (youtubeUrls, linkedLessonIds, etc.)
+      // 4. Build a map of linked content to preserve (youtubeUrls, linkedLessonIds, etc.)
       const contentMap: Record<string, any> = {};
       pendingBlocks.forEach(b => {
         const key = `${b.subject}|||${b.topic}`;
@@ -95,18 +110,18 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
         if (b.linkedFlashcardIds?.length) contentMap[key].linkedFlashcardIds = b.linkedFlashcardIds;
       });
 
-      // 4. Call Gemini to generate new schedule
+      // 5. Call Gemini to generate new schedule (only with pending topics)
       const result = await generateStudyPlan({
         subjects,
         hoursPerDay: plan.hoursPerDay,
         studyDays: plan.studyDays || ['seg', 'ter', 'qua', 'qui', 'sex'],
         examDate: plan.examDate,
         startDate: todayStr,
-        customInstructions: 'Este é um plano REORGANIZADO. O aluno ficou com matérias atrasadas e precisa recuperar o conteúdo. Distribua de forma equilibrada, priorizando matérias com mais tópicos pendentes.',
+        customInstructions: 'Este é um plano REORGANIZADO. O aluno ficou com matérias atrasadas e precisa recuperar o conteúdo. NÃO inclua tópicos que já foram estudados. Distribua de forma equilibrada, priorizando matérias com mais tópicos pendentes.',
       }, apiKey);
 
-      // 5. Process new schedule blocks - add IDs, status, and restore linked content
-      const newSchedule = result.schedule.map((day: any) => ({
+      // 6. Process new schedule blocks - add IDs, status, and restore linked content
+      const newScheduleDays = result.schedule.map((day: any) => ({
         ...day,
         blocks: day.blocks.map((block: any, idx: number) => {
           const key = `${block.subject}|||${block.topic}`;
@@ -120,21 +135,35 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
         }),
       }));
 
-      // 6. Merge: keep past days with completed blocks + new schedule
-      const pastDays = schedule
-        .filter((day: any) => {
-          const d = parseISO(day.date);
-          return isBefore(d, startOfDay(new Date())) && !isToday(d);
-        })
-        .map((day: any) => ({
-          ...day,
-          blocks: day.blocks
-            .filter((b: any) => b.status === 'completed')
-            .map((b: any) => ({ ...b })), // keep completed blocks
-        }))
-        .filter((day: any) => day.blocks.length > 0); // remove empty days
+      // 7. Group completed blocks by date
+      const completedByDate: Record<string, any[]> = {};
+      completedBlocks.forEach(({ date, block }) => {
+        if (!completedByDate[date]) completedByDate[date] = [];
+        completedByDate[date].push(block);
+      });
 
-      const mergedSchedule = [...pastDays, ...newSchedule];
+      // 8. Merge: insert completed blocks into the new schedule at their original dates
+      // Also add standalone completed-only days that aren't in the new schedule
+      const newDatesSet = new Set(newScheduleDays.map((d: any) => d.date));
+
+      // Add completed blocks to matching new schedule days
+      const mergedNew = newScheduleDays.map((day: any) => {
+        const completed = completedByDate[day.date] || [];
+        if (completed.length === 0) return day;
+        return {
+          ...day,
+          blocks: [...completed, ...day.blocks],
+        };
+      });
+
+      // Add past completed-only days that don't overlap with the new schedule
+      const pastCompletedDays = Object.entries(completedByDate)
+        .filter(([date]) => !newDatesSet.has(date))
+        .map(([date, blocks]) => ({ date, blocks }))
+        .sort((a, b) => a.date.localeCompare(b.date));
+
+      const mergedSchedule = [...pastCompletedDays, ...mergedNew]
+        .sort((a, b) => a.date.localeCompare(b.date));
 
       // 7. Update Firestore
       const planRef = doc(db, 'users', user.uid, 'studyPlans', plan.id);
