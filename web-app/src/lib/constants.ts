@@ -146,7 +146,7 @@ export const getSubjectsByMode = (mode: StudyMode) => {
 
 export const getModelsByMode = (mode: StudyMode) => {
   if (mode === 'Concurso') return ['Técnica', 'Ibam', 'Cespe', 'FGV', 'Flashcard', 'Aula Explicativa'];
-  if (mode === 'Auditor Fiscal') return ['Técnica', 'FGV', 'Cespe', 'Flashcard', 'Aula Explicativa'];
+  if (mode === 'Auditor Fiscal') return ['Técnica', 'Ibam', 'FGV', 'Cespe', 'Flashcard', 'Aula Explicativa'];
   if (mode === 'Assistente UFPE') return ['Técnica', 'Cespe', 'FGV', 'Flashcard', 'Aula Explicativa'];
   if (mode === 'ENEM') return ['Enem', 'Técnica', 'Fuvest', 'Fanema', 'Flashcard', 'Aula Explicativa'];
   return ['Técnica', 'Enem', 'Ibam', 'Cespe', 'FGV', 'Flashcard', 'Aula Explicativa'];
