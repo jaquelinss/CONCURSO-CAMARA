@@ -3,8 +3,8 @@ import { db } from '../lib/firebase';
 import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import { useReward } from '../contexts/RewardContext';
-import { CheckCircle, RotateCcw, Calendar, Clock, BookOpen, Trash2, ChevronDown, ChevronUp, Trophy, CirclePlay, Link, X, Sparkles, Search, Loader2, Undo2 } from 'lucide-react';
-import { suggestVideoSearches, suggestRescheduleDate } from '../lib/gemini';
+import { CheckCircle, RotateCcw, Calendar, Clock, BookOpen, Trash2, ChevronDown, ChevronUp, Trophy, CirclePlay, Link, X, Sparkles, Search, Loader2, Undo2, RefreshCw } from 'lucide-react';
+import { suggestVideoSearches, suggestRescheduleDate, generateStudyPlan } from '../lib/gemini';
 import { format, isToday, isBefore, startOfDay, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -22,6 +22,135 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
   const [youtubeInput, setYoutubeInput] = useState('');
   const [loadingAi, setLoadingAi] = useState<Record<string, boolean>>({});
   const [aiSuggestions, setAiSuggestions] = useState<Record<string, any[]>>({});
+  const [isReorganizing, setIsReorganizing] = useState(false);
+
+  // ─── Reorganize Plan ──────────────────────────────────────────────
+  const reorganizePlan = async () => {
+    if (!user || !apiKey) {
+      alert('Configure sua chave da API do Gemini nas Configurações.');
+      return;
+    }
+
+    const overdueCount = schedule.filter((day: any) => {
+      const d = parseISO(day.date);
+      if (isToday(d) || !isBefore(d, startOfDay(new Date()))) return false;
+      return day.blocks?.some((b: any) => b.status === 'pending');
+    }).length;
+
+    if (overdueCount === 0) {
+      alert('Não há matérias atrasadas para reorganizar!');
+      return;
+    }
+
+    if (!window.confirm(
+      `Você tem ${overdueCount} dia(s) com matéria(s) atrasada(s).\n\n` +
+      `A reorganização vai:\n` +
+      `• Manter todas as matérias já concluídas ✅\n` +
+      `• Redistribuir as pendentes de hoje até a prova\n` +
+      `• Preservar links de vídeos e conteúdos vinculados\n\n` +
+      `Deseja reorganizar o plano?`
+    )) return;
+
+    setIsReorganizing(true);
+    try {
+      const todayStr = format(new Date(), 'yyyy-MM-dd');
+
+      // 1. Collect all pending blocks (overdue + future pending, excluding rescheduled)
+      const pendingBlocks: any[] = [];
+      schedule.forEach((day: any) => {
+        day.blocks?.forEach((b: any) => {
+          if (b.status === 'pending') {
+            pendingBlocks.push({ ...b, fromDate: day.date });
+          }
+        });
+      });
+
+      if (pendingBlocks.length === 0) {
+        alert('Não há blocos pendentes para reorganizar.');
+        setIsReorganizing(false);
+        return;
+      }
+
+      // 2. Extract unique subjects with their pending topics
+      const subjectMap: Record<string, Set<string>> = {};
+      pendingBlocks.forEach(b => {
+        if (!subjectMap[b.subject]) subjectMap[b.subject] = new Set();
+        subjectMap[b.subject].add(b.topic);
+      });
+
+      const subjects = Object.entries(subjectMap).map(([name, topics]) => ({
+        name,
+        topics: Array.from(topics),
+      }));
+
+      // 3. Build a map of linked content to preserve (youtubeUrls, linkedLessonIds, etc.)
+      const contentMap: Record<string, any> = {};
+      pendingBlocks.forEach(b => {
+        const key = `${b.subject}|||${b.topic}`;
+        if (!contentMap[key]) contentMap[key] = {};
+        if (b.youtubeUrls?.length) contentMap[key].youtubeUrls = b.youtubeUrls;
+        if (b.youtubeUrl) contentMap[key].youtubeUrl = b.youtubeUrl;
+        if (b.linkedLessonIds?.length) contentMap[key].linkedLessonIds = b.linkedLessonIds;
+        if (b.linkedQuizIds?.length) contentMap[key].linkedQuizIds = b.linkedQuizIds;
+        if (b.linkedFlashcardIds?.length) contentMap[key].linkedFlashcardIds = b.linkedFlashcardIds;
+      });
+
+      // 4. Call Gemini to generate new schedule
+      const result = await generateStudyPlan({
+        subjects,
+        hoursPerDay: plan.hoursPerDay,
+        studyDays: plan.studyDays || ['seg', 'ter', 'qua', 'qui', 'sex'],
+        examDate: plan.examDate,
+        startDate: todayStr,
+        customInstructions: 'Este é um plano REORGANIZADO. O aluno ficou com matérias atrasadas e precisa recuperar o conteúdo. Distribua de forma equilibrada, priorizando matérias com mais tópicos pendentes.',
+      }, apiKey);
+
+      // 5. Process new schedule blocks - add IDs, status, and restore linked content
+      const newSchedule = result.schedule.map((day: any) => ({
+        ...day,
+        blocks: day.blocks.map((block: any, idx: number) => {
+          const key = `${block.subject}|||${block.topic}`;
+          const linked = contentMap[key] || {};
+          return {
+            ...block,
+            id: `${day.date}-${idx}`,
+            status: 'pending',
+            ...linked,
+          };
+        }),
+      }));
+
+      // 6. Merge: keep past days with completed blocks + new schedule
+      const pastDays = schedule
+        .filter((day: any) => {
+          const d = parseISO(day.date);
+          return isBefore(d, startOfDay(new Date())) && !isToday(d);
+        })
+        .map((day: any) => ({
+          ...day,
+          blocks: day.blocks
+            .filter((b: any) => b.status === 'completed')
+            .map((b: any) => ({ ...b })), // keep completed blocks
+        }))
+        .filter((day: any) => day.blocks.length > 0); // remove empty days
+
+      const mergedSchedule = [...pastDays, ...newSchedule];
+
+      // 7. Update Firestore
+      const planRef = doc(db, 'users', user.uid, 'studyPlans', plan.id);
+      await updateDoc(planRef, { schedule: mergedSchedule });
+      plan.schedule = mergedSchedule;
+      onUpdate();
+      window.dispatchEvent(new Event('study-plan-updated'));
+
+      alert('✅ Plano reorganizado com sucesso! As matérias pendentes foram redistribuídas.');
+    } catch (err) {
+      console.error('Erro ao reorganizar plano:', err);
+      alert('Erro ao reorganizar o plano. Verifique sua chave API e tente novamente.');
+    } finally {
+      setIsReorganizing(false);
+    }
+  };
 
   const addYoutubeUrl = async (dayDate: string, blockId: string, url: string) => {
     if (!user || !url.trim()) return;
@@ -355,12 +484,26 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
             <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {plan.hoursPerDay}h/dia</span>
           </p>
         </div>
-        <button
-          onClick={deletePlan}
-          className="px-3 py-2 text-sm text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors flex items-center gap-1"
-        >
-          <Trash2 className="w-4 h-4" /> Excluir Plano
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={reorganizePlan}
+            disabled={isReorganizing}
+            className="px-3 py-2 text-sm text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-900/20 rounded-lg transition-colors flex items-center gap-1 disabled:opacity-50"
+            title="Redistribuir matérias atrasadas mantendo o progresso"
+          >
+            {isReorganizing ? (
+              <><Loader2 className="w-4 h-4 animate-spin" /> Reorganizando...</>
+            ) : (
+              <><RefreshCw className="w-4 h-4" /> Reorganizar Plano</>
+            )}
+          </button>
+          <button
+            onClick={deletePlan}
+            className="px-3 py-2 text-sm text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors flex items-center gap-1"
+          >
+            <Trash2 className="w-4 h-4" /> Excluir Plano
+          </button>
+        </div>
       </div>
 
       {/* Progress */}
