@@ -21,6 +21,7 @@ const COLORS = [
 export default function NoteEditor({ note, onClose }: NoteEditorProps) {
   const { user } = useAuth();
   const [title, setTitle] = useState(note.title || '');
+  const [subjectTag, setSubjectTag] = useState(note.subjectTag || '');
   const [content] = useState(note.content || '');
   const [color, setColor] = useState(note.color || '#fef08a');
   const [saving, setSaving] = useState(false);
@@ -41,6 +42,7 @@ export default function NoteEditor({ note, onClose }: NoteEditorProps) {
       const htmlContent = contentRef.current?.innerHTML || content;
       await updateDoc(doc(db, 'users', user.uid, 'notes', note.id), {
         title,
+        subjectTag,
         content: htmlContent,
         color
       });
@@ -111,13 +113,22 @@ export default function NoteEditor({ note, onClose }: NoteEditorProps) {
         </div>
 
         <div className="p-5 flex-1 overflow-y-auto flex flex-col gap-4">
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Sem título"
-            className="w-full bg-transparent text-xl font-bold text-gray-900 placeholder-black/30 outline-none border-b border-black/10 pb-2"
-          />
+          <div className="flex flex-col gap-2 border-b border-black/10 pb-3">
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Sem título"
+              className="w-full bg-transparent text-xl font-bold text-gray-900 placeholder-black/30 outline-none"
+            />
+            <input
+              type="text"
+              value={subjectTag}
+              onChange={(e) => setSubjectTag(e.target.value)}
+              placeholder="Tag (ex: Português)"
+              className="w-full bg-transparent text-xs font-semibold text-gray-700 placeholder-black/40 outline-none uppercase tracking-wider"
+            />
+          </div>
           
           <div className="flex items-center gap-1 mb-1 p-1 bg-white/30 rounded-lg w-fit">
             <button onClick={() => execCommand('bold')} className="p-1.5 hover:bg-white/50 rounded" title="Negrito"><Bold className="w-4 h-4 text-black/70"/></button>

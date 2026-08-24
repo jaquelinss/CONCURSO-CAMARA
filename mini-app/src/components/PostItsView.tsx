@@ -12,6 +12,7 @@ export default function PostItsView() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterArchived, setFilterArchived] = useState(false);
   const [editingNote, setEditingNote] = useState<any | null>(null);
+  const [isCascadeMode, setIsCascadeMode] = useState(true);
 
   useEffect(() => {
     if (!user) return;
@@ -20,7 +21,19 @@ export default function PostItsView() {
       const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       setNotes(data);
     });
-    return () => unsubscribe();
+
+    const settingsRef = doc(db, 'users', user.uid, 'settings', 'stickyNotes');
+    const unsubscribeSettings = onSnapshot(settingsRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data.isCascadeMode !== undefined) setIsCascadeMode(data.isCascadeMode);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+      unsubscribeSettings();
+    };
   }, [user]);
 
   const filteredNotes = notes
@@ -67,6 +80,22 @@ export default function PostItsView() {
     });
   };
 
+  const toggleCascadeMode = async () => {
+    if (!user) return;
+    const newMode = !isCascadeMode;
+    // Update local state optimistically
+    setIsCascadeMode(newMode);
+    try {
+      // Use setDoc with merge instead of updateDoc to handle creation if missing
+      const { setDoc } = await import('firebase/firestore');
+      await setDoc(doc(db, 'users', user.uid, 'settings', 'stickyNotes'), { isCascadeMode: newMode }, { merge: true });
+    } catch (e) {
+      console.error(e);
+      // Revert on fail
+      setIsCascadeMode(!newMode);
+    }
+  };
+
   const deleteNote = async (noteId: string) => {
     if (!user) return;
     if (window.confirm("Deseja realmente excluir este post-it permanentemente?")) {
@@ -105,10 +134,16 @@ export default function PostItsView() {
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
           <button 
+            onClick={toggleCascadeMode}
+            className={`flex-1 sm:flex-none px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 transition-colors border ${isCascadeMode ? 'bg-indigo-600 text-white border-transparent' : 'bg-white text-indigo-600 border-indigo-200 hover:bg-indigo-50'}`}
+          >
+            {isCascadeMode ? 'Cascata Ativo' : 'Cascata'}
+          </button>
+          <button 
             onClick={() => setFilterArchived(!filterArchived)}
             className={`flex-1 sm:flex-none px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 transition-colors border ${filterArchived ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`}
           >
-            <Archive className="w-4 h-4" /> {filterArchived ? 'Ver Ativos' : 'Ver Arquivados'}
+            <Archive className="w-4 h-4" /> {filterArchived ? 'Ver Ativos' : 'Arquivados'}
           </button>
           <button 
             onClick={createNote}
