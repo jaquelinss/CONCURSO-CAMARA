@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { subjectsConcurso, subjectsEnem, subjectsGeral, subjectsAuditorFiscal, subjectsAssistenteUFPE } from '../lib/constants';
 import { useKnowledgeBase } from '../contexts/KnowledgeBaseContext';
+import ReadingLaser from './ReadingLaser';
 
 interface ChatMessage {
   sender: 'user' | 'teacher';
@@ -316,6 +317,10 @@ export default function AITeacherChat({ isHidden = false }: { isHidden?: boolean
   const { awardPoints } = useReward();
   const [isGeneratingPostIt, setIsGeneratingPostIt] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [chatFontSize, setChatFontSize] = useState<number>(() => {
+    const saved = localStorage.getItem('chat-font-size');
+    return saved ? parseInt(saved) : 14;
+  });
   
   // Knowledge Base State
   const { materials, activeMaterialIds, toggleMaterialActive, getContextText, isDownloadingContext, setShowManager } = useKnowledgeBase();
@@ -819,6 +824,23 @@ Diretrizes:
                   >
                     {isExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                   </button>
+                  <div className="flex items-center gap-0.5 bg-white/10 rounded-lg px-1">
+                    <button
+                      onClick={() => { const nv = Math.max(10, chatFontSize - 2); setChatFontSize(nv); localStorage.setItem('chat-font-size', String(nv)); }}
+                      className="px-1 py-0.5 hover:bg-white/20 rounded text-white text-[10px] font-bold transition-colors"
+                      title="Diminuir fonte"
+                    >
+                      A-
+                    </button>
+                    <span className="text-[9px] text-white/60 font-mono w-5 text-center">{chatFontSize}</span>
+                    <button
+                      onClick={() => { const nv = Math.min(24, chatFontSize + 2); setChatFontSize(nv); localStorage.setItem('chat-font-size', String(nv)); }}
+                      className="px-1 py-0.5 hover:bg-white/20 rounded text-white text-xs font-bold transition-colors"
+                      title="Aumentar fonte"
+                    >
+                      A+
+                    </button>
+                  </div>
                   <button
                     onClick={() => setIsOpen(false)}
                     className="p-1 hover:bg-white/20 rounded-lg text-white transition-colors"
@@ -866,8 +888,10 @@ Diretrizes:
               )}
               <div
                 ref={chatContainerRef}
-                className="flex-grow overflow-y-auto p-4 space-y-3.5 bg-gray-50/50 dark:bg-gray-950/20"
+                className="flex-grow overflow-y-auto p-4 space-y-3.5 bg-gray-50/50 dark:bg-gray-950/20 relative"
+                style={{ fontSize: `${chatFontSize}px` }}
               >
+                <ReadingLaser containerRef={chatContainerRef} />
                 {messages.map((msg, idx) => {
                   const isUser = msg.sender === 'user';
                   return (
@@ -878,7 +902,7 @@ Diretrizes:
                       }`}
                     >
                       <div
-                        className={`p-3 rounded-2xl text-sm leading-relaxed shadow-sm border transition-all ${
+                        className={`p-3 rounded-2xl leading-relaxed shadow-sm border transition-all ${
                           isUser
                             ? 'bg-gradient-to-br from-purple-600 to-indigo-600 text-white border-purple-500 rounded-tr-none'
                             : 'bg-white dark:bg-gray-800/80 text-gray-800 dark:text-gray-100 border-gray-200/60 dark:border-gray-850 rounded-tl-none'
