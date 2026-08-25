@@ -24,11 +24,11 @@ import {
   Database,
   CheckCircle2,
   Maximize2,
-  Minimize2
+  Minimize2,
+  Crosshair
 } from 'lucide-react';
 import { subjectsConcurso, subjectsEnem, subjectsGeral, subjectsAuditorFiscal, subjectsAssistenteUFPE } from '../lib/constants';
 import { useKnowledgeBase } from '../contexts/KnowledgeBaseContext';
-import ReadingLaser from './ReadingLaser';
 
 interface ChatMessage {
   sender: 'user' | 'teacher';
@@ -321,6 +321,8 @@ export default function AITeacherChat({ isHidden = false }: { isHidden?: boolean
     const saved = localStorage.getItem('chat-font-size');
     return saved ? parseInt(saved) : 14;
   });
+  const [showChatLaser, setShowChatLaser] = useState(false);
+  const [chatLaserY, setChatLaserY] = useState<number | null>(null);
   
   // Knowledge Base State
   const { materials, activeMaterialIds, toggleMaterialActive, getContextText, isDownloadingContext, setShowManager } = useKnowledgeBase();
@@ -824,6 +826,16 @@ Diretrizes:
                   >
                     {isExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                   </button>
+                  <button
+                    onClick={() => {
+                      setShowChatLaser(!showChatLaser);
+                      if (showChatLaser) setChatLaserY(null);
+                    }}
+                    className={`p-1.5 rounded-lg transition-colors ${showChatLaser ? 'bg-amber-400/20 text-amber-300' : 'hover:bg-white/20 text-white'}`}
+                    title={showChatLaser ? "Desativar laser de leitura" : "Ativar laser de leitura"}
+                  >
+                    <Crosshair className="w-4 h-4" />
+                  </button>
                   <div className="flex items-center gap-0.5 bg-white/10 rounded-lg px-1">
                     <button
                       onClick={() => { const nv = Math.max(10, chatFontSize - 2); setChatFontSize(nv); localStorage.setItem('chat-font-size', String(nv)); }}
@@ -890,8 +902,22 @@ Diretrizes:
                 ref={chatContainerRef}
                 className="flex-grow overflow-y-auto p-4 space-y-3.5 bg-gray-50/50 dark:bg-gray-950/20 relative"
                 style={{ fontSize: `${chatFontSize}px` }}
+                onMouseMove={(e) => {
+                  if (!showChatLaser) return;
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  setChatLaserY(e.clientY - rect.top + e.currentTarget.scrollTop);
+                }}
+                onMouseLeave={() => setChatLaserY(null)}
               >
-                <ReadingLaser containerRef={chatContainerRef} />
+                {showChatLaser && chatLaserY !== null && (
+                  <div 
+                    className="absolute left-0 right-0 h-8 bg-amber-400/30 dark:bg-amber-400/20 pointer-events-none rounded transition-all duration-75"
+                    style={{ 
+                      top: chatLaserY - 16,
+                      zIndex: 10
+                    }} 
+                  />
+                )}
                 {messages.map((msg, idx) => {
                   const isUser = msg.sender === 'user';
                   return (
