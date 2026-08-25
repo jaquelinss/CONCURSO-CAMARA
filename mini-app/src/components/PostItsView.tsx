@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { collection, query, onSnapshot, doc, updateDoc, deleteDoc, addDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
-import { Plus, Edit2, Archive, Trash2, Search, FileText } from 'lucide-react';
+import { Plus, Edit2, Archive, Trash2, Search, FileText, Eye, EyeOff, ChevronDown, RotateCcw } from 'lucide-react';
 import DOMPurify from 'dompurify';
 import NoteEditor from './NoteEditor';
 
@@ -13,6 +13,10 @@ export default function PostItsView() {
   const [filterArchived, setFilterArchived] = useState(false);
   const [editingNote, setEditingNote] = useState<any | null>(null);
   const [isCascadeMode, setIsCascadeMode] = useState(true);
+  const [selectedTag, setSelectedTag] = useState<string>('__all__');
+  const [selectedSubTag, setSelectedSubTag] = useState<string>('__all__');
+  const [showTagsFilter, setShowTagsFilter] = useState(() => localStorage.getItem('mini-showTagsFilter') !== 'false');
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
 
   useEffect(() => {
     if (!user) return;
@@ -36,20 +40,45 @@ export default function PostItsView() {
     };
   }, [user]);
 
-  const filteredNotes = notes
-    .filter(n => !n.isFlashcard) // Only standard post-its, not flip cards
-    .filter(n => !!n.isArchived === filterArchived)
-    .filter(n => {
-      if (!searchTerm) return true;
-      const search = searchTerm.toLowerCase();
-      return (n.title?.toLowerCase().includes(search) || n.content?.toLowerCase().includes(search) || n.subjectTag?.toLowerCase().includes(search));
-    })
-    .sort((a, b) => {
-      // Sort by newest first
-      const dateA = a.createdAt?.seconds || 0;
-      const dateB = b.createdAt?.seconds || 0;
-      return dateB - dateA;
+  // Build tags hierarchy from all notes
+  const tagsHierarchy = useMemo(() => {
+    const hierarchy: Record<string, Set<string>> = {};
+    notes.filter(n => !n.isFlashcard).forEach(n => {
+      if (n.subjectTag) {
+        if (!hierarchy[n.subjectTag]) hierarchy[n.subjectTag] = new Set();
+        if (n.subTag) hierarchy[n.subjectTag].add(n.subTag);
+      }
     });
+    return hierarchy;
+  }, [notes]);
+
+  const allTags = useMemo(() => Object.keys(tagsHierarchy).sort((a, b) => a.localeCompare(b, 'pt-BR')), [tagsHierarchy]);
+
+  const postItNotes = useMemo(() => notes.filter(n => !n.isFlashcard), [notes]);
+
+  const filteredNotes = useMemo(() => {
+    return postItNotes
+      .filter(n => !!n.isArchived === filterArchived)
+      .filter(n => {
+        if (selectedTag === '__all__') return true;
+        if (selectedTag === '__no_tag__') return !n.subjectTag;
+        return n.subjectTag === selectedTag;
+      })
+      .filter(n => {
+        if (selectedSubTag === '__all__') return true;
+        return n.subTag === selectedSubTag;
+      })
+      .filter(n => {
+        if (!searchTerm) return true;
+        const search = searchTerm.toLowerCase();
+        return (n.title?.toLowerCase().includes(search) || n.content?.toLowerCase().includes(search) || n.subjectTag?.toLowerCase().includes(search));
+      })
+      .sort((a, b) => {
+        const dateA = a.createdAt?.seconds || 0;
+        const dateB = b.createdAt?.seconds || 0;
+        return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+      });
+  }, [postItNotes, filterArchived, selectedTag, selectedSubTag, searchTerm, sortOrder]);
 
   const getContrastColor = (hexColor: string) => {
     if (!hexColor) return '#1f2937';
@@ -65,39 +94,29 @@ export default function PostItsView() {
     if (!hexColor) return '#e5e7eb';
     let hex = hexColor.replace('#', '');
     if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
-    
     const r = Math.max(0, parseInt(hex.substring(0, 2), 16) - amount);
     const g = Math.max(0, parseInt(hex.substring(2, 4), 16) - amount);
     const b = Math.max(0, parseInt(hex.substring(4, 6), 16) - amount);
-    
     return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
   };
 
   const toggleArchive = async (noteId: string, currentStatus: boolean) => {
     if (!user) return;
-    // If unarchiving, warn user it will open on the main app
     if (currentStatus) {
-      if (!window.confirm('Desarquivar este post-it também vai abri-lo na tela do app principal. Continuar?')) {
-        return;
-      }
+      if (!window.confirm('Desarquivar este post-it também vai abri-lo na tela do app principal. Continuar?')) return;
     }
-    await updateDoc(doc(db, 'users', user.uid, 'notes', noteId), {
-      isArchived: !currentStatus
-    });
+    await updateDoc(doc(db, 'users', user.uid, 'notes', noteId), { isArchived: !currentStatus });
   };
 
   const toggleCascadeMode = async () => {
     if (!user) return;
     const newMode = !isCascadeMode;
-    // Update local state optimistically
     setIsCascadeMode(newMode);
     try {
-      // Use setDoc with merge instead of updateDoc to handle creation if missing
       const { setDoc } = await import('firebase/firestore');
       await setDoc(doc(db, 'users', user.uid, 'settings', 'stickyNotes'), { isCascadeMode: newMode }, { merge: true });
     } catch (e) {
       console.error(e);
-      // Revert on fail
       setIsCascadeMode(!newMode);
     }
   };
@@ -114,53 +133,196 @@ export default function PostItsView() {
     const newNote = {
       content: 'Nova anotação...',
       title: 'Novo Post-it',
-      color: '#fef08a', // Default yellow
+      color: '#fef08a',
       x: window.innerWidth / 2 - 100,
       y: window.innerHeight / 2 - 100,
       zIndex: 100,
-      createdAt: new Date(), // Local temp until server syncs
+      createdAt: new Date(),
       isArchived: false,
     };
     const docRef = await addDoc(collection(db, 'users', user.uid, 'notes'), newNote);
     setEditingNote({ id: docRef.id, ...newNote });
   };
 
+  // Batch actions
+  const handleShowRecent = async () => {
+    if (!user) return;
+    const archived = postItNotes
+      .filter(n => n.isArchived)
+      .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
+      .slice(0, 3);
+    if (archived.length === 0) { alert('Nenhum post-it arquivado para reabrir.'); return; }
+    if (!window.confirm(`Reabrir os ${archived.length} últimos post-its? Isso também vai mostrá-los no app principal.`)) return;
+    for (const n of archived) {
+      await updateDoc(doc(db, 'users', user.uid, 'notes', n.id), { isArchived: false, isMinimized: false });
+    }
+  };
+
+  const handleHideAll = async () => {
+    if (!user) return;
+    const toHide = postItNotes.filter(n => !n.isArchived).filter(n => {
+      if (selectedTag === '__all__') return true;
+      if (selectedTag === '__no_tag__') return !n.subjectTag;
+      return n.subjectTag === selectedTag;
+    });
+    if (toHide.length === 0) return;
+    const label = selectedTag === '__all__' ? 'todos' : selectedTag === '__no_tag__' ? 'sem tag' : `de "${selectedTag}"`;
+    if (!window.confirm(`Ocultar ${toHide.length} post-its (${label})? Eles serão arquivados.`)) return;
+    for (const n of toHide) {
+      await updateDoc(doc(db, 'users', user.uid, 'notes', n.id), { isArchived: true });
+    }
+  };
+
+  const handleShowAll = async () => {
+    if (!user) return;
+    const toShow = postItNotes.filter(n => n.isArchived).filter(n => {
+      if (selectedTag === '__all__') return true;
+      if (selectedTag === '__no_tag__') return !n.subjectTag;
+      return n.subjectTag === selectedTag;
+    });
+    if (toShow.length === 0) { alert('Nenhum post-it arquivado para mostrar.'); return; }
+    const label = selectedTag === '__all__' ? 'todos' : selectedTag === '__no_tag__' ? 'sem tag' : `de "${selectedTag}"`;
+    if (!window.confirm(`Mostrar ${toShow.length} post-its (${label})? Isso vai abri-los no app principal.`)) return;
+    for (const n of toShow) {
+      await updateDoc(doc(db, 'users', user.uid, 'notes', n.id), { isArchived: false });
+    }
+  };
+
+  const handleToggleTagsFilter = () => {
+    const next = !showTagsFilter;
+    setShowTagsFilter(next);
+    localStorage.setItem('mini-showTagsFilter', String(next));
+  };
+
   return (
-    <div className="space-y-4 h-full flex flex-col">
-      <div className="flex flex-col sm:flex-row gap-3 justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-gray-100">
-        <div className="relative flex-1 w-full">
-          <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-          <input 
-            type="text" 
-            placeholder="Buscar post-its..." 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
+    <div className="space-y-3 h-full flex flex-col">
+      {/* Search + Actions Bar */}
+      <div className="flex flex-col gap-2 bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+        <div className="flex flex-col sm:flex-row gap-2 items-center">
+          <div className="relative flex-1 w-full">
+            <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+            <input 
+              type="text" 
+              placeholder="Buscar post-its..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+          <div className="flex gap-1.5 w-full sm:w-auto flex-wrap">
+            <button 
+              onClick={toggleCascadeMode}
+              className={`flex-1 sm:flex-none px-2.5 py-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors border ${isCascadeMode ? 'bg-indigo-600 text-white border-transparent' : 'bg-white text-indigo-600 border-indigo-200 hover:bg-indigo-50'}`}
+            >
+              {isCascadeMode ? 'Cascata ✓' : 'Cascata'}
+            </button>
+            <button 
+              onClick={() => { setFilterArchived(!filterArchived); setSelectedTag('__all__'); setSelectedSubTag('__all__'); }}
+              className={`flex-1 sm:flex-none px-2.5 py-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors border ${filterArchived ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`}
+            >
+              <Archive className="w-3.5 h-3.5" /> {filterArchived ? 'Ver Ativos' : 'Arquivados'}
+            </button>
+            <button 
+              onClick={createNote}
+              className="flex-1 sm:flex-none px-2.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" /> Novo
+            </button>
+          </div>
         </div>
-        <div className="flex gap-2 w-full sm:w-auto">
+
+        {/* Sort + Tags toggle + Batch actions */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="relative">
+            <select 
+              value={sortOrder} 
+              onChange={(e) => setSortOrder(e.target.value as any)}
+              className="appearance-none bg-gray-50 border border-gray-200 rounded-lg text-xs px-2.5 py-1.5 pr-7 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            >
+              <option value="newest">Mais recentes</option>
+              <option value="oldest">Mais antigos</option>
+            </select>
+            <ChevronDown className="w-3 h-3 text-gray-400 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+          </div>
           <button 
-            onClick={toggleCascadeMode}
-            className={`flex-1 sm:flex-none px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 transition-colors border ${isCascadeMode ? 'bg-indigo-600 text-white border-transparent' : 'bg-white text-indigo-600 border-indigo-200 hover:bg-indigo-50'}`}
+            onClick={handleToggleTagsFilter}
+            className={`p-1.5 rounded-lg transition-colors ${showTagsFilter ? 'text-indigo-600 bg-indigo-50' : 'text-gray-400 hover:bg-gray-100'}`}
+            title={showTagsFilter ? 'Ocultar tags' : 'Mostrar tags'}
           >
-            {isCascadeMode ? 'Cascata Ativo' : 'Cascata'}
+            {showTagsFilter ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
           </button>
-          <button 
-            onClick={() => setFilterArchived(!filterArchived)}
-            className={`flex-1 sm:flex-none px-3 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 transition-colors border ${filterArchived ? 'bg-indigo-50 text-indigo-700 border-indigo-200' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`}
-          >
-            <Archive className="w-4 h-4" /> {filterArchived ? 'Ver Ativos' : 'Arquivados'}
+
+          <div className="h-4 w-px bg-gray-200" />
+
+          <button onClick={handleShowRecent} className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded-md transition-colors flex items-center gap-1" title="Reabrir últimos 3 arquivados">
+            <RotateCcw className="w-3 h-3" /> Últimos
           </button>
-          <button 
-            onClick={createNote}
-            className="flex-1 sm:flex-none px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium flex items-center justify-center gap-1.5 transition-colors"
-          >
-            <Plus className="w-4 h-4" /> Novo
-          </button>
+          {!filterArchived ? (
+            <button onClick={handleHideAll} className="text-[10px] font-bold text-amber-600 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded-md transition-colors" title="Ocultar todos (ou da tag selecionada)">
+              Ocultar Todos
+            </button>
+          ) : (
+            <button onClick={handleShowAll} className="text-[10px] font-bold text-emerald-600 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-2 py-1 rounded-md transition-colors" title="Mostrar todos (ou da tag selecionada)">
+              Mostrar Todos
+            </button>
+          )}
+
+          <span className="text-[10px] text-gray-400 ml-auto">{filteredNotes.length} post-its</span>
         </div>
+
+        {/* Tag filter pills */}
+        {showTagsFilter && allTags.length > 0 && (
+          <div className="flex flex-col gap-1.5">
+            <div className="flex flex-wrap gap-1.5">
+              <button
+                onClick={() => { setSelectedTag('__all__'); setSelectedSubTag('__all__'); }}
+                className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-colors ${selectedTag === '__all__' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              >
+                Todos
+              </button>
+              <button
+                onClick={() => { setSelectedTag('__no_tag__'); setSelectedSubTag('__all__'); }}
+                className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-colors ${selectedTag === '__no_tag__' ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+              >
+                Sem Tags
+              </button>
+              {allTags.map(tag => (
+                <button
+                  key={tag}
+                  onClick={() => { setSelectedTag(tag); setSelectedSubTag('__all__'); }}
+                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-colors ${selectedTag === tag ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+
+            {/* SubTag pills */}
+            {selectedTag !== '__all__' && selectedTag !== '__no_tag__' && tagsHierarchy[selectedTag]?.size > 0 && (
+              <div className="flex flex-wrap gap-1 pl-2 border-l-2 border-indigo-200">
+                <button
+                  onClick={() => setSelectedSubTag('__all__')}
+                  className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-colors ${selectedSubTag === '__all__' ? 'bg-indigo-400 text-white' : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'}`}
+                >
+                  Todos
+                </button>
+                {Array.from(tagsHierarchy[selectedTag]).sort().map(sub => (
+                  <button
+                    key={sub}
+                    onClick={() => setSelectedSubTag(sub)}
+                    className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-colors ${selectedSubTag === sub ? 'bg-indigo-400 text-white' : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'}`}
+                  >
+                    {sub}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 pb-10">
+      {/* Notes Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 pb-10">
         {filteredNotes.length === 0 ? (
           <div className="col-span-full py-12 flex flex-col items-center justify-center text-gray-400">
             <FileText className="w-12 h-12 mb-3 text-gray-300" />
@@ -174,8 +336,8 @@ export default function PostItsView() {
             return (
               <div 
                 key={note.id} 
-                className="rounded-lg shadow-sm border border-black/5 overflow-hidden flex flex-col transform transition-transform hover:scale-105 active:scale-95 cursor-pointer"
-                style={{ backgroundColor: note.color || '#fef08a' }}
+                className="rounded-lg overflow-hidden flex flex-col transform transition-transform hover:scale-105 active:scale-95 cursor-pointer"
+                style={{ backgroundColor: note.color || '#fef08a', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }}
                 onClick={() => setEditingNote(note)}
               >
                 <div 
@@ -204,25 +366,38 @@ export default function PostItsView() {
                   </div>
                 </div>
                 
+                {/* Tags display */}
+                {(note.subjectTag || note.subTag) && (
+                  <div className="px-2 pt-1 flex flex-wrap gap-1">
+                    {note.subjectTag && (
+                      <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-black/10" style={{ color: textColor }}>
+                        {note.subjectTag}
+                      </span>
+                    )}
+                    {note.subTag && (
+                      <span className="text-[8px] font-medium px-1.5 py-0.5 rounded-full bg-black/5" style={{ color: textColor }}>
+                        {note.subTag}
+                      </span>
+                    )}
+                  </div>
+                )}
+
                 <div 
-                  className="p-2 text-xs overflow-hidden flex-1 relative max-h-32"
+                  className="p-2 text-xs overflow-hidden flex-1 relative max-h-28"
                   style={{ color: textColor }}
                 >
                   <div 
-                    className="prose prose-sm prose-p:my-0 prose-ul:my-0 line-clamp-6"
+                    className="prose prose-sm prose-p:my-0 prose-ul:my-0 line-clamp-5"
                     style={{ color: 'inherit' }}
                     dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(note.content || '') }} 
                   />
-                  {/* Visual gradient to show more text */}
                   <div 
-                    className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t pointer-events-none" 
-                    style={{ 
-                      backgroundImage: `linear-gradient(to top, ${note.color || '#fef08a'} 0%, transparent 100%)` 
-                    }}
+                    className="absolute bottom-0 left-0 right-0 h-6 pointer-events-none" 
+                    style={{ backgroundImage: `linear-gradient(to top, ${note.color || '#fef08a'} 0%, transparent 100%)` }}
                   />
                 </div>
                 
-                <div className="px-2 py-1.5 border-t border-black/5 flex justify-between items-center">
+                <div className="px-2 py-1 border-t border-black/5 flex justify-between items-center">
                    {note.noteNumber && (
                      <span className="text-[9px] font-bold opacity-50 flex-1" style={{ color: textColor }}>
                        #{note.noteNumber}
@@ -245,7 +420,8 @@ export default function PostItsView() {
       {editingNote && (
         <NoteEditor 
           note={editingNote} 
-          onClose={() => setEditingNote(null)} 
+          onClose={() => setEditingNote(null)}
+          allTags={tagsHierarchy}
         />
       )}
     </div>

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { X, Check, Palette, Trash2, Bold, Italic, Underline, List, Repeat } from 'lucide-react';
+import { X, Check, Palette, Trash2, Bold, Italic, Underline, Strikethrough, List, Repeat, AlignLeft, AlignCenter, Tag, XCircle } from 'lucide-react';
 import { updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
@@ -8,6 +8,7 @@ import DOMPurify from 'dompurify';
 interface NoteEditorProps {
   note: any;
   onClose: () => void;
+  allTags?: Record<string, Set<string>>;
 }
 
 const COLORS = [
@@ -42,16 +43,18 @@ function getRandomHexColor(type: 'pastel' | 'vibrant' | 'neon'): string {
   return "#" + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
 }
 
-export default function NoteEditor({ note, onClose }: NoteEditorProps) {
+export default function NoteEditor({ note, onClose, allTags = {} }: NoteEditorProps) {
   const { user } = useAuth();
   const [title, setTitle] = useState(note.title || '');
   const [subjectTag, setSubjectTag] = useState(note.subjectTag || '');
+  const [subTag, setSubTag] = useState(note.subTag || '');
   const [content] = useState(note.content || '');
   const [backContent] = useState(note.backContent || '');
   const [isFlashcard, setIsFlashcard] = useState(!!note.isFlashcard);
   const [color, setColor] = useState(note.color || '#fef08a');
   const [saving, setSaving] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [showTagSuggestions, setShowTagSuggestions] = useState(false);
   
   const contentRef = useRef<HTMLDivElement>(null);
   const backContentRef = useRef<HTMLDivElement>(null);
@@ -73,6 +76,7 @@ export default function NoteEditor({ note, onClose }: NoteEditorProps) {
       await updateDoc(doc(db, 'users', user.uid, 'notes', note.id), {
         title,
         subjectTag,
+        subTag,
         content: htmlContent,
         backContent: htmlBackContent,
         isFlashcard,
@@ -153,21 +157,74 @@ export default function NoteEditor({ note, onClose }: NoteEditorProps) {
               placeholder="Sem título"
               className="w-full bg-transparent text-xl font-bold text-gray-900 placeholder-black/30 outline-none"
             />
-            <input
-              type="text"
-              value={subjectTag}
-              onChange={(e) => setSubjectTag(e.target.value)}
-              placeholder="Tag (ex: Português)"
-              className="w-full bg-transparent text-xs font-semibold text-gray-700 placeholder-black/40 outline-none uppercase tracking-wider"
-            />
+            <div className="flex gap-2 items-center">
+              <input
+                type="text"
+                value={subjectTag}
+                onChange={(e) => setSubjectTag(e.target.value)}
+                placeholder="Matéria (ex: Português)"
+                className="flex-1 bg-transparent text-xs font-semibold text-gray-700 placeholder-black/40 outline-none uppercase tracking-wider"
+              />
+              <input
+                type="text"
+                value={subTag}
+                onChange={(e) => setSubTag(e.target.value)}
+                placeholder="Assunto"
+                className="flex-1 bg-transparent text-xs font-medium text-gray-600 placeholder-black/30 outline-none"
+              />
+              <button
+                onClick={() => setShowTagSuggestions(!showTagSuggestions)}
+                className={`p-1 rounded transition-colors ${showTagSuggestions ? 'bg-indigo-100 text-indigo-600' : 'text-black/40 hover:bg-black/10'}`}
+                title="Sugestões de tags"
+              >
+                <Tag className="w-3.5 h-3.5" />
+              </button>
+              {(subjectTag || subTag) && (
+                <button
+                  onClick={() => { setSubjectTag(''); setSubTag(''); }}
+                  className="p-1 text-red-400 hover:text-red-600 rounded hover:bg-red-50 transition-colors"
+                  title="Remover tags"
+                >
+                  <XCircle className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+            {/* Tag suggestions */}
+            {showTagSuggestions && Object.keys(allTags).length > 0 && (
+              <div className="bg-black/5 rounded-lg p-2 flex flex-wrap gap-1 max-h-24 overflow-y-auto">
+                {Object.entries(allTags).map(([tag, subs]) => (
+                  <div key={tag} className="flex flex-wrap gap-1">
+                    <button
+                      onClick={() => { setSubjectTag(tag); setShowTagSuggestions(false); }}
+                      className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-colors ${subjectTag === tag ? 'bg-indigo-600 text-white' : 'bg-white/80 text-gray-700 hover:bg-white'}`}
+                    >
+                      {tag}
+                    </button>
+                    {subjectTag === tag && Array.from(subs).sort().map(s => (
+                      <button
+                        key={s}
+                        onClick={() => { setSubTag(s); setShowTagSuggestions(false); }}
+                        className={`px-1.5 py-0.5 rounded-full text-[8px] font-medium transition-colors ${subTag === s ? 'bg-indigo-400 text-white' : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'}`}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           
           <div className="flex items-center justify-between mb-1 p-1 bg-white/30 rounded-lg">
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-0.5">
               <button onClick={() => execCommand('bold')} className="p-1.5 hover:bg-white/50 rounded" title="Negrito"><Bold className="w-4 h-4 text-black/70"/></button>
               <button onClick={() => execCommand('italic')} className="p-1.5 hover:bg-white/50 rounded" title="Itálico"><Italic className="w-4 h-4 text-black/70"/></button>
               <button onClick={() => execCommand('underline')} className="p-1.5 hover:bg-white/50 rounded" title="Sublinhado"><Underline className="w-4 h-4 text-black/70"/></button>
+              <button onClick={() => execCommand('strikeThrough')} className="p-1.5 hover:bg-white/50 rounded" title="Tachado"><Strikethrough className="w-4 h-4 text-black/70"/></button>
               <button onClick={() => execCommand('insertUnorderedList')} className="p-1.5 hover:bg-white/50 rounded" title="Lista"><List className="w-4 h-4 text-black/70"/></button>
+              <div className="w-px h-4 bg-black/10 mx-0.5" />
+              <button onClick={() => execCommand('justifyLeft')} className="p-1.5 hover:bg-white/50 rounded" title="Alinhar Esquerda"><AlignLeft className="w-4 h-4 text-black/70"/></button>
+              <button onClick={() => execCommand('justifyCenter')} className="p-1.5 hover:bg-white/50 rounded" title="Centralizar"><AlignCenter className="w-4 h-4 text-black/70"/></button>
             </div>
             <label className="flex items-center gap-2 text-xs font-bold text-black/60 cursor-pointer pr-2">
               <input 
@@ -176,7 +233,7 @@ export default function NoteEditor({ note, onClose }: NoteEditorProps) {
                 onChange={(e) => setIsFlashcard(e.target.checked)}
                 className="rounded border-black/30 text-indigo-600 focus:ring-indigo-500"
               />
-              Modo Flashcard
+              Flashcard
             </label>
           </div>
 
