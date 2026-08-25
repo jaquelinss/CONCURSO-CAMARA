@@ -75,6 +75,12 @@ export default function PostItsView() {
 
   const toggleArchive = async (noteId: string, currentStatus: boolean) => {
     if (!user) return;
+    // If unarchiving, warn user it will open on the main app
+    if (currentStatus) {
+      if (!window.confirm('Desarquivar este post-it também vai abri-lo na tela do app principal. Continuar?')) {
+        return;
+      }
+    }
     await updateDoc(doc(db, 'users', user.uid, 'notes', noteId), {
       isArchived: !currentStatus
     });
