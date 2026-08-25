@@ -128,6 +128,15 @@ AUTO-VALIDAÇÃO OBRIGATÓRIA (faça ANTES de retornar):
 - Em questões de legislação: verifique artigos e incisos específicos.
 - NUNCA gere questões do tipo "qual dessas palavras está grafada corretamente" onde TODAS as palavras listadas estejam corretas. Isso é um erro gravíssimo.
 
+VERIFICAÇÃO DE PRECISÃO FACTUAL E CONCEITUAL (CRÍTICO):
+- Antes de definir a alternativa correta, VERIFIQUE se o conceito subjacente está correto segundo a doutrina majoritária e a jurisprudência consolidada.
+- Em questões que envolvam CÁLCULOS, DATAS ou PRAZOS: refaça o cálculo passo a passo e confira o resultado antes de apontar a resposta.
+- Em questões de Direito Tributário: os princípios da anterioridade anual e nonagesimal (noventena) são aplicados SIMULTANEAMENTE e prevalece a data MAIS DISTANTE — eles NÃO se somam. Exemplo: lei publicada em 15/out → anterioridade anual = 1º/jan do ano seguinte; noventena = 90 dias após = ~13/jan; prevalece a data mais distante (~13/jan).
+- Em questões de Direito: aplique a interpretação consolidada nos tribunais superiores (STF/STJ) e na doutrina majoritária. Não invente interpretações.
+- Em questões de Matemática/Física/Química: refaça cada cálculo por completo antes de confirmar a alternativa correta.
+- Em questões de qualquer matéria: se a questão envolver a aplicação simultânea de dois ou mais princípios, regras ou critérios, aplique-os CORRETAMENTE conforme a doutrina — não some, não misture, não invente regra de combinação inexistente.
+- Se você não tiver certeza absoluta sobre um conceito, NÃO gere a questão. Gere outra sobre um assunto que você domine com segurança.
+
 A resposta DEVE ser estritamente um objeto JSON com o seguinte formato exato:
 {
   "materia_identificada": "Nome da Matéria Oficial",

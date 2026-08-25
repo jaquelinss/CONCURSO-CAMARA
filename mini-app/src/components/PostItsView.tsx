@@ -43,7 +43,7 @@ export default function PostItsView() {
   // Build tags hierarchy from all notes
   const tagsHierarchy = useMemo(() => {
     const hierarchy: Record<string, Set<string>> = {};
-    notes.filter(n => !n.isFlashcard).forEach(n => {
+    notes.forEach(n => {
       if (n.subjectTag) {
         if (!hierarchy[n.subjectTag]) hierarchy[n.subjectTag] = new Set();
         if (n.subTag) hierarchy[n.subjectTag].add(n.subTag);
@@ -54,7 +54,7 @@ export default function PostItsView() {
 
   const allTags = useMemo(() => Object.keys(tagsHierarchy).sort((a, b) => a.localeCompare(b, 'pt-BR')), [tagsHierarchy]);
 
-  const postItNotes = useMemo(() => notes.filter(n => !n.isFlashcard), [notes]);
+  const postItNotes = useMemo(() => notes, [notes]);
 
   const filteredNotes = useMemo(() => {
     return postItNotes
@@ -218,9 +218,9 @@ export default function PostItsView() {
             </button>
             <button 
               onClick={() => { setFilterArchived(!filterArchived); setSelectedTag('__all__'); setSelectedSubTag('__all__'); }}
-              className={`flex-1 sm:flex-none px-2.5 py-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors border ${filterArchived ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`}
+              className={`flex-1 sm:flex-none px-2.5 py-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors border ${filterArchived ? 'bg-amber-100 text-amber-800 border-amber-300' : 'bg-emerald-100 text-emerald-800 border-emerald-300 hover:bg-emerald-50'}`}
             >
-              <Archive className="w-3.5 h-3.5" /> {filterArchived ? 'Ver Ativos' : 'Arquivados'}
+              <Archive className="w-3.5 h-3.5" /> {filterArchived ? 'Visualizando: Arquivados' : 'Visualizando: Ativos'}
             </button>
             <button 
               onClick={createNote}
@@ -400,7 +400,7 @@ export default function PostItsView() {
                 <div className="px-2 py-1 border-t border-black/5 flex justify-between items-center">
                    {note.noteNumber && (
                      <span className="text-[9px] font-bold opacity-50 flex-1" style={{ color: textColor }}>
-                       #{note.noteNumber}
+                       {note.isFlashcard ? '🔄' : '📌'} #{note.noteNumber}
                      </span>
                    )}
                    <button 
