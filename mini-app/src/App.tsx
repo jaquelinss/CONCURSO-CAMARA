@@ -1,9 +1,72 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from './contexts/AuthContext';
 import Login from './components/Login';
-import { StickyNote, Layers, LogOut } from 'lucide-react';
+import { StickyNote, Layers, LogOut, Download, X } from 'lucide-react';
 import PostItsView from './components/PostItsView';
 import FlashcardsView from './components/FlashcardsView';
+
+function InstallBanner() {
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showBanner, setShowBanner] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+
+  useEffect(() => {
+    // Check if already installed
+    if (window.matchMedia('(display-mode: standalone)').matches) return;
+    // Check if user dismissed recently
+    const dismissedAt = localStorage.getItem('pwa-install-dismissed');
+    if (dismissedAt && Date.now() - parseInt(dismissedAt) < 7 * 24 * 60 * 60 * 1000) return;
+
+    const handler = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowBanner(true);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstall = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setShowBanner(false);
+    }
+    setDeferredPrompt(null);
+  };
+
+  const handleDismiss = () => {
+    setShowBanner(false);
+    setDismissed(true);
+    localStorage.setItem('pwa-install-dismissed', Date.now().toString());
+  };
+
+  if (!showBanner || dismissed) return null;
+
+  return (
+    <div className="bg-indigo-600 text-white px-4 py-3 flex items-center justify-between gap-3 animate-in slide-in-from-top">
+      <div className="flex items-center gap-3 min-w-0">
+        <Download className="w-5 h-5 flex-shrink-0" />
+        <div className="min-w-0">
+          <p className="text-sm font-bold">Instalar EduGenius Notes</p>
+          <p className="text-xs text-indigo-200 truncate">Acesse offline direto da tela inicial</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-2 flex-shrink-0">
+        <button
+          onClick={handleInstall}
+          className="px-3 py-1.5 bg-white text-indigo-600 rounded-lg text-sm font-bold hover:bg-indigo-50 transition-colors"
+        >
+          Instalar
+        </button>
+        <button onClick={handleDismiss} className="p-1 hover:bg-white/20 rounded-full">
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function MainLayout() {
   const { signOut } = useAuth();
@@ -11,6 +74,9 @@ function MainLayout() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
+      {/* PWA Install Banner */}
+      <InstallBanner />
+
       {/* Header */}
       <header className="bg-white shadow-sm px-4 py-3 flex justify-between items-center sticky top-0 z-10">
         <div className="flex items-center gap-2">
