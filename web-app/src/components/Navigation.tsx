@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useReward } from '../contexts/RewardContext';
-import { LogOut, Menu, X, CalendarDays, FolderHeart, Sun, Moon, TrendingUp, Database, HelpCircle, Focus, Book, Home, BookOpen, Archive, Flame, Store, Columns, PieChart, Timer, Trophy, NotebookPen } from 'lucide-react';
+import { LogOut, Menu, X, CalendarDays, FolderHeart, Sun, Moon, TrendingUp, Database, HelpCircle, Focus, Book, Home, BookOpen, Archive, Flame, Store, Columns, PieChart, Timer, Trophy, NotebookPen, Smartphone } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import FocusPlayer from './FocusPlayer';
 import { RewardShop } from './RewardShop';
@@ -212,6 +212,16 @@ export default function Navigation() {
               <NotebookPen className="w-5 h-5" />
             </button>
 
+            <a
+              href="https://estudo-a0215-notes.web.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:block p-2 rounded-lg text-indigo-500 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors"
+              title="Instalar EduGenius Notes (Mini App de Post-its)"
+            >
+              <Smartphone className="w-5 h-5" />
+            </a>
+
             {/* Separador */}
             <div className="hidden sm:block w-px h-6 bg-gray-200 dark:bg-gray-700 mx-0.5" />
 
@@ -392,6 +402,15 @@ export default function Navigation() {
               </svg>
               Configurações
             </Link>
+            <a
+              href="https://estudo-a0215-notes.web.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full flex items-center gap-3 pl-3 pr-4 py-3 border-l-4 border-transparent text-base font-medium text-indigo-500 dark:text-indigo-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              <Smartphone className="w-5 h-5" /> Instalar EduGenius Notes
+            </a>
             <button
               onClick={() => { setMobileMenuOpen(false); window.dispatchEvent(new Event('open-tutorial')); }}
               className="w-full flex items-center gap-3 pl-3 pr-4 py-3 border-l-4 border-transparent text-base font-medium text-indigo-600 dark:text-indigo-400 hover:bg-gray-50 dark:hover:bg-gray-700"
