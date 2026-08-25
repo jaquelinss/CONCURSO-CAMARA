@@ -22,7 +22,9 @@ import {
   ImagePlus,
   XCircle,
   Database,
-  CheckCircle2
+  CheckCircle2,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 import { subjectsConcurso, subjectsEnem, subjectsGeral, subjectsAuditorFiscal, subjectsAssistenteUFPE } from '../lib/constants';
 import { useKnowledgeBase } from '../contexts/KnowledgeBaseContext';
@@ -313,6 +315,7 @@ export default function AITeacherChat({ isHidden = false }: { isHidden?: boolean
   const { user, apiKey } = useAuth();
   const { awardPoints } = useReward();
   const [isGeneratingPostIt, setIsGeneratingPostIt] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
   
   // Knowledge Base State
   const { materials, activeMaterialIds, toggleMaterialActive, getContextText, isDownloadingContext, setShowManager } = useKnowledgeBase();
@@ -748,7 +751,11 @@ Diretrizes:
       </button>
 
       {isOpen && (
-        <div className="fixed right-4 bottom-[5.5rem] z-[10004] w-[380px] max-w-[calc(100vw-2rem)] h-[550px] max-h-[80vh] bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden flex flex-col transition-all duration-300 animate-in fade-in slide-in-from-bottom-6 zoom-in-95 origin-bottom-right">
+        <div className={`fixed z-[10004] bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden flex flex-col transition-all duration-300 animate-in fade-in slide-in-from-bottom-6 zoom-in-95 origin-bottom-right ${
+          isExpanded 
+            ? 'right-4 bottom-4 w-[700px] max-w-[calc(100vw-2rem)] h-[85vh]' 
+            : 'right-4 bottom-[5.5rem] w-[380px] max-w-[calc(100vw-2rem)] h-[550px] max-h-[80vh]'
+        }`}>
           
           <div className="p-4 border-b border-gray-200/50 dark:border-gray-800 bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-700 text-white flex flex-col gap-2.5">
             <div className="flex items-center justify-between">
@@ -804,6 +811,13 @@ Diretrizes:
                         {materials.length}
                       </span>
                     )}
+                  </button>
+                  <button
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    className="p-1.5 hover:bg-white/20 rounded-lg text-white transition-colors hidden sm:block"
+                    title={isExpanded ? "Diminuir chat" : "Expandir chat"}
+                  >
+                    {isExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                   </button>
                   <button
                     onClick={() => setIsOpen(false)}
