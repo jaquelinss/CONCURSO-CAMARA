@@ -301,7 +301,7 @@ export default function ReadingLaser({ containerRef }: ReadingLaserProps) {
             backgroundColor: color,
             opacity: opacity,
             pointerEvents: 'none',
-            zIndex: 9999,
+            zIndex: 10010,
             borderRadius: '4px',
             transition: 'top 0.05s ease-out',
           }}
@@ -331,7 +331,7 @@ export default function ReadingLaser({ containerRef }: ReadingLaserProps) {
       {/* Toggle + Settings button (Draggable via Portal) */}
       {createPortal(
         <Draggable bounds="body" nodeRef={settingsRef} handle=".drag-handle">
-          <div className="fixed bottom-8 left-4 z-[10000] flex flex-col gap-2 items-start" ref={settingsRef}>
+          <div className="fixed bottom-8 left-4 z-[10010] flex flex-col gap-2 items-start" ref={settingsRef}>
         {showSettings && (
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-4 w-64 animate-fade-in mb-2">
             <div className="flex items-center justify-between mb-3">
