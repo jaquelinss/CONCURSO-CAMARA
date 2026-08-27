@@ -154,6 +154,16 @@ export default function DigitalNotebook() {
     return () => window.removeEventListener('keydown', handler);
   }, [active]);
 
+  // ─── Toggle body class for highlighter mode ────────────────────
+  useEffect(() => {
+    if (active && isHighlightMode) {
+      document.body.classList.add('digital-notebook-highlighter-active');
+    } else {
+      document.body.classList.remove('digital-notebook-highlighter-active');
+    }
+    return () => document.body.classList.remove('digital-notebook-highlighter-active');
+  }, [active, isHighlightMode]);
+
   // ─── Firestore real-time sync ──────────────────────────────────
   useEffect(() => {
     if (!user) return;

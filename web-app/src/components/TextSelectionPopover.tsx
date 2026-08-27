@@ -18,7 +18,10 @@ export default function TextSelectionPopover() {
     const handleSelectionChange = () => {
       const selection = window.getSelection();
       
-      if (document.body.classList.contains('global-highlighter-active')) {
+      if (
+        document.body.classList.contains('global-highlighter-active') ||
+        document.body.classList.contains('digital-notebook-highlighter-active')
+      ) {
         if (!isLoading) {
           setPosition(null);
           setSelectedText('');
