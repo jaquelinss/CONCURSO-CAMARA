@@ -792,7 +792,7 @@ function SidebarNoteItem({
                 suppressContentEditableWarning
                 onInput={e => setEditContent((e.target as HTMLDivElement).innerHTML)} 
                 className="w-full bg-white/50 rounded p-2 text-sm outline-none overflow-y-auto h-20 font-sans cursor-text border border-transparent focus:border-indigo-300"
-                dangerouslySetInnerHTML={{ __html: note.content || '' }}
+                dangerouslySetInnerHTML={{ __html: editContent }}
               />
             </div>
             {note.isFlashcard && (
@@ -803,7 +803,7 @@ function SidebarNoteItem({
                   suppressContentEditableWarning
                   onInput={e => setEditBackContent((e.target as HTMLDivElement).innerHTML)} 
                   className="w-full bg-indigo-50/50 rounded p-2 text-sm outline-none overflow-y-auto h-20 font-sans border border-indigo-100 focus:border-indigo-300 cursor-text"
-                  dangerouslySetInnerHTML={{ __html: note.backContent || '' }}
+                  dangerouslySetInnerHTML={{ __html: editBackContent }}
                 />
               </div>
             )}

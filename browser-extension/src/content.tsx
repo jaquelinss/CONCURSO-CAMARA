@@ -88,6 +88,7 @@ function FloatingTracker() {
   const [minimized, setMinimized] = useState(false);
   const [showNoteForm, setShowNoteForm] = useState(false);
   const [noteText, setNoteText] = useState('');
+  const [backText, setBackText] = useState('');
   const [noteType, setNoteType] = useState<'postit' | 'flashcard'>('postit');
   const [noteSaving, setNoteSaving] = useState(false);
   const [expanded, setExpanded] = useState(true);
@@ -117,18 +118,19 @@ function FloatingTracker() {
     if (!text) return;
     setNoteSaving(true);
     chrome.runtime.sendMessage({
-      action: 'CREATE_NOTE', text, isFlashcard: noteType === 'flashcard'
+      action: 'CREATE_NOTE', text, backText: backText.trim(), isFlashcard: noteType === 'flashcard'
     }, (response) => {
       setNoteSaving(false);
       if (response?.success) {
         setNoteText('');
+        setBackText('');
         setShowNoteForm(false);
         showToast(noteType === 'flashcard' ? '📋 Flashcard salvo!' : '📝 Post-it salvo!');
       } else {
         showToast('❌ Erro: ' + (response?.error || 'desconhecido'));
       }
     });
-  }, [noteText, noteType]);
+  }, [noteText, backText, noteType]);
 
   if (minimized) {
     return (
@@ -213,6 +215,18 @@ function FloatingTracker() {
                   fontFamily: 'sans-serif', boxSizing: 'border-box'
                 }}
               />
+              {noteType === 'flashcard' && (
+                <textarea
+                  value={backText}
+                  onChange={(e) => setBackText(e.target.value)}
+                  placeholder="Verso do flashcard..."
+                  style={{
+                    width: '100%', minHeight: '60px', padding: '8px', borderRadius: '8px',
+                    border: '1px solid #d1d5db', fontSize: '12px', resize: 'vertical',
+                    fontFamily: 'sans-serif', boxSizing: 'border-box', marginTop: '6px'
+                  }}
+                />
+              )}
               <div style={{ display: 'flex', gap: '6px', marginTop: '6px' }}>
                 <button onClick={() => setShowNoteForm(false)} style={{
                   flex: 1, background: '#f3f4f6', color: '#6b7280', border: 'none',

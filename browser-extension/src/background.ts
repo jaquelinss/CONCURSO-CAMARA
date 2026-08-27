@@ -131,7 +131,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
       const newNote = {
         title: 'Captura da Web',
         content: text,
-        backContent: isFlashcard ? 'Edite o verso no app...' : '',
+        backContent: isFlashcard ? (request.backText || 'Edite o verso no app...') : '',
         isFlashcard,
         color: '#fef08a',
         subjectTag: 'Geral',

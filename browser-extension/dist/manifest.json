@@ -9,10 +9,10 @@
   "content_scripts": [
     {
       "js": [
-        "assets/content.tsx-loader-DiaAIbJE.js"
+        "assets/content.tsx-loader-Dvimdg3C.js"
       ],
       "matches": [
-        "*://gemini.google.com/share/72aba0755499*"
+        "*://gemini.google.com/*"
       ],
       "all_frames": true
     }
@@ -34,7 +34,7 @@
       "resources": [
         "assets/rolldown-runtime-Czjbc987.js",
         "assets/jsx-runtime-CRr1Db8x.js",
-        "assets/content.tsx-DdbSO52k.js"
+        "assets/content.tsx-DSCGgZIJ.js"
       ],
       "use_dynamic_url": false
     }
