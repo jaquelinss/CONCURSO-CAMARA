@@ -47,7 +47,7 @@ export default function GlobalHighlighter() {
               existingRange.endOffset === range.endOffset
             ) {
               matchedColorId = color.id;
-              matchedRange = existingRange;
+              matchedRange = existingRange as Range;
               break;
             }
           }

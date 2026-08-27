@@ -305,7 +305,7 @@ export default function DigitalNotebook() {
 
   useEffect(() => {
     if (!spanOptionsPos) return;
-    const handleGlobalClick = (e: MouseEvent) => {
+    const handleGlobalClick = (_e: MouseEvent) => {
       // Small timeout to allow button clicks on the popover itself to process
       setTimeout(() => {
         setSpanOptionsPos(null);
