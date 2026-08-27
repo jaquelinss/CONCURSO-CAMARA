@@ -33,6 +33,7 @@ import SiteDecorator from './components/SiteDecorator';
 import GlobalSplitScreenManager from './components/GlobalSplitScreenManager';
 import DigitalNotebook from './components/DigitalNotebook';
 import GlobalHighlighter from './components/GlobalHighlighter';
+import HighlightOptionsPopover from './components/HighlightOptionsPopover';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -85,6 +86,7 @@ export default function App() {
                   <PdfAnnotatorOverlay />
                   <DigitalNotebook />
                   <GlobalHighlighter />
+                  <HighlightOptionsPopover />
 
                   {/* Toggle Tools Button */}
                   <button
