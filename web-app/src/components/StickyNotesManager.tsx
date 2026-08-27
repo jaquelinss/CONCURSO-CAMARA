@@ -1036,7 +1036,7 @@ function FlashcardItem({
         <div className={`relative w-full h-full transition-transform duration-500 transform-style-3d ${flipped ? 'rotate-y-180' : ''}`}>
           
           {/* FRENTE */}
-          <div className="absolute w-full h-full backface-hidden rounded-xl shadow-xl flex flex-col" style={{ backgroundColor: baseColor, color: frontTextColor }}>
+          <div className={`absolute w-full h-full backface-hidden rounded-xl flex flex-col ${isCascadeMode ? 'shadow border border-black/10' : 'shadow-xl'}`} style={{ backgroundColor: baseColor, color: frontTextColor }}>
             <div className="drag-handle h-8 bg-black/10 flex items-center justify-between px-2 cursor-grab active:cursor-grabbing rounded-t-xl" onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center gap-2">
                 <GripHorizontal className="w-4 h-4 opacity-50" />
@@ -1138,7 +1138,7 @@ function FlashcardItem({
           </div>
 
           {/* VERSO */}
-          <div className="absolute w-full h-full backface-hidden rounded-xl shadow-xl flex flex-col rotate-y-180" style={{ backgroundColor: backColor, color: backTextColor }}>
+          <div className={`absolute w-full h-full backface-hidden rounded-xl flex flex-col rotate-y-180 ${isCascadeMode ? 'shadow border border-black/10' : 'shadow-xl'}`} style={{ backgroundColor: backColor, color: backTextColor }}>
             <div className="drag-handle h-8 bg-black/10 flex items-center justify-between px-2 cursor-grab active:cursor-grabbing rounded-t-xl" onClick={(e) => e.stopPropagation()}>
                <div className="flex items-center gap-2">
                  <GripHorizontal className="w-4 h-4 opacity-50" />
@@ -1355,7 +1355,7 @@ function StickyNoteItem({
     >
       <div 
         ref={nodeRef}
-        className={`sticky-note absolute rounded-lg shadow-xl overflow-hidden pointer-events-auto border-t-8 flex flex-col group transition-shadow hover:shadow-2xl ${isCascadeMode ? 'cascade-mode-item' : ''}`}
+        className={`sticky-note absolute rounded-lg overflow-hidden pointer-events-auto border-t-8 flex flex-col group transition-shadow ${isCascadeMode ? 'cascade-mode-item shadow border border-black/10' : 'shadow-xl hover:shadow-2xl'}`}
         style={{ 
           width: isCascadeMode && cascadeSize ? `${cascadeSize.w}px` : `${size.w}px`,
           height: note.isMinimized ? '32px' : (isCascadeMode && cascadeSize ? `${cascadeSize.h}px` : `${size.h}px`),
