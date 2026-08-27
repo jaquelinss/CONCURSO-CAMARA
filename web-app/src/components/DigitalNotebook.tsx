@@ -429,6 +429,14 @@ export default function DigitalNotebook() {
         className="fixed z-[9997] flex flex-col rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-900"
         style={{ top: 0, left: 0, width: isMinimized ? 320 : windowSize.w, height: isMinimized ? 52 : windowSize.h }}
       >
+        {isHighlightMode && (
+          <style>{`
+            .dn-editor::selection {
+              background-color: ${highlightModeColor} !important;
+              color: inherit !important;
+            }
+          `}</style>
+        )}
         {/* ─── Header ────────────────────────────────────── */}
         <div className="dn-drag-handle flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-rose-500 to-pink-600 text-white cursor-move select-none flex-shrink-0">
           <div className="flex items-center gap-2">
