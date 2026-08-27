@@ -31,6 +31,7 @@ export default function GlobalHighlighter() {
       const range = selection.getRangeAt(0);
       
       let matchedColorId: string | null = null;
+      let matchedRange: Range | null = null;
 
       // Check if this range matches any existing highlight
       for (const color of HIGHLIGHT_COLORS) {
@@ -46,6 +47,7 @@ export default function GlobalHighlighter() {
               existingRange.endOffset === range.endOffset
             ) {
               matchedColorId = color.id;
+              matchedRange = existingRange;
               break;
             }
           }
@@ -53,10 +55,10 @@ export default function GlobalHighlighter() {
         if (matchedColorId) break;
       }
 
-      if (matchedColorId) {
+      if (matchedColorId && matchedRange) {
         // Trigger options popover
         window.dispatchEvent(new CustomEvent('show-highlight-options', {
-          detail: { range, colorId: matchedColorId }
+          detail: { range: matchedRange, colorId: matchedColorId }
         }));
       } else {
         // Add new highlight

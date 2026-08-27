@@ -10,7 +10,8 @@ import {
 import {
   X, Minus, Maximize2, Plus, Search, Tag, Trash2, Pin, PinOff,
   Bold, Italic, Underline, List, ListOrdered, Heading1, Heading2,
-  Pipette, PlusCircle, StickyNote, ChevronDown, FileText, NotebookPen
+  Pipette, PlusCircle, StickyNote, ChevronDown, FileText, NotebookPen,
+  Eraser, Palette
 } from 'lucide-react';
 
 // ─── Color system (same as StickyNotesManager) ────────────────────
@@ -117,6 +118,10 @@ export default function DigitalNotebook() {
     try { const s = localStorage.getItem('dn_saved_colors'); return s ? JSON.parse(s) : []; }
     catch { return []; }
   });
+  
+  const [activeSpan, setActiveSpan] = useState<HTMLElement | null>(null);
+  const [spanOptionsPos, setSpanOptionsPos] = useState<{ x: number, y: number } | null>(null);
+  const [showSpanColors, setShowSpanColors] = useState(false);
 
   const editorRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLInputElement>(null);
@@ -284,7 +289,54 @@ export default function DigitalNotebook() {
   const openPostIt = (num: number) => {
     window.dispatchEvent(new CustomEvent('open-postit', { detail: num }));
   };
+  // ─── Span Highlight Handlers ─────────────────────────────────────
+  const handleEditorClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'SPAN' && target.style.backgroundColor) {
+      const rect = target.getBoundingClientRect();
+      setSpanOptionsPos({ x: rect.left + rect.width / 2, y: rect.bottom + 10 });
+      setActiveSpan(target);
+      setShowSpanColors(false);
+    } else {
+      setSpanOptionsPos(null);
+      setActiveSpan(null);
+    }
+  };
 
+  useEffect(() => {
+    if (!spanOptionsPos) return;
+    const handleGlobalClick = (e: MouseEvent) => {
+      // Small timeout to allow button clicks on the popover itself to process
+      setTimeout(() => {
+        setSpanOptionsPos(null);
+        setActiveSpan(null);
+      }, 150);
+    };
+    document.addEventListener('mousedown', handleGlobalClick);
+    return () => document.removeEventListener('mousedown', handleGlobalClick);
+  }, [spanOptionsPos]);
+
+  const changeSpanColor = (colorHex: string) => {
+    if (activeSpan && selectedNote) {
+      activeSpan.style.backgroundColor = colorHex;
+      saveNote(selectedNote.id, { content: editorRef.current?.innerHTML || '' });
+    }
+    setSpanOptionsPos(null);
+    setActiveSpan(null);
+  };
+
+  const removeSpanHighlight = () => {
+    if (activeSpan && selectedNote) {
+      const parent = activeSpan.parentNode;
+      while (activeSpan.firstChild) {
+        parent?.insertBefore(activeSpan.firstChild, activeSpan);
+      }
+      parent?.removeChild(activeSpan);
+      saveNote(selectedNote.id, { content: editorRef.current?.innerHTML || '' });
+    }
+    setSpanOptionsPos(null);
+    setActiveSpan(null);
+  };
   // ─── Eyedropper ────────────────────────────────────────────────
   const handleEyedropper = async () => {
     try {
@@ -665,6 +717,7 @@ export default function DigitalNotebook() {
                           }
                         }
                       }}
+                      onClick={handleEditorClick}
                       onInput={() => {
                         if (selectedNote && editorRef.current) {
                           saveNote(selectedNote.id, { content: editorRef.current.innerHTML });
@@ -766,6 +819,51 @@ export default function DigitalNotebook() {
                 </div>
               )}
             </div>
+          </div>
+        )}
+
+        {/* Span Options Popover */}
+        {spanOptionsPos && (
+          <div 
+            className="fixed z-[10000] transform -translate-x-1/2 flex gap-2 animate-fade-in shadow-xl"
+            style={{ left: spanOptionsPos.x, top: spanOptionsPos.y }}
+            onMouseDown={(e) => e.stopPropagation()}
+          >
+            {!showSpanColors ? (
+              <>
+                <button
+                  onClick={() => setShowSpanColors(true)}
+                  className="flex items-center gap-2 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 font-bold py-1.5 px-3 rounded-full border border-gray-200 dark:border-gray-600 transition-all text-xs"
+                >
+                  <Palette className="w-3.5 h-3.5" />
+                  <span>Mudar Cor</span>
+                </button>
+                <button
+                  onClick={removeSpanHighlight}
+                  className="flex items-center gap-2 bg-white dark:bg-gray-800 hover:bg-red-50 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 font-bold py-1.5 px-3 rounded-full border border-gray-200 dark:border-gray-600 transition-all text-xs"
+                >
+                  <Eraser className="w-3.5 h-3.5" />
+                  <span>Desmarcar</span>
+                </button>
+              </>
+            ) : (
+              <div className="flex items-center gap-1.5 bg-white dark:bg-gray-800 p-1.5 rounded-full border border-gray-200 dark:border-gray-600">
+                {COLORS.map(c => (
+                  <button
+                    key={c}
+                    onClick={() => changeSpanColor(c)}
+                    className="w-5 h-5 rounded-full shadow-inner border border-black/10 hover:scale-110 transition-transform"
+                    style={{ backgroundColor: c }}
+                  />
+                ))}
+                <button 
+                  onClick={() => setShowSpanColors(false)}
+                  className="ml-1 text-[10px] px-1 text-gray-500 hover:text-gray-800 dark:hover:text-gray-300 font-medium"
+                >
+                  Cancelar
+                </button>
+              </div>
+            )}
           </div>
         )}
 
