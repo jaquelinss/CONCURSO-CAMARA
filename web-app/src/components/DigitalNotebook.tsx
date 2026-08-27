@@ -114,6 +114,7 @@ export default function DigitalNotebook() {
   const [showPostItLinker, setShowPostItLinker] = useState(false);
   const [postItNumber, setPostItNumber] = useState('');
   const [isHighlightMode, setIsHighlightMode] = useState(false);
+  const [showSidebarTags, setShowSidebarTags] = useState(true);
   const [highlightModeColor, setHighlightModeColor] = useState('#fef08a');
   const [showHighlighterColors, setShowHighlighterColors] = useState(false);
   const [savedColors, setSavedColors] = useState<string[]>(() => {
@@ -497,24 +498,35 @@ export default function DigitalNotebook() {
 
                 {/* Tags */}
                 <div className="px-2 pt-3 pb-1">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-1">Tags</p>
-                  <div className="flex flex-wrap gap-1">
-                    <button
-                      onClick={() => setActiveTag(null)}
-                      className={`text-[10px] px-2 py-0.5 rounded-full font-medium transition-colors ${!activeTag ? 'bg-rose-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'}`}
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500">Tags</p>
+                    <button 
+                      onClick={() => setShowSidebarTags(!showSidebarTags)} 
+                      className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-0.5 rounded"
+                      title={showSidebarTags ? "Esconder Tags" : "Mostrar Tags"}
                     >
-                      Todas
+                      <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showSidebarTags ? 'rotate-180' : ''}`} />
                     </button>
-                    {allTags.map(([tag, count]) => (
-                      <button
-                        key={tag}
-                        onClick={() => setActiveTag(activeTag === tag ? null : tag)}
-                        className={`text-[10px] px-2 py-0.5 rounded-full font-medium transition-colors ${activeTag === tag ? 'bg-rose-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'}`}
-                      >
-                        {tag} ({count})
-                      </button>
-                    ))}
                   </div>
+                  {showSidebarTags && (
+                    <div className="flex flex-wrap gap-1">
+                      <button
+                        onClick={() => setActiveTag(null)}
+                        className={`text-[10px] px-2 py-0.5 rounded-full font-medium transition-colors ${!activeTag ? 'bg-rose-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'}`}
+                      >
+                        Todas
+                      </button>
+                      {allTags.map(([tag, count]) => (
+                        <button
+                          key={tag}
+                          onClick={() => setActiveTag(activeTag === tag ? null : tag)}
+                          className={`text-[10px] px-2 py-0.5 rounded-full font-medium transition-colors ${activeTag === tag ? 'bg-rose-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'}`}
+                        >
+                          {tag} ({count})
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Notes list */}
