@@ -469,14 +469,21 @@ export default function StickyNotesManager() {
   
   const allTags = Object.keys(tagsHierarchy);
 
+  const activeStickyNotes = activeNotes.filter(n => !n.isFlashcard);
+  const topStickyId = activeStickyNotes.length > 0 ? [...activeStickyNotes].sort((a, b) => (b.zIndex || 0) - (a.zIndex || 0))[0].id : null;
+
+  const activeFlashcards = activeNotes.filter(n => n.isFlashcard);
+  const topFlashcardId = activeFlashcards.length > 0 ? [...activeFlashcards].sort((a, b) => (b.zIndex || 0) - (a.zIndex || 0))[0].id : null;
+
   return (
     <>
       <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 9999 }}>
-        {activeNotes.filter(n => !n.isFlashcard).map(note => (
+        {activeStickyNotes.map(note => (
           <StickyNoteItem 
             key={`${note.id}-${isCascadeMode ? 'cascade' : 'free'}`} 
             note={note} 
             isCascadeMode={isCascadeMode}
+            isTop={note.id === topStickyId}
             cascadePos={cascadePos}
             cascadeSize={cascadeSize}
             onCascadeResize={(size) => setCascadeSize(size)}
@@ -499,11 +506,12 @@ export default function StickyNotesManager() {
             tagsHierarchy={tagsHierarchy}
           />
         ))}
-        {activeNotes.filter(n => n.isFlashcard).map(note => (
+        {activeFlashcards.map(note => (
           <FlashcardItem 
             key={`${note.id}-${isFlashcardCascadeMode ? 'cascade' : 'free'}`} 
             note={note} 
             isCascadeMode={isFlashcardCascadeMode}
+            isTop={note.id === topFlashcardId}
             cascadePos={flashcardCascadePos}
             cascadeSize={flashcardCascadeSize}
             onCascadeResize={(size) => {
@@ -878,6 +886,7 @@ function SidebarNoteItem({
 function FlashcardItem({ 
   note, 
   isCascadeMode,
+  isTop,
   cascadePos,
   cascadeSize,
   onCascadeResize,
@@ -888,6 +897,7 @@ function FlashcardItem({
 }: { 
   note: Note; 
   isCascadeMode: boolean;
+  isTop?: boolean;
   cascadePos?: {x: number, y: number};
   cascadeSize?: {w: number, h: number};
   onCascadeResize?: (size: {w: number, h: number}) => void;
@@ -1036,7 +1046,7 @@ function FlashcardItem({
         <div className={`relative w-full h-full transition-transform duration-500 transform-style-3d ${flipped ? 'rotate-y-180' : ''}`}>
           
           {/* FRENTE */}
-          <div className={`absolute w-full h-full backface-hidden rounded-xl flex flex-col ${isCascadeMode ? 'shadow border border-black/10' : 'shadow-xl'}`} style={{ backgroundColor: baseColor, color: frontTextColor }}>
+          <div className={`absolute w-full h-full backface-hidden rounded-xl flex flex-col ${isCascadeMode ? (isTop ? 'shadow-xl' : 'shadow-none border border-black/10') : 'shadow-xl'}`} style={{ backgroundColor: baseColor, color: frontTextColor }}>
             <div className="drag-handle h-8 bg-black/10 flex items-center justify-between px-2 cursor-grab active:cursor-grabbing rounded-t-xl" onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center gap-2">
                 <GripHorizontal className="w-4 h-4 opacity-50" />
@@ -1138,7 +1148,7 @@ function FlashcardItem({
           </div>
 
           {/* VERSO */}
-          <div className={`absolute w-full h-full backface-hidden rounded-xl flex flex-col rotate-y-180 ${isCascadeMode ? 'shadow border border-black/10' : 'shadow-xl'}`} style={{ backgroundColor: backColor, color: backTextColor }}>
+          <div className={`absolute w-full h-full backface-hidden rounded-xl flex flex-col rotate-y-180 ${isCascadeMode ? (isTop ? 'shadow-xl' : 'shadow-none border border-black/10') : 'shadow-xl'}`} style={{ backgroundColor: backColor, color: backTextColor }}>
             <div className="drag-handle h-8 bg-black/10 flex items-center justify-between px-2 cursor-grab active:cursor-grabbing rounded-t-xl" onClick={(e) => e.stopPropagation()}>
                <div className="flex items-center gap-2">
                  <GripHorizontal className="w-4 h-4 opacity-50" />
@@ -1188,6 +1198,7 @@ function FlashcardItem({
 function StickyNoteItem({ 
   note, 
   isCascadeMode,
+  isTop,
   cascadePos,
   cascadeSize,
   onCascadeResize,
@@ -1202,6 +1213,7 @@ function StickyNoteItem({
 }: { 
   note: Note; 
   isCascadeMode: boolean;
+  isTop?: boolean;
   cascadePos?: {x: number, y: number};
   cascadeSize?: {w: number, h: number};
   onCascadeResize?: (size: {w: number, h: number}) => void;
@@ -1355,7 +1367,7 @@ function StickyNoteItem({
     >
       <div 
         ref={nodeRef}
-        className={`sticky-note absolute rounded-lg overflow-hidden pointer-events-auto border-t-8 flex flex-col group transition-shadow ${isCascadeMode ? 'cascade-mode-item shadow border border-black/10' : 'shadow-xl hover:shadow-2xl'}`}
+        className={`sticky-note absolute rounded-lg overflow-hidden pointer-events-auto border-t-8 flex flex-col group transition-shadow ${isCascadeMode ? (isTop ? 'shadow-xl cascade-mode-item' : 'shadow-none border border-black/10 cascade-mode-item') : 'shadow-xl hover:shadow-2xl'}`}
         style={{ 
           width: isCascadeMode && cascadeSize ? `${cascadeSize.w}px` : `${size.w}px`,
           height: note.isMinimized ? '32px' : (isCascadeMode && cascadeSize ? `${cascadeSize.h}px` : `${size.h}px`),
