@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Highlighter } from 'lucide-react';
 import Draggable from 'react-draggable';
 import { createPortal } from 'react-dom';
 
 export default function GlobalHighlighter() {
   const [active, setActive] = useState(false);
+  const nodeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!('highlights' in CSS)) {
@@ -45,8 +46,9 @@ export default function GlobalHighlighter() {
           color: black;
         }
       `}</style>
-      <Draggable bounds="body">
+      <Draggable bounds="body" nodeRef={nodeRef}>
         <button
+          ref={nodeRef}
           onClick={() => setActive(!active)}
           className={`fixed top-32 left-4 z-[10010] p-3 rounded-full shadow-lg transition-all hover:scale-110 flex items-center justify-center ${
             active
