@@ -10,8 +10,8 @@ import {
 import {
   X, Minus, Maximize2, Plus, Search, Tag, Trash2, Pin, PinOff,
   Bold, Italic, Underline, List, ListOrdered, Heading1, Heading2,
-  Pipette, PlusCircle, StickyNote, ChevronDown, FileText, NotebookPen,
-  Eraser, Palette
+  Pipette, PlusCircle, StickyNote, ChevronDown, ChevronUp, FileText, NotebookPen,
+  Eraser, Palette, Highlighter
 } from 'lucide-react';
 
 // ─── Color system (same as StickyNotesManager) ────────────────────
@@ -114,6 +114,8 @@ export default function DigitalNotebook() {
   const [showPostItLinker, setShowPostItLinker] = useState(false);
   const [postItNumber, setPostItNumber] = useState('');
   const [isHighlightMode, setIsHighlightMode] = useState(false);
+  const [highlightModeColor, setHighlightModeColor] = useState('#fef08a');
+  const [showHighlighterColors, setShowHighlighterColors] = useState(false);
   const [savedColors, setSavedColors] = useState<string[]>(() => {
     try { const s = localStorage.getItem('dn_saved_colors'); return s ? JSON.parse(s) : []; }
     catch { return []; }
@@ -622,20 +624,51 @@ export default function DigitalNotebook() {
                         <span className="w-4 h-4 flex items-center justify-center text-xs font-bold text-red-500">A</span>
                       </button>
                     </div>
-                    <button 
-                      onClick={() => {
-                        const selection = window.getSelection();
-                        if (selection && selection.toString().length > 0) {
-                          exec('hiliteColor', '#fef08a');
-                        } else {
-                          setIsHighlightMode(!isHighlightMode);
-                        }
-                      }} 
-                      className={`p-1.5 rounded transition-colors ${isHighlightMode ? 'bg-yellow-100 dark:bg-yellow-900/30 ring-1 ring-yellow-400' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`} 
-                      title={isHighlightMode ? "Desativar Marca-texto Contínuo" : "Marca-texto (amarelo) - Clique sem selecionar texto para modo contínuo"}
-                    >
-                      <span className="w-4 h-4 flex items-center justify-center text-xs font-bold bg-yellow-200 text-yellow-900 rounded px-0.5">A</span>
-                    </button>
+                    <div className="relative flex items-center bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                      <button 
+                        onClick={() => {
+                          const selection = window.getSelection();
+                          if (selection && selection.toString().length > 0) {
+                            exec('hiliteColor', highlightModeColor);
+                          } else {
+                            setIsHighlightMode(!isHighlightMode);
+                            setShowHighlighterColors(false);
+                          }
+                        }} 
+                        className={`p-1.5 rounded-l-lg transition-colors ${isHighlightMode ? 'bg-gray-100 dark:bg-gray-700' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`} 
+                        title={isHighlightMode ? "Desativar Marca-texto Contínuo" : "Marca-texto - Clique sem selecionar texto para modo contínuo"}
+                      >
+                        <Highlighter className="w-4 h-4" style={{ color: isHighlightMode ? highlightModeColor : 'inherit' }} />
+                      </button>
+                      <div className="w-px h-4 bg-gray-200 dark:bg-gray-700" />
+                      <button
+                        onClick={() => setShowHighlighterColors(!showHighlighterColors)}
+                        className={`px-1 py-1.5 rounded-r-lg transition-colors text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 ${showHighlighterColors ? 'bg-gray-100 dark:bg-gray-700' : 'hover:bg-gray-50 dark:hover:bg-gray-700'}`}
+                      >
+                        <ChevronDown className={`w-3 h-3 transition-transform ${showHighlighterColors ? 'rotate-180' : ''}`} />
+                      </button>
+                      
+                      {showHighlighterColors && (
+                        <div className="absolute top-full left-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-2 z-50 flex gap-1.5">
+                          {COLORS.map(c => (
+                            <button
+                              key={c}
+                              onClick={() => {
+                                setHighlightModeColor(c);
+                                setIsHighlightMode(true);
+                                setShowHighlighterColors(false);
+                                const selection = window.getSelection();
+                                if (selection && selection.toString().length > 0) {
+                                  exec('hiliteColor', c);
+                                }
+                              }}
+                              className={`w-5 h-5 rounded-full shadow-inner border hover:scale-110 transition-transform ${highlightModeColor === c ? 'border-gray-800 border-2' : 'border-black/10'}`}
+                              style={{ backgroundColor: c }}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
                     <button onClick={() => exec('removeFormat')} className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 text-[10px] font-bold" title="Limpar formatação">
                       T̸
                     </button>
@@ -708,12 +741,17 @@ export default function DigitalNotebook() {
                       contentEditable
                       suppressContentEditableWarning
                       className="dn-editor min-h-full p-4 outline-none text-sm text-gray-800 dark:text-gray-100 leading-relaxed"
-                      style={BACKGROUNDS[selectedNote.background]?.style || {}}
+                      style={{
+                        ...(BACKGROUNDS[selectedNote.background]?.style || {}),
+                        cursor: isHighlightMode 
+                          ? 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'black\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d=\'M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z\'></path><line x1=\'16\' y1=\'8\' x2=\'2\' y2=\'22\'></line><line x1=\'17.5\' y1=\'15\' x2=\'9\' y2=\'15\'></line></svg>") 0 24, text' 
+                          : 'text'
+                      }}
                       onMouseUp={() => {
                         if (isHighlightMode) {
                           const selection = window.getSelection();
                           if (selection && selection.toString().length > 0) {
-                            exec('hiliteColor', '#fef08a');
+                            exec('hiliteColor', highlightModeColor);
                           }
                         }
                       }}
