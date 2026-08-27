@@ -205,6 +205,15 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
     if (e && highlighterPaletteRef.current && highlighterPaletteRef.current.contains(e.target as Node)) {
       return;
     }
+    // Ignorar se os novos marcadores (global ou caderno) estiverem ativos
+    if (
+      document.body.classList.contains('global-highlighter-active') ||
+      document.body.classList.contains('digital-notebook-highlighter-active')
+    ) {
+      setHighlighter({ visible: false, top: 0, left: 0 });
+      activeHighlightNodeRef.current = null;
+      return;
+    }
     const selection = window.getSelection();
     if (selection && contentRef.current?.contains(selection.anchorNode)) {
       const node = selection.anchorNode;
