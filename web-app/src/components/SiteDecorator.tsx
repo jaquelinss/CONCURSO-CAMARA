@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from 'react';
-import { createPortal } from 'react-dom';
 import { useLocation } from 'react-router-dom';
 import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
@@ -238,10 +237,10 @@ export default function SiteDecorator() {
     await setDoc(docRef, { stickers: newStickers }, { merge: true });
   };
 
-  return createPortal(
+  return (
     <>
       {/* Main Route Stickers */}
-      <div className="absolute top-0 left-0 pointer-events-none z-[9990]">
+      <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 9990 }}>
         {stickers.map(sticker => (
           <DraggableSticker 
             key={sticker.id}
@@ -255,8 +254,9 @@ export default function SiteDecorator() {
       {/* Split Workspace Stickers */}
       {splitMode && (
         <div 
-          className="fixed top-0 bottom-0 pointer-events-none z-[50]"
+          className="fixed top-0 bottom-0 pointer-events-none" 
           style={{ 
+            zIndex: 9990,
             width: `${splitWidth}%`, 
             [splitSide === 'right' ? 'right' : 'left']: 0 
           }}
@@ -271,8 +271,7 @@ export default function SiteDecorator() {
           ))}
         </div>
       )}
-    </>,
-    document.body
+    </>
   );
 }
 
