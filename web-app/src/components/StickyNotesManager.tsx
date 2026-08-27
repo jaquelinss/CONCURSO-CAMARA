@@ -728,8 +728,8 @@ function SidebarNoteItem({
   const nodeRef = useRef<HTMLDivElement>(null);
   const [title, setTitle] = useState(note.title || '');
   const [isEditing, setIsEditing] = useState(false);
-  const [editContent, setEditContent] = useState(note.content || '');
-  const [editBackContent, setEditBackContent] = useState(note.backContent || '');
+  const contentRef = useRef<HTMLDivElement>(null);
+  const backContentRef = useRef<HTMLDivElement>(null);
 
   // Debounce sidebar title update
   useEffect(() => {
@@ -742,7 +742,9 @@ function SidebarNoteItem({
   }, [title]);
 
   const handleSaveEdit = () => {
-    onUpdate({ content: editContent, backContent: editBackContent });
+    const newContent = contentRef.current?.innerHTML || '';
+    const newBackContent = backContentRef.current?.innerHTML || '';
+    onUpdate({ content: newContent, backContent: newBackContent });
     setIsEditing(false);
   };
 
@@ -788,22 +790,22 @@ function SidebarNoteItem({
             <div>
               <label className="text-xs font-bold opacity-60">FRENTE:</label>
               <div 
+                ref={contentRef}
                 contentEditable
                 suppressContentEditableWarning
-                onInput={e => setEditContent((e.target as HTMLDivElement).innerHTML)} 
                 className="w-full bg-white/50 rounded p-2 text-sm outline-none overflow-y-auto h-20 font-sans cursor-text border border-transparent focus:border-indigo-300"
-                dangerouslySetInnerHTML={{ __html: editContent }}
+                dangerouslySetInnerHTML={{ __html: note.content || '' }}
               />
             </div>
             {note.isFlashcard && (
               <div>
                 <label className="text-xs font-bold text-indigo-800 opacity-60">VERSO:</label>
                 <div 
+                  ref={backContentRef}
                   contentEditable
                   suppressContentEditableWarning
-                  onInput={e => setEditBackContent((e.target as HTMLDivElement).innerHTML)} 
                   className="w-full bg-indigo-50/50 rounded p-2 text-sm outline-none overflow-y-auto h-20 font-sans border border-indigo-100 focus:border-indigo-300 cursor-text"
-                  dangerouslySetInnerHTML={{ __html: editBackContent }}
+                  dangerouslySetInnerHTML={{ __html: note.backContent || '' }}
                 />
               </div>
             )}

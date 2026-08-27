@@ -88,7 +88,7 @@ export default function App() {
                   <button
                     onClick={() => setShowTools(!showTools)}
                     onTouchEnd={(e) => { e.preventDefault(); setShowTools(!showTools); }}
-                    className="fixed bottom-8 right-0 z-[9999] w-10 h-12 sm:w-8 sm:h-10 bg-gray-800/60 hover:bg-gray-800 backdrop-blur-sm text-white rounded-l-lg shadow-lg flex items-center justify-center transition-all cursor-pointer"
+                    className="fixed bottom-8 right-0 z-[10010] w-10 h-12 sm:w-8 sm:h-10 bg-gray-800/60 hover:bg-gray-800 backdrop-blur-sm text-white rounded-l-lg shadow-lg flex items-center justify-center transition-all cursor-pointer"
                     title={showTools ? "Ocultar ferramentas" : "Mostrar ferramentas"}
                   >
                     {showTools ? <ChevronRight className="w-6 h-6 sm:w-5 sm:h-5" /> : <ChevronLeft className="w-6 h-6 sm:w-5 sm:h-5" />}
