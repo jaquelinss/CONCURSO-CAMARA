@@ -574,7 +574,12 @@ export default function DigitalNotebook() {
                       onClick={() => {
                         const selection = window.getSelection();
                         if (selection && selection.toString().length > 0) {
-                          exec('hiliteColor', '#fef08a');
+                          const backColor = document.queryCommandValue('backColor');
+                          if (backColor === 'rgb(254, 240, 138)' || backColor === '#fef08a') {
+                            exec('hiliteColor', 'transparent');
+                          } else {
+                            exec('hiliteColor', '#fef08a');
+                          }
                         } else {
                           setIsHighlightMode(!isHighlightMode);
                         }
@@ -661,7 +666,12 @@ export default function DigitalNotebook() {
                         if (isHighlightMode) {
                           const selection = window.getSelection();
                           if (selection && selection.toString().length > 0) {
-                            exec('hiliteColor', '#fef08a');
+                            const backColor = document.queryCommandValue('backColor');
+                            if (backColor === 'rgb(254, 240, 138)' || backColor === '#fef08a') {
+                              exec('hiliteColor', 'transparent');
+                            } else {
+                              exec('hiliteColor', '#fef08a');
+                            }
                           }
                         }
                       }}

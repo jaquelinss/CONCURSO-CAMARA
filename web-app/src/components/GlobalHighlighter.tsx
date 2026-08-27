@@ -29,7 +29,25 @@ export default function GlobalHighlighter() {
       
       // @ts-ignore
       const highlight = CSS.highlights.get('global-highlight') || new Highlight();
-      highlight.add(range);
+      
+      let removed = false;
+      // @ts-ignore
+      for (const existingRange of highlight) {
+        if (
+          existingRange.startContainer === range.startContainer &&
+          existingRange.endContainer === range.endContainer &&
+          existingRange.startOffset === range.startOffset &&
+          existingRange.endOffset === range.endOffset
+        ) {
+          highlight.delete(existingRange);
+          removed = true;
+          break;
+        }
+      }
+
+      if (!removed) {
+        highlight.add(range);
+      }
       
       // @ts-ignore
       CSS.highlights.set('global-highlight', highlight);
