@@ -92,21 +92,36 @@ export default function SiteDecorator() {
 
   // Handle global click to place stamper
   useEffect(() => {
-    if (!activeStamper || !user) return;
+    if (!activeStamper || !user) {
+      console.log('[STAMPER] useEffect: no activeStamper or user, skipping listener registration. activeStamper:', activeStamper, 'user:', !!user);
+      return;
+    }
+
+    console.log('[STAMPER] useEffect: REGISTERING click listener. activeStamper:', activeStamper);
 
     const handleGlobalClick = async (e: MouseEvent) => {
+      console.log('[STAMPER] Click detected!', 'target:', (e.target as HTMLElement).tagName, (e.target as HTMLElement).className?.substring(0, 80));
+      
       // Ignore clicks on interactive UI elements (but allow most page areas)
       const target = e.target as HTMLElement;
-      if (target.closest('[role="dialog"], [role="menu"], .modal, .reward-shop, .whiteboard-toolbar, .whiteboard-sidebar, .palette-popover')) return;
-      // Ignore clicks on small interactive controls (buttons, inputs, etc.) but NOT large clickable areas
-      if (target.closest('input, textarea, select')) return;
-      // Ignore clicks on buttons that are part of toolbars/modals, but allow general page clicks
+      if (target.closest('[role="dialog"], [role="menu"], .modal, .reward-shop, .whiteboard-toolbar, .whiteboard-sidebar, .palette-popover')) {
+        console.log('[STAMPER] BLOCKED: dialog/modal/toolbar');
+        return;
+      }
+      if (target.closest('input, textarea, select')) {
+        console.log('[STAMPER] BLOCKED: input/textarea/select');
+        return;
+      }
       const closestButton = target.closest('button');
       if (closestButton) {
-        // Allow the click to stamp if the button is a nav/page button, but skip tiny toolbar buttons
         const rect = closestButton.getBoundingClientRect();
-        if (rect.width < 200 && rect.height < 100) return;
+        if (rect.width < 200 && rect.height < 100) {
+          console.log('[STAMPER] BLOCKED: small button', rect.width, 'x', rect.height);
+          return;
+        }
       }
+
+      console.log('[STAMPER] Placing sticker at', e.pageX, e.pageY);
 
       let isInSplitSpace = false;
       let localX = e.pageX;
@@ -131,8 +146,8 @@ export default function SiteDecorator() {
       const newSticker: PlacedSticker = {
         id: `decor_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
         stickerId: activeStamper.stickerId,
-        x: localX - 64, // Center the sticker
-        y: localY - 64, // Center the sticker
+        x: localX - 64,
+        y: localY - 64,
         isLocked: false
       };
       
@@ -140,23 +155,33 @@ export default function SiteDecorator() {
         newSticker.customUrl = activeStamper.customUrl;
       }
 
-      if (isInSplitSpace) {
-        const newStickers = [...splitStickersRef.current, newSticker];
-        setSplitStickers(newStickers);
-        const docRef = doc(db, 'users', user.uid, 'settings', splitDocId);
-        await setDoc(docRef, { stickers: newStickers }, { merge: true });
-      } else {
-        const currentDocId = docIdRef.current;
-        const newStickers = [...stickersRef.current, newSticker];
-        setStickers(newStickers);
-        const docRef = doc(db, 'users', user.uid, 'settings', currentDocId);
-        await setDoc(docRef, { stickers: newStickers }, { merge: true });
+      try {
+        if (isInSplitSpace) {
+          const newStickers = [...splitStickersRef.current, newSticker];
+          setSplitStickers(newStickers);
+          const docRef = doc(db, 'users', user.uid, 'settings', splitDocId);
+          await setDoc(docRef, { stickers: newStickers }, { merge: true });
+          console.log('[STAMPER] SUCCESS: sticker placed in split space');
+        } else {
+          const currentDocId = docIdRef.current;
+          const newStickers = [...stickersRef.current, newSticker];
+          console.log('[STAMPER] Saving to docId:', currentDocId, 'total stickers:', newStickers.length);
+          setStickers(newStickers);
+          const docRef = doc(db, 'users', user.uid, 'settings', currentDocId);
+          await setDoc(docRef, { stickers: newStickers }, { merge: true });
+          console.log('[STAMPER] SUCCESS: sticker placed on main route');
+        }
+      } catch (err) {
+        console.error('[STAMPER] ERROR placing sticker:', err);
       }
     };
 
     // Use capture phase to ensure the click is received before any stopPropagation
     window.addEventListener('click', handleGlobalClick, true);
-    return () => window.removeEventListener('click', handleGlobalClick, true);
+    return () => {
+      console.log('[STAMPER] useEffect cleanup: REMOVING click listener');
+      window.removeEventListener('click', handleGlobalClick, true);
+    };
   }, [user, activeStamper, splitMode, splitWidth, splitSide]);
 
   // Handle remove sticker via global event
@@ -216,7 +241,7 @@ export default function SiteDecorator() {
   return createPortal(
     <>
       {/* Main Route Stickers */}
-      <div className="absolute top-0 left-0 pointer-events-none z-[50]">
+      <div className="fixed inset-0 pointer-events-none z-[9990]">
         {stickers.map(sticker => (
           <DraggableSticker 
             key={sticker.id}
