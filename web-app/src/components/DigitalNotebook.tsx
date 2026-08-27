@@ -112,6 +112,7 @@ export default function DigitalNotebook() {
   const [newTag, setNewTag] = useState('');
   const [showPostItLinker, setShowPostItLinker] = useState(false);
   const [postItNumber, setPostItNumber] = useState('');
+  const [isHighlightMode, setIsHighlightMode] = useState(false);
   const [savedColors, setSavedColors] = useState<string[]>(() => {
     try { const s = localStorage.getItem('dn_saved_colors'); return s ? JSON.parse(s) : []; }
     catch { return []; }

@@ -32,6 +32,7 @@ import StamperOverlay from './components/StamperOverlay';
 import SiteDecorator from './components/SiteDecorator';
 import GlobalSplitScreenManager from './components/GlobalSplitScreenManager';
 import DigitalNotebook from './components/DigitalNotebook';
+import GlobalHighlighter from './components/GlobalHighlighter';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -83,6 +84,7 @@ export default function App() {
                   <WhiteboardOverlay />
                   <PdfAnnotatorOverlay />
                   <DigitalNotebook />
+                  <GlobalHighlighter />
 
                   {/* Toggle Tools Button */}
                   <button
