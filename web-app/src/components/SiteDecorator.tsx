@@ -95,9 +95,18 @@ export default function SiteDecorator() {
     if (!activeStamper || !user) return;
 
     const handleGlobalClick = async (e: MouseEvent) => {
-      // Ignore clicks on interactive UI elements
+      // Ignore clicks on interactive UI elements (but allow most page areas)
       const target = e.target as HTMLElement;
-      if (target.closest('button, a, input, textarea, select, [role="dialog"], [role="menu"], .modal, .reward-shop, .whiteboard-toolbar, .whiteboard-sidebar, .palette-popover')) return;
+      if (target.closest('[role="dialog"], [role="menu"], .modal, .reward-shop, .whiteboard-toolbar, .whiteboard-sidebar, .palette-popover')) return;
+      // Ignore clicks on small interactive controls (buttons, inputs, etc.) but NOT large clickable areas
+      if (target.closest('input, textarea, select')) return;
+      // Ignore clicks on buttons that are part of toolbars/modals, but allow general page clicks
+      const closestButton = target.closest('button');
+      if (closestButton) {
+        // Allow the click to stamp if the button is a nav/page button, but skip tiny toolbar buttons
+        const rect = closestButton.getBoundingClientRect();
+        if (rect.width < 200 && rect.height < 100) return;
+      }
 
       let isInSplitSpace = false;
       let localX = e.pageX;
@@ -145,8 +154,9 @@ export default function SiteDecorator() {
       }
     };
 
-    window.addEventListener('click', handleGlobalClick);
-    return () => window.removeEventListener('click', handleGlobalClick);
+    // Use capture phase to ensure the click is received before any stopPropagation
+    window.addEventListener('click', handleGlobalClick, true);
+    return () => window.removeEventListener('click', handleGlobalClick, true);
   }, [user, activeStamper, splitMode, splitWidth, splitSide]);
 
   // Handle remove sticker via global event
