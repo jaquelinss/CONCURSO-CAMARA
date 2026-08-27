@@ -520,6 +520,7 @@ export default function StickyNotesManager() {
             }}
             onUpdate={(u) => handleUpdateNote(note.id, u)}
             onFocus={() => bringToFront(note.id)}
+            onSendToBack={() => sendToBack(note.id)}
           />
         ))}
       </div>
@@ -880,7 +881,8 @@ function FlashcardItem({
   onCascadeResize,
   onCascadeStop,
   onUpdate,
-  onFocus
+  onFocus,
+  onSendToBack
 }: { 
   note: Note; 
   isCascadeMode: boolean;
@@ -890,6 +892,7 @@ function FlashcardItem({
   onCascadeStop?: (pos: {x: number, y: number}) => void;
   onUpdate: (u: Partial<Note>) => void;
   onFocus: () => void;
+  onSendToBack: () => void;
 }) {
   const [flipped, setFlipped] = useState(false);
   const nodeRef = useRef<HTMLDivElement>(null);
@@ -1038,6 +1041,16 @@ function FlashcardItem({
                 {note.noteNumber && <span className="text-xs font-semibold opacity-50">#{note.noteNumber}</span>}
               </div>
               <div className="flex gap-1">
+                {isCascadeMode && (
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); onSendToBack(); }}
+                    className="p-1 flex items-center justify-center gap-1 text-xs font-bold text-white/80 bg-black/10 hover:bg-black/20 rounded px-2 transition-colors"
+                    title="Próximo flashcard"
+                  >
+                    Próximo
+                    <ChevronRight className="w-3.5 h-3.5 pointer-events-none" />
+                  </button>
+                )}
                 <button 
                   onClick={(e) => { e.stopPropagation(); setShowPalette(!showPalette); }}
                   className="p-1 hover:bg-black/20 rounded"

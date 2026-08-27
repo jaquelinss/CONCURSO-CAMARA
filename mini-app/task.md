@@ -12,31 +12,30 @@
 - [x] PWA com Service Worker e manifest
 - [x] Banner de instalação PWA (beforeinstallprompt)
 - [x] Aviso ao desarquivar (afeta app principal)
+- [x] **Filtro por Tags** — Botões pill: "Todos", "Sem Tags" e cada tag (subjectTag)
+- [x] **Filtro por Subtags** — Sub-filtros (subTag) quando uma tag está selecionada
+- [x] **Seletor de Ordenação** — Dropdown "Mais recentes" / "Mais antigos"
+- [x] **Botão "Mostrar Últimos"** — Reabrir os 3 últimos arquivados
+- [x] **Botão "Ocultar Todos"** — Arquivar todos ativos (ou da tag selecionada)
+- [x] **Botão "Mostrar Todos"** — Desarquivar todos (ou da tag selecionada)
+- [x] **Sombras reduzidas** — boxShadow leve nos cards para evitar acúmulo visual
+- [x] **SubTag no NoteEditor** — Campo "Assunto" ao lado da "Matéria"
+- [x] **Tachado (strikeThrough)** — Botão na toolbar rich text
+- [x] **Alinhamento** — Botões Alinhar Esquerda e Centralizar na toolbar
+- [x] **Sugestão de Tags existentes** — Painel com tags/subtags para seleção rápida
+- [x] **Botão Remover Tags** — Limpar subjectTag e subTag
+- [x] **Exibir tags no card** — subjectTag e subTag visíveis no grid
+- [x] **Exibir #noteNumber** — Numeração no rodapé do card
+- [x] **Contagem de post-its** — Exibir total filtrado
 
 ---
 
 ## 🔧 Pendente — Interface e Organização
 
-### Barra de Filtros e Ações (PostItsView / FlashcardsView)
-- [ ] **Filtro por Tags** — Botões pill: "Todos", "Sem Tags" e cada tag existente (`subjectTag`)
-- [ ] **Filtro por Subtags** — Quando uma tag está selecionada, exibir subtags (`subTag`) como sub-filtros
-- [ ] **Seletor de Ordenação** — Dropdown "Mais recentes" / "Mais antigos"
-- [ ] **Botão "Mostrar Últimos"** — Desarquivar os 3 últimos post-its/flashcards arquivados
-- [ ] **Botão "Ocultar Todos"** — Arquivar todos os ativos (ou apenas os da tag selecionada)
-- [ ] **Botão "Mostrar Todos"** — Desarquivar todos (ou apenas os da tag selecionada)
-- [ ] **Eliminar acumulação de sombras** — Reduzir shadow dos cards no grid para `shadow-sm` evitando acúmulo visual
+### NoteEditor
+- [ ] **Histórico de Cores Salvas** — Salvar últimas 6 cores no localStorage
 
-### NoteEditor (Modal de edição)
-- [ ] **Subtag (subTag)** — Campo adicional "Assunto" além da Matéria existente
-- [ ] **Tachado (strikeThrough)** — Adicionar botão na toolbar rich text
-- [ ] **Alinhamento** — Botões Alinhar Esquerda e Centralizar na toolbar
-- [ ] **Sugestão de Tags existentes** — Listar tags/subtags já usadas para seleção rápida com 1 clique
-- [ ] **Botão Remover Tags** — Limpar subjectTag e subTag de uma nota
-- [ ] **Histórico de Cores Salvas** — Salvar últimas 6 cores personalizadas no localStorage
-
-### Cards no Grid (PostItsView)
-- [ ] **Exibir subtag no card** — Mostrar `subTag` abaixo do título junto com `subjectTag`
-- [ ] **Exibir número (#noteNumber)** — Mostrar numeração sequencial no rodapé do card
+### Cards no Grid
 - [ ] **Renderização de Stickers** — Exibir adesivos (emojis) sobre os post-its se existirem
 
 ---
@@ -44,12 +43,12 @@
 ## 🔧 Pendente — Flashcards
 
 ### Compatibilidade de dados
-- [ ] **Ler flashcards individuais de `users/{uid}/notes`** — Atualmente `FlashcardsView` lê de `users/{uid}/flashcards` (decks da IA). Precisa TAMBÉM exibir flashcards individuais da coleção `notes` com `isFlashcard: true`, que são os criados manualmente no app principal
-- [ ] **Filtros por Tags nos Flashcards** — Mesmos filtros de tag do PostItsView
+- [ ] **Ler flashcards individuais de `users/{uid}/notes`** — Também exibir flashcards da coleção `notes` com `isFlashcard: true` (criados no app principal)
+- [ ] **Filtros por Tags nos Flashcards** — Mesmos filtros do PostItsView
 
 ### Funcionalidades
-- [ ] **Criação/Edição de Decks** — Formulário para adicionar novas cartas (Frente/Verso) a um baralho
-- [ ] **Dúvida com IA no Modo Estudo** — Integração com Gemini para explicar o card atual
+- [ ] **Criação/Edição de Decks** — Formulário para adicionar novas cartas (Frente/Verso)
+- [ ] **Dúvida com IA no Modo Estudo** — Integração com Gemini para explicar o card
 - [ ] **Exportar PDF** — Gerar PDF com flashcards para impressão
 
 ---

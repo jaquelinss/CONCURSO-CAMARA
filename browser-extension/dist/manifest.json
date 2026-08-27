@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "Estudo Câmara Tracker",
+  "version": "1.0.0",
+  "description": "Ganha pontos no app respondendo questões no Gemini e sites suportados.",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "assets/content.tsx-loader-DiaAIbJE.js"
+      ],
+      "matches": [
+        "*://gemini.google.com/share/72aba0755499*"
+      ],
+      "all_frames": true
+    }
+  ],
+  "background": {
+    "service_worker": "service-worker-loader.js",
+    "type": "module"
+  },
+  "permissions": [
+    "storage",
+    "contextMenus",
+    "notifications"
+  ],
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "*://gemini.google.com/*"
+      ],
+      "resources": [
+        "assets/rolldown-runtime-Czjbc987.js",
+        "assets/jsx-runtime-CRr1Db8x.js",
+        "assets/content.tsx-DdbSO52k.js"
+      ],
+      "use_dynamic_url": false
+    }
+  ]
+}

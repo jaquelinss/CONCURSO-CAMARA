@@ -1,0 +1,61 @@
+{
+  "../../../@crx/manifest": {
+    "file": "assets/crx-manifest.js-CvGfH8Vx.js",
+    "name": "crx-manifest.js",
+    "src": "../../../@crx/manifest",
+    "isEntry": true
+  },
+  "_content.tsx-loader-DiaAIbJE.js": {
+    "file": "assets/content.tsx-loader-DiaAIbJE.js",
+    "src": "_content.tsx-loader-DiaAIbJE.js"
+  },
+  "_firebase-BRGHhCZb.js": {
+    "file": "assets/firebase-BRGHhCZb.js",
+    "name": "firebase",
+    "imports": [
+      "_rolldown-runtime-Czjbc987.js"
+    ]
+  },
+  "_jsx-runtime-CRr1Db8x.js": {
+    "file": "assets/jsx-runtime-CRr1Db8x.js",
+    "name": "jsx-runtime",
+    "imports": [
+      "_rolldown-runtime-Czjbc987.js"
+    ]
+  },
+  "_rolldown-runtime-Czjbc987.js": {
+    "file": "assets/rolldown-runtime-Czjbc987.js",
+    "name": "rolldown-runtime"
+  },
+  "index.html": {
+    "file": "assets/popup-DhsENeQd.js",
+    "name": "popup",
+    "src": "index.html",
+    "isEntry": true,
+    "imports": [
+      "_rolldown-runtime-Czjbc987.js",
+      "_jsx-runtime-CRr1Db8x.js",
+      "_firebase-BRGHhCZb.js"
+    ]
+  },
+  "src/background.ts": {
+    "file": "assets/background.ts-DiE_5xoh.js",
+    "name": "background.ts",
+    "src": "src/background.ts",
+    "isEntry": true,
+    "imports": [
+      "_rolldown-runtime-Czjbc987.js",
+      "_firebase-BRGHhCZb.js"
+    ]
+  },
+  "src/content.tsx": {
+    "file": "assets/content.tsx-DdbSO52k.js",
+    "name": "content.tsx",
+    "src": "src/content.tsx",
+    "isEntry": true,
+    "imports": [
+      "_rolldown-runtime-Czjbc987.js",
+      "_jsx-runtime-CRr1Db8x.js"
+    ]
+  }
+}

@@ -81,12 +81,12 @@ export default function Navigation() {
 
   return (
     <>
-      <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm fixed top-0 left-0 right-0 z-[1000] transition-colors duration-200">
-        <div className="w-full px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-2">
+      <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm sticky top-0 z-[1000] transition-colors duration-200">
+        <div className="w-full px-2 sm:px-4 lg:px-6">
+        <div className="flex flex-wrap items-center justify-between min-h-[4rem] py-2 gap-2">
 
           {/* LEFT: Logo + Nav Links */}
-          <div className="flex items-center gap-1 sm:gap-2 xl:gap-6 min-w-0">
+          <div className="flex flex-wrap items-center gap-1 sm:gap-2 xl:gap-6 min-w-0">
             {/* Logo: clicável, vai para /dashboard */}
             <Link
               to="/dashboard"
@@ -129,7 +129,7 @@ export default function Navigation() {
           </div>
 
           {/* RIGHT: Tools + Icon actions */}
-          <div className="flex items-center gap-1 flex-shrink-0">
+          <div className="flex flex-wrap items-center justify-end gap-1 flex-shrink-0">
             {/* Ferramentas de estudo */}
             <button
               onClick={() => window.dispatchEvent(new Event('toggle-archive'))}
@@ -309,7 +309,7 @@ export default function Navigation() {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="sm:hidden absolute top-16 left-0 w-full bg-white dark:bg-gray-800 shadow-lg border-t border-gray-100 dark:border-gray-700 z-50">
+        <div className="sm:hidden absolute top-full left-0 w-full bg-white dark:bg-gray-800 shadow-lg border-t border-gray-100 dark:border-gray-700 z-50">
           <div className="pt-2 pb-3 space-y-1">
             {navLinks.map(({ to, icon: Icon, label }) => (
               <Link
@@ -436,8 +436,6 @@ export default function Navigation() {
 
       {showShop && <RewardShop onClose={() => setShowShop(false)} />}
       </nav>
-      {/* Spacer para a nav fixed */}
-      <div className="h-16 w-full shrink-0" />
     </>
   );
 }
