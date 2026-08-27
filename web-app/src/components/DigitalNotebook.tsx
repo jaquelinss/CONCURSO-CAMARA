@@ -317,12 +317,15 @@ export default function DigitalNotebook() {
 
   useEffect(() => {
     if (!spanOptionsPos) return;
-    const handleGlobalClick = (_e: MouseEvent) => {
-      // Small timeout to allow button clicks on the popover itself to process
-      setTimeout(() => {
-        setSpanOptionsPos(null);
-        setActiveSpan(null);
-      }, 150);
+    const handleGlobalClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      // Se clicou no próprio menu (popover) ou se clicou em uma marcação (span),
+      // não fechamos o menu aqui (o clique no span já é tratado por handleEditorClick).
+      if (target.closest('.dn-span-popover') || (target.tagName === 'SPAN' && target.style.backgroundColor)) {
+        return;
+      }
+      setSpanOptionsPos(null);
+      setActiveSpan(null);
     };
     document.addEventListener('mousedown', handleGlobalClick);
     return () => document.removeEventListener('mousedown', handleGlobalClick);
@@ -881,7 +884,7 @@ export default function DigitalNotebook() {
         {/* Span Options Popover */}
         {spanOptionsPos && (
           <div 
-            className="fixed z-[10000] transform -translate-x-1/2 flex gap-2 animate-fade-in shadow-xl"
+            className="dn-span-popover fixed z-[10000] transform -translate-x-1/2 flex gap-2 animate-fade-in shadow-xl"
             style={{ left: spanOptionsPos.x, top: spanOptionsPos.y }}
             onMouseDown={(e) => e.stopPropagation()}
           >
