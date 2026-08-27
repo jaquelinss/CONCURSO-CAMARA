@@ -18,6 +18,14 @@ export default function TextSelectionPopover() {
     const handleSelectionChange = () => {
       const selection = window.getSelection();
       
+      if (document.body.classList.contains('global-highlighter-active')) {
+        if (!isLoading) {
+          setPosition(null);
+          setSelectedText('');
+        }
+        return;
+      }
+
       if (!selection || selection.isCollapsed || selection.toString().trim().length < 5) {
         if (!isLoading) {
           setPosition(null);

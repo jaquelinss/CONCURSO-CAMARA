@@ -565,14 +565,24 @@ export default function DigitalNotebook() {
                     <button onClick={() => exec('formatBlock', 'h2')} className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300" title="Título H2"><Heading2 className="w-4 h-4" /></button>
                     <div className="w-px h-5 bg-gray-200 dark:bg-gray-700 mx-0.5" />
 
-                    {/* Text color */}
                     <div className="relative">
                       <button onClick={() => exec('foreColor', '#ef4444')} className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700" title="Cor do texto (vermelho)">
                         <span className="w-4 h-4 flex items-center justify-center text-xs font-bold text-red-500">A</span>
                       </button>
                     </div>
-                    <button onClick={() => exec('hiliteColor', '#fef08a')} className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700" title="Marca-texto (amarelo)">
-                      <span className="w-4 h-4 flex items-center justify-center text-xs font-bold bg-yellow-200 rounded px-0.5">A</span>
+                    <button 
+                      onClick={() => {
+                        const selection = window.getSelection();
+                        if (selection && selection.toString().length > 0) {
+                          exec('hiliteColor', '#fef08a');
+                        } else {
+                          setIsHighlightMode(!isHighlightMode);
+                        }
+                      }} 
+                      className={`p-1.5 rounded transition-colors ${isHighlightMode ? 'bg-yellow-100 dark:bg-yellow-900/30 ring-1 ring-yellow-400' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`} 
+                      title={isHighlightMode ? "Desativar Marca-texto Contínuo" : "Marca-texto (amarelo) - Clique sem selecionar texto para modo contínuo"}
+                    >
+                      <span className="w-4 h-4 flex items-center justify-center text-xs font-bold bg-yellow-200 text-yellow-900 rounded px-0.5">A</span>
                     </button>
                     <button onClick={() => exec('removeFormat')} className="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 text-[10px] font-bold" title="Limpar formatação">
                       T̸
@@ -647,6 +657,14 @@ export default function DigitalNotebook() {
                       suppressContentEditableWarning
                       className="dn-editor min-h-full p-4 outline-none text-sm text-gray-800 dark:text-gray-100 leading-relaxed"
                       style={BACKGROUNDS[selectedNote.background]?.style || {}}
+                      onMouseUp={() => {
+                        if (isHighlightMode) {
+                          const selection = window.getSelection();
+                          if (selection && selection.toString().length > 0) {
+                            exec('hiliteColor', '#fef08a');
+                          }
+                        }
+                      }}
                       onInput={() => {
                         if (selectedNote && editorRef.current) {
                           saveNote(selectedNote.id, { content: editorRef.current.innerHTML });
