@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import Draggable from 'react-draggable';
 import { useAuth } from '../contexts/AuthContext';
 import { useCustomSubjects } from '../contexts/CustomSubjectsContext';
 import { db } from '../lib/firebase';
@@ -25,7 +26,8 @@ import {
   CheckCircle2,
   Maximize2,
   Minimize2,
-  Crosshair
+  Crosshair,
+  GripHorizontal
 } from 'lucide-react';
 import { subjectsConcurso, subjectsEnem, subjectsGeral, subjectsAuditorFiscal, subjectsAssistenteUFPE } from '../lib/constants';
 import { useKnowledgeBase } from '../contexts/KnowledgeBaseContext';
@@ -358,6 +360,7 @@ export default function AITeacherChat({ isHidden = false }: { isHidden?: boolean
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   // Combine and sort unique subjects from application constants and custom subjects
@@ -758,15 +761,22 @@ Diretrizes:
       </button>
 
       {isOpen && (
-        <div className={`fixed z-[10004] bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden flex flex-col transition-all duration-300 animate-in fade-in slide-in-from-bottom-6 zoom-in-95 origin-bottom-right ${
+        <Draggable
+          nodeRef={chatRef}
+          handle=".chat-drag-handle"
+          bounds="parent"
+          defaultPosition={{ x: 0, y: 0 }}
+        >
+        <div ref={chatRef} className={`fixed z-[10004] bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden flex flex-col ${
           isExpanded 
             ? 'right-4 bottom-4 w-[700px] max-w-[calc(100vw-2rem)] h-[85vh]' 
             : 'right-4 bottom-[5.5rem] w-[380px] max-w-[calc(100vw-2rem)] h-[550px] max-h-[80vh]'
         }`}>
           
-          <div className="p-4 border-b border-gray-200/50 dark:border-gray-800 bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-700 text-white flex flex-col gap-2.5">
+          <div className="chat-drag-handle p-4 border-b border-gray-200/50 dark:border-gray-800 bg-gradient-to-r from-purple-600 via-indigo-600 to-indigo-700 text-white flex flex-col gap-2.5 cursor-grab active:cursor-grabbing">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
+                <GripHorizontal className="w-5 h-5 text-white/50 cursor-grab active:cursor-grabbing hover:text-white transition-colors" />
                 <div className={`w-10 h-10 rounded-full bg-gradient-to-tr ${activeTeacher.avatarBg} flex items-center justify-center shadow-md text-xl animate-wiggle border border-white/20`}>
                   {activeTeacher.emoji}
                 </div>
@@ -1135,6 +1145,7 @@ Diretrizes:
             </div>
           )}
         </div>
+        </Draggable>
       )}
     </>
   );
