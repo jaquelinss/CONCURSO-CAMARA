@@ -241,7 +241,7 @@ export default function SiteDecorator() {
   return createPortal(
     <>
       {/* Main Route Stickers */}
-      <div className="fixed inset-0 pointer-events-none z-[9990]">
+      <div className="absolute top-0 left-0 pointer-events-none z-[9990]">
         {stickers.map(sticker => (
           <DraggableSticker 
             key={sticker.id}
