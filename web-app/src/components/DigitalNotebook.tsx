@@ -10,7 +10,7 @@ import {
 import {
   X, Minus, Maximize2, Plus, Search, Tag, Trash2, Pin, PinOff,
   Bold, Italic, Underline, List, ListOrdered, Heading1, Heading2,
-  Pipette, PlusCircle, StickyNote, ChevronDown, ChevronUp, FileText, NotebookPen,
+  Pipette, PlusCircle, StickyNote, ChevronDown, FileText, NotebookPen,
   Eraser, Palette, Highlighter
 } from 'lucide-react';
 
