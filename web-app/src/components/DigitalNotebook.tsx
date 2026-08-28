@@ -304,11 +304,18 @@ export default function DigitalNotebook() {
   };
   // ─── Span Highlight Handlers ─────────────────────────────────────
   const handleEditorClick = (e: React.MouseEvent) => {
+    const selection = window.getSelection();
+    if (selection && selection.toString().length > 0) {
+      // Ignora clique se o usuário estiver apenas selecionando texto
+      return;
+    }
+    
     const target = e.target as HTMLElement;
-    if (target.tagName === 'SPAN' && target.style.backgroundColor) {
-      const rect = target.getBoundingClientRect();
+    const spanNode = target.closest('span');
+    if (spanNode && spanNode.style.backgroundColor) {
+      const rect = spanNode.getBoundingClientRect();
       setSpanOptionsPos({ x: rect.left + rect.width / 2, y: rect.bottom + 10 });
-      setActiveSpan(target);
+      setActiveSpan(spanNode);
       setShowSpanColors(false);
     } else {
       setSpanOptionsPos(null);
@@ -320,9 +327,10 @@ export default function DigitalNotebook() {
     if (!spanOptionsPos) return;
     const handleGlobalClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
+      const spanNode = target.closest('span');
       // Se clicou no próprio menu (popover) ou se clicou em uma marcação (span),
       // não fechamos o menu aqui (o clique no span já é tratado por handleEditorClick).
-      if (target.closest('.dn-span-popover') || (target.tagName === 'SPAN' && target.style.backgroundColor)) {
+      if (target.closest('.dn-span-popover') || (spanNode && spanNode.style.backgroundColor)) {
         return;
       }
       setSpanOptionsPos(null);
