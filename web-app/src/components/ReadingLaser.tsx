@@ -97,7 +97,9 @@ export default function ReadingLaser({ containerRef }: ReadingLaserProps) {
     const handleDown = () => { 
       isMouseDownRef.current = true; 
       lassoPathRef.current = [];
-      if (mode === 'pointer') {
+      // Don't disable text selection when the global highlighter (marcador) is active
+      const highlighterActive = document.body.classList.contains('global-highlighter-active');
+      if (mode === 'pointer' && !highlighterActive) {
         container.style.userSelect = 'none';
         container.style.webkitUserSelect = 'none';
       }
@@ -108,7 +110,9 @@ export default function ReadingLaser({ containerRef }: ReadingLaserProps) {
       container.style.userSelect = '';
       container.style.webkitUserSelect = '';
 
-      if (mode !== 'pointer' || !containerRef.current) return;
+      // Skip lasso selection when the global highlighter (marcador) is active
+      const highlighterActive = document.body.classList.contains('global-highlighter-active');
+      if (mode !== 'pointer' || !containerRef.current || highlighterActive) return;
       
       const pts = lassoPathRef.current;
       if (pts.length < 20) return; // Not enough points for a loop
