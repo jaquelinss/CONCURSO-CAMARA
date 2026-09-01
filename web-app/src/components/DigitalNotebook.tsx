@@ -474,6 +474,12 @@ export default function DigitalNotebook() {
             }
           `}</style>
         )}
+        <style>{`
+          /* Forçar um line-height maior para evitar que marcações em linhas adjacentes fiquem coladas, mesmo em textos colados de PDFs */
+          .dn-editor, .dn-editor * {
+            line-height: 2.0 !important;
+          }
+        `}</style>
         {/* ─── Header ────────────────────────────────────── */}
         <div className="dn-drag-handle flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-rose-500 to-pink-600 text-white cursor-move select-none flex-shrink-0">
           <div className="flex items-center gap-2">
