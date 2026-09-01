@@ -7,7 +7,8 @@ import { CheckCircle, RotateCcw, Calendar, Clock, BookOpen, Trash2, ChevronDown,
 import { suggestVideoSearches, suggestRescheduleDate, generateStudyPlan } from '../lib/gemini';
 import { format, isToday, isBefore, startOfDay, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-
+import InlineContentGenerator from './InlineContentGenerator';
+import { ItemVideoManager } from './TodayStudyButton';
 interface StudyPlanViewProps {
   plan: any;
   onUpdate: () => void;
@@ -232,12 +233,6 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
     }
   };
 
-  const playYoutubeVideo = (url: string, block: any) => {
-    if (!url) return;
-    window.dispatchEvent(new CustomEvent('play-youtube-video', {
-      detail: { url: url, topic: block.topic, subject: block.subject }
-    }));
-  };
 
   const handleAiSearch = async (block: any) => {
     if (!user) return;
@@ -609,9 +604,9 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
                       </button>
                     </div>
                   )}
-                  {day.blocks.map((block: any) => (
+                  {day.blocks.map((block: any, idx: number) => (
                     <div
-                      key={block.id}
+                      key={block.id || idx}
                       className={`flex items-center justify-between p-3 rounded-xl transition-all ${
                         block.status === 'completed'
                           ? 'bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800'
@@ -640,21 +635,37 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
                             </p>
                           )}
 
-                          {/* Múltiplos links de vídeo (Oculto se reagendado) */}
-                          {block.status !== 'rescheduled' && ((block.youtubeUrls && block.youtubeUrls.length > 0) || block.youtubeUrl) && (
-                            <div className="flex flex-wrap gap-2 mt-2">
-                              {(block.youtubeUrls || (block.youtubeUrl ? [block.youtubeUrl] : [])).map((url: string, idx: number) => (
-                                <button
-                                  key={idx}
-                                  onClick={() => playYoutubeVideo(url, block)}
-                                  className="flex items-center gap-1 text-[11px] bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 px-2 py-1 rounded-md hover:bg-red-100 dark:hover:bg-red-900/40 font-bold transition-colors"
-                                  title="Assistir vídeo aula"
-                                >
-                                  <CirclePlay className="w-3.5 h-3.5" />
-                                  Vídeo {idx + 1}
-                                </button>
-                              ))}
-                            </div>
+                          {/* Múltiplos vídeos */}
+                          {block.status !== 'rescheduled' && (
+                            <ItemVideoManager
+                              itemType="block"
+                              id={block.id}
+                              originalDate={day.date}
+                              blockIndex={idx}
+                              subject={block.subject}
+                              topic={block.topic}
+                              urls={block.youtubeUrls || (block.youtubeUrl ? [block.youtubeUrl] : [])}
+                              apiKey={apiKey}
+                              onSave={async (url: string) => addYoutubeUrl(day.date, block.id, url)}
+                              onRemove={async (url: string) => removeYoutubeUrl(day.date, block.id, url)}
+                            />
+                          )}
+
+                          {/* Gerar Conteúdo (Aula + Questões + Flashcards) */}
+                          {block.status !== 'rescheduled' && (
+                            <InlineContentGenerator
+                              subject={block.subject}
+                              topic={block.topic}
+                              apiKey={apiKey}
+                              user={user}
+                              planId={plan.id}
+                              plan={plan}
+                              originalDate={day.date}
+                              blockIndex={idx}
+                              selectedBanca={plan.banca || 'CESPE'}
+                              itemType="block"
+                              block={block}
+                            />
                           )}
                         </div>
                       </div>

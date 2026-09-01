@@ -30,7 +30,7 @@ function Youtube({ className }: { className?: string }) {
   );
 }
 
-function InlineVideoEditor({ 
+export function InlineVideoEditor({ 
   apiKey,
   subject,
   topic,
@@ -98,7 +98,7 @@ function InlineVideoEditor({
   );
 }
 
-function ItemVideoManager({ 
+export function ItemVideoManager({ 
   itemType, 
   id, 
   originalDate, 
