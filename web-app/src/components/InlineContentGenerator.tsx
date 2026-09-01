@@ -227,26 +227,7 @@ export default function InlineContentGenerator({
   if (mode === 'done' || (mode === 'idle' && hasContent)) {
     const ContentBadge = ({ ids, type, emoji, label, colorClasses }: { ids: string[]; type: 'lesson' | 'quiz' | 'flashcard'; emoji: string; label: string; colorClasses: string }) => {
       if (ids.length === 0) return null;
-      if (ids.length === 1) {
-        return (
-          <div className="flex items-center gap-0.5">
-            <button
-              onClick={() => handleOpenContent(ids[0], type)}
-              className={`text-[10px] px-1.5 py-0.5 ${colorClasses} rounded font-bold hover:opacity-80 transition-colors cursor-pointer`}
-              title={`Abrir ${label}`}
-            >
-              {emoji} 1 {label}
-            </button>
-            <button
-              onClick={async (e) => { e.stopPropagation(); if (window.confirm(`Desvincular este ${label}?`)) { await handleUnlinkContent(ids[0], type); } }}
-              className="text-[10px] text-gray-400 hover:text-red-500 transition-colors px-0.5"
-              title="Desvincular"
-            >
-              ✕
-            </button>
-          </div>
-        );
-      }
+
       return (
         <div className="flex flex-col gap-0.5">
           <span className={`text-[10px] font-bold ${colorClasses.replace(/bg-\S+/g, '').trim()} px-1`}>{emoji} {ids.length} {label}{ids.length > 1 ? (type === 'quiz' ? 'zes' : 's') : ''}</span>
