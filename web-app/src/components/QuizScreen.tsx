@@ -13,6 +13,7 @@ import mammoth from 'mammoth';
 import PracticeQuiz from './PracticeQuiz';
 import { getRevisionSuggestions, calculateNextStep } from '../lib/revision.service';
 import ReadingLaser from './ReadingLaser';
+import { findMatchingFolder } from '../lib/folderUtils';
 
 const difficulties = ['Introdutório', 'Médio', 'Difícil'];
 
@@ -334,6 +335,9 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
       const isFlashcard = settings.model === 'Flashcard';
       const collectionName = isFlashcard ? 'flashcards' : 'quizzes';
       const quizzesRef = collection(db, 'users', user.uid, collectionName);
+      
+      const matchedFolderId = await findMatchingFolder(db, user.uid, settings.subject);
+
       await addDoc(quizzesRef, {
         subject: settings.subject,
         topic: settings.specificTopic || settings.topic,
@@ -341,6 +345,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
         model: settings.model,
         data: questions,
         userComment: '',
+        folderId: matchedFolderId || null,
         createdAt: serverTimestamp(),
       });
       setSaved(true);
@@ -358,6 +363,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     setSavingDoubt(true);
     try {
       const lessonsRef = collection(db, 'users', user.uid, 'lessons');
+      const matchedFolderId = await findMatchingFolder(db, user.uid, settings.subject);
       await addDoc(lessonsRef, {
         subject: settings.subject,
         topic: settings.specificTopic || settings.topic,
@@ -368,6 +374,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
           secoes: [{ subtitulo: 'Resposta da IA', conteudo: doubtResponse.replace(/<[^>]*>?/gm, '') }],
         },
         userComment: `Dúvida sobre ${settings.subject} - ${settings.topic}`,
+        folderId: matchedFolderId || null,
         createdAt: serverTimestamp(),
       });
       setDoubtSaved(true);
@@ -385,6 +392,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     setSavingFlashcardDoubt(true);
     try {
       const lessonsRef = collection(db, 'users', user.uid, 'lessons');
+      const matchedFolderId = await findMatchingFolder(db, user.uid, settings.subject);
       await addDoc(lessonsRef, {
         subject: settings.subject,
         topic: settings.specificTopic || settings.topic,
@@ -395,6 +403,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
           secoes: [{ subtitulo: 'Resposta da IA', conteudo: flashcardDoubtResponse.replace(/<[^>]*>?/gm, '') }],
         },
         userComment: `Dúvida sobre flashcard - ${settings.subject} - ${settings.topic}`,
+        folderId: matchedFolderId || null,
         createdAt: serverTimestamp(),
       });
       setFlashcardDoubtSaved(true);

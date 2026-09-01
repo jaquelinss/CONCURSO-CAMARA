@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp, doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { generateContentFromGemini } from '../lib/gemini';
+import { findMatchingFolder } from '../lib/folderUtils';
 import { Sparkles, Loader2, X } from 'lucide-react';
 
 interface InlineContentGeneratorProps {
@@ -110,6 +111,8 @@ export default function InlineContentGenerator({
     const newFlashcardIds = [...existingFlashcards];
 
     try {
+      const matchedFolderId = await findMatchingFolder(db, user.uid, subject);
+
       // 1. Generate Lesson
       setProgress(1);
       setProgressLabel('Gerando aula...');
@@ -129,6 +132,7 @@ export default function InlineContentGenerator({
         lessonLevel,
         data: lessonData,
         userComment: '',
+        folderId: matchedFolderId || null,
         createdAt: serverTimestamp(),
       });
       newLessonIds.push(lDoc.id);
@@ -153,6 +157,7 @@ export default function InlineContentGenerator({
         model: quizModel,
         data: quizData,
         userComment: '',
+        folderId: matchedFolderId || null,
         createdAt: serverTimestamp(),
       });
       newQuizIds.push(qDoc.id);
@@ -177,6 +182,7 @@ export default function InlineContentGenerator({
         model: 'Flashcard',
         data: flashData,
         userComment: '',
+        folderId: matchedFolderId || null,
         createdAt: serverTimestamp(),
       });
       newFlashcardIds.push(fDoc.id);
