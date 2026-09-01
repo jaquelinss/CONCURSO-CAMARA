@@ -85,7 +85,13 @@ export default function GlobalHighlighter() {
       <style>{`
         ${HIGHLIGHT_COLORS.map(c => `
           ::highlight(global-highlight-${c.id}) {
-            background-color: ${c.hex};
+            /* O ::highlight no Chrome preenche todo o line-height. Para criar espaçamento, usamos um sublinhado espesso no lugar do background. */
+            background-color: transparent;
+            text-decoration: underline;
+            text-decoration-color: ${c.hex};
+            text-decoration-thickness: 1.1em;
+            text-underline-offset: -0.2em;
+            text-decoration-skip-ink: none;
             color: black;
           }
         `).join('\n')}
