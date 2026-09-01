@@ -304,14 +304,29 @@ export default function DigitalNotebook() {
   };
   // ─── Span Highlight Handlers ─────────────────────────────────────
   const handleEditorClick = (e: React.MouseEvent) => {
+    let spanNode: HTMLElement | null = null;
+    const target = e.target as HTMLElement;
     const selection = window.getSelection();
+
     if (selection && selection.toString().length > 0) {
-      // Ignora clique se o usuário estiver apenas selecionando texto
-      return;
+      // Se o usuário selecionou texto, verifica se a seleção está totalmente
+      // dentro de um span já marcado (highlighted)
+      if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const commonAncestor = range.commonAncestorContainer;
+        const ancestorElement = commonAncestor.nodeType === Node.TEXT_NODE 
+          ? commonAncestor.parentElement 
+          : (commonAncestor as HTMLElement);
+        spanNode = ancestorElement?.closest('span') || null;
+      }
+      // Se a seleção não estiver dentro de um span marcado, apenas ignoramos (comportamento normal de seleção)
+      if (!spanNode || !spanNode.style.backgroundColor) {
+        return;
+      }
+    } else {
+      spanNode = target.closest('span');
     }
     
-    const target = e.target as HTMLElement;
-    const spanNode = target.closest('span');
     if (spanNode && spanNode.style.backgroundColor) {
       const rect = spanNode.getBoundingClientRect();
       setSpanOptionsPos({ x: rect.left + rect.width / 2, y: rect.bottom + 10 });

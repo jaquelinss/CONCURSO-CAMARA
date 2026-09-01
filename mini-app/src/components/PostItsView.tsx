@@ -2,15 +2,15 @@ import { useEffect, useState, useMemo } from 'react';
 import { collection, query, onSnapshot, doc, updateDoc, deleteDoc, addDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
-import { Plus, Edit2, Archive, Trash2, Search, FileText, Eye, EyeOff, ChevronDown, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
+import { Plus, Edit2,  Trash2, Search, FileText, Eye, EyeOff, ChevronDown, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
 import DOMPurify from 'dompurify';
 import NoteEditor from './NoteEditor';
 
-export default function PostItsView() {
+export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) {
   const { user } = useAuth();
   const [notes, setNotes] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterArchived, setFilterArchived] = useState(false);
+  
   const [editingNote, setEditingNote] = useState<any | null>(null);
   const [isCascadeMode, setIsCascadeMode] = useState(true);
   const [selectedTag, setSelectedTag] = useState<string>('__all__');
@@ -19,7 +19,7 @@ export default function PostItsView() {
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
   const [cascadeIndex, setCascadeIndex] = useState(0);
 
-  useEffect(() => { setCascadeIndex(0); }, [selectedTag, selectedSubTag, searchTerm, filterArchived, sortOrder]);
+  useEffect(() => { setCascadeIndex(0); }, [selectedTag, selectedSubTag, searchTerm, sortOrder]);
   useEffect(() => {
     if (!user) return;
     const q = query(collection(db, 'users', user.uid, 'notes'));
@@ -60,7 +60,7 @@ export default function PostItsView() {
 
   const filteredNotes = useMemo(() => {
     return postItNotes
-      .filter(n => !!n.isArchived === filterArchived)
+      
       .filter(n => {
         if (selectedTag === '__all__') return true;
         if (selectedTag === '__no_tag__') return !n.subjectTag;
@@ -80,7 +80,7 @@ export default function PostItsView() {
         const dateB = b.createdAt?.seconds || 0;
         return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
       });
-  }, [postItNotes, filterArchived, selectedTag, selectedSubTag, searchTerm, sortOrder]);
+  }, [postItNotes, selectedTag, selectedSubTag, searchTerm, sortOrder]);
 
   const getContrastColor = (hexColor: string) => {
     if (!hexColor) return '#1f2937';
@@ -160,35 +160,9 @@ export default function PostItsView() {
     }
   };
 
-  const handleHideAll = async () => {
-    if (!user) return;
-    const toHide = postItNotes.filter(n => !n.isArchived).filter(n => {
-      if (selectedTag === '__all__') return true;
-      if (selectedTag === '__no_tag__') return !n.subjectTag;
-      return n.subjectTag === selectedTag;
-    });
-    if (toHide.length === 0) return;
-    const label = selectedTag === '__all__' ? 'todos' : selectedTag === '__no_tag__' ? 'sem tag' : `de "${selectedTag}"`;
-    if (!window.confirm(`Ocultar ${toHide.length} post-its (${label})? Eles serão arquivados.`)) return;
-    for (const n of toHide) {
-      await updateDoc(doc(db, 'users', user.uid, 'notes', n.id), { isArchived: true });
-    }
-  };
+  
 
-  const handleShowAll = async () => {
-    if (!user) return;
-    const toShow = postItNotes.filter(n => n.isArchived).filter(n => {
-      if (selectedTag === '__all__') return true;
-      if (selectedTag === '__no_tag__') return !n.subjectTag;
-      return n.subjectTag === selectedTag;
-    });
-    if (toShow.length === 0) { alert('Nenhum post-it arquivado para mostrar.'); return; }
-    const label = selectedTag === '__all__' ? 'todos' : selectedTag === '__no_tag__' ? 'sem tag' : `de "${selectedTag}"`;
-    if (!window.confirm(`Mostrar ${toShow.length} post-its (${label})? Isso vai abri-los no app principal.`)) return;
-    for (const n of toShow) {
-      await updateDoc(doc(db, 'users', user.uid, 'notes', n.id), { isArchived: false });
-    }
-  };
+  
 
   const handleToggleTagsFilter = () => {
     const next = !showTagsFilter;
@@ -197,7 +171,7 @@ export default function PostItsView() {
   };
 
   return (
-    <div className="space-y-3 h-full flex flex-col">
+    <div className={`space-y-3 h-full flex flex-col ${isSplitMode ? "split" : ""}`}>
       {/* Search + Actions Bar */}
       <div className="flex flex-col gap-2 bg-white p-3 rounded-xl shadow-sm border border-gray-100">
         <div className="flex flex-col sm:flex-row gap-2 items-center">
@@ -218,12 +192,7 @@ export default function PostItsView() {
             >
               {isCascadeMode ? 'Cascata ✓' : 'Cascata'}
             </button>
-            <button 
-              onClick={() => { setFilterArchived(!filterArchived); setSelectedTag('__all__'); setSelectedSubTag('__all__'); }}
-              className={`flex-1 sm:flex-none px-2.5 py-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors border ${filterArchived ? 'bg-amber-100 text-amber-800 border-amber-300' : 'bg-emerald-100 text-emerald-800 border-emerald-300 hover:bg-emerald-50'}`}
-            >
-              <Archive className="w-3.5 h-3.5" /> {filterArchived ? 'Visualizando: Arquivados' : 'Visualizando: Ativos'}
-            </button>
+            
             <button 
               onClick={createNote}
               className="flex-1 sm:flex-none px-2.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors"
@@ -259,15 +228,7 @@ export default function PostItsView() {
           <button onClick={handleShowRecent} className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded-md transition-colors flex items-center gap-1" title="Reabrir últimos 3 arquivados">
             <RotateCcw className="w-3 h-3" /> Últimos
           </button>
-          {!filterArchived ? (
-            <button onClick={handleHideAll} className="text-[10px] font-bold text-amber-600 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded-md transition-colors" title="Ocultar todos (ou da tag selecionada)">
-              Ocultar Todos
-            </button>
-          ) : (
-            <button onClick={handleShowAll} className="text-[10px] font-bold text-emerald-600 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-2 py-1 rounded-md transition-colors" title="Mostrar todos (ou da tag selecionada)">
-              Mostrar Todos
-            </button>
-          )}
+          
 
           <span className="text-[10px] text-gray-400 ml-auto">{filteredNotes.length} post-its</span>
         </div>
@@ -354,9 +315,9 @@ export default function PostItsView() {
                     <button 
                       onClick={() => toggleArchive(note.id, note.isArchived)} 
                       className="p-1 hover:bg-black/10 rounded"
-                      title={note.isArchived ? "Desarquivar" : "Arquivar"}
+                      title={note.isArchived ? "Mostrar no painel principal" : "Ocultar do painel principal"}
                     >
-                      <Archive className="w-3.5 h-3.5" />
+                      {note.isArchived ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                     </button>
                     <button 
                       onClick={() => setEditingNote(note)}
@@ -447,9 +408,9 @@ export default function PostItsView() {
                       <button 
                         onClick={(e) => { e.stopPropagation(); toggleArchive(note.id, note.isArchived); }} 
                         className="p-1 hover:bg-black/10 rounded"
-                        title={note.isArchived ? "Desarquivar" : "Arquivar"}
+                        title={note.isArchived ? "Mostrar no painel principal" : "Ocultar do painel principal"}
                       >
-                        <Archive className="w-3 h-3" />
+                        {note.isArchived ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
                       </button>
                       <button 
                         onClick={(e) => { e.stopPropagation(); deleteNote(note.id); }} 
@@ -523,3 +484,12 @@ export default function PostItsView() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+

@@ -2,14 +2,14 @@ import { useEffect, useState, useMemo } from 'react';
 import { collection, query, onSnapshot, orderBy, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
-import { Search, Layers, Play, Trash2, Clock, ChevronLeft, ChevronRight, Repeat, StickyNote, Archive, Edit2 } from 'lucide-react';
+import { Search, Layers, Play, Trash2, Clock, ChevronLeft, ChevronRight, Repeat, StickyNote, Eye, EyeOff, Edit2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import DOMPurify from 'dompurify';
 import FlashcardStudy from './FlashcardStudy';
 import NoteEditor from './NoteEditor';
 
-export default function FlashcardsView() {
+export default function FlashcardsView({ isSplitMode }: { isSplitMode?: boolean }) {
   const { user } = useAuth();
   const [decks, setDecks] = useState<any[]>([]);
   const [notes, setNotes] = useState<any[]>([]);
@@ -124,7 +124,7 @@ export default function FlashcardsView() {
   };
 
   return (
-    <div className="space-y-4 h-full flex flex-col">
+    <div className={`space-y-4 h-full flex flex-col ${isSplitMode ? "split" : ""}`}>
       <div className="bg-white p-3 rounded-xl shadow-sm border border-gray-100">
         <div className="relative">
           <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -191,9 +191,9 @@ export default function FlashcardsView() {
                           <button 
                             onClick={() => toggleArchive(note.id)} 
                             className="p-1 hover:bg-black/10 rounded"
-                            title="Arquivar"
+                            title={note.isArchived ? "Mostrar no painel principal" : "Ocultar do painel principal"}
                           >
-                            <Archive className="w-3 h-3" />
+                            {note.isArchived ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
                           </button>
                           <button 
                             onClick={() => setEditingNote(note)}
@@ -344,3 +344,8 @@ export default function FlashcardsView() {
     </div>
   );
 }
+
+
+
+
+

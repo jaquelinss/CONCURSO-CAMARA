@@ -463,7 +463,7 @@ export default function SavedContent() {
         {loading ? (
           <p>Carregando...</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div>
               <h2 className="text-2xl font-semibold mb-4 border-b pb-2">Aulas Explicativas</h2>
               {filterByFolder(lessons).length === 0 ? (
@@ -581,8 +581,10 @@ export default function SavedContent() {
                   ))}
                 </div>
               )}
+            </div>
 
-              <h2 className="text-2xl font-semibold mb-4 border-b pb-2 mt-8">Flashcards</h2>
+            <div>
+              <h2 className="text-2xl font-semibold mb-4 border-b pb-2">Flashcards</h2>
               {filterByFolder(flashcards).length === 0 ? (
                 <p className="text-gray-500 dark:text-gray-400">Nenhum flashcard nesta visualização.</p>
               ) : (

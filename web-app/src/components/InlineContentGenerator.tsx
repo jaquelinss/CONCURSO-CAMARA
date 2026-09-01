@@ -21,7 +21,7 @@ interface InlineContentGeneratorProps {
 }
 
 export default function InlineContentGenerator({
-  subject, topic, apiKey, user, planId,
+  subject, topic, apiKey, user, planId, plan: _plan,
   originalDate, blockIndex, selectedBanca,
   itemType, itemId, block,
 }: InlineContentGeneratorProps) {
@@ -54,11 +54,50 @@ export default function InlineContentGenerator({
       const collectionName = type === 'lesson' ? 'lessons' : type === 'quiz' ? 'quizzes' : 'flashcards';
       const contentRef = doc(db, 'users', user.uid, collectionName, contentId);
       const snap = await getDoc(contentRef);
-      if (!snap.exists()) return;
+      if (!snap.exists()) {
+        const shouldUnlink = window.confirm('Este conteúdo foi excluído. Deseja remover o vínculo?');
+        if (shouldUnlink) {
+          await handleUnlinkContent(contentId, type);
+        }
+        return;
+      }
       const data = { id: snap.id, ...snap.data() };
       navigate('/saved', { state: { autoOpen: data, autoOpenType: type } });
     } catch (err) {
       console.error('Erro ao abrir conteúdo:', err);
+    }
+  };
+
+  const handleUnlinkContent = async (contentId: string, type: 'lesson' | 'quiz' | 'flashcard') => {
+    if (!user) return;
+    try {
+      if (itemType === 'revision' && itemId) {
+        const revRef = doc(db, 'users', user.uid, 'revisions', itemId);
+        const revSnap = await getDoc(revRef);
+        if (revSnap.exists()) {
+          const links = revSnap.data().contentLinks || {};
+          const key = type === 'lesson' ? 'lessonIds' : type === 'quiz' ? 'quizIds' : 'flashcardIds';
+          const updated = (links[key] || []).filter((id: string) => id !== contentId);
+          await setDoc(revRef, { contentLinks: { ...links, [key]: updated } }, { merge: true });
+        }
+      } else if (planId) {
+        const planRef = doc(db, 'users', user.uid, 'studyPlans', planId);
+        const planSnap = await getDoc(planRef);
+        if (planSnap.exists()) {
+          const planData = planSnap.data();
+          const newSchedule = [...planData.schedule];
+          const dayIndex = newSchedule.findIndex((d: any) => d.date === originalDate);
+          if (dayIndex !== -1 && newSchedule[dayIndex].blocks[blockIndex]) {
+            const b = newSchedule[dayIndex].blocks[blockIndex];
+            const key = type === 'lesson' ? 'linkedLessonIds' : type === 'quiz' ? 'linkedQuizIds' : 'linkedFlashcardIds';
+            b[key] = (b[key] || []).filter((id: string) => id !== contentId);
+            await updateDoc(planRef, { schedule: newSchedule });
+          }
+        }
+      }
+      window.dispatchEvent(new Event('study-plan-updated'));
+    } catch (err) {
+      console.error('Erro ao desvincular conteúdo:', err);
     }
   };
 
@@ -181,35 +220,58 @@ export default function InlineContentGenerator({
 
   // === RENDER: Content already linked (badges) ===
   if (mode === 'done' || (mode === 'idle' && hasContent)) {
+    const ContentBadge = ({ ids, type, emoji, label, colorClasses }: { ids: string[]; type: 'lesson' | 'quiz' | 'flashcard'; emoji: string; label: string; colorClasses: string }) => {
+      if (ids.length === 0) return null;
+      if (ids.length === 1) {
+        return (
+          <div className="flex items-center gap-0.5">
+            <button
+              onClick={() => handleOpenContent(ids[0], type)}
+              className={`text-[10px] px-1.5 py-0.5 ${colorClasses} rounded font-bold hover:opacity-80 transition-colors cursor-pointer`}
+              title={`Abrir ${label}`}
+            >
+              {emoji} 1 {label}
+            </button>
+            <button
+              onClick={async (e) => { e.stopPropagation(); if (window.confirm(`Desvincular este ${label}?`)) { await handleUnlinkContent(ids[0], type); } }}
+              className="text-[10px] text-gray-400 hover:text-red-500 transition-colors px-0.5"
+              title="Desvincular"
+            >
+              ✕
+            </button>
+          </div>
+        );
+      }
+      return (
+        <div className="flex flex-col gap-0.5">
+          <span className={`text-[10px] font-bold ${colorClasses.replace(/bg-\S+/g, '').trim()} px-1`}>{emoji} {ids.length} {label}{ids.length > 1 ? (type === 'quiz' ? 'zes' : 's') : ''}</span>
+          {ids.map((id, idx) => (
+            <div key={id} className="flex items-center gap-0.5 ml-2">
+              <button
+                onClick={() => handleOpenContent(id, type)}
+                className={`text-[9px] px-1.5 py-0.5 ${colorClasses} rounded font-semibold hover:opacity-80 transition-colors cursor-pointer truncate max-w-[180px]`}
+                title={`Abrir ${label} ${idx + 1}`}
+              >
+                #{idx + 1}
+              </button>
+              <button
+                onClick={async (e) => { e.stopPropagation(); if (window.confirm(`Desvincular ${label} #${idx + 1}?`)) { await handleUnlinkContent(id, type); } }}
+                className="text-[9px] text-gray-400 hover:text-red-500 transition-colors px-0.5"
+                title="Desvincular"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+      );
+    };
+
     return (
-      <div className="mt-1.5 flex flex-wrap items-center gap-1">
-        {existingLessons.length > 0 && (
-          <button
-            onClick={() => handleOpenContent(existingLessons[existingLessons.length - 1], 'lesson')}
-            className="text-[10px] px-1.5 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded font-bold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors cursor-pointer"
-            title="Abrir aula salva"
-          >
-            📘 {existingLessons.length} Aula{existingLessons.length > 1 ? 's' : ''}
-          </button>
-        )}
-        {existingQuizzes.length > 0 && (
-          <button
-            onClick={() => handleOpenContent(existingQuizzes[existingQuizzes.length - 1], 'quiz')}
-            className="text-[10px] px-1.5 py-0.5 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded font-bold hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors cursor-pointer"
-            title="Abrir questões salvas"
-          >
-            📝 {existingQuizzes.length} Quiz{existingQuizzes.length > 1 ? 'zes' : ''}
-          </button>
-        )}
-        {existingFlashcards.length > 0 && (
-          <button
-            onClick={() => handleOpenContent(existingFlashcards[existingFlashcards.length - 1], 'flashcard')}
-            className="text-[10px] px-1.5 py-0.5 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded font-bold hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-colors cursor-pointer"
-            title="Abrir flashcards salvos"
-          >
-            🧠 {existingFlashcards.length} Flash{existingFlashcards.length > 1 ? 'cards' : 'card'}
-          </button>
-        )}
+      <div className="mt-1.5 flex flex-wrap items-start gap-1.5">
+        <ContentBadge ids={existingLessons} type="lesson" emoji="📘" label="Aula" colorClasses="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" />
+        <ContentBadge ids={existingQuizzes} type="quiz" emoji="📝" label="Quiz" colorClasses="bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400" />
+        <ContentBadge ids={existingFlashcards} type="flashcard" emoji="🧠" label="Flashcard" colorClasses="bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400" />
         <button
           onClick={() => { setMode('options'); setShowCustom(false); }}
           className="text-[10px] px-1.5 py-0.5 text-gray-400 hover:text-indigo-500 font-bold bg-gray-50 dark:bg-gray-800/50 rounded border border-dashed border-gray-200 dark:border-gray-700 transition-colors"
@@ -387,3 +449,5 @@ export default function InlineContentGenerator({
     </button>
   );
 }
+
+
