@@ -75,10 +75,13 @@ export default function ReadingLaser({ containerRef }: ReadingLaserProps) {
     const relativeY = clientY - rect.top + containerRef.current.scrollTop;
     setMouseY(relativeY);
 
-    // For the pointer mode (fixed to screen) - only when mouse is down
-    if (mode === 'pointer' && isMouseDownRef.current) {
+    // For the pointer mode (fixed to screen) - always draws, no click needed
+    if (mode === 'pointer') {
       pointsRef.current.push({ x: clientX, y: clientY, time: Date.now() });
-      lassoPathRef.current.push({ x: clientX, y: clientY });
+      // Only track lasso path when mouse is held down
+      if (isMouseDownRef.current) {
+        lassoPathRef.current.push({ x: clientX, y: clientY });
+      }
     }
   }, [active, mode, containerRef]);
 
