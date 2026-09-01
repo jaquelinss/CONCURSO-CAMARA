@@ -1,4 +1,4 @@
-﻿import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 
 export function normalizeStr(str: string) {
   if (!str) return '';
@@ -9,22 +9,35 @@ export function isSubjectMatchingFolder(subject: string, folderName: string) {
   if (!subject || !folderName) return false;
   const s = normalizeStr(subject);
   const f = normalizeStr(folderName);
-  
+
   if (s === f) return true;
-  if (s.includes(f) || f.includes(s)) return true;
-  
-  const synonyms = [
-    ['portugues', 'linguaportuguesa', 'pt'],
-    ['matematica', 'raciociniologico', 'rlm', 'mat', 'raciocinio'],
-    ['direito', 'dir', 'legislacao', 'lei', 'constituicao', 'constitucional', 'administrativo'],
-    ['informatica', 'info', 'computacao'],
-    ['conhecimentosgerais', 'atualidades', 'historia', 'geografia']
+
+  // Only use includes() if the shorter string is at least 6 chars
+  // (prevents short strings like "pt", "dir", "mat" from causing false positives)
+  const minLen = 6;
+  if (f.length >= minLen && s.includes(f)) return true;
+  if (s.length >= minLen && f.includes(s)) return true;
+
+  // Synonym groups: only full words/stems that are unambiguous
+  const synonyms: string[][] = [
+    ['portugues', 'linguaportuguesa'],
+    ['matematica', 'raciociniologico', 'raciociniologicomatematico'],
+    ['raciocinio', 'raciociniol'],
+    ['direito', 'constitucional', 'administrativo', 'legislacao', 'constituicao'],
+    ['tributario', 'tributaria', 'tributarista', 'sistematributario', 'impostos', 'fiscal'],
+    ['informatica', 'computacao', 'tecnologia'],
+    ['historia', 'geografica', 'geografia'],
+    ['conhecimentosgerais', 'atualidades'],
+    ['arquivologia', 'arquivistica', 'gestaoarquivos'],
+    ['administracao', 'gestao', 'organizacao'],
+    ['contabilidade', 'contabil', 'financas'],
+    ['leorganica', 'leicararu', 'leiorganic'],
   ];
-  
+
   for (const group of synonyms) {
-    if (group.some(g => s.includes(g)) && group.some(g => f.includes(g))) {
-      return true;
-    }
+    const inSubject = group.some(g => s.includes(g) && g.length >= minLen);
+    const inFolder  = group.some(g => f.includes(g) && g.length >= minLen);
+    if (inSubject && inFolder) return true;
   }
   return false;
 }
