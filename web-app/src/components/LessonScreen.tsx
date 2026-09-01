@@ -314,7 +314,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
       
       let parsedLesson = result;
       if (result.materia_identificada) {
-        settings.subject = result.materia_identificada;
+        // Don't override subject — the original subject is the source of truth
         settings.topic = result.topico_identificado || settings.topic;
         parsedLesson = result.conteudo;
       }

@@ -122,7 +122,8 @@ export default function InlineContentGenerator({
       );
       let lessonData = lr, lessonSubject = subject, lessonTopic = topic;
       if (lr.materia_identificada) {
-        lessonSubject = lr.materia_identificada;
+        // Keep the original subject from the study plan as the source of truth
+        // Only use materia_identificada for topic refinement and to extract conteudo
         lessonTopic = lr.topico_identificado || topic;
         lessonData = lr.conteudo;
       }
@@ -146,7 +147,6 @@ export default function InlineContentGenerator({
       );
       let quizData = qr, quizSubject = subject, quizTopic = topic;
       if (qr.materia_identificada) {
-        quizSubject = qr.materia_identificada;
         quizTopic = qr.topico_identificado || topic;
       }
       if (qr.conteudo) quizData = qr.conteudo;
@@ -171,7 +171,6 @@ export default function InlineContentGenerator({
       );
       let flashData = fr, flashSubject = subject, flashTopic = topic;
       if (fr.materia_identificada) {
-        flashSubject = fr.materia_identificada;
         flashTopic = fr.topico_identificado || topic;
       }
       if (fr.conteudo) flashData = fr.conteudo;

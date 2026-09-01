@@ -301,7 +301,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
     setError(null);
     try {
       const result = await generateContentFromGemini({ ...settings, banca: selectedBanca }, apiKey);
-      if (result.materia_identificada) settings.subject = result.materia_identificada;
+      // Don't override subject with materia_identificada — the original subject is the source of truth
       if (result.topico_identificado) settings.topic = result.topico_identificado;
       
       if (settings.subject === 'Redação' && settings.model === 'Enem') {
