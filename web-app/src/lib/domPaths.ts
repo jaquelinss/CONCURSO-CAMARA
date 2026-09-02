@@ -29,11 +29,11 @@ function getDomPath(node: Node, root: HTMLElement): number[] {
   const path: number[] = [];
   let current: Node | null = node;
   while (current && current !== root) {
-    const parentNode = current.parentNode;
-    if (!parentNode) break;
-    const index = Array.prototype.indexOf.call(parentNode.childNodes, current);
+    const parentEl: Node | null = current.parentNode;
+    if (!parentEl) break;
+    const index = Array.prototype.indexOf.call(parentEl.childNodes, current);
     path.unshift(index);
-    current = parentNode;
+    current = parentEl;
   }
   return path;
 }
