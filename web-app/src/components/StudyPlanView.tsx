@@ -3,7 +3,7 @@ import { db } from '../lib/firebase';
 import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import { useReward } from '../contexts/RewardContext';
-import { CheckCircle, RotateCcw, Calendar, Clock, BookOpen, Trash2, ChevronDown, ChevronUp, Trophy, CirclePlay, Link, X, Sparkles, Search, Loader2, Undo2, RefreshCw } from 'lucide-react';
+import { CheckCircle, RotateCcw, Calendar, Clock, BookOpen, Trash2, ChevronDown, ChevronUp, Trophy, CirclePlay, Link, X, Sparkles, Search, Loader2, Undo2, RefreshCw, Plus } from 'lucide-react';
 import { suggestVideoSearches, suggestRescheduleDate, generateStudyPlan } from '../lib/gemini';
 import { format, isToday, isBefore, startOfDay, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -24,6 +24,73 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
   const [loadingAi, setLoadingAi] = useState<Record<string, boolean>>({});
   const [aiSuggestions, setAiSuggestions] = useState<Record<string, any[]>>({});
   const [isReorganizing, setIsReorganizing] = useState(false);
+
+  // Add Subject states
+  const [isAddingSubject, setIsAddingSubject] = useState(false);
+  const [newSubjectName, setNewSubjectName] = useState('');
+  const [newSubjectTopics, setNewSubjectTopics] = useState('');
+  const [isSavingSubject, setIsSavingSubject] = useState(false);
+
+  const handleAddSubject = async () => {
+    if (!user) return;
+    if (!newSubjectName.trim() || !newSubjectTopics.trim()) {
+      alert("Preencha o nome da matéria e os tópicos.");
+      return;
+    }
+
+    const topics = newSubjectTopics.split('\n').map(t => t.trim()).filter(Boolean);
+    if (topics.length === 0) return;
+
+    setIsSavingSubject(true);
+    try {
+      const todayStr = format(new Date(), 'yyyy-MM-dd');
+      const futureDaysIndices: number[] = [];
+      const schedule = plan.schedule || [];
+      
+      schedule.forEach((day: any, idx: number) => {
+        if (day.date >= todayStr) {
+          futureDaysIndices.push(idx);
+        }
+      });
+
+      if (futureDaysIndices.length === 0) {
+        alert("Não há dias futuros neste plano para alocar a nova matéria.");
+        setIsSavingSubject(false);
+        return;
+      }
+
+      const updatedSchedule = JSON.parse(JSON.stringify(schedule));
+      const spacing = futureDaysIndices.length / topics.length;
+
+      topics.forEach((topic, idx) => {
+        const targetDayIndex = futureDaysIndices[Math.min(Math.floor(idx * spacing), futureDaysIndices.length - 1)];
+        const day = updatedSchedule[targetDayIndex];
+        day.blocks.push({
+          id: `${day.date}-added-${Math.random().toString(36).substring(7)}`,
+          subject: newSubjectName.trim(),
+          topic: topic,
+          status: 'pending',
+          hours: 1
+        });
+      });
+
+      const planRef = doc(db, 'users', user.uid, 'studyPlans', plan.id);
+      await updateDoc(planRef, { schedule: updatedSchedule });
+      plan.schedule = updatedSchedule;
+      onUpdate();
+      window.dispatchEvent(new Event('study-plan-updated'));
+      
+      setIsAddingSubject(false);
+      setNewSubjectName('');
+      setNewSubjectTopics('');
+      alert("Matéria adicionada e distribuída com sucesso!");
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao adicionar matéria.");
+    } finally {
+      setIsSavingSubject(false);
+    }
+  };
 
   // ─── Reorganize Plan ──────────────────────────────────────────────
   const reorganizePlan = async () => {
@@ -508,7 +575,13 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
             <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {plan.hoursPerDay}h/dia</span>
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+          <button
+            onClick={() => setIsAddingSubject(true)}
+            className="px-3 py-2 text-sm text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/20 rounded-lg transition-colors flex items-center gap-1"
+          >
+            <Plus className="w-4 h-4" /> Adicionar Matéria
+          </button>
           <button
             onClick={reorganizePlan}
             disabled={isReorganizing}
@@ -824,6 +897,71 @@ export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
           );
         })}
       </div>
+
+      {/* Adicionar Matéria Modal */}
+      {isAddingSubject && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-md p-6 shadow-2xl relative border border-gray-100 dark:border-gray-700">
+            <button
+              onClick={() => setIsAddingSubject(false)}
+              className="absolute top-4 right-4 p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white flex items-center gap-2">
+              <Plus className="w-5 h-5 text-indigo-500" />
+              Adicionar Matéria Extra
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+              A nova matéria será distribuída automaticamente entre os dias restantes do plano de estudos, sem alterar as matérias atuais.
+            </p>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Nome da Matéria</label>
+                <input
+                  type="text"
+                  value={newSubjectName}
+                  onChange={e => setNewSubjectName(e.target.value)}
+                  placeholder="Ex: Direito Administrativo"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-300">Tópicos para Estudar</label>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Um tópico por linha. Ex: <br/>- Atos Administrativos<br/>- Licitações</p>
+                <textarea
+                  value={newSubjectTopics}
+                  onChange={e => setNewSubjectTopics(e.target.value)}
+                  rows={6}
+                  placeholder="Atos Administrativos&#10;Licitações&#10;Agentes Públicos"
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                />
+              </div>
+            </div>
+
+            <div className="mt-6 flex gap-3">
+              <button
+                onClick={() => setIsAddingSubject(false)}
+                className="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleAddSubject}
+                disabled={isSavingSubject}
+                className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/30"
+              >
+                {isSavingSubject ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" /> Salvando...</>
+                ) : (
+                  'Distribuir no Plano'
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
