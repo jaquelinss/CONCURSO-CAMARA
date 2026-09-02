@@ -14,13 +14,15 @@ import {
   Briefcase,
   Info,
   Banknote,
-  Target
+  Target,
+  BookOpen
 } from 'lucide-react';
 
 const ConcursosScreen: React.FC = () => {
   const [selectedId, setSelectedId] = useState(concursosData[0].id);
   const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number }>({ days: 0, hours: 0 });
   const [isJobDescOpen, setIsJobDescOpen] = useState(false);
+  const [isSyllabusOpen, setIsSyllabusOpen] = useState(false);
 
   const selectedConcurso = concursosData.find((c) => c.id === selectedId) || concursosData[0];
 
@@ -145,6 +147,34 @@ const ConcursosScreen: React.FC = () => {
                     </div>
                   )}
                 </div>
+
+                {/* Syllabus Accordion */}
+                {selectedConcurso.syllabus && selectedConcurso.syllabus.length > 0 && (
+                  <div className="mt-4 border border-slate-100 rounded-2xl overflow-hidden">
+                    <button 
+                      onClick={() => setIsSyllabusOpen(!isSyllabusOpen)}
+                      className="w-full flex items-center justify-between p-5 bg-slate-50 hover:bg-slate-100 transition-colors text-left"
+                    >
+                      <div className="flex items-center gap-3">
+                        <BookOpen className="w-5 h-5 text-slate-500" />
+                        <span className="font-semibold text-slate-800">Conteúdo Programático</span>
+                      </div>
+                      {isSyllabusOpen ? <ChevronUp className="w-5 h-5 text-slate-500" /> : <ChevronDown className="w-5 h-5 text-slate-500" />}
+                    </button>
+                    {isSyllabusOpen && (
+                      <div className="p-5 bg-white text-slate-600 border-t border-slate-100">
+                        <div className="space-y-6">
+                          {selectedConcurso.syllabus.map((subject, idx) => (
+                            <div key={idx}>
+                              <h4 className="font-bold text-slate-800 mb-2">{subject.subject}</h4>
+                              <p className="text-sm leading-relaxed whitespace-pre-wrap">{subject.topics}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
               </div>
             </div>
