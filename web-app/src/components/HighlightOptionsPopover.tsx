@@ -60,6 +60,7 @@ export default function HighlightOptionsPopover() {
     
     window.getSelection()?.removeAllRanges();
     setPosition(null);
+    window.dispatchEvent(new Event('highlights-updated'));
   };
 
   const handleChangeColor = (newColorId: string) => {
@@ -79,6 +80,7 @@ export default function HighlightOptionsPopover() {
 
     window.getSelection()?.removeAllRanges();
     setPosition(null);
+    window.dispatchEvent(new Event('highlights-updated'));
   };
 
   if (!position) return null;

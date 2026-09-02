@@ -316,6 +316,19 @@ export default function SavedContent() {
     }
   };
 
+  useEffect(() => {
+    if (viewingContent?.id) {
+      document.body.dataset.contentId = viewingContent.id;
+    } else {
+      delete document.body.dataset.contentId;
+    }
+    window.dispatchEvent(new Event('content-id-changed'));
+    return () => {
+      delete document.body.dataset.contentId;
+      window.dispatchEvent(new Event('content-id-changed'));
+    };
+  }, [viewingContent]);
+
   const handleBack = () => {
     setViewingContent(null);
     setViewingType(null);

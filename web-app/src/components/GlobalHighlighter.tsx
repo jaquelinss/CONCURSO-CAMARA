@@ -3,12 +3,96 @@ import { Highlighter, ChevronUp } from 'lucide-react';
 import Draggable from 'react-draggable';
 import { createPortal } from 'react-dom';
 import { HIGHLIGHT_COLORS } from './HighlightOptionsPopover';
+import { db } from '../lib/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { useAuth } from '../contexts/AuthContext';
+import { serializeRange, deserializeRange } from '../lib/domPaths';
 
 export default function GlobalHighlighter() {
+  const { user } = useAuth();
   const [active, setActive] = useState(false);
   const [activeColorId, setActiveColorId] = useState('yellow');
   const [showColorPicker, setShowColorPicker] = useState(false);
   const nodeRef = useRef<HTMLDivElement>(null);
+
+  // Persistence Logic
+  useEffect(() => {
+    if (!('highlights' in CSS) || !user) return;
+
+    const loadHighlights = async () => {
+      const contentId = document.body.dataset.contentId;
+      // Clear existing
+      for (const color of HIGHLIGHT_COLORS) {
+        // @ts-ignore
+        CSS.highlights.delete(`global-highlight-${color.id}`);
+      }
+
+      if (!contentId) return;
+
+      try {
+        const docRef = doc(db, 'users', user.uid, 'global_highlights', contentId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          for (const color of HIGHLIGHT_COLORS) {
+            const savedRanges = data[color.id] || [];
+            // @ts-ignore
+            const highlight = new Highlight();
+            for (const sRange of savedRanges) {
+              const range = deserializeRange(sRange);
+              if (range) highlight.add(range);
+            }
+            // @ts-ignore
+            if (highlight.size > 0) CSS.highlights.set(`global-highlight-${color.id}`, highlight);
+          }
+        }
+      } catch (e) {
+        console.error('Error loading highlights', e);
+      }
+    };
+
+    const saveHighlights = async () => {
+      const contentId = document.body.dataset.contentId;
+      if (!contentId) return;
+
+      const dataToSave: Record<string, any[]> = {};
+      for (const color of HIGHLIGHT_COLORS) {
+        // @ts-ignore
+        const highlight = CSS.highlights.get(`global-highlight-${color.id}`);
+        if (highlight) {
+          const serialized = [];
+          // @ts-ignore
+          for (const range of highlight) {
+            serialized.push(serializeRange(range as Range));
+          }
+          if (serialized.length > 0) {
+            dataToSave[color.id] = serialized;
+          }
+        }
+      }
+
+      try {
+        const docRef = doc(db, 'users', user.uid, 'global_highlights', contentId);
+        await setDoc(docRef, dataToSave);
+      } catch (e) {
+        console.error('Error saving highlights', e);
+      }
+    };
+
+    const onContentIdChanged = () => loadHighlights();
+    const onHighlightsUpdated = () => saveHighlights();
+
+    window.addEventListener('content-id-changed', onContentIdChanged);
+    window.addEventListener('highlights-updated', onHighlightsUpdated);
+    
+    // Initial load in case it mounted after content was ready
+    loadHighlights();
+
+    return () => {
+      window.removeEventListener('content-id-changed', onContentIdChanged);
+      window.removeEventListener('highlights-updated', onHighlightsUpdated);
+    };
+  }, [user]);
 
   useEffect(() => {
     if (active) {
@@ -68,6 +152,7 @@ export default function GlobalHighlighter() {
         // @ts-ignore
         CSS.highlights.set(`global-highlight-${activeColorId}`, highlight);
         selection.removeAllRanges();
+        window.dispatchEvent(new Event('highlights-updated'));
       }
     };
 
