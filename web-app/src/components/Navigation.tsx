@@ -75,6 +75,7 @@ export default function Navigation() {
     { to: '/statistics', icon: PieChart, label: 'Estatísticas' },
     { to: '/questions', icon: Database, label: 'Banco de Questões' },
     { to: '/concursos', icon: Trophy, label: 'Concursos' },
+    { to: '/discursivas', icon: NotebookPen, label: 'Discursivas' },
   ];
 
   const isActive = (path: string) => location.pathname === path;

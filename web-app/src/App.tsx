@@ -16,6 +16,7 @@ import QuestionsDatabase from './pages/QuestionsDatabase';
 
 const StatisticsScreen = lazy(() => import('./pages/StatisticsScreen'));
 const ConcursosScreen = lazy(() => import('./pages/ConcursosScreen'));
+const DiscursiveQuestionsScreen = lazy(() => import('./pages/DiscursiveQuestionsScreen'));
 
 import ReportButton from './components/ReportButton';
 import StickyNotesManager from './components/StickyNotesManager';
@@ -52,6 +53,7 @@ function AppRoutes() {
       <Route path="/questions" element={<PrivateRoute><QuestionsDatabase /></PrivateRoute>} />
       <Route path="/statistics" element={<PrivateRoute><ErrorBoundary><Suspense fallback={null}><StatisticsScreen /></Suspense></ErrorBoundary></PrivateRoute>} />
       <Route path="/concursos" element={<PrivateRoute><ErrorBoundary><Suspense fallback={null}><ConcursosScreen /></Suspense></ErrorBoundary></PrivateRoute>} />
+      <Route path="/discursivas" element={<PrivateRoute><ErrorBoundary><Suspense fallback={null}><DiscursiveQuestionsScreen /></Suspense></ErrorBoundary></PrivateRoute>} />
       <Route path="/config" element={<PrivateRoute><ConfigScreen /></PrivateRoute>} />
       <Route path="*" element={<Navigate to="/dashboard" />} />
     </Routes>

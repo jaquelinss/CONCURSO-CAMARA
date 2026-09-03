@@ -587,3 +587,32 @@ Regras:
 
   return await callGemini(genAI, prompt, false, modelName);
 }
+
+export async function analyzeDiscursiveAnswer(statement: string, expectedAnswer: string, userAnswer: string, apiKey: string, modelName = 'gemini-2.5-pro') {
+  const genAI = new GoogleGenerativeAI(apiKey);
+  
+  const prompt = `
+Você é um experiente corretor de provas discursivas para concursos da área Fiscal (Auditor Fiscal).
+O foco absoluto da sua avaliação deve ser o CONTEÚDO escrito pelo candidato (quase 100% de peso).
+Não se importe com margens ou caligrafia (pois não é visível aqui), e dê pouco peso para erros mínimos de gramática, a menos que afetem a compreensão. O candidato só pontua se os argumentos dele convergirem para o Padrão de Resposta/Espelho da Banca.
+
+ENUNCIADO DA QUESTÃO:
+${statement}
+
+PADRÃO ESPERADO PELA BANCA (ESPELHO):
+${expectedAnswer}
+
+RESPOSTA DO CANDIDATO:
+${userAnswer}
+
+Analise a resposta do candidato. Retorne EXATAMENTE e APENAS um objeto JSON válido, sem crases markdown. Formato:
+{
+  "score": 0 a 10 (numero),
+  "strengths": ["ponto forte 1", "ponto forte 2"],
+  "weaknesses": ["o que faltou 1", "o que faltou 2"],
+  "detailedAnalysis": "Texto detalhado da avaliação."
+}
+`;
+
+  return await callGemini(genAI, prompt, false, modelName);
+}
