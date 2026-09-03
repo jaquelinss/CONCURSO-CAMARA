@@ -57,12 +57,12 @@ function setupPeriodicScanner() {
       lastSeenText = allText;
       tryAwardPoints();
     }
-  }, 3000); // scan every 3 seconds
+  }, 60000); // scan every 60 seconds instead of 3 to avoid extreme spam, though still risky
 }
 
 // Start both detection methods
 setupMutationObserver();
-setupPeriodicScanner();
+// setupPeriodicScanner(); // Disabled due to infinite 10-point loop on dynamic pages
 
 // ==================== TOAST ====================
 function showToast(message: string) {

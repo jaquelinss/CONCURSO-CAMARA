@@ -10,6 +10,15 @@ interface RewardShopProps {
   onClose: () => void;
 }
 
+const COLOR_THEMES = [
+  { id: 'indigo', name: 'Índigo (Padrão)', bgClass: 'bg-indigo-500', hex: '#6366f1' },
+  { id: 'emerald', name: 'Esmeralda', bgClass: 'bg-emerald-500', hex: '#10b981' },
+  { id: 'rose', name: 'Rosa', bgClass: 'bg-rose-500', hex: '#f43f5e' },
+  { id: 'amber', name: 'Âmbar', bgClass: 'bg-amber-500', hex: '#f59e0b' },
+  { id: 'fuchsia', name: 'Fúcsia', bgClass: 'bg-fuchsia-500', hex: '#d946ef' },
+  { id: 'cyan', name: 'Ciano', bgClass: 'bg-cyan-500', hex: '#06b6d4' },
+];
+
 const DEFAULT_STICKERS = [
   { id: '1', url: '/stickers/1.png', price: 150 },
   { id: '2', url: '/stickers/2.png', price: 150 },
@@ -38,9 +47,9 @@ export interface GlobalSticker {
 }
 
 export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
-  const { effortPoints, spendPoints, awardPoints, addStickerToInventory, addMultipleStickersToInventory, unlockedStickers, setActiveStamper } = useReward();
+  const { effortPoints, spendPoints, awardPoints, addStickerToInventory, addMultipleStickersToInventory, unlockedStickers, setActiveStamper, unlockedColors, activeColor, buyColor, setActiveColor } = useReward();
   const { user, isAdmin } = useAuth();
-  const [activeTab, setActiveTab] = useState<'shop' | 'inventory' | 'admin'>('shop');
+  const [activeTab, setActiveTab] = useState<'shop' | 'inventory' | 'admin' | 'colors'>('shop');
   const [buying, setBuying] = useState<string | null>(null);
   
   const [globalShop, setGlobalShop] = useState<GlobalSticker[]>(DEFAULT_STICKERS);
@@ -543,6 +552,12 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
             📦 Minha Gaveta 
             <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs">{unlockedStickers.length}</span>
           </button>
+          <button 
+            className={`flex-1 py-3 font-semibold transition-colors flex items-center justify-center gap-2 ${activeTab === 'colors' ? 'bg-white text-indigo-600 border-b-2 border-indigo-600' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
+            onClick={() => setActiveTab('colors')}
+          >
+            🎨 Cores do App
+          </button>
           {isAdmin && (
             <button 
               className={`flex-1 py-3 font-semibold transition-colors flex items-center justify-center gap-2 ${activeTab === 'admin' ? 'bg-white text-purple-600 border-b-2 border-purple-600' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
@@ -696,11 +711,75 @@ export const RewardShop: React.FC<RewardShopProps> = ({ onClose }) => {
                     </div>
                   );
                 })
-              )}
-            </div>
-          ) : (
-            // Admin Tab
-            <div className="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-sm border border-purple-100">
+                )}
+              </div>
+            ) : activeTab === 'colors' ? (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="font-bold text-gray-900 text-lg mb-2">Temas e Cores do App</h3>
+                  <p className="text-gray-600 text-sm mb-6">Compre novas cores para mudar o visual do seu ambiente de estudo. (Preço: 500 EP cada)</p>
+                  
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {COLOR_THEMES.map(theme => {
+                      const isUnlocked = unlockedColors.includes(theme.id);
+                      const isActive = activeColor === theme.id;
+                      
+                      return (
+                        <div 
+                          key={theme.id}
+                          className={`bg-white p-4 rounded-xl shadow-sm border-2 flex flex-col items-center gap-3 transition-all ${isActive ? 'border-indigo-600 ring-2 ring-indigo-200' : isUnlocked ? 'border-gray-200 hover:border-gray-300 cursor-pointer' : 'border-gray-100'}`}
+                          onClick={() => {
+                            if (isUnlocked && !isActive) {
+                              setActiveColor(theme.id);
+                            }
+                          }}
+                        >
+                          <div className={`w-12 h-12 rounded-full shadow-inner ${theme.bgClass}`} style={{ backgroundColor: theme.hex }} />
+                          <div className="text-center">
+                            <h4 className="font-bold text-gray-800 text-sm">{theme.name}</h4>
+                          </div>
+                          
+                          <div className="w-full mt-2">
+                            {isActive ? (
+                              <button disabled className="w-full py-2 bg-indigo-100 text-indigo-700 text-sm font-bold rounded-lg cursor-default">
+                                Ativo
+                              </button>
+                            ) : isUnlocked ? (
+                              <button className="w-full py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm font-bold rounded-lg transition-colors">
+                                Usar Tema
+                              </button>
+                            ) : (
+                              <button 
+                                onClick={async (e) => {
+                                  e.stopPropagation();
+                                  setBuying(theme.id);
+                                  const success = await buyColor(theme.id);
+                                  if (!success) {
+                                    alert('Pontos insuficientes ou erro ao comprar!');
+                                  }
+                                  setBuying(null);
+                                }}
+                                disabled={buying === theme.id || effortPoints < 500}
+                                className={`w-full py-2 flex items-center justify-center gap-1.5 text-sm font-bold rounded-lg transition-colors ${
+                                  effortPoints >= 500 
+                                    ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                }`}
+                              >
+                                {buying === theme.id ? <Wand2 className="w-4 h-4 animate-spin" /> : null}
+                                <span>500 EP</span>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              // Admin Tab
+              <div className="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-sm border border-purple-100">
               <div className="flex justify-between items-center mb-6">
                 <div>
                   <h3 className="text-lg font-bold text-purple-900">Painel Admin da Loja</h3>

@@ -35,6 +35,16 @@ export default function Navigation() {
   }, [awardPoints]);
 
   useEffect(() => {
+    if (effortPoints > 20000 && localStorage.getItem('reset_extension_bug_40k') !== 'true') {
+      localStorage.setItem('reset_extension_bug_40k', 'true');
+      const diff = effortPoints - 1000; // Leave 1000 points as compensation
+      if (diff > 0) {
+         spendPoints(diff, 'ajuste_bug_extensao');
+      }
+    }
+  }, [effortPoints, spendPoints]);
+
+  useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'l') {

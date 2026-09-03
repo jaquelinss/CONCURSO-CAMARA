@@ -24,6 +24,10 @@ interface RewardContextType {
   activeStamper: { instanceId: string; stickerId: string; customUrl?: string } | null;
   setActiveStamper: (stamper: { instanceId: string; stickerId: string; customUrl?: string } | null) => void;
   floatingPoints: { id: string; amount: number }[];
+  unlockedColors: string[];
+  activeColor: string;
+  buyColor: (colorId: string) => Promise<boolean>;
+  setActiveColor: (colorId: string) => Promise<void>;
 }
 
 const RewardContext = createContext<RewardContextType>({
@@ -39,6 +43,10 @@ const RewardContext = createContext<RewardContextType>({
   activeStamper: null,
   setActiveStamper: () => {},
   floatingPoints: [],
+  unlockedColors: ['indigo'],
+  activeColor: 'indigo',
+  buyColor: async () => false,
+  setActiveColor: async () => {},
 });
 
 export const useReward = () => useContext(RewardContext);
@@ -60,11 +68,15 @@ export const RewardProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [lastActionTimes, setLastActionTimes] = useState<Record<string, number>>({});
 
   const [unlockedStickers, setUnlockedStickers] = useState<StickerInstance[]>([]);
+  const [unlockedColors, setUnlockedColors] = useState<string[]>(['indigo']);
+  const [activeColor, setActiveColorState] = useState<string>('indigo');
 
   useEffect(() => {
     if (!user) {
       setEffortPoints(0);
       setUnlockedStickers([]);
+      setUnlockedColors(['indigo']);
+      setActiveColorState('indigo');
       return;
     }
 
@@ -74,10 +86,18 @@ export const RewardProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         const data = docSnap.data();
         setEffortPoints(data.effortPoints || 0);
         setUnlockedStickers(data.unlockedStickers || []);
+        
+        const colors = data.unlockedColors || ['indigo'];
+        const currentActive = data.activeColor || 'indigo';
+        setUnlockedColors(colors);
+        setActiveColorState(currentActive);
+        
+        document.documentElement.setAttribute('data-theme-color', currentActive);
       } else {
-        // Se não existe, assumimos 0 localmente, mas não gravamos 0 no banco para evitar zerar por engano
         setEffortPoints(0);
         setUnlockedStickers([]);
+        setUnlockedColors(['indigo']);
+        setActiveColorState('indigo');
       }
     });
 
@@ -242,32 +262,75 @@ export const RewardProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const markStickerAsUnused = useCallback(async (instanceId: string) => {
     if (!user) return;
-    try {
-      const docRef = doc(db, 'users', user.uid, 'settings', 'rewards');
-      const snap = await getDoc(docRef);
-      if (!snap.exists()) return;
-      
-      const currentStickers: StickerInstance[] = snap.data().unlockedStickers || [];
-      
-      // Emit event so the responsible component (Whiteboard, Postit, Decorator) removes it from its UI and DB
-      window.dispatchEvent(new CustomEvent('remove-sticker', { detail: { instanceId } }));
+    const docRef = doc(db, 'users', user.uid, 'settings', 'rewards');
+    const snap = await getDoc(docRef);
+    if (!snap.exists()) return;
+    
+    const currentStickers: StickerInstance[] = snap.data().unlockedStickers || [];
+    
+    // Emit event so the responsible component (Whiteboard, Postit, Decorator) removes it from its UI and DB
+    window.dispatchEvent(new CustomEvent('remove-sticker', { detail: { instanceId } }));
 
-      const updatedStickers = currentStickers.map(s => {
-        if (s.instanceId === instanceId) {
-          const { route, ...rest } = s;
-          return { ...rest, isUsed: false };
-        }
-        return s;
-      });
-      
-      await setDoc(docRef, { unlockedStickers: updatedStickers }, { merge: true });
-    } catch (e) {
-      console.error("Erro ao desmarcar sticker:", e);
-    }
+    const updatedStickers = currentStickers.map(s => {
+      if (s.instanceId === instanceId) {
+        const { route, ...rest } = s;
+        return { ...rest, isUsed: false };
+      }
+      return s;
+    });
+    
+    await setDoc(docRef, { unlockedStickers: updatedStickers }, { merge: true });
+  }, [user]);
+
+  const buyColor = useCallback(async (colorId: string) => {
+    if (!user) return false;
+    const docRef = doc(db, 'users', user.uid, 'settings', 'rewards');
+    const snap = await getDoc(docRef);
+    if (!snap.exists()) return false;
+    
+    const data = snap.data();
+    const colors = data.unlockedColors || ['indigo'];
+    if (colors.includes(colorId)) return true;
+
+    // Check points and deduct
+    const currentPoints = data.effortPoints || 0;
+    const PRICE = 3000; // Fixed price for all colors
+    if (currentPoints < PRICE) return false;
+
+    colors.push(colorId);
+    await setDoc(docRef, { 
+      effortPoints: currentPoints - PRICE,
+      unlockedColors: colors 
+    }, { merge: true });
+    
+    return true;
+  }, [user]);
+
+  const setActiveColor = useCallback(async (colorId: string) => {
+    if (!user) return;
+    const docRef = doc(db, 'users', user.uid, 'settings', 'rewards');
+    await setDoc(docRef, { activeColor: colorId }, { merge: true });
   }, [user]);
 
   return (
-    <RewardContext.Provider value={{ effortPoints, unlockedStickers, awardPoints, awardFocusPoints, spendPoints, addStickerToInventory, addMultipleStickersToInventory, markStickerAsUsed, markStickerAsUnused, activeStamper, setActiveStamper, floatingPoints }}>
+    <RewardContext.Provider value={{ 
+      effortPoints, 
+      unlockedStickers, 
+      awardPoints, 
+      awardFocusPoints, 
+      spendPoints, 
+      addStickerToInventory, 
+      addMultipleStickersToInventory, 
+      markStickerAsUsed, 
+      markStickerAsUnused, 
+      activeStamper, 
+      setActiveStamper, 
+      floatingPoints,
+      unlockedColors,
+      activeColor,
+      buyColor,
+      setActiveColor
+    }}>
       {children}
     </RewardContext.Provider>
   );
