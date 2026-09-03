@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, increment, collection, addDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, increment, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from './firebase';
 
 // Setup Context Menus when extension is installed
@@ -41,7 +41,7 @@ chrome.contextMenus.onClicked.addListener((info, _tab) => {
         color: '#fef08a',
         subjectTag: 'Geral',
         subTag: '',
-        createdAt: new Date().toISOString(),
+        createdAt: serverTimestamp(),
         archived: false
       };
 
@@ -136,7 +136,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
         color: '#fef08a',
         subjectTag: 'Geral',
         subTag: '',
-        createdAt: new Date().toISOString(),
+        createdAt: serverTimestamp(),
         archived: false
       };
 
@@ -202,7 +202,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
             color: '#fef08a',
             subjectTag: 'Geral',
             subTag: '',
-            createdAt: new Date().toISOString(),
+            createdAt: serverTimestamp(),
             archived: false
           };
           // web-app typically saves flashcards in 'flashcards' collection, but 'notes' with isFlashcard: true is what extension was using manually above. I will use 'flashcards' to match the web-app RevisionScreen. Wait, web-app has both 'notes' and 'flashcards'. Let's use 'flashcards' if isFlashcard is true, otherwise 'notes'. Wait, previously it saved to 'notes'. Let's stick to 'notes' as previously used in background.ts. No, actually web-app has a separate 'flashcards' collection. Let's save to 'flashcards' for flashcard, 'notes' for post-it!
@@ -221,7 +221,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
             color: '#fef08a',
             subjectTag: 'Geral',
             subTag: '',
-            createdAt: new Date().toISOString(),
+            createdAt: serverTimestamp(),
             archived: false
           };
           await addDoc(collection(db, 'users', currentUser.uid, 'notes'), newPostIt);

@@ -9,8 +9,8 @@
     "file": "assets/content.tsx-loader-DpgRLQ-n.js",
     "src": "_content.tsx-loader-DpgRLQ-n.js"
   },
-  "_firebase-BRGHhCZb.js": {
-    "file": "assets/firebase-BRGHhCZb.js",
+  "_firebase-Bz4XHMCN.js": {
+    "file": "assets/firebase-Bz4XHMCN.js",
     "name": "firebase",
     "imports": [
       "_rolldown-runtime-Czjbc987.js"
@@ -28,24 +28,24 @@
     "name": "rolldown-runtime"
   },
   "index.html": {
-    "file": "assets/popup-CKO6jnCU.js",
+    "file": "assets/popup-CCox_ixf.js",
     "name": "popup",
     "src": "index.html",
     "isEntry": true,
     "imports": [
       "_rolldown-runtime-Czjbc987.js",
       "_jsx-runtime-CRr1Db8x.js",
-      "_firebase-BRGHhCZb.js"
+      "_firebase-Bz4XHMCN.js"
     ]
   },
   "src/background.ts": {
-    "file": "assets/background.ts-maWWb8E1.js",
+    "file": "assets/background.ts-UVEspHDg.js",
     "name": "background.ts",
     "src": "src/background.ts",
     "isEntry": true,
     "imports": [
       "_rolldown-runtime-Czjbc987.js",
-      "_firebase-BRGHhCZb.js"
+      "_firebase-Bz4XHMCN.js"
     ]
   },
   "src/content.tsx": {

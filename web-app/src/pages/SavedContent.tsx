@@ -545,7 +545,7 @@ export default function SavedContent() {
                           onUpdate={(newTitle) => setLessons(prev => prev.map(l => l.id === lesson.id ? { ...l, data: { ...l.data, titulo: newTitle } } : l))}
                         />
                         <div className="flex items-center flex-wrap gap-2 text-sm text-gray-500 dark:text-gray-400 mt-1">
-                          <span>Salvo em: {lesson.createdAt?.toDate().toLocaleDateString()}</span>
+                          <span>Salvo em: {typeof lesson.createdAt?.toDate === 'function' ? lesson.createdAt.toDate().toLocaleDateString() : (lesson.createdAt ? new Date(lesson.createdAt).toLocaleDateString() : '')}</span>
                           {lesson.folderId && folders.find(f => f.id === lesson.folderId) && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
                               <FolderOpen className="w-3 h-3" />
@@ -605,7 +605,7 @@ export default function SavedContent() {
                         />
                         <p className="text-sm text-gray-500 dark:text-gray-400">{quiz.data?.length || 0} questões</p>
                         <div className="flex items-center flex-wrap gap-2 text-sm text-gray-500 dark:text-gray-400 mt-1">
-                          <span>Salvo em: {quiz.createdAt?.toDate().toLocaleDateString()}</span>
+                          <span>Salvo em: {typeof quiz.createdAt?.toDate === 'function' ? quiz.createdAt.toDate().toLocaleDateString() : (quiz.createdAt ? new Date(quiz.createdAt).toLocaleDateString() : '')}</span>
                           {quiz.folderId && folders.find(f => f.id === quiz.folderId) && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
                               <FolderOpen className="w-3 h-3" />
@@ -665,7 +665,7 @@ export default function SavedContent() {
                         />
                         <p className="text-sm text-gray-500 dark:text-gray-400">{flash.data?.length || 0} flashcards</p>
                         <div className="flex items-center flex-wrap gap-2 text-sm text-gray-500 dark:text-gray-400 mt-1">
-                          <span>Salvo em: {flash.createdAt?.toDate().toLocaleDateString()}</span>
+                          <span>Salvo em: {typeof flash.createdAt?.toDate === 'function' ? flash.createdAt.toDate().toLocaleDateString() : (flash.createdAt ? new Date(flash.createdAt).toLocaleDateString() : '')}</span>
                           {flash.folderId && folders.find(f => f.id === flash.folderId) && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
                               <FolderOpen className="w-3 h-3" />
