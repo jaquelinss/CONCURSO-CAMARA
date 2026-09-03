@@ -616,3 +616,20 @@ Analise a resposta do candidato. Retorne EXATAMENTE e APENAS um objeto JSON vál
 
   return await callGemini(genAI, prompt, false, modelName);
 }
+
+export async function generateStudyCards(subject: string, topic: string, apiKey: string, modelName = 'gemini-2.5-flash') {
+  const genAI = new GoogleGenerativeAI(apiKey);
+  
+  const prompt = `Gere até 4 dicas rápidas (mini flashcards) essenciais para revisão de concurso público (área fiscal) sobre o assunto: ${subject} - ${topic}.
+As dicas devem ser diretas, focadas em decoreba ou conceitos chave para provas discursivas e objetivas.
+
+Retorne EXATAMENTE APENAS um objeto JSON válido, sem crases markdown, neste formato:
+{
+  "cards": [
+    { "title": "Conceito Chave ou Título Curto", "content": "Explicação direta em no máximo 2 frases." }
+  ]
+}
+`;
+
+  return await callGemini(genAI, prompt, false, modelName);
+}

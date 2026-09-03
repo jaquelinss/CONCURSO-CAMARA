@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import Navigation from '../components/Navigation';
-import { HelpCircle, Loader2, CheckCircle, Search, FileText } from 'lucide-react';
+import { HelpCircle, Loader2, CheckCircle, Search, FileText, Sparkles, Lightbulb } from 'lucide-react';
 import { discursiveQuestionsData } from '../lib/discursiveData';
 import type { DiscursiveQuestion } from '../lib/discursiveData';
 import { useAuth } from '../contexts/AuthContext';
-import { analyzeDiscursiveAnswer } from '../lib/gemini';
+import { analyzeDiscursiveAnswer, generateStudyCards } from '../lib/gemini';
 
 export default function DiscursiveQuestionsScreen() {
   const { apiKey } = useAuth();
@@ -14,6 +14,8 @@ export default function DiscursiveQuestionsScreen() {
   const [feedback, setFeedback] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showExpectedAnswer, setShowExpectedAnswer] = useState(false);
+  const [studyCards, setStudyCards] = useState<{title: string, content: string}[] | null>(null);
+  const [isGeneratingCards, setIsGeneratingCards] = useState(false);
 
   const filteredQuestions = discursiveQuestionsData.filter(q => 
     q.subject.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -46,6 +48,23 @@ export default function DiscursiveQuestionsScreen() {
       alert("Erro ao avaliar resposta. Tente novamente.");
     } finally {
       setIsEvaluating(false);
+    }
+  };
+
+  const handleGenerateCards = async () => {
+    if (!apiKey) {
+      alert("Configure sua chave da API do Gemini para gerar dicas.");
+      return;
+    }
+    setIsGeneratingCards(true);
+    try {
+      const result = await generateStudyCards(selectedQuestion!.subject, selectedQuestion!.topic, apiKey);
+      setStudyCards(result.cards || []);
+    } catch (e) {
+      console.error(e);
+      alert("Erro ao gerar dicas.");
+    } finally {
+      setIsGeneratingCards(false);
     }
   };
 
@@ -89,6 +108,7 @@ export default function DiscursiveQuestionsScreen() {
                     setAnswerText('');
                     setFeedback(null);
                     setShowExpectedAnswer(false);
+                    setStudyCards(null);
                   }
                 }}
                 className={`w-full text-left p-3 mb-2 rounded-xl transition-all border ${
@@ -120,16 +140,42 @@ export default function DiscursiveQuestionsScreen() {
           {selectedQuestion ? (
             <div className="flex flex-col h-full overflow-y-auto">
               {/* Enunciado */}
-              <div className="p-6 border-b border-slate-200 dark:border-gray-700 bg-slate-50/30 dark:bg-gray-800/30">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
-                    {selectedQuestion.subject}
-                  </span>
-                  <span className="text-slate-300 dark:text-gray-600">•</span>
-                  <span className="text-xs font-medium text-slate-500 dark:text-gray-400">
-                    {selectedQuestion.topic}
-                  </span>
+              <div className="p-6 border-b border-slate-200 dark:border-gray-700 bg-slate-50/30 dark:bg-gray-800/30 flex-shrink-0">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+                      {selectedQuestion.subject}
+                    </span>
+                    <span className="text-slate-300 dark:text-gray-600">•</span>
+                    <span className="text-xs font-medium text-slate-500 dark:text-gray-400">
+                      {selectedQuestion.topic}
+                    </span>
+                  </div>
+                  
+                  <button
+                    onClick={handleGenerateCards}
+                    disabled={isGeneratingCards}
+                    className="text-xs font-semibold px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors flex items-center gap-1.5 border border-indigo-200 dark:border-indigo-800"
+                  >
+                    {isGeneratingCards ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                    Dicas / Revisão IA
+                  </button>
                 </div>
+                
+                {/* Mini Cards Display */}
+                {studyCards && studyCards.length > 0 && (
+                  <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {studyCards.map((card, idx) => (
+                      <div key={idx} className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30 rounded-xl p-3 shadow-sm">
+                        <h4 className="font-bold text-amber-800 dark:text-amber-500 text-sm flex items-center gap-1.5 mb-1.5">
+                          <Lightbulb className="w-4 h-4" /> {card.title}
+                        </h4>
+                        <p className="text-xs text-amber-900/80 dark:text-amber-200/70 leading-relaxed">{card.content}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 <div className="prose prose-sm dark:prose-invert max-w-none text-slate-700 dark:text-gray-300">
                   <p>{selectedQuestion.statement}</p>
                 </div>
