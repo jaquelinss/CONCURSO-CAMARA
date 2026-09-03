@@ -17,6 +17,7 @@ function Popup() {
   const [noteText, setNoteText] = useState('');
   const [backText, setBackText] = useState('');
   const [showNoteForm, setShowNoteForm] = useState(false);
+  const [isAiMode, setIsAiMode] = useState(false);
   const [noteSaving, setNoteSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
 
@@ -146,14 +147,14 @@ function Popup() {
             {!showNoteForm ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 <div style={{ display: 'flex', gap: '6px' }}>
-                  <button onClick={() => { setNoteType('postit'); setShowNoteForm(true); }} style={{
+                  <button onClick={() => { setNoteType('postit'); setIsAiMode(false); setShowNoteForm(true); }} style={{
                     flex: 1, background: '#fef08a', color: '#78350f', border: '1px solid #fde047',
                     padding: '8px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px',
                     fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
                   }}>
                     <StickyNote size={14} /> Post-it
                   </button>
-                  <button onClick={() => { setNoteType('flashcard'); setShowNoteForm(true); }} style={{
+                  <button onClick={() => { setNoteType('flashcard'); setIsAiMode(false); setShowNoteForm(true); }} style={{
                     flex: 1, background: '#dbeafe', color: '#1e40af', border: '1px solid #93c5fd',
                     padding: '8px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px',
                     fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
@@ -163,8 +164,6 @@ function Popup() {
                 </div>
                 <div style={{ display: 'flex', gap: '6px' }}>
                   <button onClick={() => {
-                    setNoteSaving(true);
-                    setSaveMessage('Gerando Post-it...');
                     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                       const tab = tabs[0];
                       if (tab && tab.id) {
@@ -174,6 +173,8 @@ function Popup() {
                         }, (results) => {
                           const text = results?.[0]?.result || '';
                           if (text) {
+                            setNoteSaving(true);
+                            setSaveMessage('Gerando Post-it...');
                             chrome.runtime.sendMessage({
                               action: 'GENERATE_NOTE_WITH_AI',
                               text: text,
@@ -189,13 +190,18 @@ function Popup() {
                               }
                             });
                           } else {
-                            setNoteSaving(false);
-                            setSaveMessage('⚠️ Selecione um texto na página!');
-                            setTimeout(() => setSaveMessage(''), 3000);
+                            // Fallback: open form for paste
+                            setNoteType('postit');
+                            setIsAiMode(true);
+                            setNoteText('');
+                            setShowNoteForm(true);
                           }
                         });
                       } else {
-                        setNoteSaving(false);
+                        setNoteType('postit');
+                        setIsAiMode(true);
+                        setNoteText('');
+                        setShowNoteForm(true);
                       }
                     });
                   }} disabled={noteSaving} style={{
@@ -206,8 +212,6 @@ function Popup() {
                     ✨ IA: Post-it
                   </button>
                   <button onClick={() => {
-                    setNoteSaving(true);
-                    setSaveMessage('Gerando Flashcard...');
                     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                       const tab = tabs[0];
                       if (tab && tab.id) {
@@ -217,6 +221,8 @@ function Popup() {
                         }, (results) => {
                           const text = results?.[0]?.result || '';
                           if (text) {
+                            setNoteSaving(true);
+                            setSaveMessage('Gerando Flashcard...');
                             chrome.runtime.sendMessage({
                               action: 'GENERATE_NOTE_WITH_AI',
                               text: text,
@@ -232,13 +238,18 @@ function Popup() {
                               }
                             });
                           } else {
-                            setNoteSaving(false);
-                            setSaveMessage('⚠️ Selecione um texto na página!');
-                            setTimeout(() => setSaveMessage(''), 3000);
+                            // Fallback: open form for paste
+                            setNoteType('flashcard');
+                            setIsAiMode(true);
+                            setNoteText('');
+                            setShowNoteForm(true);
                           }
                         });
                       } else {
-                        setNoteSaving(false);
+                        setNoteType('flashcard');
+                        setIsAiMode(true);
+                        setNoteText('');
+                        setShowNoteForm(true);
                       }
                     });
                   }} disabled={noteSaving} style={{
@@ -255,14 +266,14 @@ function Popup() {
                 <textarea
                   value={noteText}
                   onChange={(e) => setNoteText(e.target.value)}
-                  placeholder={noteType === 'flashcard' ? 'Frente do flashcard (cole ou digite)...' : 'Conteúdo do post-it (cole ou digite)...'}
+                  placeholder={isAiMode ? "Cole o texto aqui para a IA gerar..." : (noteType === 'flashcard' ? 'Frente do flashcard (cole ou digite)...' : 'Conteúdo do post-it (cole ou digite)...')}
                   style={{
                     width: '100%', minHeight: '60px', padding: '8px', borderRadius: '8px',
                     border: '1px solid #d1d5db', fontSize: '12px', resize: 'vertical',
                     fontFamily: 'sans-serif', boxSizing: 'border-box'
                   }}
                 />
-                {noteType === 'flashcard' && (
+                {!isAiMode && noteType === 'flashcard' && (
                   <textarea
                     value={backText}
                     onChange={(e) => setBackText(e.target.value)}
@@ -279,10 +290,39 @@ function Popup() {
                     flex: 1, background: '#f3f4f6', color: '#6b7280', border: 'none',
                     padding: '8px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px'
                   }}>Cancelar</button>
-                  <button onClick={saveNote} disabled={noteSaving} style={{
+                  <button onClick={() => {
+                    if (isAiMode) {
+                      if (!noteText.trim()) {
+                         setSaveMessage('⚠️ Cole um texto primeiro!');
+                         setTimeout(() => setSaveMessage(''), 3000);
+                         return;
+                      }
+                      setNoteSaving(true);
+                      setSaveMessage('Gerando...');
+                      chrome.runtime.sendMessage({
+                        action: 'GENERATE_NOTE_WITH_AI',
+                        text: noteText.trim(),
+                        isFlashcard: noteType === 'flashcard'
+                      }, (response) => {
+                        setNoteSaving(false);
+                        if (response?.success) {
+                          setNoteText('');
+                          setBackText('');
+                          setShowNoteForm(false);
+                          setSaveMessage(`✨ ${noteType === 'flashcard' ? 'Flashcard' : 'Post-it'} gerado e salvo!`);
+                          setTimeout(() => setSaveMessage(''), 3000);
+                        } else {
+                          setSaveMessage('❌ Erro: ' + (response?.error || 'Desconhecido'));
+                          setTimeout(() => setSaveMessage(''), 3000);
+                        }
+                      });
+                    } else {
+                      saveNote();
+                    }
+                  }} disabled={noteSaving} style={{
                     flex: 1, background: '#4f46e5', color: 'white', border: 'none',
                     padding: '8px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold'
-                  }}>{noteSaving ? 'Salvando...' : 'Salvar'}</button>
+                  }}>{noteSaving ? 'Salvando...' : (isAiMode ? '✨ Gerar com IA' : 'Salvar')}</button>
                 </div>
               </div>
             )}

@@ -90,6 +90,7 @@ function FloatingTracker() {
   const [noteText, setNoteText] = useState('');
   const [backText, setBackText] = useState('');
   const [noteType, setNoteType] = useState<'postit' | 'flashcard'>('postit');
+  const [isAiMode, setIsAiMode] = useState(false);
   const [noteSaving, setNoteSaving] = useState(false);
   const [expanded, setExpanded] = useState(true);
 
@@ -189,14 +190,14 @@ function FloatingTracker() {
           {!showNoteForm ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <div style={{ display: 'flex', gap: '6px' }}>
-                <button onClick={() => { setNoteType('postit'); setShowNoteForm(true); setNoteText(window.getSelection()?.toString() || ''); }} style={{
+                <button onClick={() => { setNoteType('postit'); setIsAiMode(false); setShowNoteForm(true); setNoteText(window.getSelection()?.toString() || ''); }} style={{
                   flex: 1, background: '#fef08a', color: '#78350f', border: '1px solid #fde047',
                   padding: '8px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px',
                   fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
                 }}>
                   <StickyNote size={14} /> Post-it
                 </button>
-                <button onClick={() => { setNoteType('flashcard'); setShowNoteForm(true); setNoteText(window.getSelection()?.toString() || ''); }} style={{
+                <button onClick={() => { setNoteType('flashcard'); setIsAiMode(false); setShowNoteForm(true); setNoteText(window.getSelection()?.toString() || ''); }} style={{
                   flex: 1, background: '#dbeafe', color: '#1e40af', border: '1px solid #93c5fd',
                   padding: '8px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px',
                   fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
@@ -223,7 +224,10 @@ function FloatingTracker() {
                       }
                     });
                   } else {
-                    showToast('⚠️ Selecione um texto primeiro!');
+                    setNoteType('postit');
+                    setIsAiMode(true);
+                    setNoteText('');
+                    setShowNoteForm(true);
                   }
                 }} disabled={noteSaving} style={{
                   flex: 1, background: '#fef08a', color: '#78350f', border: '1px solid #fde047',
@@ -250,7 +254,10 @@ function FloatingTracker() {
                       }
                     });
                   } else {
-                    showToast('⚠️ Selecione um texto primeiro!');
+                    setNoteType('flashcard');
+                    setIsAiMode(true);
+                    setNoteText('');
+                    setShowNoteForm(true);
                   }
                 }} disabled={noteSaving} style={{
                   flex: 1, background: '#dbeafe', color: '#1e40af', border: '1px solid #93c5fd',
@@ -266,14 +273,14 @@ function FloatingTracker() {
               <textarea
                 value={noteText}
                 onChange={(e) => setNoteText(e.target.value)}
-                placeholder={noteType === 'flashcard' ? 'Frente do flashcard...' : 'Conteúdo do post-it...'}
+                placeholder={isAiMode ? "Cole o texto aqui para a IA gerar..." : (noteType === 'flashcard' ? 'Frente do flashcard...' : 'Conteúdo do post-it...')}
                 style={{
                   width: '100%', minHeight: '60px', padding: '8px', borderRadius: '8px',
                   border: '1px solid #d1d5db', fontSize: '12px', resize: 'vertical',
                   fontFamily: 'sans-serif', boxSizing: 'border-box'
                 }}
               />
-              {noteType === 'flashcard' && (
+              {!isAiMode && noteType === 'flashcard' && (
                 <textarea
                   value={backText}
                   onChange={(e) => setBackText(e.target.value)}
@@ -290,10 +297,36 @@ function FloatingTracker() {
                   flex: 1, background: '#f3f4f6', color: '#6b7280', border: 'none',
                   padding: '8px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px'
                 }}>Cancelar</button>
-                <button onClick={saveNote} disabled={noteSaving} style={{
+                <button onClick={() => {
+                  if (isAiMode) {
+                    if (!noteText.trim()) {
+                       showToast('⚠️ Cole um texto primeiro!');
+                       return;
+                    }
+                    setNoteSaving(true);
+                    showToast('Gerando...');
+                    chrome.runtime.sendMessage({
+                      action: 'GENERATE_NOTE_WITH_AI',
+                      text: noteText.trim(),
+                      isFlashcard: noteType === 'flashcard'
+                    }, (response) => {
+                      setNoteSaving(false);
+                      if (response?.success) {
+                        setNoteText('');
+                        setBackText('');
+                        setShowNoteForm(false);
+                        showToast(`✨ ${noteType === 'flashcard' ? 'Flashcard' : 'Post-it'} gerado e salvo!`);
+                      } else {
+                        showToast('❌ Erro: ' + (response?.error || 'desconhecido'));
+                      }
+                    });
+                  } else {
+                    saveNote();
+                  }
+                }} disabled={noteSaving} style={{
                   flex: 1, background: '#4f46e5', color: 'white', border: 'none',
                   padding: '8px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold'
-                }}>{noteSaving ? 'Salvando...' : 'Salvar'}</button>
+                }}>{noteSaving ? 'Salvando...' : (isAiMode ? '✨ Gerar com IA' : 'Salvar')}</button>
               </div>
             </div>
           )}
