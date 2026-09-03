@@ -294,7 +294,7 @@ export const RewardProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     // Check points and deduct
     const currentPoints = data.effortPoints || 0;
-    const PRICE = 3000; // Fixed price for all colors
+    const PRICE = 500; // Fixed price for all colors
     if (currentPoints < PRICE) return false;
 
     colors.push(colorId);
