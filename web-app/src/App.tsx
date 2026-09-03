@@ -46,15 +46,15 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-      <Route path="/saved" element={<PrivateRoute><SavedContent /></PrivateRoute>} />
-      <Route path="/revisions" element={<PrivateRoute><RevisionScreen /></PrivateRoute>} />
-      <Route path="/progress" element={<PrivateRoute><StudyProgressScreen /></PrivateRoute>} />
-      <Route path="/questions" element={<PrivateRoute><QuestionsDatabase /></PrivateRoute>} />
+      <Route path="/dashboard" element={<PrivateRoute><ErrorBoundary><Dashboard /></ErrorBoundary></PrivateRoute>} />
+      <Route path="/saved" element={<PrivateRoute><ErrorBoundary><SavedContent /></ErrorBoundary></PrivateRoute>} />
+      <Route path="/revisions" element={<PrivateRoute><ErrorBoundary><RevisionScreen /></ErrorBoundary></PrivateRoute>} />
+      <Route path="/progress" element={<PrivateRoute><ErrorBoundary><StudyProgressScreen /></ErrorBoundary></PrivateRoute>} />
+      <Route path="/questions" element={<PrivateRoute><ErrorBoundary><QuestionsDatabase /></ErrorBoundary></PrivateRoute>} />
       <Route path="/statistics" element={<PrivateRoute><ErrorBoundary><Suspense fallback={null}><StatisticsScreen /></Suspense></ErrorBoundary></PrivateRoute>} />
       <Route path="/concursos" element={<PrivateRoute><ErrorBoundary><Suspense fallback={null}><ConcursosScreen /></Suspense></ErrorBoundary></PrivateRoute>} />
       <Route path="/discursivas" element={<PrivateRoute><ErrorBoundary><Suspense fallback={null}><DiscursiveQuestionsScreen /></Suspense></ErrorBoundary></PrivateRoute>} />
-      <Route path="/config" element={<PrivateRoute><ConfigScreen /></PrivateRoute>} />
+      <Route path="/config" element={<PrivateRoute><ErrorBoundary><ConfigScreen /></ErrorBoundary></PrivateRoute>} />
       <Route path="*" element={<Navigate to="/dashboard" />} />
     </Routes>
   );
@@ -71,24 +71,24 @@ export default function App() {
             <CustomSubjectsProvider>
               <Router>
                 <div className="relative min-h-screen font-sans transition-colors duration-200 overflow-x-hidden">
-                  <AppRoutes />
+                  <ErrorBoundary><AppRoutes /></ErrorBoundary>
                 
-                  <SiteDecorator />
-                  <GlobalSplitScreenManager />
-                  <ReportButton isHidden={!showTools} />
-                  <StickyNotesManager />
-                  <FloatingYouTubePlayer />
-                  <FocusTimerWidget />
-                  <StamperOverlay />
-                  <TodayStudyButton isHidden={!showTools} />
-                  <AITeacherChat isHidden={!showTools} />
-                  <TextSelectionPopover />
-                  <KnowledgeBaseManager />
-                  <WhiteboardOverlay />
-                  <PdfAnnotatorOverlay />
-                  <DigitalNotebook />
-                  <GlobalHighlighter />
-                  <HighlightOptionsPopover />
+                  <ErrorBoundary><SiteDecorator /></ErrorBoundary>
+                  <ErrorBoundary><GlobalSplitScreenManager /></ErrorBoundary>
+                  <ErrorBoundary><ReportButton isHidden={!showTools} /></ErrorBoundary>
+                  <ErrorBoundary><StickyNotesManager /></ErrorBoundary>
+                  <ErrorBoundary><FloatingYouTubePlayer /></ErrorBoundary>
+                  <ErrorBoundary><FocusTimerWidget /></ErrorBoundary>
+                  <ErrorBoundary><StamperOverlay /></ErrorBoundary>
+                  <ErrorBoundary><TodayStudyButton isHidden={!showTools} /></ErrorBoundary>
+                  <ErrorBoundary><AITeacherChat isHidden={!showTools} /></ErrorBoundary>
+                  <ErrorBoundary><TextSelectionPopover /></ErrorBoundary>
+                  <ErrorBoundary><KnowledgeBaseManager /></ErrorBoundary>
+                  <ErrorBoundary><WhiteboardOverlay /></ErrorBoundary>
+                  <ErrorBoundary><PdfAnnotatorOverlay /></ErrorBoundary>
+                  <ErrorBoundary><DigitalNotebook /></ErrorBoundary>
+                  <ErrorBoundary><GlobalHighlighter /></ErrorBoundary>
+                  <ErrorBoundary><HighlightOptionsPopover /></ErrorBoundary>
 
                   {/* Toggle Tools Button */}
                   <button
@@ -100,7 +100,7 @@ export default function App() {
                     {showTools ? <ChevronRight className="w-6 h-6 sm:w-5 sm:h-5" /> : <ChevronLeft className="w-6 h-6 sm:w-5 sm:h-5" />}
                   </button>
 
-                  <NavigationTutorial />
+                  <ErrorBoundary><NavigationTutorial /></ErrorBoundary>
                 </div>
               </Router>
             </CustomSubjectsProvider>
