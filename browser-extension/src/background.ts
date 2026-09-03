@@ -146,4 +146,93 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
     });
     return true;
   }
+
+  if (request.action === 'GENERATE_NOTE_WITH_AI') {
+    auth.authStateReady().then(async () => {
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        sendResponse({ success: false, error: 'Faça login na extensão primeiro.' });
+        return;
+      }
+
+      try {
+        const configRef = doc(db, 'users', currentUser.uid, 'settings', 'config');
+        const configSnap = await getDoc(configRef);
+        const apiKey = configSnap.exists() ? configSnap.data().apiKey : null;
+
+        if (!apiKey) {
+          sendResponse({ success: false, error: 'Chave da API do Gemini não configurada no app principal.' });
+          return;
+        }
+
+        const isFlashcard = request.isFlashcard || false;
+        const text = request.text || '';
+
+        let prompt = '';
+        if (isFlashcard) {
+          prompt = `A partir do seguinte texto, crie um ÚNICO Flashcard (estilo frente e verso) que resuma o ponto principal de forma testável:\n"${text}"\n\nRegras:\n1. O objetivo do flashcard é testar o conhecimento do aluno.\n2. A "FRENTE" deve conter uma pergunta clara, um gatilho mental, ou um conceito a ser definido.\n3. O "VERSO" deve conter a resposta direta e concisa.\n4. Forneça um título super curto (1-3 palavras) que resuma o assunto do flashcard.\n\nA resposta DEVE ser estritamente um objeto JSON com o formato:\n{\n  "title": "Assunto Curto",\n  "front": "Pergunta ou Gatilho (Frente)",\n  "back": "Resposta ou Definição (Verso)"\n}\n\nNÃO retorne formatação markdown \`\`\`json. Apenas o JSON válido.`;
+        } else {
+          prompt = `Atue como um estudante de alta performance. Crie um resumo conciso e VISUALMENTE BONITO (estilo post-it de parede) a partir do seguinte texto:\n"${text}"\n\nRegras OBRIGATÓRIAS:\n1. PRIMEIRA LINHA: Um título curto e chamativo seguido de um emoji relevante (ex: "Advérbios: O Toque Mágico! ✨"). SEM marcadores no título.\n2. LINHAS SEGUINTES: Organize as informações em tópicos usando "•" como marcador.\n3. Use emojis temáticos (📍🕐💪✅❌🤔⇒→) para tornar o post-it visualmente rico e fácil de escanear.\n4. Destaque PALAVRAS-CHAVE em MAIÚSCULAS quando apropriado.\n5. Use "⇒" ou "→" para conectar causa/consequência ou explicações complementares.\n6. Se o texto tiver categorias/tipos, organize como subtópicos com "  •" (indentado).\n7. Seja EXTREMAMENTE conciso — cada tópico deve ter no máximo 1 linha.\n8. PROIBIDO: Markdown (**, *, #, etc). Apenas texto puro com emojis e marcadores "•".\n\nRetorne SOMENTE o post-it. Nada mais.`;
+        }
+
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.3 }
+          })
+        });
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error?.message || 'Erro na API Gemini');
+        
+        const generatedText = data.candidates[0].content.parts[0].text.trim();
+
+        if (isFlashcard) {
+          const jsonMatch = generatedText.match(/\[.*\]|\{.*\}/s);
+          const jsonStr = jsonMatch ? jsonMatch[0] : generatedText;
+          const parsed = JSON.parse(jsonStr.replace(/\\/g, "\\\\"));
+          
+          const newFlashcard = {
+            title: parsed.title || 'Flashcard IA',
+            content: parsed.front || 'Frente',
+            backContent: parsed.back || 'Verso',
+            isFlashcard: true,
+            color: '#fef08a',
+            subjectTag: 'Geral',
+            subTag: '',
+            createdAt: new Date().toISOString(),
+            archived: false
+          };
+          // web-app typically saves flashcards in 'flashcards' collection, but 'notes' with isFlashcard: true is what extension was using manually above. I will use 'flashcards' to match the web-app RevisionScreen. Wait, web-app has both 'notes' and 'flashcards'. Let's use 'flashcards' if isFlashcard is true, otherwise 'notes'. Wait, previously it saved to 'notes'. Let's stick to 'notes' as previously used in background.ts. No, actually web-app has a separate 'flashcards' collection. Let's save to 'flashcards' for flashcard, 'notes' for post-it!
+          const collectionName = isFlashcard ? 'flashcards' : 'notes';
+          await addDoc(collection(db, 'users', currentUser.uid, collectionName), newFlashcard);
+        } else {
+          const lines = generatedText.split('\n');
+          const title = lines[0].replace(/\*\*/g, '').replace(/#/g, '').trim();
+          const content = lines.slice(1).join('\n').trim().replace(/\*\*/g, '');
+          
+          const newPostIt = {
+            title: title || 'Post-it IA',
+            content: content || generatedText,
+            backContent: '',
+            isFlashcard: false,
+            color: '#fef08a',
+            subjectTag: 'Geral',
+            subTag: '',
+            createdAt: new Date().toISOString(),
+            archived: false
+          };
+          await addDoc(collection(db, 'users', currentUser.uid, 'notes'), newPostIt);
+        }
+
+        sendResponse({ success: true });
+      } catch (err: any) {
+        console.error(err);
+        sendResponse({ success: false, error: err.message || 'Erro desconhecido' });
+      }
+    });
+    return true;
+  }
 });

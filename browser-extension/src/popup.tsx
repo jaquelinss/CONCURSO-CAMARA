@@ -161,35 +161,94 @@ function Popup() {
                     <BookOpen size={14} /> Flashcard
                   </button>
                 </div>
-                <button onClick={() => {
-                  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                    const tab = tabs[0];
-                    if (tab && tab.id) {
-                      chrome.scripting.executeScript({
-                        target: { tabId: tab.id },
-                        func: () => window.getSelection()?.toString() || ''
-                      }, (results) => {
-                        const text = results?.[0]?.result || '';
-                        if (text) {
-                          const prompt = `Gere flashcards e um resumo (post-it) com base neste texto:\n\n${text}`;
-                          navigator.clipboard.writeText(prompt).then(() => {
-                            setSaveMessage('🤖 Prompt copiado! Cole no chat da IA.');
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <button onClick={() => {
+                    setNoteSaving(true);
+                    setSaveMessage('Gerando Post-it...');
+                    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                      const tab = tabs[0];
+                      if (tab && tab.id) {
+                        chrome.scripting.executeScript({
+                          target: { tabId: tab.id },
+                          func: () => window.getSelection()?.toString() || ''
+                        }, (results) => {
+                          const text = results?.[0]?.result || '';
+                          if (text) {
+                            chrome.runtime.sendMessage({
+                              action: 'GENERATE_NOTE_WITH_AI',
+                              text: text,
+                              isFlashcard: false
+                            }, (response) => {
+                              setNoteSaving(false);
+                              if (response?.success) {
+                                setSaveMessage('✨ Post-it gerado e salvo!');
+                                setTimeout(() => setSaveMessage(''), 3000);
+                              } else {
+                                setSaveMessage('❌ Erro: ' + (response?.error || 'Desconhecido'));
+                                setTimeout(() => setSaveMessage(''), 3000);
+                              }
+                            });
+                          } else {
+                            setNoteSaving(false);
+                            setSaveMessage('⚠️ Selecione um texto na página!');
                             setTimeout(() => setSaveMessage(''), 3000);
-                          });
-                        } else {
-                          setSaveMessage('⚠️ Selecione um texto na página primeiro!');
-                          setTimeout(() => setSaveMessage(''), 3000);
-                        }
-                      });
-                    }
-                  });
-                }} style={{
-                  background: '#f3e8ff', color: '#6b21a8', border: '1px solid #d8b4fe',
-                  padding: '8px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px',
-                  fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
-                }}>
-                  🤖 Gerar notas com IA (Copiar Prompt)
-                </button>
+                          }
+                        });
+                      } else {
+                        setNoteSaving(false);
+                      }
+                    });
+                  }} disabled={noteSaving} style={{
+                    flex: 1, background: '#fef08a', color: '#78350f', border: '1px solid #fde047',
+                    padding: '8px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px',
+                    fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
+                  }}>
+                    ✨ IA: Post-it
+                  </button>
+                  <button onClick={() => {
+                    setNoteSaving(true);
+                    setSaveMessage('Gerando Flashcard...');
+                    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                      const tab = tabs[0];
+                      if (tab && tab.id) {
+                        chrome.scripting.executeScript({
+                          target: { tabId: tab.id },
+                          func: () => window.getSelection()?.toString() || ''
+                        }, (results) => {
+                          const text = results?.[0]?.result || '';
+                          if (text) {
+                            chrome.runtime.sendMessage({
+                              action: 'GENERATE_NOTE_WITH_AI',
+                              text: text,
+                              isFlashcard: true
+                            }, (response) => {
+                              setNoteSaving(false);
+                              if (response?.success) {
+                                setSaveMessage('✨ Flashcard gerado e salvo!');
+                                setTimeout(() => setSaveMessage(''), 3000);
+                              } else {
+                                setSaveMessage('❌ Erro: ' + (response?.error || 'Desconhecido'));
+                                setTimeout(() => setSaveMessage(''), 3000);
+                              }
+                            });
+                          } else {
+                            setNoteSaving(false);
+                            setSaveMessage('⚠️ Selecione um texto na página!');
+                            setTimeout(() => setSaveMessage(''), 3000);
+                          }
+                        });
+                      } else {
+                        setNoteSaving(false);
+                      }
+                    });
+                  }} disabled={noteSaving} style={{
+                    flex: 1, background: '#dbeafe', color: '#1e40af', border: '1px solid #93c5fd',
+                    padding: '8px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px',
+                    fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
+                  }}>
+                    ✨ IA: Flashcard
+                  </button>
+                </div>
               </div>
             ) : (
               <div style={{ background: 'white', padding: '10px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
