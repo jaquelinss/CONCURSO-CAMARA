@@ -5,9 +5,9 @@
     "src": "../../../@crx/manifest",
     "isEntry": true
   },
-  "_content.tsx-loader-cBOJ1OTe.js": {
-    "file": "assets/content.tsx-loader-cBOJ1OTe.js",
-    "src": "_content.tsx-loader-cBOJ1OTe.js"
+  "_content.tsx-loader-BsPRwucr.js": {
+    "file": "assets/content.tsx-loader-BsPRwucr.js",
+    "src": "_content.tsx-loader-BsPRwucr.js"
   },
   "_firebase-BRGHhCZb.js": {
     "file": "assets/firebase-BRGHhCZb.js",
@@ -28,7 +28,7 @@
     "name": "rolldown-runtime"
   },
   "index.html": {
-    "file": "assets/popup-CbTu9TmS.js",
+    "file": "assets/popup-B3yukIkj.js",
     "name": "popup",
     "src": "index.html",
     "isEntry": true,
@@ -49,7 +49,7 @@
     ]
   },
   "src/content.tsx": {
-    "file": "assets/content.tsx-B5kuoIyd.js",
+    "file": "assets/content.tsx-CAkuQvZf.js",
     "name": "content.tsx",
     "src": "src/content.tsx",
     "isEntry": true,

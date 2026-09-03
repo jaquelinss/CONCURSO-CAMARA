@@ -144,20 +144,51 @@ function Popup() {
 
           <div style={{ marginBottom: '12px' }}>
             {!showNoteForm ? (
-              <div style={{ display: 'flex', gap: '6px' }}>
-                <button onClick={() => { setNoteType('postit'); setShowNoteForm(true); }} style={{
-                  flex: 1, background: '#fef08a', color: '#78350f', border: '1px solid #fde047',
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <button onClick={() => { setNoteType('postit'); setShowNoteForm(true); }} style={{
+                    flex: 1, background: '#fef08a', color: '#78350f', border: '1px solid #fde047',
+                    padding: '8px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px',
+                    fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
+                  }}>
+                    <StickyNote size={14} /> Post-it
+                  </button>
+                  <button onClick={() => { setNoteType('flashcard'); setShowNoteForm(true); }} style={{
+                    flex: 1, background: '#dbeafe', color: '#1e40af', border: '1px solid #93c5fd',
+                    padding: '8px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px',
+                    fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
+                  }}>
+                    <BookOpen size={14} /> Flashcard
+                  </button>
+                </div>
+                <button onClick={() => {
+                  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                    const tab = tabs[0];
+                    if (tab && tab.id) {
+                      chrome.scripting.executeScript({
+                        target: { tabId: tab.id },
+                        func: () => window.getSelection()?.toString() || ''
+                      }, (results) => {
+                        const text = results?.[0]?.result || '';
+                        if (text) {
+                          const prompt = `Gere flashcards e um resumo (post-it) com base neste texto:\n\n${text}`;
+                          navigator.clipboard.writeText(prompt).then(() => {
+                            setSaveMessage('🤖 Prompt copiado! Cole no chat da IA.');
+                            setTimeout(() => setSaveMessage(''), 3000);
+                          });
+                        } else {
+                          setSaveMessage('⚠️ Selecione um texto na página primeiro!');
+                          setTimeout(() => setSaveMessage(''), 3000);
+                        }
+                      });
+                    }
+                  });
+                }} style={{
+                  background: '#f3e8ff', color: '#6b21a8', border: '1px solid #d8b4fe',
                   padding: '8px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px',
                   fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
                 }}>
-                  <StickyNote size={14} /> Post-it
-                </button>
-                <button onClick={() => { setNoteType('flashcard'); setShowNoteForm(true); }} style={{
-                  flex: 1, background: '#dbeafe', color: '#1e40af', border: '1px solid #93c5fd',
-                  padding: '8px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px',
-                  fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
-                }}>
-                  <BookOpen size={14} /> Flashcard
+                  🤖 Gerar notas com IA (Copiar Prompt)
                 </button>
               </div>
             ) : (
