@@ -95,8 +95,20 @@ export default function DigitalNotebook() {
     catch { return { w: 900, h: 620 }; }
   });
   const [windowPos, setWindowPos] = useState(() => {
-    try { const p = localStorage.getItem('dn_pos'); return p ? JSON.parse(p) : { x: 80, y: 80 }; }
-    catch { return { x: 80, y: 80 }; }
+    try {
+      const p = localStorage.getItem('dn_pos');
+      if (p) {
+        const parsed = JSON.parse(p);
+        // Clamp: ensure the drag handle (top bar) is always reachable
+        const maxX = window.innerWidth - 100;
+        const maxY = window.innerHeight - 52;
+        return {
+          x: Math.max(-200, Math.min(parsed.x, maxX)),
+          y: Math.max(0, Math.min(parsed.y, maxY)),
+        };
+      }
+      return { x: 80, y: 80 };
+    } catch { return { x: 80, y: 80 }; }
   });
 
   // Notes data
@@ -458,7 +470,14 @@ export default function DigitalNotebook() {
       nodeRef={nodeRef}
       handle=".dn-drag-handle"
       position={windowPos}
-      onStop={(_e, data) => setWindowPos({ x: data.x, y: data.y })}
+      onStop={(_e, data) => {
+        const maxX = window.innerWidth - 100;
+        const maxY = window.innerHeight - 52;
+        setWindowPos({ 
+          x: Math.max(-200, Math.min(data.x, maxX)), 
+          y: Math.max(0, Math.min(data.y, maxY)) 
+        });
+      }}
       cancel="input,button,.dn-editor,[contenteditable]"
     >
       <div
