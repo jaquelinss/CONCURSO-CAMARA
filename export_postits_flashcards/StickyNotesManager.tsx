@@ -1010,7 +1010,7 @@ function FlashcardItem({
     <Draggable
       nodeRef={nodeRef}
       handle=".drag-handle"
-      defaultPosition={{ x: Math.max(0, (isCascadeMode && cascadePos ? cascadePos.x : note.x) || 0), y: Math.max(65, (isCascadeMode && cascadePos ? cascadePos.y : note.y) || 65) }}
+      defaultPosition={isCascadeMode && cascadePos ? cascadePos : { x: note.x || 0, y: note.y || 0 }}
       onDrag={(_e, data) => {
         if (isCascadeMode) {
           const elements = document.querySelectorAll('.flashcard-cascade-item');
@@ -1030,7 +1030,7 @@ function FlashcardItem({
         }
       }}
       onStart={onFocus}
-      bounds={{ top: 65, left: 0 }}
+      bounds="parent"
       cancel="button,.flip-content,.palette-popover"
     >
       <div 
@@ -1340,7 +1340,7 @@ function StickyNoteItem({
     <Draggable
       nodeRef={nodeRef}
       handle=".drag-handle"
-      defaultPosition={{ x: Math.max(0, (isCascadeMode && cascadePos ? cascadePos.x : note.x) || 0), y: Math.max(65, (isCascadeMode && cascadePos ? cascadePos.y : note.y) || 65) }}
+      defaultPosition={isCascadeMode && cascadePos ? cascadePos : { x: note.x || 0, y: note.y || 0 }}
       onDrag={(_e, data) => {
         if (isCascadeMode) {
           const elements = document.querySelectorAll('.cascade-mode-item');
@@ -1362,7 +1362,7 @@ function StickyNoteItem({
       onStart={() => {
         onFocus();
       }}
-      bounds={{ top: 65, left: 0 }}
+      bounds="parent"
       cancel="button"
     >
       <div 

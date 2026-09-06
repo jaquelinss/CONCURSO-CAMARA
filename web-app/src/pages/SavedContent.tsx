@@ -7,7 +7,7 @@ import { collection, query, getDocs, orderBy, doc, updateDoc, deleteDoc, addDoc,
 import QuizScreen from '../components/QuizScreen';
 import LessonScreen from '../components/LessonScreen';
 import ScheduleRevisionModal from '../components/ScheduleRevisionModal';
-import { CalendarClock, MessageSquare, Check, X, Trash2, FolderPlus, Plus, FolderOpen, XCircle, Pencil, Sparkles, Loader2 } from 'lucide-react';
+import { CalendarClock, MessageSquare, Check, X, Trash2, FolderPlus, Plus, FolderOpen, XCircle, Pencil, Sparkles, Loader2, CalendarDays } from 'lucide-react';
 import { isSubjectMatchingFolder } from '../lib/folderUtils';
 
 function CommentBadge({ item, collectionName, userId }: { item: any, collectionName: string, userId: string }) {
@@ -151,6 +151,12 @@ export default function SavedContent() {
   const [editFolderName, setEditFolderName] = useState('');
   const [autoOrganizing, setAutoOrganizing] = useState(false);
 
+  // Date filter system
+  const [dateFilterMode, setDateFilterMode] = useState<'all' | 'today' | 'week' | 'month' | 'year' | 'range'>('all');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [showDateFilter, setShowDateFilter] = useState(false);
+
   const saveFolderName = async (folderId: string) => {
     if (!user || !editFolderName.trim()) return;
     try {
@@ -291,13 +297,55 @@ export default function SavedContent() {
     }
   };
 
+  const getItemDate = (item: any): Date | null => {
+    if (item.createdAt?.toDate) return item.createdAt.toDate();
+    if (item.createdAt) return new Date(item.createdAt);
+    return null;
+  };
+
+  const filterByDate = (items: any[]) => {
+    if (dateFilterMode === 'all') return items;
+
+    const now = new Date();
+    let start: Date;
+    let end: Date = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+
+    if (dateFilterMode === 'today') {
+      start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+    } else if (dateFilterMode === 'week') {
+      start = new Date(now);
+      start.setDate(now.getDate() - 7);
+      start.setHours(0, 0, 0, 0);
+    } else if (dateFilterMode === 'month') {
+      start = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0);
+    } else if (dateFilterMode === 'year') {
+      start = new Date(now.getFullYear(), 0, 1, 0, 0, 0);
+    } else if (dateFilterMode === 'range') {
+      if (!dateFrom) return items;
+      start = new Date(dateFrom + 'T00:00:00');
+      end = dateTo ? new Date(dateTo + 'T23:59:59') : new Date(now.getFullYear() + 1, 0, 1);
+    } else {
+      return items;
+    }
+
+    return items.filter(item => {
+      const d = getItemDate(item);
+      if (!d) return false;
+      return d >= start && d <= end;
+    });
+  };
+
   const filterByFolder = (items: any[]) => {
     const existingFolderIds = folders.map(f => f.id);
-    if (activeFolder === 'all') return items;
-    if (activeFolder === 'none') {
-      return items.filter(i => !i.folderId || !existingFolderIds.includes(i.folderId));
+    let filtered: any[];
+    if (activeFolder === 'all') {
+      filtered = items;
+    } else if (activeFolder === 'none') {
+      filtered = items.filter(i => !i.folderId || !existingFolderIds.includes(i.folderId));
+    } else {
+      filtered = items.filter(i => i.folderId === activeFolder);
     }
-    return items.filter(i => i.folderId === activeFolder);
+    return filterByDate(filtered);
   };
 
   const handleDelete = async (e: React.MouseEvent, id: string, type: 'lessons' | 'quizzes' | 'flashcards') => {
@@ -517,6 +565,67 @@ export default function SavedContent() {
                 <Plus className="w-3.5 h-3.5" />
                 Nova Pasta
               </button>
+            </div>
+          )}
+        </div>
+
+        {/* Date Filter Bar */}
+        <div className="mb-4">
+          <button
+            onClick={() => setShowDateFilter(!showDateFilter)}
+            className={`flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg transition-colors ${showDateFilter || dateFilterMode !== 'all' ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+          >
+            <CalendarDays className="w-4 h-4" />
+            Filtrar por data
+            {dateFilterMode !== 'all' && (
+              <span className="ml-1 px-1.5 py-0.5 bg-indigo-600 text-white text-xs rounded-full">
+                {dateFilterMode === 'today' ? 'Hoje' : dateFilterMode === 'week' ? 'Semana' : dateFilterMode === 'month' ? 'Mês' : dateFilterMode === 'year' ? 'Ano' : 'Intervalo'}
+              </span>
+            )}
+          </button>
+
+          {showDateFilter && (
+            <div className="mt-2 flex flex-wrap items-center gap-2 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
+              {(['all', 'today', 'week', 'month', 'year', 'range'] as const).map(mode => {
+                const labels: Record<string, string> = { all: 'Todos', today: 'Hoje', week: 'Última Semana', month: 'Este Mês', year: 'Este Ano', range: 'Intervalo' };
+                return (
+                  <button
+                    key={mode}
+                    onClick={() => setDateFilterMode(mode)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${dateFilterMode === mode ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600'}`}
+                  >
+                    {labels[mode]}
+                  </button>
+                );
+              })}
+
+              {dateFilterMode === 'range' && (
+                <div className="flex items-center gap-2 ml-2">
+                  <label className="text-xs text-gray-500 dark:text-gray-400">De:</label>
+                  <input
+                    type="date"
+                    value={dateFrom}
+                    onChange={(e) => setDateFrom(e.target.value)}
+                    className="text-xs px-2 py-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                  />
+                  <label className="text-xs text-gray-500 dark:text-gray-400">Até:</label>
+                  <input
+                    type="date"
+                    value={dateTo}
+                    onChange={(e) => setDateTo(e.target.value)}
+                    className="text-xs px-2 py-1 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                  />
+                </div>
+              )}
+
+              {dateFilterMode !== 'all' && (
+                <button
+                  onClick={() => { setDateFilterMode('all'); setDateFrom(''); setDateTo(''); }}
+                  className="ml-auto text-xs text-red-500 hover:text-red-600 flex items-center gap-1"
+                >
+                  <X className="w-3 h-3" /> Limpar filtro
+                </button>
+              )}
             </div>
           )}
         </div>
