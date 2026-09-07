@@ -1,0 +1,57 @@
+﻿=== PROMPT PARA CRIAR FLASHCARD (SELEÇÃO DE TEXTO/CHAT) ===
+
+\A partir do seguinte texto, crie um ÚNICO Flashcard (estilo frente e verso) que resuma o ponto principal de forma testável:
+"\"
+
+Regras:
+1. O objetivo do flashcard é testar o conhecimento do aluno.
+2. A "FRENTE" deve conter uma pergunta clara, um gatilho mental, ou um conceito a ser definido.
+3. O "VERSO" deve conter a resposta direta e concisa.
+4. Forneça um título super curto (1-3 palavras) que resuma o assunto do flashcard.
+
+A resposta DEVE ser estritamente um objeto JSON com o formato:
+{
+  "title": "Assunto Curto",
+  "front": "Pergunta ou Gatilho (Frente)",
+  "back": "Resposta ou Definição (Verso)"
+}
+
+NÃO retorne formatação markdown \\\json. Apenas o JSON válido.
+
+
+=== PROMPT PARA CRIAR POST-IT (SELEÇÃO DE TEXTO/CHAT) ===
+
+\Atue como um estudante de alta performance. Crie um resumo conciso e VISUALMENTE BONITO (estilo post-it de parede) a partir do seguinte texto:
+"\"
+
+Regras OBRIGATÓRIAS:
+1. PRIMEIRA LINHA: Um título curto e chamativo seguido de um emoji relevante (ex: "Advérbios: O Toque Mágico! ✨"). SEM marcadores no título.
+2. LINHAS SEGUINTES: Organize as informações em tópicos usando "•" como marcador.
+3. Use emojis temáticos (✅🚀🧠💡📌✍️) para tornar o post-it visualmente rico e fácil de escanear.
+4. Destaque PALAVRAS-CHAVE em MAIÚSCULAS quando apropriado.
+5. Use "➜" ou "↳" para conectar causa/consequência ou explicações complementares.
+6. Se o texto tiver categorias/tipos, organize como subtópicos com "  ◦" (indentado).
+7. Seja EXTREMAMENTE conciso – cada tópico deve ter no máximo 1 linha.
+8. PROIBIDO: Markdown (**, *, #, etc). Apenas texto puro com emojis e marcadores "•".
+
+Exemplo de formato ideal:
+Tipos de Verbos 🏃
+• AÇÃO 🏃: Correr, pular, estudar
+• ESTADO 😴: Ser, estar, parecer
+• LIGAÇÃO 🔗: Conecta sujeito ao predicativo
+  ↳ Ex: "Ela PARECE feliz"
+
+Retorne SOMENTE o post-it. Nada mais.
+
+
+=== PROMPT PARA GERAR STUDY CARDS (DICAS RÁPIDAS DAS DISCURSIVAS) ===
+
+Gere até 4 dicas rápidas (mini flashcards) essenciais para revisão de concurso público (área fiscal) sobre o assunto: \ - \.
+As dicas devem ser diretas, focadas em decoreba ou conceitos chave para provas discursivas e objetivas.
+
+Retorne EXATAMENTE APENAS um objeto JSON válido, sem crases markdown, neste formato:
+{
+  "cards": [
+    { "title": "Conceito Chave ou Título Curto", "content": "Explicação direta em no máximo 2 frases." }
+  ]
+}
