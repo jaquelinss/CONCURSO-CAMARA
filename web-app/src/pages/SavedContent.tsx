@@ -187,7 +187,31 @@ export default function SavedContent() {
         const flashcardsRef = collection(db, 'users', user.uid, 'flashcards');
         const qFlashcards = query(flashcardsRef, orderBy('createdAt', 'desc'));
         const flashcardsSnap = await getDocs(qFlashcards);
-        setFlashcards(flashcardsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+        const generatedFlashcards = flashcardsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        // Also fetch post-it style flashcards from 'notes' collection
+        const notesRef = collection(db, 'users', user.uid, 'notes');
+        const qNotes = query(notesRef, orderBy('createdAt', 'desc'));
+        const notesSnap = await getDocs(qNotes);
+        const postItFlashcards = notesSnap.docs
+          .map(d => ({ id: d.id, ...d.data() }))
+          .filter((n: any) => n.isFlashcard && !n.archived)
+          .map((n: any) => ({
+            ...n,
+            subject: n.subjectTag || 'Geral',
+            topic: n.title || 'Flashcard',
+            customTitle: `📌 ${n.title || 'Flashcard'}`,
+            data: [{ question: n.content || '', answer: n.backContent || '' }],
+            _sourceCollection: 'notes'
+          }));
+
+        // Merge and sort by date
+        const allFlashcards = [...generatedFlashcards, ...postItFlashcards].sort((a: any, b: any) => {
+          const da = a.createdAt?.toDate?.() || new Date(a.createdAt || 0);
+          const db2 = b.createdAt?.toDate?.() || new Date(b.createdAt || 0);
+          return db2.getTime() - da.getTime();
+        });
+        setFlashcards(allFlashcards);
 
         // Fetch folders
         const foldersRef = collection(db, 'users', user.uid, 'folders');
@@ -354,10 +378,17 @@ export default function SavedContent() {
     if (!window.confirm('Tem certeza que deseja excluir este conteúdo?')) return;
     
     try {
-      await deleteDoc(doc(db, 'users', user.uid, type, id));
-      if (type === 'lessons') setLessons(prev => prev.filter(item => item.id !== id));
-      if (type === 'quizzes') setQuizzes(prev => prev.filter(item => item.id !== id));
-      if (type === 'flashcards') setFlashcards(prev => prev.filter(item => item.id !== id));
+      if (type === 'flashcards') {
+        // Check if this flashcard came from the notes collection
+        const item = flashcards.find((f: any) => f.id === id);
+        const actualCollection = (item as any)?._sourceCollection === 'notes' ? 'notes' : 'flashcards';
+        await deleteDoc(doc(db, 'users', user.uid, actualCollection, id));
+        setFlashcards(prev => prev.filter(item => item.id !== id));
+      } else {
+        await deleteDoc(doc(db, 'users', user.uid, type, id));
+        if (type === 'lessons') setLessons(prev => prev.filter(item => item.id !== id));
+        if (type === 'quizzes') setQuizzes(prev => prev.filter(item => item.id !== id));
+      }
     } catch (error) {
       console.error("Erro ao excluir", error);
       alert('Erro ao excluir conteúdo.');
