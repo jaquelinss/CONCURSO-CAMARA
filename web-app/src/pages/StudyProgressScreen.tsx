@@ -32,7 +32,7 @@ export default function StudyProgressScreen() {
   const justCreatedSubjectRef = useRef<string | null>(null);
 
   // AI Modal States
-  const { apiKey } = useAuth();
+  const { activeApiKey: apiKey } = useAuth();
   const [isAIModalOpen, setIsAIModalOpen] = useState(false);
   const [aiContext, setAiContext] = useState('');
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);

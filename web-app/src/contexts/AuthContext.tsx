@@ -9,9 +9,14 @@ interface AuthContextType {
   loading: boolean;
   signOut: () => Promise<void>;
   apiKey: string | null;
+  testApiKey: string | null;
+  useTestKey: boolean;
+  activeApiKey: string | null;
   hasSeenWelcome: boolean;
   selectedBanca: string | null;
   saveApiKey: (key: string) => Promise<void>;
+  saveTestApiKey: (key: string) => Promise<void>;
+  toggleUseTestKey: () => Promise<void>;
   saveBanca: (banca: string) => Promise<void>;
   markWelcomeAsSeen: () => Promise<void>;
   isAdmin: boolean;
@@ -22,9 +27,14 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   signOut: async () => {},
   apiKey: null,
+  testApiKey: null,
+  useTestKey: false,
+  activeApiKey: null,
   hasSeenWelcome: false,
   selectedBanca: null,
   saveApiKey: async () => {},
+  saveTestApiKey: async () => {},
+  toggleUseTestKey: async () => {},
   saveBanca: async () => {},
   markWelcomeAsSeen: async () => {},
   isAdmin: false,
@@ -36,6 +46,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [apiKey, setApiKey] = useState<string | null>(null);
+  const [testApiKey, setTestApiKey] = useState<string | null>(null);
+  const [useTestKey, setUseTestKey] = useState<boolean>(false);
   const [hasSeenWelcome, setHasSeenWelcome] = useState<boolean>(false);
   const [selectedBanca, setSelectedBanca] = useState<string | null>(null);
 
@@ -49,11 +61,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (docSnap.exists()) {
             const data = docSnap.data();
             setApiKey(data.apiKey || null);
+            setTestApiKey(data.testApiKey || null);
+            setUseTestKey(data.useTestKey || false);
             setHasSeenWelcome(data.hasSeenWelcome || false);
             setSelectedBanca(data.selectedBanca || 'IBAM');
           } else {
             // Document doesn't exist yet
             setApiKey(null);
+            setTestApiKey(null);
+            setUseTestKey(false);
             setHasSeenWelcome(false);
             setSelectedBanca('IBAM');
           }
@@ -62,6 +78,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } else {
         setApiKey(null);
+        setTestApiKey(null);
+        setUseTestKey(false);
         setHasSeenWelcome(false);
         setSelectedBanca(null);
       }
@@ -83,7 +101,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const saveTestApiKey = async (key: string) => {
+    if (!user) return;
+    try {
+      const docRef = doc(db, 'users', user.uid, 'settings', 'config');
+      await setDoc(docRef, { testApiKey: key }, { merge: true });
+      setTestApiKey(key);
+    } catch (error) {
+      console.error("Error saving Test API Key:", error);
+      throw error;
+    }
+  };
 
+  const toggleUseTestKey = async () => {
+    if (!user) return;
+    const newVal = !useTestKey;
+    try {
+      const docRef = doc(db, 'users', user.uid, 'settings', 'config');
+      await setDoc(docRef, { useTestKey: newVal }, { merge: true });
+      setUseTestKey(newVal);
+    } catch (error) {
+      console.error("Error toggling test key:", error);
+      throw error;
+    }
+  };
+
+  const activeApiKey = useTestKey && testApiKey ? testApiKey : apiKey;
 
   const saveBanca = async (banca: string) => {
     if (!user) return;
@@ -119,7 +162,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = () => firebaseSignOut(auth);
 
   return (
-    <AuthContext.Provider value={{ user, loading, signOut, apiKey, hasSeenWelcome, selectedBanca, saveApiKey, saveBanca, markWelcomeAsSeen, isAdmin: user?.email === 'quelinalins@gmail.com' }}>
+    <AuthContext.Provider value={{ user, loading, signOut, apiKey, testApiKey, useTestKey, activeApiKey, hasSeenWelcome, selectedBanca, saveApiKey, saveTestApiKey, toggleUseTestKey, saveBanca, markWelcomeAsSeen, isAdmin: user?.email === 'quelinalins@gmail.com' }}>
       {!loading && children}
     </AuthContext.Provider>
   );

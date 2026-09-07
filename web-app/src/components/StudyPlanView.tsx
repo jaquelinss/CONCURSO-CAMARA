@@ -15,7 +15,7 @@ interface StudyPlanViewProps {
 }
 
 export default function StudyPlanView({ plan, onUpdate }: StudyPlanViewProps) {
-  const { user, apiKey } = useAuth();
+  const { user, activeApiKey: apiKey } = useAuth();
   const { awardPoints } = useReward();
   const [expandedDay, setExpandedDay] = useState<string | null>(null);
   const [updating, setUpdating] = useState<string | null>(null);

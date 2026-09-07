@@ -315,7 +315,7 @@ const DEFAULT_TEACHER: Teacher = {
 };
 
 export default function AITeacherChat({ isHidden = false }: { isHidden?: boolean }) {
-  const { user, apiKey } = useAuth();
+  const { user, activeApiKey: apiKey } = useAuth();
   const { awardPoints } = useReward();
   const [isGeneratingPostIt, setIsGeneratingPostIt] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);

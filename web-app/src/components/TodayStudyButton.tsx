@@ -153,7 +153,7 @@ export function ItemVideoManager({
 }
 
 export default function TodayStudyButton({ isHidden = false }: { isHidden?: boolean }) {
-  const { user, apiKey, selectedBanca } = useAuth();
+  const { user, activeApiKey: apiKey, selectedBanca } = useAuth();
   const { awardPoints } = useReward();
   const [open, setOpen] = useState(false);
   const [showOverdue, setShowOverdue] = useState(false);

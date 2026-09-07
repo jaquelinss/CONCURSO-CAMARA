@@ -26,7 +26,7 @@ const weekDays = [
 ];
 
 export default function StudyPlanWizard({ onPlanCreated, onClose }: StudyPlanWizardProps) {
-  const { user, apiKey } = useAuth();
+  const { user, activeApiKey: apiKey } = useAuth();
   const [step, setStep] = useState(1);
 
   // Step 1 — Source

@@ -18,7 +18,7 @@ interface QuestionTutorChatProps {
 }
 
 export default function QuestionTutorChat({ question, subject, topic }: QuestionTutorChatProps) {
-  const { user, apiKey } = useAuth();
+  const { user, activeApiKey: apiKey } = useAuth();
   const { awardPoints } = useReward();
   
   const [doubt, setDoubt] = useState("");

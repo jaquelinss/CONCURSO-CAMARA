@@ -496,7 +496,7 @@ export default function RevisionScreen() {
 }
 
 function RevisionCard({ revision, onAction, onLink, onReschedule, onUpdate }: { revision: any, onAction: any, onLink: any, onReschedule: any, onUpdate: () => void }) {
-  const { user, apiKey } = useAuth();
+  const { user, activeApiKey: apiKey } = useAuth();
   const date = revision.scheduledDate.toDate();
   const isOverdue = isBefore(date, startOfDay(new Date()));
   const isTodayDate = isToday(date);

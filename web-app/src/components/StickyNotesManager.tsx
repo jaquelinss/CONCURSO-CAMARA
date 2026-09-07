@@ -38,7 +38,7 @@ const COLORS = [
 
 // Gerenciador Global que escuta os eventos
 export default function StickyNotesManager() {
-  const { user, apiKey } = useAuth();
+  const { user, activeApiKey: apiKey } = useAuth();
   const { awardPoints } = useReward();
   const [notes, setNotes] = useState<Note[]>([]);
   const [highestZ, setHighestZ] = useState(100);

@@ -13,7 +13,7 @@ const SESSION_SCREEN_KEY = 'dashboard_screen';
 const SESSION_SETTINGS_KEY = 'dashboard_settings';
 
 export default function Dashboard() {
-  const { hasSeenWelcome, apiKey } = useAuth();
+  const { hasSeenWelcome, activeApiKey: apiKey } = useAuth();
   const location = useLocation();
   const stateFromNav = location.state as any;
 

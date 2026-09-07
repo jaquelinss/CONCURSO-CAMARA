@@ -126,7 +126,7 @@ const HighlighterPalette = ({ top, left, onHighlight }: { top: number, left: num
 };
 
 export default function LessonScreen({ settings, onBack, savedData }: LessonScreenProps) {
-  const { user, apiKey, selectedBanca } = useAuth();
+  const { user, activeApiKey: apiKey, selectedBanca } = useAuth();
   const { awardPoints } = useReward();
   const theme = themes[settings.subject] || defaultTheme;
   const isSavedMode = !!savedData;

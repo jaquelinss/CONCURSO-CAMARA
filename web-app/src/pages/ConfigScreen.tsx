@@ -11,8 +11,9 @@ import DocumentationModal from '../components/DocumentationModal';
 const ADMIN_EMAILS = ['quelinalins@gmail.com'];
 
 export default function ConfigScreen() {
-  const { apiKey, saveApiKey, user } = useAuth();
+  const { apiKey, testApiKey, useTestKey, saveApiKey, saveTestApiKey, toggleUseTestKey, user } = useAuth();
   const [inputValue, setInputValue] = useState('');
+  const [testInputValue, setTestInputValue] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -37,6 +38,12 @@ export default function ConfigScreen() {
       setInputValue(apiKey);
     }
   }, [apiKey]);
+
+  useEffect(() => {
+    if (testApiKey) {
+      setTestInputValue(testApiKey);
+    }
+  }, [testApiKey]);
 
   const fetchReports = async () => {
     if (!isAdmin) return;
@@ -86,6 +93,9 @@ export default function ConfigScreen() {
     }
   };
 
+  const [savingTest, setSavingTest] = useState(false);
+  const [savedTest, setSavedTest] = useState(false);
+
   const handleSave = async () => {
     if (!inputValue.trim()) {
       alert("Por favor, insira uma chave válida.");
@@ -97,9 +107,26 @@ export default function ConfigScreen() {
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (error) {
-      alert("Erro ao salvar a chave.");
+      alert("Erro ao salvar chave.");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSaveTestKey = async () => {
+    if (!testInputValue.trim()) {
+      alert("Por favor, insira uma chave de teste válida.");
+      return;
+    }
+    setSavingTest(true);
+    try {
+      await saveTestApiKey(testInputValue.trim());
+      setSavedTest(true);
+      setTimeout(() => setSavedTest(false), 3000);
+    } catch (error) {
+      alert("Erro ao salvar chave de teste.");
+    } finally {
+      setSavingTest(false);
     }
   };
 
@@ -181,7 +208,43 @@ export default function ConfigScreen() {
           </div>
         </div>
 
+        <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 mt-8">
+          <h2 className="text-2xl font-semibold mb-4 text-emerald-700">Chave de Teste do Google (Gemini)</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
+            Se você tem uma chave de teste (por exemplo, do Google AI Studio/Canvas) que não consome seus tokens pessoais, você pode configurá-la aqui e alternar entre a chave principal e a de teste.
+          </p>
 
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 mb-4">
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" className="sr-only peer" checked={useTestKey} onChange={toggleUseTestKey} />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+              </label>
+              <span className="font-bold text-gray-700">Usar Chave de Teste em vez da Principal</span>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Sua Chave de Teste (AIza...)</label>
+              <input
+                type="text"
+                value={testInputValue}
+                onChange={(e) => setTestInputValue(e.target.value)}
+                placeholder="Cole sua chave de teste aqui..."
+                className="w-full p-4 rounded-lg bg-gray-50 dark:bg-gray-900 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-mono"
+              />
+            </div>
+            
+            <div className="flex gap-4 pt-4">
+              <button 
+                onClick={handleSaveTestKey} 
+                disabled={savingTest || savedTest}
+                className={`px-8 py-3 text-white rounded-lg font-bold shadow-md transform hover:scale-105 transition-all ${savedTest ? 'bg-green-500' : 'bg-emerald-600 hover:bg-emerald-700'}`}
+              >
+                {savingTest ? 'Salvando...' : (savedTest ? 'Salvo com sucesso!' : 'Salvar Chave de Teste')}
+              </button>
+            </div>
+          </div>
+        </div>
 
         {/* Painel de Admin - Reportes de Erro */}
         {isAdmin && (

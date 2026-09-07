@@ -202,7 +202,7 @@ interface QuizScreenProps {
 }
 
 export default function QuizScreen({ settings, onBack, savedData }: QuizScreenProps) {
-  const { user, apiKey, selectedBanca } = useAuth();
+  const { user, activeApiKey: apiKey, selectedBanca } = useAuth();
   const { awardPoints } = useReward();
   const theme = themes[settings.subject] || defaultTheme;
   const isSavedMode = !!savedData;

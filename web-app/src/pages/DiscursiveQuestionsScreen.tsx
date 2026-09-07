@@ -7,7 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { analyzeDiscursiveAnswer, generateStudyCards } from '../lib/gemini';
 
 export default function DiscursiveQuestionsScreen() {
-  const { apiKey } = useAuth();
+  const { activeApiKey: apiKey } = useAuth();
   const [selectedQuestion, setSelectedQuestion] = useState<DiscursiveQuestion | null>(null);
   const [answerText, setAnswerText] = useState('');
   const [isEvaluating, setIsEvaluating] = useState(false);

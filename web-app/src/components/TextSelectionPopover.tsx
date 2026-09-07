@@ -9,7 +9,7 @@ export default function TextSelectionPopover() {
   const [selectedText, setSelectedText] = useState('');
   const [isLoadingPostIt, setIsLoadingPostIt] = useState(false);
   const [isLoadingFlashcard, setIsLoadingFlashcard] = useState(false);
-  const { apiKey } = useAuth();
+  const { activeApiKey: apiKey } = useAuth();
   const { getContextText } = useKnowledgeBase();
 
   const isLoading = isLoadingPostIt || isLoadingFlashcard;
