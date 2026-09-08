@@ -206,15 +206,6 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
             archived: false
           };
           await addDoc(collection(db, 'users', currentUser.uid, 'notes'), newFlashcard);
-          // Also save to 'flashcards' collection so it shows in SavedContent/Conteúdo Salvo
-          await addDoc(collection(db, 'users', currentUser.uid, 'flashcards'), {
-            subject: 'Geral',
-            topic: newFlashcard.title || 'Flashcard IA',
-            data: [{ question: newFlashcard.content, answer: newFlashcard.backContent }],
-            customTitle: newFlashcard.title || 'Flashcard IA',
-            createdAt: serverTimestamp(),
-            source: 'extension'
-          });
         } else {
           const lines = generatedText.split('\n');
           const title = lines[0].replace(/\*\*/g, '').replace(/#/g, '').trim();
