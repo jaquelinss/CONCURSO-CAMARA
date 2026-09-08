@@ -9,6 +9,7 @@ interface SettingsProps {
   settings: any;
   setSettings: (s: any) => void;
   onStart: () => void;
+  onImportTxt?: () => void;
 }
 
 const CustomSelect = ({ label, value, onChange, options, theme, disabled = false }: any) => (
@@ -41,7 +42,7 @@ const CustomInput = ({ label, value, onChange, theme, type = "text", disabled = 
   </div>
 );
 
-export default function SettingsScreen({ settings, setSettings, onStart }: SettingsProps) {
+export default function SettingsScreen({ settings, setSettings, onStart, onImportTxt }: SettingsProps) {
   const theme = useMemo(() => themes[settings.subject] || defaultTheme, [settings.subject]);
   const isAula = settings.model === 'Aula Explicativa';
   const { getAllSubjectsByMode } = useCustomSubjects();
@@ -293,12 +294,24 @@ export default function SettingsScreen({ settings, setSettings, onStart }: Setti
           </div>
         )}
 
-        <button
-          onClick={onStart}
-          className={`w-full py-4 text-lg font-bold ${theme.button} rounded-lg shadow-md transform hover:scale-105 transition-all duration-300`}
-        >
-          {getButtonLabel()}
-        </button>
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={onStart}
+            className={`w-full py-4 text-lg font-bold ${theme.button} rounded-lg shadow-md transform hover:scale-105 transition-all duration-300`}
+          >
+            {getButtonLabel()}
+          </button>
+          
+          {onImportTxt && !isAula && settings.model !== 'Corrigir Redação Pronta' && (
+            <button
+              onClick={onImportTxt}
+              className={`w-full py-3 text-sm font-bold text-gray-700 bg-gray-200 dark:bg-gray-700 dark:text-gray-300 rounded-lg shadow-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-300 flex items-center justify-center gap-2`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              Importar de arquivo TXT
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

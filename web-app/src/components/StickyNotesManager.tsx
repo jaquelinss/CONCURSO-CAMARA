@@ -4,7 +4,7 @@ import { collection, query, onSnapshot, addDoc, doc, updateDoc, deleteDoc, serve
 import { useAuth } from '../contexts/AuthContext';
 import { useReward } from '../contexts/RewardContext';
 import Draggable from 'react-draggable';
-import { Palette, X, GripHorizontal, Tag, PlusCircle, Layers, Eye, EyeOff, Pipette, ChevronRight, ChevronUp, ChevronDown, History, AlignLeft, AlignCenter } from 'lucide-react';
+import { Palette, X, GripHorizontal, Tag, PlusCircle, Layers, Eye, EyeOff, Pipette, ChevronRight, ChevronUp, ChevronDown, History, AlignLeft, AlignCenter, Highlighter } from 'lucide-react';
 import { generateNoteTag } from '../lib/gemini';
 
 interface Note {
@@ -1654,7 +1654,11 @@ function StickyNoteItem({
         </div>
 
         {/* Rich Text Toolbar */}
-        <RichTextToolbar />
+        <RichTextToolbar onExec={() => {
+          if (editableRef.current) {
+            setContent(editableRef.current.innerHTML);
+          }
+        }} />
 
         {/* Editable Content */}
         <div
@@ -1788,9 +1792,10 @@ function getRandomHexColor(type: 'pastel' | 'vibrant' | 'neon'): string {
 }
 
 // Rich Text Mini-Toolbar Component
-function RichTextToolbar() {
-  const exec = (cmd: string) => {
-    document.execCommand(cmd, false);
+function RichTextToolbar({ onExec }: { onExec?: () => void }) {
+  const exec = (cmd: string, arg?: string) => {
+    document.execCommand(cmd, false, arg);
+    if (onExec) setTimeout(onExec, 50); // delay to let innerHTML update
   };
   return (
     <div className="rich-toolbar" onPointerDown={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()}>
@@ -1798,6 +1803,8 @@ function RichTextToolbar() {
       <button onClick={() => exec('italic')} title="Itálico (Ctrl+I)"><i>I</i></button>
       <button onClick={() => exec('underline')} title="Sublinhado (Ctrl+U)"><u>U</u></button>
       <button onClick={() => exec('strikeThrough')} title="Tachado"><s>S</s></button>
+      <div className="w-[1px] h-4 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+      <button onClick={() => exec('hiliteColor', '#fef08a')} title="Marca-texto (Amarelo)"><Highlighter size={14} /></button>
       <div className="w-[1px] h-4 bg-gray-300 dark:bg-gray-600 mx-1"></div>
       <button onClick={() => exec('justifyLeft')} title="Alinhar à Esquerda"><AlignLeft size={14} /></button>
       <button onClick={() => exec('justifyCenter')} title="Centralizar"><AlignCenter size={14} /></button>

@@ -4,6 +4,7 @@ import Navigation from '../components/Navigation';
 import SettingsScreen from '../components/SettingsScreen';
 import LessonScreen from '../components/LessonScreen';
 import QuizScreen from '../components/QuizScreen';
+import TxtQuizImporter from '../components/TxtQuizImporter';
 import WelcomeModal from '../components/WelcomeModal';
 import { useAuth } from '../contexts/AuthContext';
 import { FlaskConical } from 'lucide-react';
@@ -67,8 +68,12 @@ export default function Dashboard() {
 
   const [showPeriodicTable, setShowPeriodicTable] = useState(false);
   const [hoveredElement, setHoveredElement] = useState<any>(null);
+  
+  const [isImportingTxt, setIsImportingTxt] = useState(false);
+  const [importedQuizData, setImportedQuizData] = useState<any>(null);
 
   const handleStart = () => {
+    setImportedQuizData(null); // Clear previous imported data
     if (settings.model === 'Aula Explicativa') {
       setScreen('lesson');
     } else {
@@ -76,8 +81,21 @@ export default function Dashboard() {
     }
   };
 
+  const handleQuizReady = (quizData: any) => {
+    setSettings((prev: any) => ({
+      ...prev,
+      subject: quizData.subject,
+      topic: quizData.topic,
+      model: quizData.model,
+      difficulty: quizData.difficulty
+    }));
+    setImportedQuizData(quizData.data);
+    setIsImportingTxt(false);
+    setScreen('quiz');
+  };
+
   return (
-    <div className="min-h-screen flex flex-col relative">
+    <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
       <Navigation />
       {!hasSeenWelcome && !apiKey && <WelcomeModal />}
       <main className="flex-grow p-4">
@@ -86,15 +104,23 @@ export default function Dashboard() {
             settings={settings} 
             setSettings={setSettings} 
             onStart={handleStart} 
+            onImportTxt={() => setIsImportingTxt(true)}
           />
         )}
         {screen === 'lesson' && (
           <LessonScreen settings={settings} onBack={() => setScreen('settings')} />
         )}
         {screen === 'quiz' && (
-          <QuizScreen settings={settings} onBack={() => setScreen('settings')} />
+          <QuizScreen settings={settings} onBack={() => setScreen('settings')} savedData={importedQuizData} />
         )}
       </main>
+
+      {isImportingTxt && (
+        <TxtQuizImporter 
+          onQuizReady={handleQuizReady} 
+          onCancel={() => setIsImportingTxt(false)} 
+        />
+      )}
 
       {settings.subject === 'Química' && (screen === 'quiz' || screen === 'lesson') && (
         <>
