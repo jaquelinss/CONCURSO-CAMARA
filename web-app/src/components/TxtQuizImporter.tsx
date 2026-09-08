@@ -42,79 +42,147 @@ export default function TxtQuizImporter({ onQuizReady, onCancel }: TxtQuizImport
     setParsing(true);
 
     try {
-      // 1. Parse Questions
-      const questionBlocks = questionsText.split(/\n(?=\d+\.)/);
-      
-      const parsedQuestions = questionBlocks.map((block) => {
-        const lines = block.split('\n').map(l => l.trim()).filter(l => l);
-        if (lines.length === 0) return null;
+      const normalizeSpaces = (str: string) => str.replace(/\s+/g, ' ').trim();
+      const removePrefixes = (str: string) => str.replace(/^(?:Quest[ãa]o\s*)?\d+[\.\-\):]\s*/i, '');
+      const getNum = (str: string) => {
+        const m = str.match(/^(?:Quest[ãa]o\s*)?(\d+)[\.\-\):]/i);
+        return m ? parseInt(m[1], 10).toString() : null;
+      };
 
-        // The first line(s) before A) are the question
-        const optionStartIndex = lines.findIndex(l => /^[a-eA-E][).]\s/.test(l));
-        if (optionStartIndex === -1) return null;
-
-        const pergunta = lines.slice(0, optionStartIndex).join('\n').replace(/^\d+\.\s*/, '').trim();
-        const rawOptions = lines.slice(optionStartIndex);
+      const splitBlocks = (text: string) => {
+        const blocks: string[] = [];
+        let currentBlock: string[] = [];
+        const lines = text.split('\n');
         
-        // Extract option letter and text
-        const opcoesMap: Record<string, string> = {};
-        rawOptions.forEach(optLine => {
-          const match = optLine.match(/^([a-eA-E])[).]\s+(.*)$/);
-          if (match) {
-            opcoesMap[match[1].toUpperCase()] = match[2].trim();
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+          
+          if (/^(?:Quest[ãa]o\s*)?\d+[\.\-\):]/i.test(line)) {
+            if (currentBlock.length > 0) blocks.push(currentBlock.join('\n'));
+            currentBlock = [line];
+          } else {
+            currentBlock.push(line);
           }
-        });
+        }
+        if (currentBlock.length > 0) blocks.push(currentBlock.join('\n'));
+        return blocks;
+      };
+
+      const qBlocks = splitBlocks(questionsText);
+      const aBlocks = splitBlocks(answersText);
+
+      if (qBlocks.length === 0) throw new Error("Não foi possível identificar nenhuma questão. Verifique se começam com '1.', 'Questão 1:', etc.");
+
+      const parsedQuestions = qBlocks.map(block => {
+        const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
+        const originalNumber = getNum(lines[0]);
+        if (!originalNumber) return null;
+
+        const perguntaLines: string[] = [];
+        const opcoesMap: Record<string, string> = {};
+        let currentOption: string | null = null;
+        let currentOptionText: string[] = [];
+
+        for (let i = 0; i < lines.length; i++) {
+          let line = lines[i];
+          if (i === 0) line = removePrefixes(line);
+          if (!line) continue;
+
+          const optMatch = line.match(/^[\(]?([a-eA-E])[\)\.\-]\s+(.*)/);
+          if (optMatch) {
+            if (currentOption) {
+              opcoesMap[currentOption] = normalizeSpaces(currentOptionText.join(' '));
+            }
+            currentOption = optMatch[1].toUpperCase();
+            currentOptionText = [optMatch[2]];
+          } else if (currentOption) {
+            currentOptionText.push(line);
+          } else {
+            perguntaLines.push(line);
+          }
+        }
+        if (currentOption) {
+          opcoesMap[currentOption] = normalizeSpaces(currentOptionText.join(' '));
+        }
 
         return {
-          originalNumber: block.match(/^(\d+)\./)?.[1],
-          pergunta,
+          originalNumber,
+          pergunta: normalizeSpaces(perguntaLines.join('\n')),
           opcoesMap,
           opcoesArray: Object.values(opcoesMap)
         };
       }).filter(Boolean) as any[];
 
-      // 2. Parse Answers
-      const answerBlocks = answersText.split(/\n(?=\d+\.)/);
-      const parsedAnswers = answerBlocks.map(block => {
-        const lines = block.split('\n').map(l => l.trim()).filter(l => l);
-        if (lines.length === 0) return null;
+      const parsedAnswers = aBlocks.map(block => {
+        const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
+        const originalNumber = getNum(lines[0]);
+        if (!originalNumber) return null;
 
-        // Format expected: "1. B" or "1. Resposta: B"
-        const headerMatch = lines[0].match(/^(\d+)\.\s*(?:Resposta:?\s*)?([a-eA-E])/i);
-        if (!headerMatch) return null;
+        let blockText = lines.join(' ');
+        blockText = removePrefixes(blockText);
 
-        const number = headerMatch[1];
-        const correctLetter = headerMatch[2].toUpperCase();
-        
-        // Everything else is explanation
-        const explicacao = lines.slice(1)
-          .join('\n')
-          .replace(/^(Explica[cç][aã]o|Justificativa):?\s*/i, '')
-          .trim();
+        let correctLetter: string | null = null;
+        let correctText: string | null = null;
 
-        return {
-          number,
-          correctLetter,
-          explicacao: explicacao || 'Sem explicação.'
-        };
+        let answerLineStr = "";
+        for (let line of lines) {
+            let cl = removePrefixes(line).trim();
+            if (cl.toLowerCase().startsWith('resposta') || cl.toLowerCase().startsWith('gabarito') || /^[A-E][\)\.\-]?$/i.test(cl)) {
+                answerLineStr = cl;
+                break;
+            }
+        }
+        if (!answerLineStr) answerLineStr = removePrefixes(lines[0]).trim();
+
+        const flMatch = answerLineStr.match(/^(?:Gabarito:?\s*|Resposta(?: Correta)?:?\s*|Alternativa(?: Correta)?:?\s*)?([A-E])[\)\.\-]?$/i);
+        if (flMatch) {
+             correctLetter = flMatch[1].toUpperCase();
+        } else {
+             const textMatch = blockText.match(/(?:Gabarito:?\s*|Resposta(?: Correta)?:?\s*|Alternativa(?: Correta)?:?\s*)(.*?)(?:\s+(?:Explica[cç][aã]o|Justificativa|Lei Seca)|$)/i);
+             if (textMatch) {
+                 correctText = normalizeSpaces(textMatch[1]);
+             } else {
+                 correctText = normalizeSpaces(answerLineStr);
+             }
+        }
+
+        const expMatch = blockText.match(/(?:Explica[cç][aã]o|Justificativa|Lei Seca)[^\:]*\:\s*(.*)/is);
+        const explicacao = expMatch ? normalizeSpaces(expMatch[1]) : 'Sem explicação.';
+
+        return { originalNumber, correctLetter, correctText, explicacao };
       }).filter(Boolean) as any[];
 
       // 3. Merge them
       const finalQuestions = parsedQuestions.map(q => {
-        const ans = parsedAnswers.find(a => a.number === q.originalNumber);
+        const ans = parsedAnswers.find(a => a.originalNumber === q.originalNumber);
         if (!ans) {
           throw new Error(`Gabarito não encontrado para a questão ${q.originalNumber}`);
         }
 
-        const correctText = q.opcoesMap[ans.correctLetter];
-        if (!correctText) {
-          throw new Error(`Alternativa '${ans.correctLetter}' não encontrada na questão ${q.originalNumber}`);
+        let correctOptionStr = "";
+        
+        if (ans.correctLetter && q.opcoesMap[ans.correctLetter]) {
+          correctOptionStr = q.opcoesMap[ans.correctLetter];
+        } else if (ans.correctText) {
+          const searchTxt = ans.correctText.toLowerCase().replace(/[\.\,\;]$/, ''); // remove trailing punctuation
+          const match = q.opcoesArray.find((opt: string) => 
+            opt.toLowerCase().includes(searchTxt) || 
+            searchTxt.includes(opt.toLowerCase())
+          );
+          if (match) {
+            correctOptionStr = match;
+          }
+        }
+
+        if (!correctOptionStr) {
+          throw new Error(`Não foi possível encontrar a alternativa '${ans.correctLetter || ans.correctText}' na questão ${q.originalNumber}`);
         }
 
         return {
           pergunta: q.pergunta,
           opcoes: q.opcoesArray,
-          correta: correctText, // Needs to be the EXACT string of the option
+          correta: correctOptionStr,
           explicacao: ans.explicacao
         };
       });
@@ -126,7 +194,7 @@ export default function TxtQuizImporter({ onQuizReady, onCancel }: TxtQuizImport
       const finalQuizData = {
         subject,
         topic,
-        difficulty: 'Médio', // Default
+        difficulty: 'Médio',
         model: 'Questões',
         data: finalQuestions
       };
