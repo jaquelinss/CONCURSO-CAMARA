@@ -129,7 +129,7 @@ export default function LessonScreen({ settings, onBack, savedData }: LessonScre
   const { user, activeApiKey: apiKey, selectedBanca } = useAuth();
   const { awardPoints } = useReward();
   const theme = themes[settings.subject] || defaultTheme;
-  const isSavedMode = !!savedData;
+  const isSavedMode = !!savedData && !settings.isImported;
   
   const [currentLevel, setCurrentLevel] = useState(savedData ? (settings.lessonLevel || 'Introdutória') : settings.lessonLevel);
   const [lessonData, setLessonData] = useState<Record<string, any>>(savedData ? { [settings.lessonLevel || 'Introdutória']: savedData } : {});

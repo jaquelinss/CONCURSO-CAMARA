@@ -205,7 +205,7 @@ export default function QuizScreen({ settings, onBack, savedData }: QuizScreenPr
   const { user, activeApiKey: apiKey, selectedBanca } = useAuth();
   const { awardPoints } = useReward();
   const theme = themes[settings.subject] || defaultTheme;
-  const isSavedMode = !!savedData;
+  const isSavedMode = !!savedData && !settings.isImported;
   const [questions, setQuestions] = useState<any[]>(savedData || []);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);

@@ -87,11 +87,17 @@ export default function Dashboard() {
       subject: quizData.subject,
       topic: quizData.topic,
       model: quizData.model,
-      difficulty: quizData.difficulty
+      difficulty: quizData.difficulty,
+      isImported: true
     }));
     setImportedQuizData(quizData.data);
     setIsImportingTxt(false);
-    setScreen('quiz');
+    
+    if (quizData.model === 'Aula Explicativa') {
+      setScreen('lesson');
+    } else {
+      setScreen('quiz');
+    }
   };
 
   return (
@@ -108,7 +114,7 @@ export default function Dashboard() {
           />
         )}
         {screen === 'lesson' && (
-          <LessonScreen settings={settings} onBack={() => setScreen('settings')} />
+          <LessonScreen settings={settings} onBack={() => setScreen('settings')} savedData={importedQuizData} />
         )}
         {screen === 'quiz' && (
           <QuizScreen settings={settings} onBack={() => setScreen('settings')} savedData={importedQuizData} />
