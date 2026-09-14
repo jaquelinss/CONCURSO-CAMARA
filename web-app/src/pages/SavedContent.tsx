@@ -143,7 +143,7 @@ export default function SavedContent() {
 
   // Folder system
   const [folders, setFolders] = useState<any[]>([]);
-  const [activeFolder, setActiveFolder] = useState<string>('none'); // Default to 'none' (Sem Pasta) to keep the landing page clean
+  const [activeFolder, setActiveFolder] = useState<string>('all');
   const [creatingFolder, setCreatingFolder] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
   const [movingItem, setMovingItem] = useState<{id: string, type: 'lessons' | 'quizzes' | 'flashcards'} | null>(null);
