@@ -114,9 +114,9 @@ export default function TxtQuizImporter({ onQuizReady, onCancel }: TxtQuizImport
     if (!answersText.trim()) {
       throw new Error('Por favor, forneça o texto do gabarito.');
     }
-    const removePrefixes = (str: string) => str.replace(/^(?:Quest[ãa]o\s*)?\d+[\.\-\):]\s*/i, '');
+    const removePrefixes = (str: string) => str.replace(/^(?:Quest[ãa]o\s*)?\d+\s*[\.\-\):]?\s*/i, '');
     const getNum = (str: string) => {
-      const m = str.match(/^(?:Quest[ãa]o\s*)?(\d+)[\.\-\):]/i);
+      const m = str.match(/^(?:Quest[ãa]o\s*)?(\d+)\s*[\.\-\):]?/i);
       return m ? parseInt(m[1], 10).toString() : null;
     };
 
@@ -129,7 +129,7 @@ export default function TxtQuizImporter({ onQuizReady, onCancel }: TxtQuizImport
         const line = lines[i].trim();
         if (!line) continue;
         
-        if (/^(?:Quest[ãa]o\s*)?\d+[\.\-\):]/i.test(line)) {
+        if (/^(?:Quest[ãa]o\s*)?\d+\s*[\.\-\):]/i.test(line) || /^\d+\s*[\.\-\):]\s/i.test(line)) {
           if (currentBlock.length > 0) blocks.push(currentBlock.join('\n'));
           currentBlock = [line];
         } else {
@@ -160,7 +160,7 @@ export default function TxtQuizImporter({ onQuizReady, onCancel }: TxtQuizImport
         if (i === 0) line = removePrefixes(line);
         if (!line) continue;
 
-        const optMatch = line.match(/^[\(]?([a-eA-E])[\)\.\-]\s+(.*)/);
+        const optMatch = line.match(/^[\(]?([a-eA-E])\s*[\)\.\-]\s*(.*)/);
         if (optMatch) {
           if (currentOption) {
             opcoesMap[currentOption] = normalizeSpaces(currentOptionText.join(' '));
