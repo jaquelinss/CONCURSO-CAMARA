@@ -1,22 +1,22 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { ENEM_AREAS, isLawSubject, subjectsGeral } from './constants';
 
-// Cache for the Lei Orgânica de Caruaru text to avoid re-fetching
-let leiOrganicaCache: string | null = null;
+// Cache for the Caruaru context text to avoid re-fetching
+let caruaruContextCache: string | null = null;
 
 /**
- * Fetches and caches the full text of Lei Orgânica de Caruaru.
- * The text is loaded from a local file extracted from the official PDF compiled through December 2024.
+ * Fetches and caches the full text of Caruaru legal context.
+ * The text is loaded from a local file compiled from the user's study materials.
  */
-export async function fetchLeiOrganicaText(): Promise<string> {
-  if (leiOrganicaCache) return leiOrganicaCache;
+export async function fetchCaruaruContext(): Promise<string> {
+  if (caruaruContextCache) return caruaruContextCache;
   try {
-    const response = await fetch('/data/lei_organica_caruaru.txt?v=1');
-    if (!response.ok) throw new Error('Failed to load Lei Orgânica text');
-    leiOrganicaCache = await response.text();
-    return leiOrganicaCache;
+    const response = await fetch('/data/caruaru_context.txt?v=2');
+    if (!response.ok) throw new Error('Failed to load Caruaru context text');
+    caruaruContextCache = await response.text();
+    return caruaruContextCache;
   } catch (err) {
-    console.error('Erro ao carregar texto da Lei Orgânica de Caruaru:', err);
+    console.error('Erro ao carregar contexto de Caruaru:', err);
     return '';
   }
 }
@@ -159,24 +159,24 @@ export const generateContentFromGemini = async (settings: any, apiKey: string, m
 
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    // Check if the subject is related to Lei Orgânica
+    // Check if the subject is related to Caruaru
     const subjectStr = String(settings.subject || '').toLowerCase();
     const topicStr = String(settings.topic || '').toLowerCase();
     const specificTopicStr = String(settings.specificTopic || '').toLowerCase();
-    const isLeiOrganica = subjectStr.includes('orgânica') || topicStr.includes('orgânica') || specificTopicStr.includes('orgânica') || subjectStr.includes('organica') || topicStr.includes('organica') || specificTopicStr.includes('organica');
+    const isCaruaruContext = subjectStr.includes('caruaru') || topicStr.includes('caruaru') || specificTopicStr.includes('caruaru');
 
-    // Load Lei Orgânica text if the subject requires it
-    let leiOrganicaText = '';
-    if (isLeiOrganica || subjectStr === 'lei orgânica de caruaru') {
-      leiOrganicaText = await fetchLeiOrganicaText();
+    // Load Caruaru text if the subject requires it
+    let caruaruContext = '';
+    if (isCaruaruContext) {
+      caruaruContext = await fetchCaruaruContext();
     }
     
-    const prompt = buildPrompt(settings, leiOrganicaText);
+    const prompt = buildPrompt(settings, caruaruContext);
 
     const needsSearch = (settings.subject?.toLowerCase().includes('legislação') 
         || settings.subject?.toLowerCase().includes('lei')
         || settings.subject?.toLowerCase().includes('orgânica'))
-        && !leiOrganicaText; // Don't use Google Search if we already have the official text
+        && !caruaruContext; // Don't use Google Search if we already have the official text
 
     if (needsSearch) {
         try {
@@ -258,18 +258,18 @@ Seja rigoroso e detalhista como um corretor oficial do ENEM.`;
     return safeJsonParse(responseText);
 };
 
-function buildPrompt(settings: any, leiOrganicaText?: string): string {
+function buildPrompt(settings: any, caruaruContext?: string): string {
     const basePrompt = generatePrompt(settings);
     
     const subjectStr = String(settings.subject || '').toLowerCase();
     const topicStr = String(settings.topic || '').toLowerCase();
     const specificTopicStr = String(settings.specificTopic || '').toLowerCase();
-    const isLeiOrganica = subjectStr.includes('orgânica') || topicStr.includes('orgânica') || specificTopicStr.includes('orgânica') || subjectStr.includes('organica') || topicStr.includes('organica') || specificTopicStr.includes('organica');
+    const isCaruaru = subjectStr.includes('caruaru') || topicStr.includes('caruaru') || specificTopicStr.includes('caruaru');
 
-    // If we have the actual Lei Orgânica text, inject it directly into the prompt
-    if (isLeiOrganica && leiOrganicaText) {
-        const leiInstruction = `\n\nFONTE OFICIAL OBRIGATÓRIA — LEI ORGÂNICA DO MUNICÍPIO DE CARUARU (compilada até Dezembro de 2024):\nO texto abaixo é o texto OFICIAL e INTEGRAL da Lei Orgânica do Município de Caruaru. Você DEVE usar EXCLUSIVAMENTE este texto como base para criar questões, aulas e explicações, pois o usuário está estudando para o concurso de Caruaru-PE. Se o usuário pedir questões sobre "Lei Orgânica Municipal", é ESTA lei que ele quer.\n\nREGRAS ABSOLUTAS:\n1. NÃO invente artigos, incisos, parágrafos ou alíneas que NÃO existam neste texto.\n2. NÃO use informações de leis orgânicas de OUTROS municípios (como São Paulo, Rio, etc).\n3. NÃO "aluciante" conteúdo — se um artigo/inciso não estiver no texto abaixo, ele NÃO EXISTE na Lei Orgânica de Caruaru.\n4. Ao citar um artigo na explicação ou na "lei_seca", transcreva o texto EXATO conforme aparece abaixo.\n5. Verifique CADA artigo citado nas questões e explicações contra o texto abaixo antes de retornar.\n\n--- INÍCIO DO TEXTO OFICIAL DA LEI ORGÂNICA DE CARUARU ---\n${leiOrganicaText}\n--- FIM DO TEXTO OFICIAL DA LEI ORGÂNICA DE CARUARU ---\n`;
-        return leiInstruction + '\n' + basePrompt;
+    // If we have the Caruaru context text, inject it directly into the prompt
+    if (isCaruaru && caruaruContext) {
+        const caruaruInstruction = `\n\nFONTE OFICIAL OBRIGATÓRIA — MATERIAL DE ESTUDO DE CARUARU-PE:\nO texto abaixo é a compilação OFICIAL e INTEGRAL da legislação e de materiais de estudo do Município de Caruaru. Você DEVE usar EXCLUSIVAMENTE este texto como base para criar questões, aulas e explicações, pois o usuário está estudando para o concurso de Caruaru-PE. Este contexto possui as Leis Complementares, Código Tributário, Plano Diretor e a Lei Orgânica.\n\nREGRAS ABSOLUTAS:\n1. NÃO invente artigos, regras ou leis que NÃO existam neste texto.\n2. NÃO use informações de legislação de OUTROS municípios.\n3. NÃO "alucine" conteúdo — se não estiver no texto abaixo, assuma que não é válido para a legislação local.\n4. Ao citar trechos na explicação, garanta que condizem com o texto.\n\n--- INÍCIO DO MATERIAL DE CARUARU ---\n${caruaruContext}\n--- FIM DO MATERIAL DE CARUARU ---\n`;
+        return caruaruInstruction + '\n' + basePrompt;
     }
     
     // Instrução extra para legislação genérica (quando não temos o texto oficial)

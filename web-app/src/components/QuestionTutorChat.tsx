@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useReward } from '../contexts/RewardContext';
 import { db } from '../lib/firebase';
-import { fetchLeiOrganicaText } from '../lib/gemini';
+import { fetchCaruaruContext } from '../lib/gemini';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Bot, Sparkles } from 'lucide-react';
 
@@ -35,19 +35,19 @@ export default function QuestionTutorChat({ question, subject, topic }: Question
     
     const formatOpcoes = (opcoes?: string[]) => opcoes ? opcoes.map((opt, i) => `${String.fromCharCode(65 + i)}) ${opt}`).join(' | ') : 'N/A';
     
-    // Load Lei Orgânica text if subject matches
-    let leiOrganicaContext = '';
+    // Load Caruaru text if subject matches
+    let caruaruContext = '';
     const subjectStr = String(subject || '').toLowerCase();
-    const isLeiOrganica = subjectStr.includes('orgânica') || subjectStr.includes('organica');
+    const isCaruaru = subjectStr.includes('caruaru') || String(topic || '').toLowerCase().includes('caruaru');
 
-    if (isLeiOrganica || subject === 'Lei Orgânica de Caruaru') {
-      const leiText = await fetchLeiOrganicaText();
-      if (leiText) {
-        leiOrganicaContext = `\n\nFONTE OFICIAL OBRIGATÓRIA — LEI ORGÂNICA DO MUNICÍPIO DE CARUARU (compilada até Dezembro de 2024):\nO texto abaixo é o texto OFICIAL da Lei Orgânica do Município de Caruaru. Use EXCLUSIVAMENTE este texto como base para responder. NÃO invente artigos ou incisos que não existam neste texto. Se o aluno questionar a veracidade de um artigo citado na questão, verifique no texto abaixo se ele realmente existe.\n\n--- INÍCIO DO TEXTO OFICIAL ---\n${leiText}\n--- FIM DO TEXTO OFICIAL ---\n`;
+    if (isCaruaru) {
+      const text = await fetchCaruaruContext();
+      if (text) {
+        caruaruContext = `\n\nFONTE OFICIAL OBRIGATÓRIA — MATERIAL DE CARUARU-PE:\nO texto abaixo é a compilação OFICIAL da legislação e materiais de Caruaru. Use EXCLUSIVAMENTE este texto como base para responder. NÃO invente artigos ou regras que não existam neste texto.\n\n--- INÍCIO DO MATERIAL ---\n${text}\n--- FIM DO MATERIAL ---\n`;
       }
     }
     
-    const doubtPrompt = `Você é um professor extremamente rigoroso e preciso. Com base na seguinte questão: "${question.pergunta}", nas alternativas: "${formatOpcoes(question.opcoes)}", na resposta correta: "${question.correta}" e na sua explicação: "${question.explicacao}", responda a seguinte dúvida do aluno: "${doubt}". ${leiOrganicaContext}\n\nREGRAS RÍGIDAS:\n1. NUNCA invente ou alucine regras de gramática, ortografia, matemática ou leis. Siga ESTRITAMENTE as normas oficiais.\n2. Se a dúvida do aluno apontar um erro real na questão original, reconheça o erro com honestidade intelectual.${isLeiOrganica ? '\n3. Se o aluno questionar um artigo ou inciso citado na questão, verifique no TEXTO OFICIAL DA LEI fornecido acima se ele realmente existe. Se NÃO existir, reconheça que a questão contém um erro e indique o conteúdo real do artigo conforme o texto oficial.' : ''}\n4. Formate sua resposta usando HTML para melhor legibilidade (<p>, <strong>, <ul>, <li>). Não inclua <html>, <head>, ou <body>.`;
+    const doubtPrompt = `Você é um professor extremamente rigoroso e preciso. Com base na seguinte questão: "${question.pergunta}", nas alternativas: "${formatOpcoes(question.opcoes)}", na resposta correta: "${question.correta}" e na sua explicação: "${question.explicacao}", responda a seguinte dúvida do aluno: "${doubt}". ${caruaruContext}\n\nREGRAS RÍGIDAS:\n1. NUNCA invente ou alucine regras de gramática, ortografia, matemática ou leis. Siga ESTRITAMENTE as normas oficiais.\n2. Se a dúvida do aluno apontar um erro real na questão original, reconheça o erro com honestidade intelectual.${isCaruaru ? '\n3. Se o aluno questionar um artigo citado, verifique no TEXTO OFICIAL fornecido acima se ele realmente existe.' : ''}\n4. Formate sua resposta usando HTML para melhor legibilidade (<p>, <strong>, <ul>, <li>). Não inclua <html>, <head>, ou <body>.`;
     
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
