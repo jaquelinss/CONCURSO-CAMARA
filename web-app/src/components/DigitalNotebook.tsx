@@ -673,12 +673,16 @@ export default function DigitalNotebook() {
                       <form onSubmit={e => { e.preventDefault(); addTag(); }} className="inline-flex items-center gap-1">
                         <input
                           autoFocus
+                          list="dn-tags-list"
                           value={newTag}
                           onChange={e => setNewTag(e.target.value)}
                           onBlur={() => { if (!newTag.trim()) setShowTagInput(false); }}
                           placeholder="Nova tag..."
                           className="text-[10px] px-2 py-0.5 w-24 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-full outline-none focus:ring-1 focus:ring-rose-400 text-gray-700 dark:text-gray-200"
                         />
+                        <datalist id="dn-tags-list">
+                          {allTags.map(([tag]) => <option key={tag} value={tag} />)}
+                        </datalist>
                       </form>
                     ) : (
                       <button onClick={() => setShowTagInput(true)} className="text-[10px] px-2 py-0.5 border border-dashed border-gray-300 dark:border-gray-600 text-gray-400 rounded-full hover:border-rose-400 hover:text-rose-400 transition-colors">

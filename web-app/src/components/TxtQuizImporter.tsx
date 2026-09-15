@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload, AlertCircle, Play, FileText } from 'lucide-react';
+import { Upload, AlertCircle, FileText } from 'lucide-react';
 
 interface TxtQuizImporterProps {
   onQuizReady: (quizData: any) => void;
