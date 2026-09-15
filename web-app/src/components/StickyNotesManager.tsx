@@ -1549,24 +1549,34 @@ function StickyNoteItem({
                 <label className="text-[10px] font-bold text-gray-500 uppercase">Matéria (Tag Principal)</label>
                 <input 
                   type="text"
+                  list={`tags-list-${note.id}`}
                   value={newTagInput}
                   onChange={(e) => setNewTagInput(e.target.value)}
                   placeholder="Ex: Português"
                   className="w-full bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-indigo-500"
                   onPointerDown={(e) => e.stopPropagation()}
                 />
+                <datalist id={`tags-list-${note.id}`}>
+                  {allTags.map(tag => <option key={tag} value={tag} />)}
+                </datalist>
               </div>
               
               <div>
                 <label className="text-[10px] font-bold text-gray-500 uppercase">Assunto (Subtag)</label>
                 <input 
                   type="text"
+                  list={`subtags-list-${note.id}`}
                   value={newSubTagInput}
                   onChange={(e) => setNewSubTagInput(e.target.value)}
                   placeholder="Ex: Gramática"
                   className="w-full bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-indigo-500"
                   onPointerDown={(e) => e.stopPropagation()}
                 />
+                <datalist id={`subtags-list-${note.id}`}>
+                  {newTagInput && tagsHierarchy && tagsHierarchy[newTagInput] 
+                    ? Array.from<string>(tagsHierarchy[newTagInput]).map(subtag => <option key={subtag} value={subtag} />)
+                    : []}
+                </datalist>
               </div>
 
               <button
