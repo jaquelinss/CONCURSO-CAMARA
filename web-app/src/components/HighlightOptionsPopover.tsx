@@ -87,7 +87,7 @@ export default function HighlightOptionsPopover() {
 
   return (
     <div 
-      className="fixed z-[10020] transform -translate-x-1/2 flex gap-2 animate-fade-in"
+      className="fixed z-[99999] transform -translate-x-1/2 flex gap-2 animate-fade-in"
       style={{ left: position.x, top: position.y }}
       onMouseDown={(e) => e.stopPropagation()}
     >
