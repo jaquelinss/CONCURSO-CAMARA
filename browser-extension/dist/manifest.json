@@ -9,7 +9,7 @@
   "content_scripts": [
     {
       "js": [
-        "assets/content.tsx-loader-5egzlnLq.js"
+        "assets/content.tsx-loader-C273e5Di.js"
       ],
       "matches": [
         "*://gemini.google.com/*"
@@ -37,7 +37,7 @@
       "resources": [
         "assets/rolldown-runtime-Czjbc987.js",
         "assets/jsx-runtime-BQSlDbCE.js",
-        "assets/content.tsx-BCBFw37F.js"
+        "assets/content.tsx-D_Pemk0w.js"
       ],
       "use_dynamic_url": false
     }

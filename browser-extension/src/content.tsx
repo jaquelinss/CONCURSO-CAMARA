@@ -87,6 +87,7 @@ function FloatingTracker() {
   const [totalPoints, setTotalPoints] = useState<number | null>(null);
   const [minimized, setMinimized] = useState(false);
   const [showNoteForm, setShowNoteForm] = useState(false);
+  const [noteTitle, setNoteTitle] = useState('');
   const [noteText, setNoteText] = useState('');
   const [backText, setBackText] = useState('');
   const [noteType, setNoteType] = useState<'postit' | 'flashcard'>('postit');
@@ -119,10 +120,11 @@ function FloatingTracker() {
     if (!text) return;
     setNoteSaving(true);
     chrome.runtime.sendMessage({
-      action: 'CREATE_NOTE', text, backText: backText.trim(), isFlashcard: noteType === 'flashcard'
+      action: 'CREATE_NOTE', title: noteTitle.trim(), text, backText: backText.trim(), isFlashcard: noteType === 'flashcard'
     }, (response) => {
       setNoteSaving(false);
       if (response?.success) {
+        setNoteTitle('');
         setNoteText('');
         setBackText('');
         setShowNoteForm(false);
@@ -131,7 +133,7 @@ function FloatingTracker() {
         showToast('❌ Erro: ' + (response?.error || 'desconhecido'));
       }
     });
-  }, [noteText, backText, noteType]);
+  }, [noteTitle, noteText, backText, noteType]);
 
   if (minimized) {
     return (
@@ -270,6 +272,19 @@ function FloatingTracker() {
             </div>
           ) : (
             <div>
+              {!isAiMode && (
+                <input
+                  type="text"
+                  value={noteTitle}
+                  onChange={(e) => setNoteTitle(e.target.value)}
+                  placeholder="Título (Opcional)"
+                  style={{
+                    width: '100%', padding: '8px', borderRadius: '8px',
+                    border: '1px solid #d1d5db', fontSize: '12px',
+                    fontFamily: 'sans-serif', boxSizing: 'border-box', marginBottom: '6px'
+                  }}
+                />
+              )}
               <textarea
                 value={noteText}
                 onChange={(e) => setNoteText(e.target.value)}
