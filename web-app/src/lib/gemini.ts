@@ -1,24 +1,73 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { ENEM_AREAS, isLawSubject, subjectsGeral } from './constants';
 
-// Cache for the Caruaru context text to avoid re-fetching
-let caruaruContextCache: string | null = null;
+// Cache for individual Caruaru context files to avoid re-fetching
+const caruaruFileCache: Record<string, string> = {};
 
-/**
- * Fetches and caches the full text of Caruaru legal context.
- * The text is loaded from a local file compiled from the user's study materials.
- */
-export async function fetchCaruaruContext(): Promise<string> {
-  if (caruaruContextCache) return caruaruContextCache;
+// Mapping of keywords to the relevant files they should load
+const CARUARU_FILE_MAP: { keywords: string[]; file: string; label: string }[] = [
+  { keywords: ['lei orgânica', 'lei organica', 'orgânica de caruaru', 'organica de caruaru'], file: 'lei_organica_caruaru.txt', label: 'Lei Orgânica de Caruaru' },
+  { keywords: ['código tributário', 'codigo tributario', 'tributário municipal', 'tributario municipal', 'tribut', 'issqn', 'iptu', 'itbi', 'taxa', 'contribuição de melhoria', 'contribuicao de melhoria', 'obrigação tributária', 'obrigacao tributaria', 'crédito tributário', 'credito tributario', 'lançamento', 'lancamento', 'fiscalização', 'fiscalizacao', 'imunidade', 'isenção', 'isencao', 'infração', 'infracao', 'penalidade'], file: 'cod_trib_cape.txt', label: 'Código Tributário de Caruaru' },
+  { keywords: ['plano diretor', 'zoneamento', 'uso do solo', 'política urbana', 'politica urbana', 'ordenamento territorial'], file: 'pl_diretor_cape.txt', label: 'Plano Diretor de Caruaru' },
+  { keywords: ['analista fiscal', 'cargo de analista', 'lc 162', 'lei complementar 162', 'complementar nº 162', 'complementar n 162'], file: 'lc_162_25.txt', label: 'LC 162/2025 – Cargo de Analista Fiscal' },
+  { keywords: ['lc 169', 'lei complementar 169', 'complementar nº 169', 'complementar n 169'], file: 'lc_169_25.txt', label: 'LC 169/2025' },
+  { keywords: ['lc 090', 'lei complementar 090', 'lc 90', 'complementar nº 090', 'complementar nº 90', 'complementar n 090'], file: 'lc_090_22.txt', label: 'LC 090/2022' },
+  { keywords: ['lei 7507', 'lei nº 7507', 'lei n 7507', '7507', 'reserva de vagas'], file: '7507_26.txt', label: 'Lei 7.507/2026' },
+  { keywords: ['auditor fiscal', 'cargo de auditor', 'lc 087', 'lei complementar 087', 'lc 87', 'complementar nº 087', 'complementar nº 87', 'complementar n 087', 'remuneração auditor', 'remuneracao auditor', 'estrutura fazenda', 'administração fazendária', 'administracao fazendaria'], file: 'lc_087_21.txt', label: 'LC 087/2021 – Cargo de Auditor Fiscal' },
+  { keywords: ['lc 154', 'lei complementar 154', 'complementar nº 154', 'complementar n 154'], file: 'lc_154_25.txt', label: 'LC 154/2025' },
+];
+
+// Fallback small files (non-huge) to load when topic is generic "Caruaru" without a specific match
+const CARUARU_FALLBACK_FILES = ['lei_organica_caruaru.txt', 'lc_162_25.txt', 'lc_169_25.txt', 'lc_090_22.txt', '7507_26.txt', 'lc_087_21.txt', 'lc_154_25.txt'];
+
+async function fetchCaruaruFile(filename: string): Promise<string> {
+  if (caruaruFileCache[filename]) return caruaruFileCache[filename];
   try {
-    const response = await fetch('/data/caruaru_context.txt?v=2');
-    if (!response.ok) throw new Error('Failed to load Caruaru context text');
-    caruaruContextCache = await response.text();
-    return caruaruContextCache;
+    const response = await fetch(`/data/caruaru/${filename}?v=3`);
+    if (!response.ok) throw new Error(`Failed to load ${filename}`);
+    const text = await response.text();
+    caruaruFileCache[filename] = text;
+    return text;
   } catch (err) {
-    console.error('Erro ao carregar contexto de Caruaru:', err);
+    console.error(`Erro ao carregar ${filename}:`, err);
     return '';
   }
+}
+
+/**
+ * Fetches only the relevant Caruaru context files based on the subject/topic.
+ * This avoids sending 1MB+ of text in every request and hitting the Gemini token limit.
+ */
+export async function fetchCaruaruContext(subject?: string, topic?: string, specificTopic?: string): Promise<string> {
+  const searchStr = [subject, topic, specificTopic].filter(Boolean).join(' ').toLowerCase();
+  
+  // Find which files match the keywords
+  const matchedFiles = new Set<string>();
+  const matchedLabels: string[] = [];
+  
+  for (const entry of CARUARU_FILE_MAP) {
+    if (entry.keywords.some(kw => searchStr.includes(kw))) {
+      matchedFiles.add(entry.file);
+      matchedLabels.push(entry.label);
+    }
+  }
+  
+  // If no specific match, load fallback files (all except the huge Código Tributário and Plano Diretor)
+  if (matchedFiles.size === 0) {
+    for (const file of CARUARU_FALLBACK_FILES) {
+      matchedFiles.add(file);
+    }
+  }
+  
+  // Fetch all matched files in parallel
+  const fileContents = await Promise.all(
+    Array.from(matchedFiles).map(async (file) => {
+      const content = await fetchCaruaruFile(file);
+      return content ? `\n=== ${file} ===\n${content}` : '';
+    })
+  );
+  
+  return fileContents.filter(Boolean).join('\n');
 }
 
 /**
@@ -168,7 +217,7 @@ export const generateContentFromGemini = async (settings: any, apiKey: string, m
     // Load Caruaru text if the subject requires it
     let caruaruContext = '';
     if (isCaruaruContext) {
-      caruaruContext = await fetchCaruaruContext();
+      caruaruContext = await fetchCaruaruContext(settings.subject, settings.topic, settings.specificTopic);
     }
     
     const prompt = buildPrompt(settings, caruaruContext);

@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged, User } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { auth, db } from './firebase';
-import { BookOpen, LogOut, CheckCircle, Trophy, StickyNote } from 'lucide-react';
+import { BookOpen, LogOut, CheckCircle, Trophy, StickyNote, Headphones, Pause, Play, Volume2, CloudRain, Waves } from 'lucide-react';
 
 function Popup() {
   const [user, setUser] = useState<User | null>(null);
@@ -14,12 +14,62 @@ function Popup() {
   const [points, setPoints] = useState(0);
 
   const [noteType, setNoteType] = useState<'postit' | 'flashcard'>('postit');
+  const [noteTitle, setNoteTitle] = useState('');
   const [noteText, setNoteText] = useState('');
   const [backText, setBackText] = useState('');
   const [showNoteForm, setShowNoteForm] = useState(false);
   const [isAiMode, setIsAiMode] = useState(false);
   const [noteSaving, setNoteSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
+
+  // Audio State
+  const [currentSound, setCurrentSound] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [volume, setVolume] = useState(0.5);
+
+  const sounds = [
+    { id: 'white', name: 'Ruído Branco (Estático)', icon: CloudRain, type: 'ruido' },
+    { id: 'pink', name: 'Ruído Rosa (Suave)', icon: CloudRain, type: 'ruido' },
+    { id: 'brown', name: 'Ruído Marrom (Profundo)', icon: CloudRain, type: 'ruido' },
+    { id: 'beta', name: 'Ondas Beta (Foco Intenso)', icon: Waves, type: 'binaural' },
+    { id: 'alpha', name: 'Ondas Alpha (Estudo Relaxado)', icon: Waves, type: 'binaural' },
+    { id: 'theta', name: 'Ondas Theta (Criatividade)', icon: Waves, type: 'binaural' }
+  ];
+
+  useEffect(() => {
+    // Load saved audio state from local storage so it persists when popup opens
+    chrome.storage.local.get(['currentSound', 'isPlaying', 'volume'], (result) => {
+      if (result.currentSound) setCurrentSound(result.currentSound);
+      if (result.isPlaying) setIsPlaying(result.isPlaying);
+      if (result.volume !== undefined) setVolume(result.volume);
+    });
+  }, []);
+
+  const playAudio = (id: string, startPlaying: boolean = true) => {
+    const url = `https://estudo-a0215.web.app/audio/${id}.mp3`;
+    chrome.runtime.sendMessage({ action: 'PLAY_AUDIO', url, volume });
+    setCurrentSound(id);
+    setIsPlaying(startPlaying);
+    chrome.storage.local.set({ currentSound: id, isPlaying: startPlaying });
+  };
+
+  const togglePlay = () => {
+    if (isPlaying) {
+      chrome.runtime.sendMessage({ action: 'STOP_AUDIO' });
+      setIsPlaying(false);
+      chrome.storage.local.set({ isPlaying: false });
+    } else {
+      if (currentSound) {
+        playAudio(currentSound, true);
+      }
+    }
+  };
+
+  const changeVolume = (newVol: number) => {
+    setVolume(newVol);
+    chrome.runtime.sendMessage({ action: 'SET_VOLUME', volume: newVol });
+    chrome.storage.local.set({ volume: newVol });
+  };
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
@@ -76,12 +126,14 @@ function Popup() {
     setNoteSaving(true);
     chrome.runtime.sendMessage({
       action: 'CREATE_NOTE',
+      title: noteTitle.trim(),
       text: noteText.trim(),
       backText: backText.trim(),
       isFlashcard: noteType === 'flashcard'
     }, (response) => {
       setNoteSaving(false);
       if (response?.success) {
+        setNoteTitle('');
         setNoteText('');
         setBackText('');
         setShowNoteForm(false);
@@ -263,6 +315,19 @@ function Popup() {
               </div>
             ) : (
               <div style={{ background: 'white', padding: '10px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                {!isAiMode && (
+                  <input
+                    type="text"
+                    value={noteTitle}
+                    onChange={(e) => setNoteTitle(e.target.value)}
+                    placeholder="Título (Opcional)"
+                    style={{
+                      width: '100%', padding: '8px', borderRadius: '8px',
+                      border: '1px solid #d1d5db', fontSize: '12px',
+                      fontFamily: 'sans-serif', boxSizing: 'border-box', marginBottom: '6px'
+                    }}
+                  />
+                )}
                 <textarea
                   value={noteText}
                   onChange={(e) => setNoteText(e.target.value)}
@@ -327,6 +392,71 @@ function Popup() {
               </div>
             )}
             {saveMessage && <p style={{ fontSize: '12px', color: '#10b981', textAlign: 'center', marginTop: '8px', fontWeight: 'bold' }}>{saveMessage}</p>}
+          </div>
+
+          <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '12px', marginBottom: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#1e3a8a', fontWeight: 'bold', fontSize: '13px' }}>
+                <Headphones size={16} /> Sons de Foco
+              </div>
+              <button 
+                onClick={togglePlay}
+                style={{ 
+                  background: isPlaying ? '#dbeafe' : '#f3f4f6', 
+                  color: isPlaying ? '#1d4ed8' : '#4b5563', 
+                  border: 'none', borderRadius: '50%', width: '32px', height: '32px', 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' 
+                }}>
+                {isPlaying ? <Pause size={16} /> : <Play size={16} style={{ marginLeft: '2px' }} />}
+              </button>
+            </div>
+
+            <div style={{ fontSize: '11px', color: '#6b7280', fontWeight: 'bold', marginBottom: '6px' }}>Ruídos (Foco & Bloqueio)</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '12px' }}>
+              {sounds.filter(s => s.type === 'ruido').map(s => (
+                <div 
+                  key={s.id} 
+                  onClick={() => playAudio(s.id)}
+                  style={{ 
+                    display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 8px', 
+                    borderRadius: '6px', cursor: 'pointer',
+                    background: currentSound === s.id ? '#ecfdf5' : 'transparent',
+                    color: currentSound === s.id ? '#047857' : '#4b5563',
+                    fontWeight: currentSound === s.id ? 'bold' : 'normal'
+                  }}>
+                  <s.icon size={14} /> <span style={{ fontSize: '12px' }}>{s.name}</span>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ fontSize: '11px', color: '#6b7280', fontWeight: 'bold', marginBottom: '6px' }}>Binaural (Ondas Cerebrais)</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '12px' }}>
+              {sounds.filter(s => s.type === 'binaural').map(s => (
+                <div 
+                  key={s.id} 
+                  onClick={() => playAudio(s.id)}
+                  style={{ 
+                    display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 8px', 
+                    borderRadius: '6px', cursor: 'pointer',
+                    background: currentSound === s.id ? '#ecfdf5' : 'transparent',
+                    color: currentSound === s.id ? '#047857' : '#4b5563',
+                    fontWeight: currentSound === s.id ? 'bold' : 'normal'
+                  }}>
+                  <s.icon size={14} /> <span style={{ fontSize: '12px' }}>{s.name}</span>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#9ca3af' }}>
+              <Volume2 size={14} />
+              <input 
+                type="range" 
+                min="0" max="1" step="0.05" 
+                value={volume} 
+                onChange={(e) => changeVolume(parseFloat(e.target.value))}
+                style={{ flex: 1, accentColor: '#4f46e5' }}
+              />
+            </div>
           </div>
 
           <p style={{ fontSize: '11px', color: '#6b7280', margin: '0 0 12px 0', lineHeight: '1.4' }}>

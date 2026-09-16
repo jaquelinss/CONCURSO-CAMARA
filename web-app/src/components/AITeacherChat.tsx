@@ -530,7 +530,7 @@ Diretrizes:
 
       // Load Caruaru context text if the teacher subject is related to Caruaru
       if (activeTeacher.subject.includes('Caruaru')) {
-        const caruaruText = await fetchCaruaruContext();
+        const caruaruText = await fetchCaruaruContext(activeTeacher.subject, userText);
         if (caruaruText) {
           systemPrompt += `\n\nFONTE OFICIAL OBRIGATÓRIA — LEGISLAÇÃO E MATERIAIS DE CARUARU-PE:\nO texto abaixo é a compilação OFICIAL da legislação de Caruaru. Use EXCLUSIVAMENTE este texto como base para responder dúvidas locais. NÃO invente leis ou artigos.\n\n--- INÍCIO DO TEXTO OFICIAL ---\n${caruaruText}\n--- FIM DO TEXTO OFICIAL ---`;
         }

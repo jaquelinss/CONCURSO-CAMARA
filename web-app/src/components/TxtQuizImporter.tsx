@@ -114,10 +114,16 @@ export default function TxtQuizImporter({ onQuizReady, onCancel }: TxtQuizImport
     if (!answersText.trim()) {
       throw new Error('Por favor, forneça o texto do gabarito.');
     }
-    const removePrefixes = (str: string) => str.replace(/^(?:Quest[ãa]o\s*)?\d+\s*[\.\-\):]?\s*/i, '');
+    const removePrefixes = (str: string) => str.replace(/^(?:(?:Quest[ãa]o|Q)\s*)?\d+\s*[\.\-\):]?\s*/i, '');
     const getNum = (str: string) => {
-      const m = str.match(/^(?:Quest[ãa]o\s*)?(\d+)\s*[\.\-\):]?/i);
+      const m = str.match(/^(?:(?:Quest[ãa]o|Q)\s*)?(\d+)/i);
       return m ? parseInt(m[1], 10).toString() : null;
+    };
+    const isQuestionLine = (line: string) => {
+      if (/^(?:Quest[ãa]o|Q)\s*\d+/i.test(line)) return true;
+      if (/^\d+\s*[\.\-\):]/i.test(line)) return true;
+      if (/^\d+$/.test(line)) return true;
+      return false;
     };
 
     const splitBlocks = (text: string) => {
@@ -129,7 +135,7 @@ export default function TxtQuizImporter({ onQuizReady, onCancel }: TxtQuizImport
         const line = lines[i].trim();
         if (!line) continue;
         
-        if (/^(?:Quest[ãa]o\s*)?\d+\s*[\.\-\):]/i.test(line) || /^\d+\s*[\.\-\):]\s/i.test(line)) {
+        if (isQuestionLine(line)) {
           if (currentBlock.length > 0) blocks.push(currentBlock.join('\n'));
           currentBlock = [line];
         } else {
@@ -199,7 +205,7 @@ export default function TxtQuizImporter({ onQuizReady, onCancel }: TxtQuizImport
       let answerLineStr = "";
       for (let line of lines) {
           let cl = removePrefixes(line).trim();
-          if (cl.toLowerCase().startsWith('resposta') || cl.toLowerCase().startsWith('gabarito') || /^[A-E][\)\.\-]?$/i.test(cl)) {
+          if (cl.toLowerCase().startsWith('resposta') || cl.toLowerCase().startsWith('gabarito') || cl.toLowerCase().startsWith('alternativa') || /^[A-E][\)\.\-]?$/i.test(cl)) {
               answerLineStr = cl;
               break;
           }

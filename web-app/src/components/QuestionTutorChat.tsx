@@ -41,7 +41,7 @@ export default function QuestionTutorChat({ question, subject, topic }: Question
     const isCaruaru = subjectStr.includes('caruaru') || String(topic || '').toLowerCase().includes('caruaru');
 
     if (isCaruaru) {
-      const text = await fetchCaruaruContext();
+      const text = await fetchCaruaruContext(subject, topic, question.pergunta);
       if (text) {
         caruaruContext = `\n\nFONTE OFICIAL OBRIGATÓRIA — MATERIAL DE CARUARU-PE:\nO texto abaixo é a compilação OFICIAL da legislação e materiais de Caruaru. Use EXCLUSIVAMENTE este texto como base para responder. NÃO invente artigos ou regras que não existam neste texto.\n\n--- INÍCIO DO MATERIAL ---\n${text}\n--- FIM DO MATERIAL ---\n`;
       }

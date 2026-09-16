@@ -9,7 +9,7 @@
   "content_scripts": [
     {
       "js": [
-        "assets/content.tsx-loader-DpgRLQ-n.js"
+        "assets/content.tsx-loader-5egzlnLq.js"
       ],
       "matches": [
         "*://gemini.google.com/*"
@@ -26,7 +26,8 @@
     "contextMenus",
     "notifications",
     "activeTab",
-    "scripting"
+    "scripting",
+    "offscreen"
   ],
   "web_accessible_resources": [
     {
@@ -35,8 +36,8 @@
       ],
       "resources": [
         "assets/rolldown-runtime-Czjbc987.js",
-        "assets/jsx-runtime-CRr1Db8x.js",
-        "assets/content.tsx-ChNRXAUJ.js"
+        "assets/jsx-runtime-BQSlDbCE.js",
+        "assets/content.tsx-BCBFw37F.js"
       ],
       "use_dynamic_url": false
     }

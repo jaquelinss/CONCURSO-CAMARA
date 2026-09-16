@@ -129,7 +129,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
       const text = request.text || '';
 
       const newNote = {
-        title: 'Captura da Web',
+        title: request.title || 'Captura da Web',
         content: text,
         backContent: isFlashcard ? (request.backText || 'Edite o verso no app...') : '',
         isFlashcard,
@@ -230,6 +230,43 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
         console.error(err);
         sendResponse({ success: false, error: err.message || 'Erro desconhecido' });
       }
+    });
+    return true;
+  }
+});
+// --- AUDIO OFFSCREEN MANAGEMENT ---
+async function setupOffscreenDocument() {
+  const offscreenUrl = chrome.runtime.getURL('offscreen.html');
+  const existingContexts = await chrome.runtime.getContexts({
+    contextTypes: ['OFFSCREEN_DOCUMENT'],
+    documentUrls: [offscreenUrl]
+  });
+
+  if (existingContexts.length > 0) {
+    return;
+  }
+
+  await chrome.offscreen.createDocument({
+    url: offscreenUrl,
+    reasons: ['AUDIO_PLAYBACK'],
+    justification: 'Playing focus sounds'
+  });
+}
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === 'PLAY_AUDIO' || request.action === 'STOP_AUDIO' || request.action === 'SET_VOLUME') {
+    setupOffscreenDocument().then(() => {
+      chrome.runtime.sendMessage({
+        target: 'offscreen',
+        action: request.action === 'PLAY_AUDIO' ? 'play' : (request.action === 'STOP_AUDIO' ? 'stop' : 'set_volume'),
+        url: request.url,
+        volume: request.volume
+      }, (response) => {
+        sendResponse(response);
+      });
+    }).catch(err => {
+      console.error('Error setting up offscreen document:', err);
+      sendResponse({ success: false, error: err.message });
     });
     return true;
   }

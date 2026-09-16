@@ -1,13 +1,13 @@
 {
   "../../../@crx/manifest": {
-    "file": "assets/crx-manifest.js-BlL-Qnr0.js",
+    "file": "assets/crx-manifest.js-ClzihykN.js",
     "name": "crx-manifest.js",
     "src": "../../../@crx/manifest",
     "isEntry": true
   },
-  "_content.tsx-loader-DpgRLQ-n.js": {
-    "file": "assets/content.tsx-loader-DpgRLQ-n.js",
-    "src": "_content.tsx-loader-DpgRLQ-n.js"
+  "_content.tsx-loader-5egzlnLq.js": {
+    "file": "assets/content.tsx-loader-5egzlnLq.js",
+    "src": "_content.tsx-loader-5egzlnLq.js"
   },
   "_firebase-Bz4XHMCN.js": {
     "file": "assets/firebase-Bz4XHMCN.js",
@@ -16,8 +16,8 @@
       "_rolldown-runtime-Czjbc987.js"
     ]
   },
-  "_jsx-runtime-CRr1Db8x.js": {
-    "file": "assets/jsx-runtime-CRr1Db8x.js",
+  "_jsx-runtime-BQSlDbCE.js": {
+    "file": "assets/jsx-runtime-BQSlDbCE.js",
     "name": "jsx-runtime",
     "imports": [
       "_rolldown-runtime-Czjbc987.js"
@@ -28,18 +28,18 @@
     "name": "rolldown-runtime"
   },
   "index.html": {
-    "file": "assets/popup-CCox_ixf.js",
+    "file": "assets/popup-Bx3c6IYn.js",
     "name": "popup",
     "src": "index.html",
     "isEntry": true,
     "imports": [
       "_rolldown-runtime-Czjbc987.js",
-      "_jsx-runtime-CRr1Db8x.js",
+      "_jsx-runtime-BQSlDbCE.js",
       "_firebase-Bz4XHMCN.js"
     ]
   },
   "src/background.ts": {
-    "file": "assets/background.ts-BAUBWXHw.js",
+    "file": "assets/background.ts-BgCbf5F4.js",
     "name": "background.ts",
     "src": "src/background.ts",
     "isEntry": true,
@@ -49,13 +49,13 @@
     ]
   },
   "src/content.tsx": {
-    "file": "assets/content.tsx-ChNRXAUJ.js",
+    "file": "assets/content.tsx-BCBFw37F.js",
     "name": "content.tsx",
     "src": "src/content.tsx",
     "isEntry": true,
     "imports": [
       "_rolldown-runtime-Czjbc987.js",
-      "_jsx-runtime-CRr1Db8x.js"
+      "_jsx-runtime-BQSlDbCE.js"
     ]
   }
 }
