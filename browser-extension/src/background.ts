@@ -259,7 +259,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       chrome.runtime.sendMessage({
         target: 'offscreen',
         action: request.action === 'PLAY_AUDIO' ? 'play' : (request.action === 'STOP_AUDIO' ? 'stop' : 'set_volume'),
-        url: request.url,
+        type: request.type,
         volume: request.volume
       }, (response) => {
         sendResponse(response);

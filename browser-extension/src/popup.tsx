@@ -46,8 +46,7 @@ function Popup() {
   }, []);
 
   const playAudio = (id: string, startPlaying: boolean = true) => {
-    const url = `https://estudo-a0215.web.app/audio/${id}.mp3`;
-    chrome.runtime.sendMessage({ action: 'PLAY_AUDIO', url, volume });
+    chrome.runtime.sendMessage({ action: 'PLAY_AUDIO', type: id, volume });
     setCurrentSound(id);
     setIsPlaying(startPlaying);
     chrome.storage.local.set({ currentSound: id, isPlaying: startPlaying });

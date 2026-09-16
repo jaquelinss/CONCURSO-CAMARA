@@ -28,7 +28,7 @@
     "name": "rolldown-runtime"
   },
   "index.html": {
-    "file": "assets/popup-Bx3c6IYn.js",
+    "file": "assets/popup-CoHfCeGo.js",
     "name": "popup",
     "src": "index.html",
     "isEntry": true,
@@ -39,7 +39,7 @@
     ]
   },
   "src/background.ts": {
-    "file": "assets/background.ts-BgCbf5F4.js",
+    "file": "assets/background.ts-DFaJepVk.js",
     "name": "background.ts",
     "src": "src/background.ts",
     "isEntry": true,
