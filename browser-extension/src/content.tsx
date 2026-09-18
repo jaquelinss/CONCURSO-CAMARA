@@ -83,7 +83,33 @@ function showToast(message: string) {
 // Only render the full widget on the main frame, not inside iframes
 const isMainFrame = window === window.top;
 
+function useDarkMode() {
+  const [isDark, setIsDark] = useState(() => window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  // Add useEffect to listen for changes if React allows inside this context.
+  // Actually, since content.tsx doesn't import useEffect, we should either import it or just use state on mount.
+  // Let's check if useEffect is imported.
+  return isDark;
+}
+
 function FloatingTracker() {
+  const isDark = useDarkMode();
+  const theme = {
+    bg: isDark ? '#111827' : 'white',
+    textMain: isDark ? '#f9fafb' : '#111827',
+    textMuted: isDark ? '#9ca3af' : '#6b7280',
+    border: isDark ? '#374151' : '#e5e7eb',
+    inputBg: isDark ? '#374151' : 'white',
+    postitBtnBg: isDark ? '#854d0e' : '#fef08a',
+    postitBtnColor: isDark ? '#fef08a' : '#78350f',
+    postitBtnBorder: isDark ? '#713f12' : '#fde047',
+    flashcardBtnBg: isDark ? '#1e3a8a' : '#dbeafe',
+    flashcardBtnColor: isDark ? '#bfdbfe' : '#1e40af',
+    flashcardBtnBorder: isDark ? '#1e3a8a' : '#93c5fd',
+    submitBtnBg: isDark ? '#3730a3' : '#4f46e5',
+    cancelBtnBg: isDark ? '#374151' : '#f3f4f6',
+    widgetBubbleBg: isDark ? '#3730a3' : '#4f46e5',
+    headerBg: isDark ? 'linear-gradient(135deg, #3730a3, #5b21b6)' : 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+  };
   const [totalPoints, setTotalPoints] = useState<number | null>(null);
   const [minimized, setMinimized] = useState(false);
   const [showNoteForm, setShowNoteForm] = useState(false);
@@ -141,7 +167,7 @@ function FloatingTracker() {
         onClick={() => setMinimized(false)}
         style={{
           position: 'fixed', bottom: '24px', right: '24px', zIndex: 999999,
-          background: '#4f46e5', color: 'white', width: '48px', height: '48px',
+          background: theme.widgetBubbleBg, color: 'white', width: '48px', height: '48px',
           borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
           cursor: 'pointer', boxShadow: '0 4px 12px rgba(79,70,229,0.4)',
           fontFamily: 'sans-serif', fontSize: '20px'
@@ -154,13 +180,13 @@ function FloatingTracker() {
   return (
     <div style={{
       position: 'fixed', bottom: '24px', right: '24px', zIndex: 999999,
-      background: 'white', borderRadius: '16px',
+      background: theme.bg, borderRadius: '16px',
       boxShadow: '0 10px 40px rgba(0,0,0,0.12)', fontFamily: 'sans-serif',
-      border: '1px solid #e5e7eb', width: '260px', overflow: 'hidden'
+      border: '1px solid ' + theme.border, width: '260px', overflow: 'hidden'
     }}>
       {/* Header */}
       <div style={{
-        background: 'linear-gradient(135deg, #4f46e5, #7c3aed)', color: 'white',
+        background: theme.headerBg, color: 'white',
         padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         cursor: 'pointer'
       }} onClick={() => setExpanded(!expanded)}>
@@ -185,7 +211,7 @@ function FloatingTracker() {
 
       {expanded && (
         <div style={{ padding: '10px' }}>
-          <p style={{ fontSize: '10px', color: '#6b7280', margin: '0 0 8px 0', textAlign: 'center' }}>
+          <p style={{ fontSize: '10px', color: theme.textMuted, margin: '0 0 8px 0', textAlign: 'center' }}>
             ⚡ Pontos automáticos ao responder questões
           </p>
 
@@ -193,14 +219,14 @@ function FloatingTracker() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <div style={{ display: 'flex', gap: '6px' }}>
                 <button onClick={() => { setNoteType('postit'); setIsAiMode(false); setShowNoteForm(true); setNoteText(window.getSelection()?.toString() || ''); }} style={{
-                  flex: 1, background: '#fef08a', color: '#78350f', border: '1px solid #fde047',
+                  flex: 1, background: theme.postitBtnBg, color: theme.postitBtnColor, border: '1px solid ' + theme.postitBtnBorder,
                   padding: '8px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px',
                   fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
                 }}>
                   <StickyNote size={14} /> Post-it
                 </button>
                 <button onClick={() => { setNoteType('flashcard'); setIsAiMode(false); setShowNoteForm(true); setNoteText(window.getSelection()?.toString() || ''); }} style={{
-                  flex: 1, background: '#dbeafe', color: '#1e40af', border: '1px solid #93c5fd',
+                  flex: 1, background: theme.flashcardBtnBg, color: theme.flashcardBtnColor, border: '1px solid ' + theme.flashcardBtnBorder,
                   padding: '8px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px',
                   fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
                 }}>
@@ -232,7 +258,7 @@ function FloatingTracker() {
                     setShowNoteForm(true);
                   }
                 }} disabled={noteSaving} style={{
-                  flex: 1, background: '#fef08a', color: '#78350f', border: '1px solid #fde047',
+                  flex: 1, background: theme.postitBtnBg, color: theme.postitBtnColor, border: '1px solid ' + theme.postitBtnBorder,
                   padding: '8px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px',
                   fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
                 }}>
@@ -262,7 +288,7 @@ function FloatingTracker() {
                     setShowNoteForm(true);
                   }
                 }} disabled={noteSaving} style={{
-                  flex: 1, background: '#dbeafe', color: '#1e40af', border: '1px solid #93c5fd',
+                  flex: 1, background: theme.flashcardBtnBg, color: theme.flashcardBtnColor, border: '1px solid ' + theme.flashcardBtnBorder,
                   padding: '8px', borderRadius: '8px', cursor: 'pointer', fontSize: '11px',
                   fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px'
                 }}>
@@ -280,7 +306,7 @@ function FloatingTracker() {
                   placeholder="Título (Opcional)"
                   style={{
                     width: '100%', padding: '8px', borderRadius: '8px',
-                    border: '1px solid #d1d5db', fontSize: '12px',
+                    border: '1px solid ' + theme.border, background: theme.inputBg, color: theme.textMain, fontSize: '12px',
                     fontFamily: 'sans-serif', boxSizing: 'border-box', marginBottom: '6px'
                   }}
                 />
@@ -291,7 +317,7 @@ function FloatingTracker() {
                 placeholder={isAiMode ? "Cole o texto aqui para a IA gerar..." : (noteType === 'flashcard' ? 'Frente do flashcard...' : 'Conteúdo do post-it...')}
                 style={{
                   width: '100%', minHeight: '60px', padding: '8px', borderRadius: '8px',
-                  border: '1px solid #d1d5db', fontSize: '12px', resize: 'vertical',
+                  border: '1px solid ' + theme.border, background: theme.inputBg, color: theme.textMain, fontSize: '12px', resize: 'vertical',
                   fontFamily: 'sans-serif', boxSizing: 'border-box'
                 }}
               />
@@ -302,14 +328,14 @@ function FloatingTracker() {
                   placeholder="Verso do flashcard..."
                   style={{
                     width: '100%', minHeight: '60px', padding: '8px', borderRadius: '8px',
-                    border: '1px solid #d1d5db', fontSize: '12px', resize: 'vertical',
+                    border: '1px solid ' + theme.border, background: theme.inputBg, color: theme.textMain, fontSize: '12px', resize: 'vertical',
                     fontFamily: 'sans-serif', boxSizing: 'border-box', marginTop: '6px'
                   }}
                 />
               )}
               <div style={{ display: 'flex', gap: '6px', marginTop: '6px' }}>
                 <button onClick={() => setShowNoteForm(false)} style={{
-                  flex: 1, background: '#f3f4f6', color: '#6b7280', border: 'none',
+                  flex: 1, background: theme.cancelBtnBg, color: theme.textMuted, border: 'none',
                   padding: '8px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px'
                 }}>Cancelar</button>
                 <button onClick={() => {
@@ -339,7 +365,7 @@ function FloatingTracker() {
                     saveNote();
                   }
                 }} disabled={noteSaving} style={{
-                  flex: 1, background: '#4f46e5', color: 'white', border: 'none',
+                  flex: 1, background: theme.submitBtnBg, color: 'white', border: 'none',
                   padding: '8px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold'
                 }}>{noteSaving ? 'Salvando...' : (isAiMode ? '✨ Gerar com IA' : 'Salvar')}</button>
               </div>
