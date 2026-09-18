@@ -119,33 +119,40 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 
   if (request.action === 'CREATE_NOTE') {
     auth.authStateReady().then(() => {
-      const currentUser = auth.currentUser;
-      if (!currentUser) {
-        sendResponse({ success: false, error: 'Faça login na extensão primeiro.' });
-        return;
+      try {
+        const currentUser = auth.currentUser;
+        if (!currentUser) {
+          sendResponse({ success: false, error: 'Faça login na extensão primeiro.' });
+          return;
+        }
+
+        const isFlashcard = request.isFlashcard || false;
+        const text = request.text || '';
+
+        const colors = ['#fef08a', '#fbcfe8', '#bfdbfe', '#bbf7d0', '#e9d5ff'];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+        const newNote = {
+          title: request.title || 'Captura da Web',
+          content: text,
+          backContent: isFlashcard ? (request.backText || 'Edite o verso no app...') : '',
+          isFlashcard,
+          color: randomColor,
+          subjectTag: 'Geral',
+          subTag: '',
+          createdAt: serverTimestamp(),
+          archived: false
+        };
+
+        addDoc(collection(db, 'users', currentUser.uid, 'notes'), newNote)
+          .then(() => sendResponse({ success: true }))
+          .catch((err: Error) => sendResponse({ success: false, error: err.message }));
+      } catch (err: any) {
+        console.error("Error in CREATE_NOTE sync block:", err);
+        sendResponse({ success: false, error: err.message || 'Erro inesperado' });
       }
-
-      const isFlashcard = request.isFlashcard || false;
-      const text = request.text || '';
-
-      const colors = ['#fef08a', '#fbcfe8', '#bfdbfe', '#bbf7d0', '#e9d5ff'];
-      const randomColor = colors[Math.floor(Math.random() * colors.length)];
-
-      const newNote = {
-        title: request.title || 'Captura da Web',
-        content: text,
-        backContent: isFlashcard ? (request.backText || 'Edite o verso no app...') : '',
-        isFlashcard,
-        color: randomColor,
-        subjectTag: 'Geral',
-        subTag: '',
-        createdAt: serverTimestamp(),
-        archived: false
-      };
-
-      addDoc(collection(db, 'users', currentUser.uid, 'notes'), newNote)
-        .then(() => sendResponse({ success: true }))
-        .catch((err: Error) => sendResponse({ success: false, error: err.message }));
+    }).catch(err => {
+      sendResponse({ success: false, error: err.message || 'Erro de autenticação' });
     });
     return true;
   }
