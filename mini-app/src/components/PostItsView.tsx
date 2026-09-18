@@ -173,7 +173,7 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
   return (
     <div className={`space-y-3 h-full flex flex-col ${isSplitMode ? "split" : ""}`}>
       {/* Search + Actions Bar */}
-      <div className="flex flex-col gap-2 bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+      <div className="flex flex-col gap-2 bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
         <div className="flex flex-col sm:flex-row gap-2 items-center">
           <div className="relative flex-1 w-full">
             <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -182,13 +182,13 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
               placeholder="Buscar post-its..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full pl-9 pr-3 py-2 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
           <div className="flex gap-1.5 w-full sm:w-auto flex-wrap">
             <button 
               onClick={toggleCascadeMode}
-              className={`flex-1 sm:flex-none px-2.5 py-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors border ${isCascadeMode ? 'bg-indigo-600 text-white border-transparent' : 'bg-white text-indigo-600 border-indigo-200 hover:bg-indigo-50'}`}
+              className={`flex-1 sm:flex-none px-2.5 py-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-colors border ${isCascadeMode ? 'bg-indigo-600 text-white border-transparent' : 'bg-white dark:bg-gray-800 text-indigo-600 dark:text-indigo-400 border-indigo-200 hover:bg-indigo-50'}`}
             >
               {isCascadeMode ? 'Cascata ✓' : 'Cascata'}
             </button>
@@ -208,7 +208,7 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
             <select 
               value={sortOrder} 
               onChange={(e) => setSortOrder(e.target.value as any)}
-              className="appearance-none bg-gray-50 border border-gray-200 rounded-lg text-xs px-2.5 py-1.5 pr-7 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="appearance-none bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg text-xs px-2.5 py-1.5 pr-7 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             >
               <option value="newest">Mais recentes</option>
               <option value="oldest">Mais antigos</option>
@@ -217,7 +217,7 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
           </div>
           <button 
             onClick={handleToggleTagsFilter}
-            className={`p-1.5 rounded-lg transition-colors ${showTagsFilter ? 'text-indigo-600 bg-indigo-50' : 'text-gray-400 hover:bg-gray-100'}`}
+            className={`p-1.5 rounded-lg transition-colors ${showTagsFilter ? 'text-indigo-600 dark:text-indigo-400 bg-indigo-50' : 'text-gray-400 hover:bg-gray-100 dark:bg-gray-900'}`}
             title={showTagsFilter ? 'Ocultar tags' : 'Mostrar tags'}
           >
             {showTagsFilter ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
@@ -225,7 +225,7 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
 
           <div className="h-4 w-px bg-gray-200" />
 
-          <button onClick={handleShowRecent} className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2 py-1 rounded-md transition-colors flex items-center gap-1" title="Reabrir últimos 3 arquivados">
+          <button onClick={handleShowRecent} className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 bg-indigo-50 dark:bg-indigo-900/40 hover:bg-indigo-100 dark:bg-indigo-900 px-2 py-1 rounded-md transition-colors flex items-center gap-1" title="Reabrir últimos 3 arquivados">
             <RotateCcw className="w-3 h-3" /> Últimos
           </button>
           
@@ -239,13 +239,13 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
             <div className="flex flex-wrap gap-1.5">
               <button
                 onClick={() => { setSelectedTag('__all__'); setSelectedSubTag('__all__'); }}
-                className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-colors ${selectedTag === '__all__' ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-colors ${selectedTag === '__all__' ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-200'}`}
               >
                 Todos
               </button>
               <button
                 onClick={() => { setSelectedTag('__no_tag__'); setSelectedSubTag('__all__'); }}
-                className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-colors ${selectedTag === '__no_tag__' ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-colors ${selectedTag === '__no_tag__' ? 'bg-gray-700 text-white' : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-200'}`}
               >
                 Sem Tags
               </button>
@@ -253,7 +253,7 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
                 <button
                   key={tag}
                   onClick={() => { setSelectedTag(tag); setSelectedSubTag('__all__'); }}
-                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-colors ${selectedTag === tag ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                  className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition-colors ${selectedTag === tag ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-200'}`}
                 >
                   {tag}
                 </button>
@@ -265,7 +265,7 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
               <div className="flex flex-wrap gap-1 pl-2 border-l-2 border-indigo-200">
                 <button
                   onClick={() => setSelectedSubTag('__all__')}
-                  className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-colors ${selectedSubTag === '__all__' ? 'bg-indigo-400 text-white' : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'}`}
+                  className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-colors ${selectedSubTag === '__all__' ? 'bg-indigo-400 text-white' : 'bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:bg-indigo-900'}`}
                 >
                   Todos
                 </button>
@@ -273,7 +273,7 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
                   <button
                     key={sub}
                     onClick={() => setSelectedSubTag(sub)}
-                    className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-colors ${selectedSubTag === sub ? 'bg-indigo-400 text-white' : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'}`}
+                    className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-colors ${selectedSubTag === sub ? 'bg-indigo-400 text-white' : 'bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:bg-indigo-900'}`}
                   >
                     {sub}
                   </button>
@@ -289,7 +289,7 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
         /* Cascade Carousel View */
         <div className="flex-1 flex flex-col items-center justify-center pb-10">
           {/* Counter */}
-          <div className="text-xs font-medium text-gray-500 bg-white px-3 py-1 rounded-full shadow-sm border border-gray-100 mb-3">
+          <div className="text-xs font-medium text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 px-3 py-1 rounded-full shadow-sm border border-gray-100 dark:border-gray-700 mb-3">
             {Math.min(cascadeIndex + 1, filteredNotes.length)} / {filteredNotes.length}
           </div>
 
@@ -363,14 +363,14 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
             <button
               onClick={() => { if (cascadeIndex > 0) setCascadeIndex(prev => prev - 1); }}
               disabled={cascadeIndex === 0}
-              className="p-3 rounded-full bg-white shadow-sm border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-30 transition-colors"
+              className="p-3 rounded-full bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800/50 disabled:opacity-30 transition-colors"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               onClick={() => { if (cascadeIndex < filteredNotes.length - 1) setCascadeIndex(prev => prev + 1); }}
               disabled={cascadeIndex >= filteredNotes.length - 1}
-              className="p-3 rounded-full bg-white shadow-sm border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-30 transition-colors"
+              className="p-3 rounded-full bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800/50 disabled:opacity-30 transition-colors"
             >
               <ChevronRight className="w-5 h-5" />
             </button>

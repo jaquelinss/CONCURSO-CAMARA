@@ -125,7 +125,7 @@ export default function FlashcardsView({ isSplitMode }: { isSplitMode?: boolean 
 
   return (
     <div className={`space-y-4 h-full flex flex-col ${isSplitMode ? "split" : ""}`}>
-      <div className="bg-white p-3 rounded-xl shadow-sm border border-gray-100">
+      <div className="bg-white dark:bg-gray-800 p-3 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
         <div className="relative">
           <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input 
@@ -133,19 +133,19 @@ export default function FlashcardsView({ isSplitMode }: { isSplitMode?: boolean 
             placeholder="Buscar flashcards..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-9 pr-3 py-2 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
       </div>
 
       {/* Post-it Flashcards Section */}
       {filteredPostItFlashcards.length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="px-4 py-3 bg-indigo-50 border-b border-indigo-100 flex items-center justify-between">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="px-4 py-3 bg-indigo-50 dark:bg-indigo-900/40 border-b border-indigo-100 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <StickyNote className="w-4 h-4 text-indigo-600" />
+              <StickyNote className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
               <h3 className="text-sm font-bold text-indigo-900">Flashcards Post-it</h3>
-              <span className="text-[10px] font-medium text-indigo-500 bg-indigo-100 px-1.5 py-0.5 rounded-full">
+              <span className="text-[10px] font-medium text-indigo-500 bg-indigo-100 dark:bg-indigo-900 px-1.5 py-0.5 rounded-full">
                 {filteredPostItFlashcards.length}
               </span>
             </div>
@@ -244,13 +244,13 @@ export default function FlashcardsView({ isSplitMode }: { isSplitMode?: boolean 
               <button
                 onClick={() => { if (cascadeIndex > 0) { setCascadeIndex(prev => prev - 1); setIsFlipped(false); } }}
                 disabled={cascadeIndex === 0}
-                className="p-2.5 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-30 transition-colors"
+                className="p-2.5 rounded-full bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-200 disabled:opacity-30 transition-colors"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setIsFlipped(!isFlipped)}
-                className="flex items-center gap-1.5 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-xl text-sm font-bold hover:bg-indigo-100 transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 rounded-xl text-sm font-bold hover:bg-indigo-100 dark:bg-indigo-900 transition-colors"
               >
                 <Repeat className="w-4 h-4" />
                 Virar
@@ -258,7 +258,7 @@ export default function FlashcardsView({ isSplitMode }: { isSplitMode?: boolean 
               <button
                 onClick={() => { if (cascadeIndex < filteredPostItFlashcards.length - 1) { setCascadeIndex(prev => prev + 1); setIsFlipped(false); } }}
                 disabled={cascadeIndex >= filteredPostItFlashcards.length - 1}
-                className="p-2.5 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-30 transition-colors"
+                className="p-2.5 rounded-full bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-200 disabled:opacity-30 transition-colors"
               >
                 <ChevronRight className="w-5 h-5" />
               </button>
@@ -271,7 +271,7 @@ export default function FlashcardsView({ isSplitMode }: { isSplitMode?: boolean 
       {(filteredPostItFlashcards.length > 0 || filteredDecks.length > 0) && (
         <div className="flex items-center gap-2 px-1">
           <Layers className="w-4 h-4 text-gray-400" />
-          <h3 className="text-sm font-bold text-gray-600">Decks de Estudo</h3>
+          <h3 className="text-sm font-bold text-gray-600 dark:text-gray-400">Decks de Estudo</h3>
         </div>
       )}
 
@@ -283,10 +283,10 @@ export default function FlashcardsView({ isSplitMode }: { isSplitMode?: boolean 
           </div>
         ) : (
           filteredDecks.map(deck => (
-            <div key={deck.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col">
+            <div key={deck.id} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col">
               <div className="p-4 flex-1">
                 <div className="flex justify-between items-start mb-2">
-                  <span className="px-2 py-1 bg-indigo-50 text-indigo-700 rounded text-xs font-semibold">
+                  <span className="px-2 py-1 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 rounded text-xs font-semibold">
                     {deck.subject}
                   </span>
                   {deck.createdAt && (
@@ -297,17 +297,17 @@ export default function FlashcardsView({ isSplitMode }: { isSplitMode?: boolean 
                   )}
                 </div>
                 
-                <h3 className="font-bold text-gray-800 text-sm mb-1 line-clamp-2">
+                <h3 className="font-bold text-gray-800 dark:text-gray-200 text-sm mb-1 line-clamp-2">
                   {deck.customTitle || deck.topic}
                 </h3>
                 
-                <div className="mt-3 flex items-center gap-2 text-xs text-gray-500">
+                <div className="mt-3 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                   <Layers className="w-3.5 h-3.5" />
                   <span>{deck.data?.length || 0} cartas</span>
                 </div>
               </div>
               
-              <div className="border-t border-gray-100 bg-gray-50 p-2 flex justify-between items-center gap-2">
+              <div className="border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-2 flex justify-between items-center gap-2">
                 <button 
                   onClick={() => deleteDeck(deck.id)}
                   className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"

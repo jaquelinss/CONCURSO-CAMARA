@@ -155,7 +155,7 @@ export default function NoteEditor({ note, onClose, allTags = {} }: NoteEditorPr
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Sem título"
-              className="w-full bg-transparent text-xl font-bold text-gray-900 placeholder-black/30 outline-none"
+              className="w-full bg-transparent text-xl font-bold text-gray-900 dark:text-gray-100 placeholder-black/30 outline-none"
             />
             <div className="flex gap-2 items-center">
               <input
@@ -163,18 +163,18 @@ export default function NoteEditor({ note, onClose, allTags = {} }: NoteEditorPr
                 value={subjectTag}
                 onChange={(e) => setSubjectTag(e.target.value)}
                 placeholder="Matéria (ex: Português)"
-                className="flex-1 bg-transparent text-xs font-semibold text-gray-700 placeholder-black/40 outline-none uppercase tracking-wider"
+                className="flex-1 bg-transparent text-xs font-semibold text-gray-700 dark:text-gray-300 placeholder-black/40 outline-none uppercase tracking-wider"
               />
               <input
                 type="text"
                 value={subTag}
                 onChange={(e) => setSubTag(e.target.value)}
                 placeholder="Assunto"
-                className="flex-1 bg-transparent text-xs font-medium text-gray-600 placeholder-black/30 outline-none"
+                className="flex-1 bg-transparent text-xs font-medium text-gray-600 dark:text-gray-400 placeholder-black/30 outline-none"
               />
               <button
                 onClick={() => setShowTagSuggestions(!showTagSuggestions)}
-                className={`p-1 rounded transition-colors ${showTagSuggestions ? 'bg-indigo-100 text-indigo-600' : 'text-black/40 hover:bg-black/10'}`}
+                className={`p-1 rounded transition-colors ${showTagSuggestions ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400' : 'text-black/40 hover:bg-black/10'}`}
                 title="Sugestões de tags"
               >
                 <Tag className="w-3.5 h-3.5" />
@@ -196,7 +196,7 @@ export default function NoteEditor({ note, onClose, allTags = {} }: NoteEditorPr
                   <div key={tag} className="flex flex-wrap gap-1">
                     <button
                       onClick={() => { setSubjectTag(tag); setShowTagSuggestions(false); }}
-                      className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-colors ${subjectTag === tag ? 'bg-indigo-600 text-white' : 'bg-white/80 text-gray-700 hover:bg-white'}`}
+                      className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-colors ${subjectTag === tag ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 hover:bg-white dark:bg-gray-800'}`}
                     >
                       {tag}
                     </button>
@@ -204,7 +204,7 @@ export default function NoteEditor({ note, onClose, allTags = {} }: NoteEditorPr
                       <button
                         key={s}
                         onClick={() => { setSubTag(s); setShowTagSuggestions(false); }}
-                        className={`px-1.5 py-0.5 rounded-full text-[8px] font-medium transition-colors ${subTag === s ? 'bg-indigo-400 text-white' : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'}`}
+                        className={`px-1.5 py-0.5 rounded-full text-[8px] font-medium transition-colors ${subTag === s ? 'bg-indigo-400 text-white' : 'bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:bg-indigo-900'}`}
                       >
                         {s}
                       </button>
@@ -215,23 +215,23 @@ export default function NoteEditor({ note, onClose, allTags = {} }: NoteEditorPr
             )}
           </div>
           
-          <div className="flex items-center justify-between mb-1 p-1 bg-white/30 rounded-lg">
+          <div className="flex items-center justify-between mb-1 p-1 bg-white dark:bg-gray-800/30 rounded-lg">
             <div className="flex items-center gap-0.5">
-              <button onClick={() => execCommand('bold')} className="p-1.5 hover:bg-white/50 rounded" title="Negrito"><Bold className="w-4 h-4 text-black/70"/></button>
-              <button onClick={() => execCommand('italic')} className="p-1.5 hover:bg-white/50 rounded" title="Itálico"><Italic className="w-4 h-4 text-black/70"/></button>
-              <button onClick={() => execCommand('underline')} className="p-1.5 hover:bg-white/50 rounded" title="Sublinhado"><Underline className="w-4 h-4 text-black/70"/></button>
-              <button onClick={() => execCommand('strikeThrough')} className="p-1.5 hover:bg-white/50 rounded" title="Tachado"><Strikethrough className="w-4 h-4 text-black/70"/></button>
-              <button onClick={() => execCommand('insertUnorderedList')} className="p-1.5 hover:bg-white/50 rounded" title="Lista"><List className="w-4 h-4 text-black/70"/></button>
+              <button onClick={() => execCommand('bold')} className="p-1.5 hover:bg-white dark:bg-gray-800/50 rounded" title="Negrito"><Bold className="w-4 h-4 text-black/70"/></button>
+              <button onClick={() => execCommand('italic')} className="p-1.5 hover:bg-white dark:bg-gray-800/50 rounded" title="Itálico"><Italic className="w-4 h-4 text-black/70"/></button>
+              <button onClick={() => execCommand('underline')} className="p-1.5 hover:bg-white dark:bg-gray-800/50 rounded" title="Sublinhado"><Underline className="w-4 h-4 text-black/70"/></button>
+              <button onClick={() => execCommand('strikeThrough')} className="p-1.5 hover:bg-white dark:bg-gray-800/50 rounded" title="Tachado"><Strikethrough className="w-4 h-4 text-black/70"/></button>
+              <button onClick={() => execCommand('insertUnorderedList')} className="p-1.5 hover:bg-white dark:bg-gray-800/50 rounded" title="Lista"><List className="w-4 h-4 text-black/70"/></button>
               <div className="w-px h-4 bg-black/10 mx-0.5" />
-              <button onClick={() => execCommand('justifyLeft')} className="p-1.5 hover:bg-white/50 rounded" title="Alinhar Esquerda"><AlignLeft className="w-4 h-4 text-black/70"/></button>
-              <button onClick={() => execCommand('justifyCenter')} className="p-1.5 hover:bg-white/50 rounded" title="Centralizar"><AlignCenter className="w-4 h-4 text-black/70"/></button>
+              <button onClick={() => execCommand('justifyLeft')} className="p-1.5 hover:bg-white dark:bg-gray-800/50 rounded" title="Alinhar Esquerda"><AlignLeft className="w-4 h-4 text-black/70"/></button>
+              <button onClick={() => execCommand('justifyCenter')} className="p-1.5 hover:bg-white dark:bg-gray-800/50 rounded" title="Centralizar"><AlignCenter className="w-4 h-4 text-black/70"/></button>
             </div>
             <label className="flex items-center gap-2 text-xs font-bold text-black/60 cursor-pointer pr-2">
               <input 
                 type="checkbox" 
                 checked={isFlashcard}
                 onChange={(e) => setIsFlashcard(e.target.checked)}
-                className="rounded border-black/30 text-indigo-600 focus:ring-indigo-500"
+                className="rounded border-black/30 text-indigo-600 dark:text-indigo-400 focus:ring-indigo-500"
               />
               Flashcard
             </label>
@@ -249,7 +249,7 @@ export default function NoteEditor({ note, onClose, allTags = {} }: NoteEditorPr
                   ref={contentRef}
                   contentEditable
                   suppressContentEditableWarning
-                  className="w-full flex-1 outline-none text-gray-900 prose prose-sm max-w-none overflow-y-auto"
+                  className="w-full flex-1 outline-none text-gray-900 dark:text-gray-100 prose prose-sm max-w-none overflow-y-auto"
                   dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(note.content || '') }}
                 />
               </div>
@@ -264,7 +264,7 @@ export default function NoteEditor({ note, onClose, allTags = {} }: NoteEditorPr
                   ref={backContentRef}
                   contentEditable
                   suppressContentEditableWarning
-                  className="w-full flex-1 outline-none text-gray-900 prose prose-sm max-w-none overflow-y-auto"
+                  className="w-full flex-1 outline-none text-gray-900 dark:text-gray-100 prose prose-sm max-w-none overflow-y-auto"
                   dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(note.backContent || '') }}
                 />
               </div>
@@ -274,7 +274,7 @@ export default function NoteEditor({ note, onClose, allTags = {} }: NoteEditorPr
           {isFlashcard && (
             <button 
               onClick={() => setIsFlipped(!isFlipped)}
-              className="self-center flex items-center gap-2 px-4 py-2 mt-2 bg-indigo-100 text-indigo-700 hover:bg-indigo-200 rounded-full text-sm font-bold transition-colors"
+              className="self-center flex items-center gap-2 px-4 py-2 mt-2 bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 rounded-full text-sm font-bold transition-colors"
             >
               <Repeat className="w-4 h-4" />
               {isFlipped ? 'Ver Frente' : 'Ver Verso'}
@@ -282,7 +282,7 @@ export default function NoteEditor({ note, onClose, allTags = {} }: NoteEditorPr
           )}
         </div>
 
-        <div className="p-4 border-t border-black/10 flex justify-between items-center bg-white/20 backdrop-blur-md">
+        <div className="p-4 border-t border-black/10 flex justify-between items-center bg-white dark:bg-gray-800/20 backdrop-blur-md">
           <div className="flex flex-col gap-2">
             <div className="flex gap-2 items-center">
               <Palette className="w-5 h-5 text-black/50" />
@@ -316,7 +316,7 @@ export default function NoteEditor({ note, onClose, allTags = {} }: NoteEditorPr
                         console.error('EyeDropper cancelado');
                       }
                     }}
-                    className="w-6 h-6 rounded-full border border-black/20 bg-white/50 flex items-center justify-center hover:bg-white transition-colors"
+                    className="w-6 h-6 rounded-full border border-black/20 bg-white dark:bg-gray-800/50 flex items-center justify-center hover:bg-white dark:bg-gray-800 transition-colors"
                     title="Conta-gotas"
                   >
                     <span role="img" aria-label="conta-gotas" className="text-[10px]">💉</span>
@@ -328,7 +328,7 @@ export default function NoteEditor({ note, onClose, allTags = {} }: NoteEditorPr
             <div className="flex gap-2 items-center pl-7">
               <button 
                 onClick={() => setColor(getRandomHexColor('pastel'))}
-                className="text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-black/10 bg-white/80 hover:bg-white text-gray-600 transition-colors"
+                className="text-[10px] font-bold px-2 py-1 rounded shadow-sm border border-black/10 bg-white dark:bg-gray-800/80 hover:bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 transition-colors"
               >
                 Pastel
               </button>
