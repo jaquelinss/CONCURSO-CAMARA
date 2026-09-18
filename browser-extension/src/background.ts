@@ -118,7 +118,9 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   }
 
   if (request.action === 'CREATE_NOTE') {
-    auth.authStateReady().then(() => {
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Tempo limite excedido. Verifique sua conexão.')), 10000));
+    
+    Promise.race([auth.authStateReady(), timeoutPromise]).then(() => {
       try {
         const currentUser = auth.currentUser;
         if (!currentUser) {
@@ -144,30 +146,32 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
           archived: false
         };
 
-        addDoc(collection(db, 'users', currentUser.uid, 'notes'), newNote)
+        Promise.race([addDoc(collection(db, 'users', currentUser.uid, 'notes'), newNote), timeoutPromise])
           .then(() => sendResponse({ success: true }))
-          .catch((err: Error) => sendResponse({ success: false, error: err.message }));
+          .catch((err: any) => sendResponse({ success: false, error: err.message }));
       } catch (err: any) {
         console.error("Error in CREATE_NOTE sync block:", err);
         sendResponse({ success: false, error: err.message || 'Erro inesperado' });
       }
     }).catch(err => {
-      sendResponse({ success: false, error: err.message || 'Erro de autenticação' });
+      sendResponse({ success: false, error: err.message || 'Erro de autenticação ou timeout' });
     });
     return true;
   }
 
   if (request.action === 'GENERATE_NOTE_WITH_AI') {
-    auth.authStateReady().then(async () => {
-      const currentUser = auth.currentUser;
-      if (!currentUser) {
-        sendResponse({ success: false, error: 'Faça login na extensão primeiro.' });
-        return;
-      }
+    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Tempo limite excedido. Verifique sua conexão ou tente novamente.')), 15000));
 
+    Promise.race([auth.authStateReady(), timeoutPromise]).then(async () => {
       try {
+        const currentUser = auth.currentUser;
+        if (!currentUser) {
+          sendResponse({ success: false, error: 'Faça login na extensão primeiro.' });
+          return;
+        }
+
         const configRef = doc(db, 'users', currentUser.uid, 'settings', 'config');
-        const configSnap = await getDoc(configRef);
+        const configSnap = await Promise.race([getDoc(configRef), timeoutPromise]) as any;
         const apiKey = configSnap.exists() ? configSnap.data().apiKey : null;
 
         if (!apiKey) {
@@ -185,7 +189,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
           prompt = `Atue como um estudante de alta performance. Crie um resumo conciso e VISUALMENTE BONITO (estilo post-it de parede) a partir do seguinte texto:\n"${text}"\n\nRegras OBRIGATÓRIAS:\n1. PRIMEIRA LINHA: Um título curto e chamativo seguido de um emoji relevante (ex: "Advérbios: O Toque Mágico! ✨"). SEM marcadores no título.\n2. LINHAS SEGUINTES: Organize as informações em tópicos usando "•" como marcador.\n3. Use emojis temáticos (📍🕐💪✅❌🤔⇒→) para tornar o post-it visualmente rico e fácil de escanear.\n4. Destaque PALAVRAS-CHAVE em MAIÚSCULAS quando apropriado.\n5. Use "⇒" ou "→" para conectar causa/consequência ou explicações complementares.\n6. Se o texto tiver categorias/tipos, organize como subtópicos com "  •" (indentado).\n7. Seja EXTREMAMENTE conciso — cada tópico deve ter no máximo 1 linha.\n8. PROIBIDO: Markdown (**, *, #, etc). Apenas texto puro com emojis e marcadores "•".\n\nRetorne SOMENTE o post-it. Nada mais.`;
         }
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+        const fetchPromise = fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -193,6 +197,8 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
             generationConfig: { temperature: 0.3 }
           })
         });
+        
+        const response = await Promise.race([fetchPromise, timeoutPromise]) as any;
 
         const data = await response.json();
         if (!response.ok) throw new Error(data.error?.message || 'Erro na API Gemini');
@@ -218,7 +224,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
             createdAt: serverTimestamp(),
             archived: false
           };
-          await addDoc(collection(db, 'users', currentUser.uid, 'notes'), newFlashcard);
+          await Promise.race([addDoc(collection(db, 'users', currentUser.uid, 'notes'), newFlashcard), timeoutPromise]);
         } else {
           const lines = generatedText.split('\n');
           const title = lines[0].replace(/\*\*/g, '').replace(/#/g, '').trim();
@@ -235,7 +241,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
             createdAt: serverTimestamp(),
             archived: false
           };
-          await addDoc(collection(db, 'users', currentUser.uid, 'notes'), newPostIt);
+          await Promise.race([addDoc(collection(db, 'users', currentUser.uid, 'notes'), newPostIt), timeoutPromise]);
         }
 
         sendResponse({ success: true });
@@ -243,6 +249,8 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
         console.error(err);
         sendResponse({ success: false, error: err.message || 'Erro desconhecido' });
       }
+    }).catch((err: any) => {
+      sendResponse({ success: false, error: err.message || 'Erro de autenticação ou timeout' });
     });
     return true;
   }
