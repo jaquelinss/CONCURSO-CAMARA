@@ -128,12 +128,15 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
       const isFlashcard = request.isFlashcard || false;
       const text = request.text || '';
 
+      const colors = ['#fef08a', '#fbcfe8', '#bfdbfe', '#bbf7d0', '#e9d5ff'];
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
       const newNote = {
         title: request.title || 'Captura da Web',
         content: text,
         backContent: isFlashcard ? (request.backText || 'Edite o verso no app...') : '',
         isFlashcard,
-        color: '#fef08a',
+        color: randomColor,
         subjectTag: 'Geral',
         subTag: '',
         createdAt: serverTimestamp(),
@@ -189,6 +192,9 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
         
         const generatedText = data.candidates[0].content.parts[0].text.trim();
 
+        const colors = ['#fef08a', '#fbcfe8', '#bfdbfe', '#bbf7d0', '#e9d5ff'];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
         if (isFlashcard) {
           const jsonMatch = generatedText.match(/\[.*\]|\{.*\}/s);
           const jsonStr = jsonMatch ? jsonMatch[0] : generatedText;
@@ -199,7 +205,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
             content: parsed.front || 'Frente',
             backContent: parsed.back || 'Verso',
             isFlashcard: true,
-            color: '#fef08a',
+            color: randomColor,
             subjectTag: 'Geral',
             subTag: '',
             createdAt: serverTimestamp(),
@@ -216,7 +222,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
             content: content || generatedText,
             backContent: '',
             isFlashcard: false,
-            color: '#fef08a',
+            color: randomColor,
             subjectTag: 'Geral',
             subTag: '',
             createdAt: serverTimestamp(),

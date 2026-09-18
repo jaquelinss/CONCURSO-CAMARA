@@ -319,11 +319,13 @@ export default function StickyNotesManager() {
 
       const nextNoteNumber = notes.length > 0 ? Math.max(0, ...notes.filter(n => n.noteNumber).map(n => n.noteNumber!)) + 1 : 1;
 
+      const randomColor = COLORS[Math.floor(Math.random() * COLORS.length)];
+
       await addDoc(collection(db, 'users', user.uid, 'notes'), {
         noteNumber: nextNoteNumber,
         title: initialTitle,
         content: initialContent,
-        color: COLORS[0],
+        color: randomColor,
         x,
         y,
         w: savedSize?.w || 256,
@@ -367,13 +369,15 @@ export default function StickyNotesManager() {
 
       const nextNoteNumber = notes.length > 0 ? Math.max(0, ...notes.filter(n => n.noteNumber).map(n => n.noteNumber!)) + 1 : 1;
 
+      const randomColor = COLORS[Math.floor(Math.random() * COLORS.length)];
+
       await addDoc(collection(db, 'users', user.uid, 'notes'), {
         noteNumber: nextNoteNumber,
         title: initialTitle,
         content: initialContent,
         backContent: initialBackContent,
         isFlashcard: true,
-        color: COLORS[0],
+        color: randomColor,
         x,
         y,
         w: savedSize?.w || 256,
