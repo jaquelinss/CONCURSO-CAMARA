@@ -1,6 +1,9 @@
 import { doc, getDoc, setDoc, increment, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from './firebase';
 
+const NOTE_COLORS = ['#fef08a', '#fbcfe8', '#bfdbfe', '#bbf7d0', '#e9d5ff'];
+function randomColor() { return NOTE_COLORS[Math.floor(Math.random() * NOTE_COLORS.length)]; }
+
 // Setup Context Menus when extension is installed
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
@@ -38,7 +41,7 @@ chrome.contextMenus.onClicked.addListener((info, _tab) => {
         content: selectedText,
         backContent: isFlashcard ? 'Edite o verso no app...' : '',
         isFlashcard: isFlashcard,
-        color: '#fef08a',
+        color: randomColor(),
         subjectTag: 'Geral',
         subTag: '',
         createdAt: serverTimestamp(),
@@ -133,7 +136,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
         content: text,
         backContent: isFlashcard ? (request.backText || 'Edite o verso no app...') : '',
         isFlashcard,
-        color: '#fef08a',
+        color: randomColor(),
         subjectTag: 'Geral',
         subTag: '',
         createdAt: serverTimestamp(),
@@ -199,7 +202,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
             content: parsed.front || 'Frente',
             backContent: parsed.back || 'Verso',
             isFlashcard: true,
-            color: '#fef08a',
+            color: randomColor(),
             subjectTag: 'Geral',
             subTag: '',
             createdAt: serverTimestamp(),
@@ -216,7 +219,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
             content: content || generatedText,
             backContent: '',
             isFlashcard: false,
-            color: '#fef08a',
+            color: randomColor(),
             subjectTag: 'Geral',
             subTag: '',
             createdAt: serverTimestamp(),
