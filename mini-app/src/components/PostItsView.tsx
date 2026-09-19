@@ -307,10 +307,10 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
                 style={{ backgroundColor: note.color || '#fef08a', minHeight: '280px' }}
               >
                 <div 
-                  className="px-3 py-2 flex justify-between items-center"
+                  className="px-3 py-2 flex justify-between items-start"
                   style={{ backgroundColor: topBarColor, color: textColor }}
                 >
-                  <span className="text-xs font-bold truncate pr-2">
+                  <span className="text-xs font-bold pr-2 leading-tight break-words flex-1">
                     {note.noteNumber && `#${note.noteNumber} · `}{note.title || (note.subjectTag ? note.subjectTag : 'Nota')}
                   </span>
                   <div className="flex items-center gap-1">

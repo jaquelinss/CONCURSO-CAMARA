@@ -183,11 +183,11 @@ export default function FlashcardsView({ isSplitMode }: { isSplitMode?: boolean 
                       style={{ backgroundColor: baseColor, color: frontTextColor }}
                     >
                       <div 
-                        className="px-3 py-2 flex justify-between items-center"
+                        className="px-3 py-2 flex justify-between items-start"
                         style={{ backgroundColor: darkenColor(baseColor, 20) }}
                         onClick={(e) => e.stopPropagation()}
                       >
-                        <span className="text-xs font-bold truncate">
+                        <span className="text-xs font-bold pr-2 leading-tight break-words flex-1">
                           {note.noteNumber && `#${note.noteNumber} · `}{note.title || 'Flashcard'}
                         </span>
                         <div className="flex items-center gap-1">
@@ -230,7 +230,7 @@ export default function FlashcardsView({ isSplitMode }: { isSplitMode?: boolean 
                       style={{ backgroundColor: backColor, color: backTextColor, transform: 'rotateY(180deg)' }}
                     >
                       <div 
-                        className="px-3 py-2 flex justify-between items-center"
+                        className="px-3 py-2 flex justify-between items-start"
                         style={{ backgroundColor: darkenColor(backColor, 20) }}
                         onClick={(e) => e.stopPropagation()}
                       >
