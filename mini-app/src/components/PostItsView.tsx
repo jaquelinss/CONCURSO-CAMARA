@@ -13,6 +13,7 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
   
   const [editingNote, setEditingNote] = useState<any | null>(null);
   const [fullscreenNote, setFullscreenNote] = useState<any | null>(null);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [isCascadeMode, setIsCascadeMode] = useState(true);
   const [selectedTag, setSelectedTag] = useState<string>('__all__');
   const [selectedSubTag, setSelectedSubTag] = useState<string>('__all__');
@@ -494,7 +495,34 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
         <div 
           className="fixed top-[52px] left-0 right-0 bottom-0 z-[15] bg-gray-100/90 dark:bg-gray-900/90 backdrop-blur-sm p-4 flex flex-col items-center justify-center overflow-hidden animate-in fade-in"
           onClick={() => setFullscreenNote(null)}
+          onTouchStart={(e) => setTouchStartX(e.touches[0].clientX)}
+          onTouchEnd={(e) => {
+            if (touchStartX === null || !fullscreenNote) return;
+            const touchEndX = e.changedTouches[0].clientX;
+            const diff = touchStartX - touchEndX;
+            const currentIndex = filteredNotes.findIndex(n => n.id === fullscreenNote.id);
+            if (currentIndex === -1) return;
+            
+            if (Math.abs(diff) > 50) {
+              e.stopPropagation(); // prevent closing
+              if (diff > 0 && currentIndex < filteredNotes.length - 1) {
+                setFullscreenNote(filteredNotes[currentIndex + 1]);
+              } else if (diff < 0 && currentIndex > 0) {
+                setFullscreenNote(filteredNotes[currentIndex - 1]);
+              }
+            }
+            setTouchStartX(null);
+          }}
         >
+           {filteredNotes.findIndex(n => n.id === fullscreenNote.id) > 0 && (
+             <button 
+               onClick={(e) => { e.stopPropagation(); setFullscreenNote(filteredNotes[filteredNotes.findIndex(n => n.id === fullscreenNote.id) - 1]); }}
+               className="hidden md:flex absolute left-2 md:left-6 top-1/2 -translate-y-1/2 z-20 p-2 md:p-3 bg-black/20 hover:bg-black/40 dark:bg-black/60 dark:hover:bg-black/80 rounded-full text-white shadow-md transition-colors backdrop-blur-sm"
+             >
+               <ChevronLeft className="w-6 h-6 md:w-8 md:h-8" />
+             </button>
+           )}
+
            <div 
              className="w-full h-full max-w-2xl rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200"
              style={{ backgroundColor: fullscreenNote.color || '#fef08a' }}
@@ -541,6 +569,15 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
                />
              </div>
            </div>
+
+           {filteredNotes.findIndex(n => n.id === fullscreenNote.id) !== -1 && filteredNotes.findIndex(n => n.id === fullscreenNote.id) < filteredNotes.length - 1 && (
+             <button 
+               onClick={(e) => { e.stopPropagation(); setFullscreenNote(filteredNotes[filteredNotes.findIndex(n => n.id === fullscreenNote.id) + 1]); }}
+               className="hidden md:flex absolute right-2 md:right-6 top-1/2 -translate-y-1/2 z-20 p-2 md:p-3 bg-black/20 hover:bg-black/40 dark:bg-black/60 dark:hover:bg-black/80 rounded-full text-white shadow-md transition-colors backdrop-blur-sm"
+             >
+               <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
+             </button>
+           )}
         </div>
       )}
   
