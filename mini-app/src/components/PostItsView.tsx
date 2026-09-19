@@ -529,10 +529,10 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
              onClick={(e) => e.stopPropagation()}
            >
              <div 
-               className="px-4 py-3 flex justify-between items-center"
+               className="px-4 py-3 flex justify-between items-start"
                style={{ backgroundColor: darkenColor(fullscreenNote.color || '#fef08a', 20), color: getContrastColor(fullscreenNote.color || '#fef08a') }}
              >
-               <span className="font-bold text-lg truncate pr-2">
+               <span className="font-bold text-lg pr-2 leading-tight break-words flex-1">
                  {fullscreenNote.noteNumber && `#${fullscreenNote.noteNumber} - `}{fullscreenNote.title || (fullscreenNote.subjectTag ? `${fullscreenNote.subjectTag}` : 'Nota')}
                </span>
                <button 

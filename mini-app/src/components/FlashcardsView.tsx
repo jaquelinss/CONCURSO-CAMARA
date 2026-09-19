@@ -386,11 +386,11 @@ export default function FlashcardsView({ isSplitMode }: { isSplitMode?: boolean 
                  style={{ backgroundColor: fullscreenNote.color || '#fef08a' }}
                >
                  <div 
-                   className="px-4 py-3 flex justify-between items-center"
+                   className="px-4 py-3 flex justify-between items-start"
                    style={{ backgroundColor: darkenColor(fullscreenNote.color || '#fef08a', 20), color: getContrastColor(fullscreenNote.color || '#fef08a') }}
                    onClick={(e) => e.stopPropagation()}
                  >
-                   <span className="font-bold text-lg truncate pr-2">
+                   <span className="font-bold text-lg pr-2 leading-tight break-words flex-1">
                      {fullscreenNote.title || 'Frente'}
                    </span>
                    <button 
@@ -426,7 +426,7 @@ export default function FlashcardsView({ isSplitMode }: { isSplitMode?: boolean 
                    className="px-4 py-3 flex justify-between items-center bg-indigo-700"
                    onClick={(e) => e.stopPropagation()}
                  >
-                   <span className="font-bold text-lg truncate pr-2">
+                   <span className="font-bold text-lg pr-2 leading-tight break-words flex-1">
                      Verso
                    </span>
                    <button 
