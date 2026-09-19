@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { collection, query, onSnapshot, doc, updateDoc, deleteDoc, addDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
-import { Plus, Edit2,  Trash2, Search, FileText, Eye, EyeOff, ChevronDown, ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
+import { Plus, Edit2,  Trash2, Search, FileText, Eye, EyeOff, ChevronDown, ChevronLeft, ChevronRight, RotateCcw , Maximize, Minimize} from 'lucide-react';
 import DOMPurify from 'dompurify';
 import NoteEditor from './NoteEditor';
 
@@ -12,6 +12,7 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
   const [searchTerm, setSearchTerm] = useState('');
   
   const [editingNote, setEditingNote] = useState<any | null>(null);
+  const [fullscreenNote, setFullscreenNote] = useState<any | null>(null);
   const [isCascadeMode, setIsCascadeMode] = useState(true);
   const [selectedTag, setSelectedTag] = useState<string>('__all__');
   const [selectedSubTag, setSelectedSubTag] = useState<string>('__all__');
@@ -419,6 +420,13 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
                       >
                         <Trash2 className="w-3 h-3" />
                       </button>
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); setFullscreenNote(note); }} 
+                        className="p-1 hover:bg-black/10 rounded"
+                        title="Tela Cheia"
+                      >
+                        <Maximize className="w-3 h-3" />
+                      </button>
                     </div>
                   </div>
                   
@@ -474,6 +482,61 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
         </div>
       )}
 
+      
+      {fullscreenNote && (
+        <div 
+          className="fixed top-[52px] left-0 right-0 bottom-0 z-[15] bg-gray-100/90 dark:bg-gray-900/90 backdrop-blur-sm p-4 flex flex-col items-center justify-center overflow-hidden animate-in fade-in"
+          onClick={() => setFullscreenNote(null)}
+        >
+           <div 
+             className="w-full h-full max-w-2xl rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200"
+             style={{ backgroundColor: fullscreenNote.color || '#fef08a' }}
+             onClick={(e) => e.stopPropagation()}
+           >
+             <div 
+               className="px-4 py-3 flex justify-between items-center"
+               style={{ backgroundColor: darkenColor(fullscreenNote.color || '#fef08a', 20), color: getContrastColor(fullscreenNote.color || '#fef08a') }}
+             >
+               <span className="font-bold text-lg truncate pr-2">
+                 {fullscreenNote.noteNumber && `#${fullscreenNote.noteNumber} - `}{fullscreenNote.title || (fullscreenNote.subjectTag ? `${fullscreenNote.subjectTag}` : 'Nota')}
+               </span>
+               <button 
+                 onClick={() => setFullscreenNote(null)}
+                 className="p-2 hover:bg-black/10 rounded-full"
+               >
+                 <Minimize className="w-6 h-6" />
+               </button>
+             </div>
+             
+             {(fullscreenNote.subjectTag || fullscreenNote.subTag) && (
+               <div className="px-4 pt-3 flex flex-wrap gap-2">
+                 {fullscreenNote.subjectTag && (
+                   <span className="text-xs font-bold px-2 py-1 rounded-full bg-black/10" style={{ color: getContrastColor(fullscreenNote.color || '#fef08a') }}>
+                     {fullscreenNote.subjectTag}
+                   </span>
+                 )}
+                 {fullscreenNote.subTag && (
+                   <span className="text-xs font-medium px-2 py-1 rounded-full bg-black/5" style={{ color: getContrastColor(fullscreenNote.color || '#fef08a') }}>
+                     {fullscreenNote.subTag}
+                   </span>
+                 )}
+               </div>
+             )}
+  
+             <div 
+               className="p-4 md:p-6 text-base md:text-lg flex-1 overflow-y-auto"
+               style={{ color: getContrastColor(fullscreenNote.color || '#fef08a') }}
+             >
+               <div 
+                 className="prose prose-sm md:prose-base max-w-none"
+                 style={{ color: 'inherit' }}
+                 dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(fullscreenNote.content || '') }} 
+               />
+             </div>
+           </div>
+        </div>
+      )}
+  
       {editingNote && (
         <NoteEditor 
           note={editingNote} 

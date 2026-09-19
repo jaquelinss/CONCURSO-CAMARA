@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { collection, query, onSnapshot, orderBy, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
-import { Search, Layers, Play, Trash2, Clock, ChevronLeft, ChevronRight, Repeat, StickyNote, Eye, EyeOff, Edit2 } from 'lucide-react';
+import { Search, Layers, Play, Trash2, Clock, ChevronLeft, ChevronRight, Repeat, StickyNote, Eye, EyeOff, Edit2 , Maximize, Minimize} from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import DOMPurify from 'dompurify';
@@ -18,6 +18,8 @@ export default function FlashcardsView({ isSplitMode }: { isSplitMode?: boolean 
   const [cascadeIndex, setCascadeIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [editingNote, setEditingNote] = useState<any | null>(null);
+  const [fullscreenNote, setFullscreenNote] = useState<any | null>(null);
+  const [isFlippedFS, setIsFlippedFS] = useState(false);
 
   // Load flashcard decks (AI-generated)
   useEffect(() => {
@@ -196,6 +198,13 @@ export default function FlashcardsView({ isSplitMode }: { isSplitMode?: boolean 
                             {note.isArchived ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
                           </button>
                           <button 
+                              onClick={(e) => { e.stopPropagation(); setFullscreenNote(note); setIsFlippedFS(false); }} 
+                              className="p-1 hover:bg-black/10 rounded"
+                              title="Tela Cheia"
+                            >
+                              <Maximize className="w-3 h-3" />
+                            </button>
+                            <button 
                             onClick={() => setEditingNote(note)}
                             className="p-1 hover:bg-black/10 rounded"
                             title="Editar"
@@ -327,6 +336,95 @@ export default function FlashcardsView({ isSplitMode }: { isSplitMode?: boolean 
         )}
       </div>
 
+      
+      {fullscreenNote && (
+        <div 
+          className="fixed top-[52px] left-0 right-0 bottom-0 z-[15] bg-gray-100/90 dark:bg-gray-900/90 backdrop-blur-sm p-4 flex flex-col items-center justify-center overflow-hidden animate-in fade-in"
+          onClick={() => setFullscreenNote(null)}
+        >
+           <div 
+             className="w-full h-full max-w-2xl rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 perspective-1000"
+           >
+             <div 
+               className="w-full h-full relative preserve-3d transition-transform duration-500"
+               style={{ transform: isFlippedFS ? 'rotateY(180deg)' : 'rotateY(0deg)' }}
+               onClick={(e) => { e.stopPropagation(); setIsFlippedFS(!isFlippedFS); }}
+             >
+               {/* FRENTE */}
+               <div 
+                 className="absolute inset-0 backface-hidden flex flex-col overflow-hidden rounded-2xl"
+                 style={{ backgroundColor: fullscreenNote.color || '#fef08a' }}
+               >
+                 <div 
+                   className="px-4 py-3 flex justify-between items-center"
+                   style={{ backgroundColor: darkenColor(fullscreenNote.color || '#fef08a', 20), color: getContrastColor(fullscreenNote.color || '#fef08a') }}
+                   onClick={(e) => e.stopPropagation()}
+                 >
+                   <span className="font-bold text-lg truncate pr-2">
+                     {fullscreenNote.title || 'Frente'}
+                   </span>
+                   <button 
+                     onClick={() => setFullscreenNote(null)}
+                     className="p-2 hover:bg-black/10 rounded-full"
+                   >
+                     <Minimize className="w-6 h-6" />
+                   </button>
+                 </div>
+                 
+                 <div 
+                   className="p-4 md:p-6 text-base md:text-lg flex-1 overflow-y-auto flex items-center justify-center"
+                   style={{ color: getContrastColor(fullscreenNote.color || '#fef08a') }}
+                 >
+                   <div 
+                     className="prose prose-sm md:prose-base text-center"
+                     style={{ color: 'inherit' }}
+                     dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(fullscreenNote.content || '') }} 
+                   />
+                 </div>
+                 
+                 <div className="px-4 py-2 text-center text-xs font-bold opacity-50" style={{ color: getContrastColor(fullscreenNote.color || '#fef08a') }}>
+                   Toque para virar
+                 </div>
+               </div>
+
+               {/* VERSO */}
+               <div 
+                 className="absolute inset-0 backface-hidden flex flex-col rounded-2xl overflow-hidden bg-indigo-600 text-white"
+                 style={{ transform: 'rotateY(180deg)' }}
+               >
+                 <div 
+                   className="px-4 py-3 flex justify-between items-center bg-indigo-700"
+                   onClick={(e) => e.stopPropagation()}
+                 >
+                   <span className="font-bold text-lg truncate pr-2">
+                     Verso
+                   </span>
+                   <button 
+                     onClick={() => setFullscreenNote(null)}
+                     className="p-2 hover:bg-white/20 rounded-full"
+                   >
+                     <Minimize className="w-6 h-6" />
+                   </button>
+                 </div>
+                 
+                 <div 
+                   className="p-4 md:p-6 text-base md:text-lg flex-1 overflow-y-auto flex items-center justify-center"
+                 >
+                   <div 
+                     className="prose prose-sm md:prose-base prose-invert text-center"
+                     dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(fullscreenNote.backContent || '') }} 
+                   />
+                 </div>
+                 
+                 <div className="px-4 py-2 text-center text-xs font-bold opacity-50 text-white">
+                   Toque para voltar
+                 </div>
+               </div>
+             </div>
+           </div>
+        </div>
+      )}
+  
       {activeStudyDeck && (
         <FlashcardStudy 
           deck={activeStudyDeck} 
