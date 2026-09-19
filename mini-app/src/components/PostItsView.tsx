@@ -327,6 +327,13 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
                     >
                       <Edit2 className="w-3.5 h-3.5" />
                     </button>
+                    <button 
+                      onClick={() => setFullscreenNote(note)}
+                      className="p-1 hover:bg-black/10 rounded"
+                      title="Tela Cheia"
+                    >
+                      <Maximize className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 </div>
 
