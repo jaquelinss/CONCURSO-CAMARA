@@ -19,6 +19,7 @@ interface Note {
   isArchived?: boolean;
   subjectTag?: string;
   subTag?: string;
+  aiTagged?: boolean;
   w?: number;
   h?: number;
   isMinimized?: boolean;
@@ -276,14 +277,25 @@ export default function StickyNotesManager() {
     if (!user || !apiKey || notes.length === 0) return;
     
     // Find the first archived note that has content but no tag/subtag, and is not currently being processed
-    const noteToProcess = notes.find(n => n.isArchived && (!n.subjectTag || n.subTag === undefined) && n.content && !processingTagsRef.current.has(n.id));
+    // Now also includes notes tagged as 'Geral' which lack a subTag and haven't been processed by AI yet.
+    const noteToProcess = notes.find(n => 
+      n.isArchived && 
+      (!n.subjectTag || (n.subjectTag === 'Geral' && !n.subTag) || n.subTag === undefined) && 
+      !n.aiTagged && 
+      n.content && 
+      !processingTagsRef.current.has(n.id)
+    );
     
     if (noteToProcess) {
       processingTagsRef.current.add(noteToProcess.id);
       generateNoteTag(noteToProcess.content, noteToProcess.title || '', apiKey).then(async (result) => {
         if (result && result.tag) {
           const noteRef = doc(db, 'users', user.uid, 'notes', noteToProcess.id);
-          await updateDoc(noteRef, { subjectTag: result.tag, subTag: result.subtag || '' });
+          await updateDoc(noteRef, { 
+            subjectTag: result.tag, 
+            subTag: result.subtag || '',
+            aiTagged: true 
+          });
         }
       }).catch(e => {
         console.error("Erro ao gerar tag:", e);
