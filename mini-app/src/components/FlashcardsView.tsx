@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+﻿import { useEffect, useState, useMemo } from 'react';
 import { collection, query, onSnapshot, orderBy, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
@@ -188,7 +188,7 @@ export default function FlashcardsView({ isSplitMode }: { isSplitMode?: boolean 
                         onClick={(e) => e.stopPropagation()}
                       >
                         <span className="text-xs font-bold pr-2 leading-tight break-words flex-1">
-                          {note.noteNumber && `#${note.noteNumber} · `}{note.title || 'Flashcard'}
+                          {note.noteNumber && `#${note.noteNumber} Â· `}{note.title || 'Flashcard'}
                         </span>
                         <div className="flex items-center gap-1">
                           <button 
@@ -214,6 +214,20 @@ export default function FlashcardsView({ isSplitMode }: { isSplitMode?: boolean 
                           </button>
                         </div>
                       </div>
+                      {(note.subjectTag || note.subTag) && (
+                        <div className="px-3 pt-2 flex flex-wrap gap-1">
+                          {note.subjectTag && (
+                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-black/10" style={{ color: 'inherit' }}>
+                              {note.subjectTag}
+                            </span>
+                          )}
+                          {note.subTag && (
+                            <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-black/5" style={{ color: 'inherit' }}>
+                              {note.subTag}
+                            </span>
+                          )}
+                        </div>
+                      )}
                       <div className="flex-1 flex items-center justify-center p-5 overflow-y-auto">
                         <div className="text-xs font-bold text-indigo-400 absolute top-12 left-3">FRENTE</div>
                         <div 
@@ -236,6 +250,20 @@ export default function FlashcardsView({ isSplitMode }: { isSplitMode?: boolean 
                       >
                         <span className="text-xs font-bold">VERSO</span>
                       </div>
+                      {(note.subjectTag || note.subTag) && (
+                        <div className="px-3 pt-2 flex flex-wrap gap-1">
+                          {note.subjectTag && (
+                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-black/10" style={{ color: 'inherit' }}>
+                              {note.subjectTag}
+                            </span>
+                          )}
+                          {note.subTag && (
+                            <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-black/5" style={{ color: 'inherit' }}>
+                              {note.subTag}
+                            </span>
+                          )}
+                        </div>
+                      )}
                       <div className="flex-1 flex items-center justify-center p-5 overflow-y-auto">
                         <div 
                           className="prose prose-sm text-center font-bold"
@@ -401,6 +429,21 @@ export default function FlashcardsView({ isSplitMode }: { isSplitMode?: boolean 
                    </button>
                  </div>
                  
+                  
+                  {(fullscreenNote.subjectTag || fullscreenNote.subTag) && (
+                    <div className="px-4 pt-3 flex flex-wrap gap-2">
+                      {fullscreenNote.subjectTag && (
+                        <span className="text-xs font-bold px-2 py-1 rounded-full bg-black/10" style={{ color: getContrastColor(fullscreenNote.color || '#fef08a') }}>
+                          {fullscreenNote.subjectTag}
+                        </span>
+                      )}
+                      {fullscreenNote.subTag && (
+                        <span className="text-xs font-medium px-2 py-1 rounded-full bg-black/5" style={{ color: getContrastColor(fullscreenNote.color || '#fef08a') }}>
+                          {fullscreenNote.subTag}
+                        </span>
+                      )}
+                    </div>
+                  )}
                  <div 
                    className="p-4 md:p-6 text-base md:text-lg flex-1 overflow-y-auto flex items-center justify-center"
                    style={{ color: getContrastColor(fullscreenNote.color || '#fef08a') }}

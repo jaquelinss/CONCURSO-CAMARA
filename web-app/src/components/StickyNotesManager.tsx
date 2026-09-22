@@ -545,6 +545,8 @@ export default function StickyNotesManager() {
             onUpdate={(u) => handleUpdateNote(note.id, u)}
             onFocus={() => bringToFront(note.id)}
             onSendToBack={() => sendToBack(note.id)}
+            allTags={allTags}
+            tagsHierarchy={tagsHierarchy}
           />
         ))}
       </div>
@@ -909,7 +911,9 @@ function FlashcardItem({
   onCascadeStop,
   onUpdate,
   onFocus,
-  onSendToBack
+  onSendToBack,
+  allTags,
+  tagsHierarchy
 }: { 
   note: Note; 
   isCascadeMode: boolean;
@@ -921,6 +925,8 @@ function FlashcardItem({
   onUpdate: (u: Partial<Note>) => void;
   onFocus: () => void;
   onSendToBack: () => void;
+  allTags: string[];
+  tagsHierarchy?: Record<string, Set<string>>;
 }) {
   const [flipped, setFlipped] = useState(false);
   const nodeRef = useRef<HTMLDivElement>(null);
@@ -928,6 +934,9 @@ function FlashcardItem({
   const [size, setSize] = useState({ w: note.w || 250, h: note.h || 300 });
   
   const [showPalette, setShowPalette] = useState(false);
+  const [showTagPicker, setShowTagPicker] = useState(false);
+  const [newTagInput, setNewTagInput] = useState(note.subjectTag || '');
+  const [newSubTagInput, setNewSubTagInput] = useState(note.subTag || '');
   const [savedColors, setSavedColors] = useState<string[]>(() => {
     try { return JSON.parse(localStorage.getItem('sticky_saved_colors') || '[]'); } catch { return []; }
   });
@@ -1080,11 +1089,18 @@ function FlashcardItem({
                   </button>
                 )}
                 <button 
-                  onClick={(e) => { e.stopPropagation(); setShowPalette(!showPalette); }}
+                  onClick={(e) => { e.stopPropagation(); setShowPalette(!showPalette); setShowTagPicker(false); }}
                   className="p-1 hover:bg-black/20 rounded"
                   title="Mudar Cor"
                 >
                   <Palette className="w-3.5 h-3.5 opacity-80 pointer-events-none" />
+                </button>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setShowTagPicker(!showTagPicker); setShowPalette(false); }}
+                  className="p-1 hover:bg-black/20 rounded"
+                  title="Atribuir Tag"
+                >
+                  <Tag className="w-3.5 h-3.5 opacity-80 pointer-events-none" />
                 </button>
                 <button 
                   onClick={(e) => { e.stopPropagation(); onUpdate({ isArchived: true }); }}
@@ -1138,10 +1154,78 @@ function FlashcardItem({
               </div>
             )}
 
+            {showTagPicker && (
+              <div className="palette-popover flex flex-col gap-3 p-3 bg-white/95 backdrop-blur border-b border-black/10 text-black z-50">
+                <div className="flex flex-col gap-2">
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase">Matéria (Tag Principal)</label>
+                    <input 
+                      type="text"
+                      list={`tags-list-${note.id}`}
+                      value={newTagInput}
+                      onChange={(e) => setNewTagInput(e.target.value)}
+                      placeholder="Ex: Português"
+                      className="w-full bg-gray-100 border border-gray-200 rounded px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-indigo-500"
+                      onPointerDown={(e) => e.stopPropagation()}
+                    />
+                    <datalist id={`tags-list-${note.id}`}>
+                      {allTags.map(tag => <option key={tag} value={tag} />)}
+                    </datalist>
+                  </div>
+                  
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase">Assunto (Subtag)</label>
+                    <input 
+                      type="text"
+                      list={`subtags-list-${note.id}`}
+                      value={newSubTagInput}
+                      onChange={(e) => setNewSubTagInput(e.target.value)}
+                      placeholder="Ex: Gramática"
+                      className="w-full bg-gray-100 border border-gray-200 rounded px-2 py-1.5 text-xs outline-none focus:ring-1 focus:ring-indigo-500"
+                      onPointerDown={(e) => e.stopPropagation()}
+                    />
+                    <datalist id={`subtags-list-${note.id}`}>
+                      {newTagInput && tagsHierarchy && tagsHierarchy[newTagInput] 
+                        ? Array.from<string>(tagsHierarchy[newTagInput]).map(subtag => <option key={subtag} value={subtag} />)
+                        : []}
+                    </datalist>
+                  </div>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onUpdate({ 
+                        subjectTag: newTagInput,
+                        subTag: newSubTagInput
+                      });
+                      setShowTagPicker(false);
+                    }}
+                    className="w-full mt-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs py-1.5 rounded transition-colors"
+                  >
+                    Salvar Tags
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div 
-              className="flip-content flex-grow flex items-center justify-center p-6 cursor-pointer overflow-auto text-center"
+              className="flip-content flex-grow flex flex-col items-center justify-center p-4 cursor-pointer overflow-auto text-center relative"
               onClick={(e) => { e.stopPropagation(); setFlipped(true); }}
             >
+              {(note.subjectTag || note.subTag) && (
+                <div className="flex flex-wrap gap-1 justify-center mb-3">
+                  {note.subjectTag && (
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-black/10" style={{ color: frontTextColor }}>
+                      {note.subjectTag}
+                    </span>
+                  )}
+                  {note.subTag && (
+                    <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-black/5" style={{ color: frontTextColor }}>
+                      {note.subTag}
+                    </span>
+                  )}
+                </div>
+              )}
               <div 
                 className="font-bold whitespace-pre-wrap"
                 dangerouslySetInnerHTML={{ __html: note.content || "Frente do flashcard" }}
