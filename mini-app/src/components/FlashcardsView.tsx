@@ -60,7 +60,7 @@ export default function FlashcardsView({ isSplitMode }: { isSplitMode?: boolean 
 
   const postItFlashcards = useMemo(() => {
     return notes
-      .filter(n => n.isFlashcard && !n.isArchived)
+      .filter(n => n.isFlashcard)
       .sort((a, b) => {
         const dateA = a.createdAt?.seconds || 0;
         const dateB = b.createdAt?.seconds || 0;
