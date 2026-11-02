@@ -564,7 +564,7 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
              >
                <div 
                  className="prose prose-sm md:prose-base max-w-none"
-                 style={{ color: 'inherit' }}
+                 style={{ color: 'inherit', whiteSpace: 'pre-wrap' }}
                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(fullscreenNote.content || '') }} 
                />
              </div>
