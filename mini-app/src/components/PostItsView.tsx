@@ -359,7 +359,7 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
                 >
                   <div 
                     className="prose prose-sm max-w-none"
-                    style={{ color: 'inherit' }}
+                    style={{ color: 'inherit', whiteSpace: 'pre-wrap' }}
                     dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(note.content || '') }} 
                   />
                 </div>
@@ -460,7 +460,7 @@ export default function PostItsView({ isSplitMode }: { isSplitMode?: boolean }) 
                   >
                     <div 
                       className="prose prose-sm prose-p:my-0 prose-ul:my-0 line-clamp-5"
-                      style={{ color: 'inherit' }}
+                      style={{ color: 'inherit', whiteSpace: 'pre-wrap' }}
                       dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(note.content || '') }} 
                     />
                     <div 
